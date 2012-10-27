@@ -4,3 +4,4 @@ Output
 *_Resharper*
 *.user
 *.suo
+*.nupkg

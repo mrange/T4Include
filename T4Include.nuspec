@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata schemaVersion="2">
+    <id>T4Include</id>
+    <version>1.0.1</version>
+    <title>T4Include</title>
+    <authors>Mårten Rånge</authors>
+    <owners>Mårten Rånge</owners>
+    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <projectUrl>https://github.com/mrange/T4Include</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>T4Include provides small and useful functions intended to be referenced by source, this nuget package includes the necessary files to reference local files and web files by source</description>
+    <summary>T4Include allows reference local files and web files by source</summary>
+    <tags>include T4</tags>
+    <frameworkAssemblies>
+    </frameworkAssemblies>
+    <releaseNotes>
+      * 1.0.1   - Initial release
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="T4\IncludeHeader.ttinclude" target="T4" />
+    <file src="T4\IncludeLocalFile.ttinclude" target="T4" />
+    <file src="T4\IncludeWebFile.ttinclude" target="T4" />
+  </files>
+</package>
