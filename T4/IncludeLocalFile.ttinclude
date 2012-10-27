@@ -1,0 +1,60 @@
+﻿<#@ template    hostspecific= "true"                            #>
+<#@ import      namespace   = "System.IO"                       #>
+<#@ include     file        ="IncludeHeader.ttinclude"          #>
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+<#+
+    const string Extension_RootPath     = @".";
+
+    string Extension_CombinePath (string containerPath, string localPath)
+    {
+        return Path.IsPathRooted (localPath)
+            ?   localPath
+            :   Path.GetFullPath (Path.Combine (containerPath, localPath))
+            ;
+    }
+
+    string Extension_GetFullPath (IncludeFile include)
+    {
+        var localPath   = include.LocalPath ?? ""; 
+        var fullPath    = 
+            Extension_CombinePath (
+                Host.ResolvePath (RootPath), 
+                localPath.Replace ("/", @"\")
+            );
+        return fullPath;
+    }
+
+    string Extension_GetFullContainer (IncludeFile include)
+    {
+        var localPath   = Extension_GetFullPath (include);
+        return Path.GetDirectoryName (localPath); 
+    }
+
+    string[] Extension_ReadAllLines (IncludeFile include)
+    {
+        var fullPath = Extension_GetFullPath (include);
+
+        return File.ReadAllLines (fullPath);
+    }
+
+    bool Extension_Exists (IncludeFile include)
+    {
+        var fullPath = Extension_GetFullPath (include);
+
+        return File.Exists (fullPath);
+    }
+
+#>
+

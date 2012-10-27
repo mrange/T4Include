@@ -1,0 +1,199 @@
+﻿// ############################################################################
+// #                                                                          #
+// #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+// #                                                                          #
+// # This means that any edits to the .cs file will be lost when its          #
+// # regenerated. Changes should instead be applied to the corresponding      #
+// # text template file (.tt)                                                      #
+// ############################################################################
+
+<#@ assembly    name        = "System.Core"                     #>
+<#@ import      namespace   = "System.Net"                      #>
+<#@ import      namespace   = "System.Text.RegularExpressions"  #>
+<#@ import      namespace   = "System.Collections.Generic"      #>
+<#@ import      namespace   = "System.Linq"                     #>
+
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+<#
+    var seenIncludes = new HashSet<string> ();
+#>
+
+// ############################################################################
+<#
+    var processed = new List<IncludeFile> ();
+    var toBeProcessed = new Queue<IncludeFile> (Includes ?? new IncludeFile[0]);
+
+    var topLines        = new List<string>();
+    var bottomLines = new List<string>();
+
+    while (toBeProcessed.Count > 0)
+    {
+        var include         = toBeProcessed.Dequeue ();
+        var fullPath        = Extension_GetFullPath (include); 
+        try
+        {
+        var fullContainer   = Extension_GetFullContainer (include);
+
+        if (seenIncludes.Contains (fullPath))
+        {
+#>
+// @@@ SKIPPING(Already seen): <#=fullPath#>
+<#
+            continue;
+        }
+
+        seenIncludes.Add (fullPath);
+
+        if (!Extension_Exists (include))
+        {
+#>
+// @@@ SKIPPING(Not found): <#=fullPath#>
+<#
+            continue;
+        }
+#>
+// @@@ INCLUDING: <#=fullPath#>
+<#
+        processed.Add (include);
+        var lines = Extension_ReadAllLines (include);
+
+
+        foreach (var line in lines)
+        {
+            var includeMatch = s_matchInclude.Match (line);
+            var topMatch = s_matchMoveToTop.Match (line);
+            if (includeMatch.Success)
+            {
+                var fileName = includeMatch.Groups["fileName"].Value;
+#>
+// @@@ INCLUDE_FOUND: <#=fileName#>
+<#
+                toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName)));
+            }
+            else if (topMatch.Success)
+            {
+                topLines.Add(line);
+            }
+            else
+            {
+                bottomLines.Add(line);
+            }
+        }
+        }
+        catch (Exception exc)
+        {
+#>
+// @@@ SKIPPING(Exception: "<#=exc.Message#>"): <#=fullPath#>
+<#
+            continue;
+        }
+    }
+#>
+// ############################################################################
+// Certains directives such as #define and // Resharper comments has to be 
+// moved to top in order to work properly    
+// ############################################################################
+<#
+    foreach (var topLine in topLines.Distinct().OrderBy(p => p))
+    {
+        WriteLine(topLine);
+    }
+#>
+// ############################################################################
+<#
+    foreach (var u in Usings)
+    {
+        if (string.IsNullOrEmpty(u.Namespace))
+        {
+            continue;
+        }
+#>
+using <#=u.Namespace#>;
+<#
+    }
+#>
+// ############################################################################
+namespace <#=Namespace#>
+{
+<#
+    foreach (var bottomLine in bottomLines)
+    {
+        Write("    ");
+        WriteLine(bottomLine);
+    }
+#>
+    // ############################################################################
+    namespace Include
+    {
+        static partial class MetaData
+        {
+            public const string RootPath        = @"<#=RootPath#>";
+            public const string IncludeDate     = @"<#=DateTime.Now.ToString ("yyyy-MM-ddTHH:mm:ss")#>";
+
+<#
+    var iter = -1;
+    foreach (var include in processed)
+    {
+        ++iter;
+#>
+            public const string Include_<#=iter#>       = @"<#=include.LocalPath#>";
+<#
+    }
+#>
+        }
+    }
+    // ############################################################################
+}
+
+<#+
+
+    string Namespace    = "Internal";
+    string RootPath     = Extension_RootPath;
+    
+    IncludeFile[]    Includes    = new IncludeFile[0];
+    UsingNamespace[] Usings      = new UsingNamespace[0];
+
+    static readonly Regex s_matchInclude = new Regex (
+        @"^//\s*###\s*INCLUDE\s*:\s*(?<fileName>.*)$",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
+        );
+
+    static readonly Regex s_matchMoveToTop = new Regex (
+        @"^(\#define|// ReSharper )",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
+        );
+
+    sealed class IncludeFile 
+    {
+        public string LocalPath;
+    }
+
+    static IncludeFile Include (string file)
+    {
+        return new IncludeFile { LocalPath = file ?? "", };
+    }
+
+    sealed class UsingNamespace 
+    {
+        public string Namespace;
+    }
+
+    static UsingNamespace Using (string ns)
+    {
+        return new UsingNamespace { Namespace = ns ?? "", };
+    }
+
+
+#>
