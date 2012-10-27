@@ -49,6 +49,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
+    <None Include="NonSource\NuGet\T4Include.nuspec" />
     <None Include="README.md" />
     <None Include="T4\IncludeHeader.ttinclude" />
     <None Include="T4\IncludeLocalFile.ttinclude" />

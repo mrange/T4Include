@@ -76,8 +76,8 @@
     {
         var fullPath = Extension_GetFullPath (include);
 
-        var wc = new WebClient();
-        var result = wc.DownloadString(fullPath);
+        var wc = new WebClient ();
+        var result = wc.DownloadString (fullPath);
 
         var lines = new List<string> (16); 
         string line;

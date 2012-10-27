@@ -21,8 +21,9 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier
 // ############################################################################
+
 // ############################################################################
-namespace Internal
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -80,6 +81,11 @@ namespace Internal
     
         }
     }
+}
+
+// ############################################################################
+namespace FileInclude
+{
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
     // ----------------------------------------------------------------------------------------------
@@ -99,19 +105,21 @@ namespace Internal
             public static readonly T[] Empty = new T[0];
         }
     }
-    // ############################################################################
-    namespace Include
-    {
-        static partial class MetaData
-        {
-            public const string RootPath        = @"..\..\..";
-            public const string IncludeDate     = @"2012-10-27T11:41:50";
-
-            public const string Include_0       = @"Extensions\BasicExtensions.cs";
-            public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        }
-    }
-    // ############################################################################
 }
+// ############################################################################
+
+// ############################################################################
+namespace FileInclude.Include
+{
+    static partial class MetaData
+    {
+        public const string RootPath        = @"..\..\..";
+        public const string IncludeDate     = @"2012-10-27T15:41:58";
+
+        public const string Include_0       = @"Extensions\BasicExtensions.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+    }
+}
+// ############################################################################
 
 

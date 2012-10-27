@@ -25,12 +25,12 @@ namespace Source.Extensions
     {
         public static bool IsNullOrEmpty (this string v)
         {
-            return string.IsNullOrEmpty(v);
+            return string.IsNullOrEmpty (v);
         }
 
         public static string DefaultTo (this string v, string defaultValue = "")
         {
-            return !v.IsNullOrEmpty() ? v : defaultValue;
+            return !v.IsNullOrEmpty () ? v : defaultValue;
         }
 
         public static IEnumerable<T> DefaultTo<T>(this IEnumerable<T> v, IEnumerable<T> defaultValue = null)
@@ -38,10 +38,10 @@ namespace Source.Extensions
             return v ?? Array<T>.Empty;
         }
 
-        public static T DefaultTo<T>(this T v, T defaultValue = default(T))
+        public static T DefaultTo<T>(this T v, T defaultValue = default (T))
             where T : struct, IEquatable<T>
         {
-            return !v.Equals(default(T)) ? v : defaultValue;
+            return !v.Equals (default (T)) ? v : defaultValue;
         }
 
         public static TValue Lookup<TKey, TValue> (IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default (TValue))
@@ -52,7 +52,7 @@ namespace Source.Extensions
             }
 
             TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+            return dictionary.TryGetValue (key, out value) ? value : defaultValue;
         }
 
     }

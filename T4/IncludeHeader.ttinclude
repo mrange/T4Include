@@ -35,6 +35,8 @@
     var processed = new List<IncludeFile> ();
     var toBeProcessed = new Queue<IncludeFile> (Includes ?? new IncludeFile[0]);
 
+    const string NewFileToken   = "<<New File>>";
+
     var topLines        = new List<string>();
     var bottomLines = new List<string>();
 
@@ -44,58 +46,59 @@
         var fullPath        = Extension_GetFullPath (include); 
         try
         {
-        var fullContainer   = Extension_GetFullContainer (include);
+            var fullContainer   = Extension_GetFullContainer (include);
 
-        if (seenIncludes.Contains (fullPath))
-        {
+            if (seenIncludes.Contains (fullPath))
+            {
 #>
-// @@@ SKIPPING(Already seen): <#=fullPath#>
+// @@@ SKIPPING (Already seen): <#=fullPath#>
 <#
-            continue;
-        }
+                continue;
+            }
 
-        seenIncludes.Add (fullPath);
+            seenIncludes.Add (fullPath);
 
-        if (!Extension_Exists (include))
-        {
+            if (!Extension_Exists (include))
+            {
 #>
-// @@@ SKIPPING(Not found): <#=fullPath#>
+// @@@ SKIPPING (Not found): <#=fullPath#>
 <#
-            continue;
-        }
+                continue;
+            }
 #>
 // @@@ INCLUDING: <#=fullPath#>
 <#
-        processed.Add (include);
-        var lines = Extension_ReadAllLines (include);
+            processed.Add (include);
+            var lines = Extension_ReadAllLines (include);
 
 
-        foreach (var line in lines)
-        {
-            var includeMatch = s_matchInclude.Match (line);
-            var topMatch = s_matchMoveToTop.Match (line);
-            if (includeMatch.Success)
+            bottomLines.Add (NewFileToken);
+            foreach (var line in lines)
             {
-                var fileName = includeMatch.Groups["fileName"].Value;
+                var includeMatch = s_matchInclude.Match (line);
+                var topMatch = s_matchMoveToTop.Match (line);
+                if (includeMatch.Success)
+                {
+                    var fileName = includeMatch.Groups["fileName"].Value;
 #>
 // @@@ INCLUDE_FOUND: <#=fileName#>
 <#
-                toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName)));
+                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName)));
+                }
+                else if (topMatch.Success)
+                {
+                    topLines.Add (line);
+                }
+                else
+                {
+                    bottomLines.Add (line);
+                }
             }
-            else if (topMatch.Success)
-            {
-                topLines.Add(line);
-            }
-            else
-            {
-                bottomLines.Add(line);
-            }
-        }
         }
         catch (Exception exc)
         {
 #>
-// @@@ SKIPPING(Exception: "<#=exc.Message#>"): <#=fullPath#>
+// @@@ SKIPPING (Exception: "<#=exc.Message#>"): <#=fullPath#>
 <#
             continue;
         }
@@ -106,16 +109,16 @@
 // moved to top in order to work properly    
 // ############################################################################
 <#
-    foreach (var topLine in topLines.Distinct().OrderBy(p => p))
+    foreach (var topLine in topLines.Distinct ().OrderBy (p => p))
     {
-        WriteLine(topLine);
+        WriteLine (topLine);
     }
 #>
 // ############################################################################
 <#
     foreach (var u in Usings)
     {
-        if (string.IsNullOrEmpty(u.Namespace))
+        if (string.IsNullOrEmpty (u.Namespace))
         {
             continue;
         }
@@ -123,24 +126,52 @@
 using <#=u.Namespace#>;
 <#
     }
+
+    var first = true;
+    foreach (var bottomLine in bottomLines)
+    {
+        if (ReferenceEquals (NewFileToken, bottomLine))
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
 #>
+}
+<#
+            }
+#>
+
 // ############################################################################
 namespace <#=Namespace#>
 {
 <#
-    foreach (var bottomLine in bottomLines)
+        }
+        else
+        {
+            Write ("    ");
+            WriteLine (bottomLine);
+        }
+    }
+
+    if (!first)
     {
-        Write("    ");
-        WriteLine(bottomLine);
+#>
+}
+// ############################################################################
+<#
     }
 #>
-    // ############################################################################
-    namespace Include
+
+// ############################################################################
+namespace <#=Namespace#>.Include
+{
+    static partial class MetaData
     {
-        static partial class MetaData
-        {
-            public const string RootPath        = @"<#=RootPath#>";
-            public const string IncludeDate     = @"<#=DateTime.Now.ToString ("yyyy-MM-ddTHH:mm:ss")#>";
+        public const string RootPath        = @"<#=RootPath#>";
+        public const string IncludeDate     = @"<#=DateTime.Now.ToString ("yyyy-MM-ddTHH:mm:ss")#>";
 
 <#
     var iter = -1;
@@ -148,19 +179,18 @@ namespace <#=Namespace#>
     {
         ++iter;
 #>
-            public const string Include_<#=iter#>       = @"<#=include.LocalPath#>";
+        public const string Include_<#=iter#>       = @"<#=include.LocalPath#>";
 <#
     }
 #>
-        }
     }
-    // ############################################################################
 }
+// ############################################################################
 
 <#+
 
-    string Namespace    = "Internal";
-    string RootPath     = Extension_RootPath;
+    string Namespace    = "T4Include"           ;
+    string RootPath     = Extension_RootPath    ;
     
     IncludeFile[]    Includes    = new IncludeFile[0];
     UsingNamespace[] Usings      = new UsingNamespace[0];
