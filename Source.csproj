@@ -42,19 +42,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Array.cs" />
+    <Compile Include="Common\ConsoleLog.cs" />
+    <Compile Include="Common\Log.cs" />
+    <Compile Include="Extensions\NumericalExtensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NumericalExtensions.tt</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\BasicExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="NonSource\Source\Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Extensions\NumericalExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NumericalExtensions.cs</LastGenOutput>
+    </None>
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
     <None Include="NonSource\NuGet\T4Include.nuspec" />
     <None Include="README.md" />
+    <None Include="T4\Header.ttinclude" />
     <None Include="T4\IncludeHeader.ttinclude" />
     <None Include="T4\IncludeLocalFile.ttinclude" />
     <None Include="T4\IncludeWebFile.ttinclude" />
+    <None Include="T4\NumericalExtensions.ttinclude" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

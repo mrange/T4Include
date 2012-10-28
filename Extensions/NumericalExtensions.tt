@@ -11,14 +11,18 @@
     // You must not remove this notice, or any other, from this software.
     // ----------------------------------------------------------------------------------------------
 #>
+
 <#
-    Namespace = "FileInclude";
-    RootPath    = @"..\..\..";
-    Includes = new []
-        {
-            Include (@"Extensions\BasicExtensions.cs"),
-            Include (@"Common\ConsoleLog.cs"),
-        };
+    Model = new []
+    {
+        I ("Byte")      ,
+        I ("Int16")     ,
+        I ("Int32")     ,
+        I ("Int64")     ,
+        F ("Single")    ,
+        F ("Double")    , 
+        F ("Decimal")   ,
+    };
 #>
 
-<#@ include file="$(SolutionDir)\T4\IncludeLocalFile.ttinclude" #>
+<#@ include     file        ="..\T4\NumericalExtensions.ttinclude"          #>

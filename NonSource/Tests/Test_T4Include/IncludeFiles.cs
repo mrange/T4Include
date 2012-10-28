@@ -13,11 +13,20 @@
 // ############################################################################
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
+// @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDE_FOUND: Array.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier
 // ############################################################################
@@ -43,32 +52,60 @@ namespace FileInclude
     {
         using System;
         using System.Collections.Generic;
+        using System.Globalization;
         using Source.Common;
+    
     
         static partial class BasicExtensions
         {
+            public static bool IsNullOrWhiteSpace (this string v)
+            {
+                return string.IsNullOrWhiteSpace (v);
+            }
+    
             public static bool IsNullOrEmpty (this string v)
             {
-                return string.IsNullOrEmpty(v);
+                return string.IsNullOrEmpty (v);
             }
     
             public static string DefaultTo (this string v, string defaultValue = "")
             {
-                return !v.IsNullOrEmpty() ? v : defaultValue;
+                return !v.IsNullOrEmpty () ? v : defaultValue;
             }
     
-            public static IEnumerable<T> DefaultTo<T>(this IEnumerable<T> v, IEnumerable<T> defaultValue = null)
+            public static IEnumerable<T> DefaultTo<T>(
+                this IEnumerable<T> values, 
+                IEnumerable<T> defaultValue = null
+                )
             {
-                return v ?? Array<T>.Empty;
+                return values ?? Array<T>.Empty;
             }
     
-            public static T DefaultTo<T>(this T v, T defaultValue = default(T))
+            public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
+            {
+                return values ?? Array<T>.Empty;
+            }
+    
+            public static T DefaultTo<T>(this T v, T defaultValue = default (T))
                 where T : struct, IEquatable<T>
             {
-                return !v.Equals(default(T)) ? v : defaultValue;
+                return !v.Equals (default (T)) ? v : defaultValue;
             }
     
-            public static TValue Lookup<TKey, TValue> (IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default (TValue))
+            public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
+            {
+                return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+            }
+    
+            public static string FormatWith (this string format, params object[] args)
+            {
+                return format.FormatWith(CultureInfo.InvariantCulture, args);
+            }
+    
+            public static TValue Lookup<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary, 
+                TKey key, 
+                TValue defaultValue = default (TValue))
             {
                 if (dictionary == null)
                 {
@@ -79,6 +116,122 @@ namespace FileInclude
                 return dictionary.TryGetValue(key, out value) ? value : defaultValue;
             }
     
+            public static TValue GetOrAdd<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary, 
+                TKey key, 
+                TValue defaultValue = default (TValue))
+            {
+                if (dictionary == null)
+                {
+                    return defaultValue;
+                }
+    
+                TValue value;
+                if (!dictionary.TryGetValue(key, out value))
+                {
+                    value = defaultValue;
+                    dictionary[key] = value;
+                }
+    
+                return value;
+            }
+    
+            public static TValue GetOrAdd<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary,
+                TKey key,
+                Func<TValue> valueCreator
+                )
+            {
+                if (dictionary == null)
+                {
+                    return valueCreator ();
+                }
+    
+                TValue value;
+                if (!dictionary.TryGetValue(key, out value))
+                {
+                    value = valueCreator ();
+                    dictionary[key] = value;
+                }
+    
+                return value;
+            }
+    
+            public static void DisposeNoThrow (this object value)
+            {
+                try
+                {
+                    var disposable = value as IDisposable;
+    
+                    if (disposable != null)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.LogMessage (Log.Level.Exception, "DisposeNoThrow: Dispose threw: {0}", exc);
+                }
+            }
+    
+            public static TTo CastTo<TTo> (object value, TTo defaultValue)
+            {
+                return value is TTo ? (TTo) value : defaultValue;
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Globalization;
+    
+        partial class Log
+        {
+            static readonly object s_colorLock = new object();
+            static partial void Partial_LogMessage(Level level, ConsoleColor levelColor, string levelMessage, string message)
+            {
+                var now = DateTime.Now;
+                var finalMessage = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0:HHmmss} {1} : {2}",
+                    now,
+                    levelMessage,
+                    message
+                    );
+                lock (s_colorLock)
+                {
+                    var oldColor = Console.ForegroundColor;
+                    Console.ForegroundColor = levelColor;
+                    try
+                    {
+                        Console.WriteLine(finalMessage);
+                    }
+                    finally
+                    {
+                        Console.ForegroundColor = oldColor;
+                    }
+    
+                }
+            }
         }
     }
 }
@@ -106,6 +259,119 @@ namespace FileInclude
         }
     }
 }
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Globalization;
+    
+        static partial class Log
+        {
+            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message);
+            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
+    
+            public enum Level
+            {
+                Success     =  1000,
+                HighLight   =  2000,
+                Info        =  3000,
+                Warning     = 10000,
+                Error       = 20000,
+                Exception   = 21000,
+            }
+    
+            static ConsoleColor GetLevelColor (Level level)
+            {
+                switch (level)
+                {
+                    case Level.Success:
+                        return ConsoleColor.Green;
+                    case Level.HighLight:
+                        return ConsoleColor.White;
+                    case Level.Info:
+                        return ConsoleColor.Gray;
+                    case Level.Warning:
+                        return ConsoleColor.Yellow;
+                    case Level.Error:
+                    case Level.Exception:
+                        return ConsoleColor.Red;
+                    default:
+                        return ConsoleColor.Magenta;
+                }
+            }
+    
+            static string GetLevelMessage(Level level)
+            {
+                switch (level)
+                {
+                    case Level.Success:
+                        return "SUCCESS  ";
+                    case Level.HighLight:
+                        return "HIGHLIGHT";
+                    case Level.Info:
+                        return "INFO     ";
+                    case Level.Warning:
+                        return "WARNING  ";
+                    case Level.Error:
+                        return "ERROR    ";
+                    case Level.Exception:
+                        return "EXCEPTION";
+                    default:
+                        return "UNKNOWN  ";
+                }
+            }
+    
+            public static void LogMessage(Level level, string format, params object[] args)
+            {
+                try
+                {
+                    Partial_LogMessage(level, GetLevelColor(level), GetLevelMessage(level), GetMessage(format, args));
+                }
+                catch (Exception exc)
+                {
+                    Partial_ExceptionOnLog(level, format, args, exc);
+                }
+                
+            }
+    
+            static string GetMessage(string format, object[] args)
+            {
+                format = format ?? "";
+                args = args ?? Array<object>.Empty;
+    
+                try
+                {
+                    return args.Length == 0
+                               ? format
+                               : string.Format(CultureInfo.InvariantCulture, format, args)
+                        ;
+                }
+                catch (FormatException)
+                {
+    
+                    return format;
+                }
+            }
+        }
+    }
+}
 // ############################################################################
 
 // ############################################################################
@@ -114,10 +380,12 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-10-27T15:41:58";
+        public const string IncludeDate     = @"2012-10-28T09:37:02";
 
         public const string Include_0       = @"Extensions\BasicExtensions.cs";
-        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_1       = @"Common\ConsoleLog.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
     }
 }
 // ############################################################################

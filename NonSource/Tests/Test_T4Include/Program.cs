@@ -10,12 +10,16 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+using FileInclude.Source.Common;
+
 namespace Test_T4Include
 {
     class Program
     {
         static void Main(string[] args)
         {
+            Log.LogMessage(Log.Level.Success, "Hi there!");
+            Log.LogMessage(Log.Level.Info, "Shutting down");
         }
     }
 }

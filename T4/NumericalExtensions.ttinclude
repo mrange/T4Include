@@ -1,0 +1,196 @@
+﻿<#@ include     file        ="..\T4\Header.ttinclude"          #>
+
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+
+// ReSharper disable PartialTypeWithSinglePart
+
+namespace Source.Extensions
+{
+    using System;
+    using System.Globalization;
+
+    static partial class NumericalExtensions
+    {
+<#
+    foreach (var nd in Model)
+    {
+#>
+        // <#=nd.Name#> (<#=nd.Type#>)
+
+        public static <#=nd.Name#> Clamp (this <#=nd.Name#> value, <#=nd.Name#> inclusiveMin, <#=nd.Name#> inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return inclusiveMin;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return inclusiveMax;
+            }
+
+            return value;
+        }
+
+        public static bool IsBetween (this <#=nd.Name#> value, <#=nd.Name#> inclusiveMin, <#=nd.Name#> inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return false;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool TryParse (this string s, out <#=nd.Name#> result)
+        {
+            return s.TryParse (CultureInfo.InvariantCulture, out result);
+        }
+
+        public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
+        {
+            <#=nd.Name#> value;
+
+            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+        }
+
+        public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
+        {
+            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+        }
+
+<#
+    if (nd.Type == NumericalType.IntLike)
+    {
+#>
+        public static bool IsAnyOn (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) != 0;
+        }
+        
+        public static bool IsAnyOff (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) != test;
+        }
+        
+        public static bool IsAllOn (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) == test;
+        }
+        
+        public static bool IsAllOff (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) == 0;
+        }
+         
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        {
+            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+        }
+<#
+    }
+    else if (nd.Type == NumericalType.FloatLike)
+    {
+#>
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        {                                                  
+            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
+        }
+<#
+    }
+    else if (nd.Type == NumericalType.EnumLike)
+    {
+#>
+        public static bool IsAnyOn (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) != 0;
+        }
+        
+        public static bool IsAnyOff (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) != test;
+        }
+        
+        public static bool IsAllOn (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) == test;
+        }
+        
+        public static bool IsAllOff (this <#=nd.Name#> value, <#=nd.Name#> test)
+        {
+            return (value & test) == 0;
+        }
+         
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        {                                                  
+            return Enum.TryParse(s ?? "", true, out result);              
+        }
+<#
+    }
+#>
+
+<#
+    }
+#>
+    }
+}
+
+<#+
+    enum NumericalType
+    {
+        IntLike     ,
+        FloatLike   ,
+        EnumLike    ,
+    }
+
+    NumericalDefinition[] Model = new NumericalDefinition[0];    
+
+    sealed class NumericalDefinition : BaseEntity<Root>
+    {
+        public NumericalType    Type;
+        public string           Name;
+    }
+
+    static NumericalDefinition Create (NumericalType type, string name)
+    {
+        return new NumericalDefinition
+        {
+            Type = type             ,
+            Name = name ?? S_NoName ,
+        };
+    }
+
+    static NumericalDefinition F (string name)
+    {
+        return Create (NumericalType.FloatLike, name);
+    }
+
+    static NumericalDefinition I (string name)
+    {
+        return Create (NumericalType.IntLike, name);
+    }
+
+    static NumericalDefinition E (string name)
+    {
+        return Create (NumericalType.EnumLike, name);
+    }
+
+
+#>

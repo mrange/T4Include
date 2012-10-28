@@ -11,7 +11,9 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Array.cs
+// ### INCLUDE: ../Common/Log.cs
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier
 
@@ -19,10 +21,17 @@ namespace Source.Extensions
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using Source.Common;
+
 
     static partial class BasicExtensions
     {
+        public static bool IsNullOrWhiteSpace (this string v)
+        {
+            return string.IsNullOrWhiteSpace (v);
+        }
+
         public static bool IsNullOrEmpty (this string v)
         {
             return string.IsNullOrEmpty (v);
@@ -33,9 +42,17 @@ namespace Source.Extensions
             return !v.IsNullOrEmpty () ? v : defaultValue;
         }
 
-        public static IEnumerable<T> DefaultTo<T>(this IEnumerable<T> v, IEnumerable<T> defaultValue = null)
+        public static IEnumerable<T> DefaultTo<T>(
+            this IEnumerable<T> values, 
+            IEnumerable<T> defaultValue = null
+            )
         {
-            return v ?? Array<T>.Empty;
+            return values ?? Array<T>.Empty;
+        }
+
+        public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
+        {
+            return values ?? Array<T>.Empty;
         }
 
         public static T DefaultTo<T>(this T v, T defaultValue = default (T))
@@ -44,7 +61,20 @@ namespace Source.Extensions
             return !v.Equals (default (T)) ? v : defaultValue;
         }
 
-        public static TValue Lookup<TKey, TValue> (IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default (TValue))
+        public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
+        {
+            return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+        }
+
+        public static string FormatWith (this string format, params object[] args)
+        {
+            return format.FormatWith(CultureInfo.InvariantCulture, args);
+        }
+
+        public static TValue Lookup<TKey, TValue>(
+            this IDictionary<TKey, TValue> dictionary, 
+            TKey key, 
+            TValue defaultValue = default (TValue))
         {
             if (dictionary == null)
             {
@@ -52,8 +82,70 @@ namespace Source.Extensions
             }
 
             TValue value;
-            return dictionary.TryGetValue (key, out value) ? value : defaultValue;
+            return dictionary.TryGetValue(key, out value) ? value : defaultValue;
         }
 
+        public static TValue GetOrAdd<TKey, TValue>(
+            this IDictionary<TKey, TValue> dictionary, 
+            TKey key, 
+            TValue defaultValue = default (TValue))
+        {
+            if (dictionary == null)
+            {
+                return defaultValue;
+            }
+
+            TValue value;
+            if (!dictionary.TryGetValue(key, out value))
+            {
+                value = defaultValue;
+                dictionary[key] = value;
+            }
+
+            return value;
+        }
+
+        public static TValue GetOrAdd<TKey, TValue>(
+            this IDictionary<TKey, TValue> dictionary,
+            TKey key,
+            Func<TValue> valueCreator
+            )
+        {
+            if (dictionary == null)
+            {
+                return valueCreator ();
+            }
+
+            TValue value;
+            if (!dictionary.TryGetValue(key, out value))
+            {
+                value = valueCreator ();
+                dictionary[key] = value;
+            }
+
+            return value;
+        }
+
+        public static void DisposeNoThrow (this object value)
+        {
+            try
+            {
+                var disposable = value as IDisposable;
+
+                if (disposable != null)
+                {
+                    disposable.Dispose();
+                }
+            }
+            catch (Exception exc)
+            {
+                Log.LogMessage (Log.Level.Exception, "DisposeNoThrow: Dispose threw: {0}", exc);
+            }
+        }
+
+        public static TTo CastTo<TTo> (object value, TTo defaultValue)
+        {
+            return value is TTo ? (TTo) value : defaultValue;
+        }
     }
 }
