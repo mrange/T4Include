@@ -46,6 +46,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IncludeFiles.tt</DependentUpon>
     </Compile>
+    <Compile Include="IncludeProject.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IncludeProject.tt</DependentUpon>
+    </Compile>
     <Compile Include="IncludeWebFiles.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -58,6 +63,10 @@
     <None Include="IncludeFiles.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IncludeFiles.cs</LastGenOutput>
+    </None>
+    <None Include="IncludeProject.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IncludeProject.cs</LastGenOutput>
     </None>
     <None Include="IncludeWebFiles.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -1,11 +1,16 @@
-// ############################################################################
-// #                                                                          #
-// #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
-// #                                                                          #
-// # This means that any edits to the .cs file will be lost when its          #
-// # regenerated. Changes should instead be applied to the corresponding      #
-// # template file (.tt)                                                      #
-// ############################################################################
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
 
 <#@ assembly name="System.Core"                       #>
 <#@ assembly name="System.Xml"                        #>
@@ -13,97 +18,72 @@
 <#@ import namespace="System.Collections.Generic"     #>
 <#@ import namespace="System.IO"                      #>
 <#@ import namespace="System.Linq"                    #>
-<#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Xml"                     #>
 <#@ import namespace="System.Xml.Linq"                #>
 
 <#
-   var useIncludeNamespace    = !string.IsNullOrEmpty (includeNamespace);
-   var projectFilePath        = Path.GetFullPath (projectFile);
-   var projectFileLocation    = Path.GetDirectoryName (projectFilePath);
-   const string Namespace     = @"http://schemas.microsoft.com/developer/msbuild/2003";
-   const string Project       = @"{"+Namespace+@"}Project";
-   const string ItemGroup     = @"{"+Namespace+@"}ItemGroup";
-   const string Compile       = @"{"+Namespace+@"}Compile";
-   using (var streamReader    = new StreamReader (projectFilePath))
-   {
-      var xdoc = XDocument.Load (streamReader);
+   
+    const string XmlNamespace   = @"http://schemas.microsoft.com/developer/msbuild/2003";
+    const string Project       = @"{"+XmlNamespace+@"}Project";
+    const string ItemGroup     = @"{"+XmlNamespace+@"}ItemGroup";
+    const string Compile       = @"{"+XmlNamespace+@"}Compile";
 
-      var compileElements = xdoc.Elements (Project).Elements (ItemGroup).Elements (Compile);
+    var projectFilePath         = Host.ResolvePath (ProjectFileName);
 
-      var defines = new List<string> (32);
-      var results = new List<string> (1024);
+    RootPath                    = Path.GetDirectoryName (projectFilePath);
 
-      foreach (var path in compileElements
-         .Select (compileElement => Path.Combine (projectFileLocation, compileElement.Attribute ("Include").Value))
-         .Where (path => !blackList.Any (bl => bl.IsMatch (path)))
-      )
-      {
+    using (var streamReader    = new StreamReader (projectFilePath))
+    {
+        var xdoc = XDocument.Load (streamReader);
+
+        var compileElements = xdoc.Elements (Project).Elements (ItemGroup).Elements (Compile);
+
+        var defines = new List<string> (32);
+        var results = new List<string> (1024);
+
+        Includes = compileElements
+            .Select (compileElement => 
+                Path.GetFullPath (
+                    Path.Combine (
+                        RootPath, 
+                        compileElement.Attribute ("Include").Value)))
+            .Where (p => 
+                {
+                    if (BlackList.Any (bl => p.Contains(bl.Fragment)))
+                    {
 #>
-// @@@ INCLUDING: <#=path#>
+// @@@ SKIPPING (Blacklisted): <#=p#>
 <#
-         var allLines = File.ReadAllLines (path);
-         if (useIncludeNamespace)
-         {
-            results.Add ("namespace " + includeNamespace);
-            results.Add ("{");
-         }
-
-         foreach (var line in allLines)
-         {
-            if (line.StartsWith ("#define"))
-            {
-               defines.Add (line);
-               results.Add ("// " + line);
-            }
-            else
-            {
-               results.Add (line);
-            }
-         }
-
-         if (useIncludeNamespace)
-         {
-            results.Add ("}");
-         }
-
-      }
-
-      if (defines.Count > 0)
-      {
-#>
-// ----------------------------------------------------------------------------
-// Included defines (C# requires #define to in the first part of a code file)
-// ----------------------------------------------------------------------------
-<#
-      foreach (var define in defines.Distinct ().OrderBy (name => name))
-      {
-         WriteLine (define);
-      }
-#>
-// ----------------------------------------------------------------------------
-<#
-      }
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                })                        
+            .Select (p => Include (p))
+            .ToArray ();
+    }
 #>
 
-// ----------------------------------------------------------------------------
-// Included code
-// ----------------------------------------------------------------------------
+<#@ include file="IncludeLocalFile.ttinclude" #>
 
-<#
-      foreach (var result in results)
-      {
-         WriteLine (result);
-      }
-
-   }
-#>
 <#+
-   static Regex BlackList (string str)
-   {
-      return new Regex (
-         str,
-         RegexOptions.IgnoreCase | RegexOptions.Compiled
-         );
-   }
+    string ProjectFileName      = "Source.csproj";
+
+    BlackListedFileFragment[]   BlackList = new BlackListedFileFragment[0];
+
+    class BlackListedFileFragment
+    {
+        public string Fragment;
+    }
+
+    static BlackListedFileFragment BlackListFragment (string fragment)
+    {
+        return new BlackListedFileFragment
+        {
+            Fragment = fragment ?? "",
+        };
+    }
+
 #>
