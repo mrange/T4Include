@@ -16,6 +16,7 @@
     Includes = new []
         {
             Include (@"mrange/T4Include/master/Extensions/BasicExtensions.cs"),
+            Include (@"mrange/T4Include/master/Common/ConsoleLog.cs"),
             // Uncomment below to include dapper
             // Include (@"SamSaffron/dapper-dot-net/master/Dapper/SqlMapper.cs"),
         };
