@@ -36,6 +36,27 @@ namespace Source.Extensions
     {
         // Byte (IntLike)
 
+#if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+        public static Byte Min (this Byte left, Byte right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Byte Max (this Byte left, Byte right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
+
         public static Byte Clamp (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
         {
             if (value < inclusiveMin)
@@ -108,7 +129,30 @@ namespace Source.Extensions
             return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+
         // Int16 (IntLike)
+
+#if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+        public static Int16 Min (this Int16 left, Int16 right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Int16 Max (this Int16 left, Int16 right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Int16 Clamp (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
         {
@@ -182,7 +226,30 @@ namespace Source.Extensions
             return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+
         // Int32 (IntLike)
+
+#if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+        public static Int32 Min (this Int32 left, Int32 right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Int32 Max (this Int32 left, Int32 right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Int32 Clamp (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
         {
@@ -256,7 +323,30 @@ namespace Source.Extensions
             return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+
         // Int64 (IntLike)
+
+#if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+        public static Int64 Min (this Int64 left, Int64 right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Int64 Max (this Int64 left, Int64 right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Int64 Clamp (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
         {
@@ -330,7 +420,30 @@ namespace Source.Extensions
             return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+
         // Single (FloatLike)
+
+#if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+        public static Single Min (this Single left, Single right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Single Max (this Single left, Single right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Single Clamp (this Single value, Single inclusiveMin, Single inclusiveMax) 
         {
@@ -379,12 +492,44 @@ namespace Source.Extensions
             return s.Parse (CultureInfo.InvariantCulture, defaultValue);
         }
 
+        public static Single Lerp (
+            this Single t,
+            Single from,
+            Single to
+            )
+        {
+            return t.Clamp(0,1) * (to - from) + from;
+        }
+
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Single result)
         {                                                  
             return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+
         // Double (FloatLike)
+
+#if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+        public static Double Min (this Double left, Double right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Double Max (this Double left, Double right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Double Clamp (this Double value, Double inclusiveMin, Double inclusiveMax) 
         {
@@ -433,12 +578,44 @@ namespace Source.Extensions
             return s.Parse (CultureInfo.InvariantCulture, defaultValue);
         }
 
+        public static Double Lerp (
+            this Double t,
+            Double from,
+            Double to
+            )
+        {
+            return t.Clamp(0,1) * (to - from) + from;
+        }
+
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Double result)
         {                                                  
             return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
         }
 
+#endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+
         // Decimal (FloatLike)
+
+#if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+        public static Decimal Min (this Decimal left, Decimal right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static Decimal Max (this Decimal left, Decimal right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
 
         public static Decimal Clamp (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
         {
@@ -487,10 +664,175 @@ namespace Source.Extensions
             return s.Parse (CultureInfo.InvariantCulture, defaultValue);
         }
 
+        public static Decimal Lerp (
+            this Decimal t,
+            Decimal from,
+            Decimal to
+            )
+        {
+            return t.Clamp(0,1) * (to - from) + from;
+        }
+
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal result)
         {                                                  
             return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
         }
+
+#endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+
+        // TimeSpan (TimeSpanLike)
+
+#if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+        public static TimeSpan Min (this TimeSpan left, TimeSpan right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static TimeSpan Max (this TimeSpan left, TimeSpan right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
+
+        public static TimeSpan Clamp (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return inclusiveMin;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return inclusiveMax;
+            }
+
+            return value;
+        }
+
+        public static bool IsBetween (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return false;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool TryParse (this string s, out TimeSpan result)
+        {
+            return s.TryParse (CultureInfo.InvariantCulture, out result);
+        }
+
+        public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
+        {
+            TimeSpan value;
+
+            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+        }
+
+        public static TimeSpan Parse (this string s, TimeSpan defaultValue)
+        {
+            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+        }
+
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan result)
+        {                                                  
+            return TimeSpan.TryParse (s ?? "", cultureInfo, out result);
+        }
+
+#endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+
+        // DateTime (DateTimeLike)
+
+#if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+        public static DateTime Min (this DateTime left, DateTime right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static DateTime Max (this DateTime left, DateTime right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
+
+        public static DateTime Clamp (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return inclusiveMin;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return inclusiveMax;
+            }
+
+            return value;
+        }
+
+        public static bool IsBetween (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+        {
+            if (value < inclusiveMin)
+            {
+                return false;
+            }
+        
+            if (value > inclusiveMax)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool TryParse (this string s, out DateTime result)
+        {
+            return s.TryParse (CultureInfo.InvariantCulture, out result);
+        }
+
+        public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
+        {
+            DateTime value;
+
+            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+        }
+
+        public static DateTime Parse (this string s, DateTime defaultValue)
+        {
+            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+        }
+
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime result)
+        {                                                  
+            return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
+        }
+
+#endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
 
     }
 }

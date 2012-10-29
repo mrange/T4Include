@@ -29,6 +29,27 @@ namespace Source.Extensions
 #>
         // <#=nd.Name#> (<#=nd.Type#>)
 
+#if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
+        public static <#=nd.Name#> Min (this <#=nd.Name#> left, <#=nd.Name#> right) 
+        {
+            if (left < right)
+            {
+                return left;
+            }
+        
+            return right;
+        }
+
+        public static <#=nd.Name#> Max (this <#=nd.Name#> left, <#=nd.Name#> right) 
+        {
+            if (left < right)
+            {
+                return right;
+            }
+        
+            return left;
+        }
+
         public static <#=nd.Name#> Clamp (this <#=nd.Name#> value, <#=nd.Name#> inclusiveMin, <#=nd.Name#> inclusiveMax) 
         {
             if (value < inclusiveMin)
@@ -80,25 +101,9 @@ namespace Source.Extensions
     if (nd.Type == NumericalType.IntLike)
     {
 #>
-        public static bool IsAnyOn (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) != 0;
-        }
-        
-        public static bool IsAnyOff (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) != test;
-        }
-        
-        public static bool IsAllOn (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) == test;
-        }
-        
-        public static bool IsAllOff (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) == 0;
-        }
+<#
+        OutputBitTests (nd.Name);
+#>
          
         public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
         {
@@ -106,9 +111,36 @@ namespace Source.Extensions
         }
 <#
     }
+    else if (nd.Type == NumericalType.DateTimeLike)
+    {
+#>
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        {                                                  
+            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
+        }
+<#
+    }
+    else if (nd.Type == NumericalType.TimeSpanLike)
+    {
+#>
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        {                                                  
+            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, out result);
+        }
+<#
+    }
     else if (nd.Type == NumericalType.FloatLike)
     {
 #>
+        public static <#=nd.Name#> Lerp (
+            this <#=nd.Name#> t,
+            <#=nd.Name#> from,
+            <#=nd.Name#> to
+            )
+        {
+            return t.Clamp(0,1) * (to - from) + from;
+        }
+
         public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
         {                                                  
             return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
@@ -118,25 +150,9 @@ namespace Source.Extensions
     else if (nd.Type == NumericalType.EnumLike)
     {
 #>
-        public static bool IsAnyOn (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) != 0;
-        }
-        
-        public static bool IsAnyOff (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) != test;
-        }
-        
-        public static bool IsAllOn (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) == test;
-        }
-        
-        public static bool IsAllOff (this <#=nd.Name#> value, <#=nd.Name#> test)
-        {
-            return (value & test) == 0;
-        }
+<#
+        OutputBitTests (nd.Name);
+#>
          
         public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
         {                                                  
@@ -145,6 +161,8 @@ namespace Source.Extensions
 <#
     }
 #>
+
+#endif // T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
 
 <#
     }
@@ -158,6 +176,8 @@ namespace Source.Extensions
         IntLike     ,
         FloatLike   ,
         EnumLike    ,
+        DateTimeLike,
+        TimeSpanLike,
     }
 
     NumericalDefinition[] Model = new NumericalDefinition[0];    
@@ -192,5 +212,39 @@ namespace Source.Extensions
         return Create (NumericalType.EnumLike, name);
     }
 
+    static NumericalDefinition DT (string name)
+    {
+        return Create (NumericalType.DateTimeLike, name);
+    }
+
+    static NumericalDefinition TS (string name)
+    {
+        return Create (NumericalType.TimeSpanLike, name);
+    }
+
+    void OutputBitTests (string name)
+    {
+#>
+        public static bool IsAnyOn (this <#=name#> value, <#=name#> test)
+        {
+            return (value & test) != 0;
+        }
+        
+        public static bool IsAnyOff (this <#=name#> value, <#=name#> test)
+        {
+            return (value & test) != test;
+        }
+        
+        public static bool IsAllOn (this <#=name#> value, <#=name#> test)
+        {
+            return (value & test) == test;
+        }
+        
+        public static bool IsAllOff (this <#=name#> value, <#=name#> test)
+        {
+            return (value & test) == 0;
+        }
+<#+
+    }
 
 #>

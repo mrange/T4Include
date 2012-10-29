@@ -22,6 +22,8 @@
         F ("Single")    ,
         F ("Double")    , 
         F ("Decimal")   ,
+        TS("TimeSpan")  ,
+        DT("DateTime")  ,
     };
 #>
 
