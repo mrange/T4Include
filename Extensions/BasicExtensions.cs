@@ -17,6 +17,8 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier
 
+using System.Text;
+
 namespace Source.Extensions
 {
     using System;
@@ -37,9 +39,9 @@ namespace Source.Extensions
             return string.IsNullOrEmpty (v);
         }
 
-        public static string DefaultTo (this string v, string defaultValue = "")
+        public static string DefaultTo (this string v, string defaultValue = null)
         {
-            return !v.IsNullOrEmpty () ? v : defaultValue;
+            return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
         }
 
         public static IEnumerable<T> DefaultTo<T>(
@@ -47,12 +49,12 @@ namespace Source.Extensions
             IEnumerable<T> defaultValue = null
             )
         {
-            return values ?? Array<T>.Empty;
+            return values ?? defaultValue ?? Array<T>.Empty;
         }
 
         public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
         {
-            return values ?? Array<T>.Empty;
+            return values ?? defaultValue ?? Array<T>.Empty;
         }
 
         public static T DefaultTo<T>(this T v, T defaultValue = default (T))
@@ -63,12 +65,12 @@ namespace Source.Extensions
 
         public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
         {
-            return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+            return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
         }
 
         public static string FormatWith (this string format, params object[] args)
         {
-            return format.FormatWith(CultureInfo.InvariantCulture, args);
+            return format.FormatWith (CultureInfo.InvariantCulture, args);
         }
 
         public static TValue Lookup<TKey, TValue>(
@@ -82,7 +84,7 @@ namespace Source.Extensions
             }
 
             TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+            return dictionary.TryGetValue (key, out value) ? value : defaultValue;
         }
 
         public static TValue GetOrAdd<TKey, TValue>(
@@ -96,7 +98,7 @@ namespace Source.Extensions
             }
 
             TValue value;
-            if (!dictionary.TryGetValue(key, out value))
+            if (!dictionary.TryGetValue (key, out value))
             {
                 value = defaultValue;
                 dictionary[key] = value;
@@ -117,7 +119,7 @@ namespace Source.Extensions
             }
 
             TValue value;
-            if (!dictionary.TryGetValue(key, out value))
+            if (!dictionary.TryGetValue (key, out value))
             {
                 value = valueCreator ();
                 dictionary[key] = value;
@@ -126,15 +128,13 @@ namespace Source.Extensions
             return value;
         }
 
-        public static void DisposeNoThrow (this object value)
+        public static void DisposeNoThrow (this IDisposable disposable)
         {
             try
             {
-                var disposable = value as IDisposable;
-
                 if (disposable != null)
                 {
-                    disposable.Dispose();
+                    disposable.Dispose ();
                 }
             }
             catch (Exception exc)
@@ -146,6 +146,31 @@ namespace Source.Extensions
         public static TTo CastTo<TTo> (object value, TTo defaultValue)
         {
             return value is TTo ? (TTo) value : defaultValue;
+        }
+
+        public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+        {
+            values = values ?? Array<string>.Empty;
+            delimiter = delimiter ?? ", ";
+            var first = true;
+
+            var sb = new StringBuilder (capacity);     
+
+            foreach (var v in values)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append (delimiter);
+                }
+
+                sb.Append (v);
+            }
+
+            return sb.ToString ();
         }
     }
 }

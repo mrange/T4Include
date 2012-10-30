@@ -498,7 +498,7 @@ namespace Source.Extensions
             Single to
             )
         {
-            return t.Clamp(0,1) * (to - from) + from;
+            return t.Clamp (0,1) * (to - from) + from;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Single result)
@@ -584,7 +584,7 @@ namespace Source.Extensions
             Double to
             )
         {
-            return t.Clamp(0,1) * (to - from) + from;
+            return t.Clamp (0,1) * (to - from) + from;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Double result)
@@ -670,7 +670,7 @@ namespace Source.Extensions
             Decimal to
             )
         {
-            return t.Clamp(0,1) * (to - from) + from;
+            return t.Clamp (0,1) * (to - from) + from;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal result)

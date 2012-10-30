@@ -20,6 +20,8 @@ namespace Source.Extensions
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
     using Source.Common;
 
     static partial class EnumerableExtensions
@@ -33,22 +35,26 @@ namespace Source.Extensions
             IEqualityComparer<TKey> comparer = null
             )
         {
+            if (keySelector == null) throw new ArgumentNullException ("keySelector");
+            if (valueSelector == null) throw new ArgumentNullException ("valueSelector");
+            if (duplicateResolver == null) throw new ArgumentNullException ("duplicateResolver");
+
             var dic = new Dictionary<TKey, TValue>(capacity, comparer);
 
             values = values ?? Array<T>.Empty;
 
             foreach (var value in values)
             {
-                var key = keySelector(value);
+                var key = keySelector (value);
                 TValue existingValue;
-                if (dic.TryGetValue(key, out existingValue))
+                if (dic.TryGetValue (key, out existingValue))
                 {
-                    var newValue = duplicateResolver(existingValue, value);
+                    var newValue = duplicateResolver (existingValue, value);
                     dic[key] = newValue;
                 }
                 else
                 {
-                    var newValue = valueSelector(value);
+                    var newValue = valueSelector (value);
                     dic[key] = newValue;
                 }
 
@@ -65,7 +71,7 @@ namespace Source.Extensions
             IEqualityComparer<TKey> comparer = null
             )
         {
-            return values.ToDictionaryAndResolveDuplicates(
+            return values.ToDictionaryAndResolveDuplicates (
                 keySelector,
                 v => v,
                 duplicateResolver,
@@ -82,7 +88,7 @@ namespace Source.Extensions
             IEqualityComparer<TKey> comparer = null
             )
         {
-            return values.ToDictionaryAndResolveDuplicates(
+            return values.ToDictionaryAndResolveDuplicates (
                 keySelector,
                 valueSelector,
                 (existingValue, newValue) => existingValue,
@@ -98,7 +104,7 @@ namespace Source.Extensions
             IEqualityComparer<TKey> comparer = null
             )
         {
-            return values.ToDictionaryAndKeepFirst(
+            return values.ToDictionaryAndKeepFirst (
                 keySelector,
                 v => v,
                 capacity,
@@ -111,6 +117,93 @@ namespace Source.Extensions
             values = values ?? Array<T>.Empty;
 
             return new HashSet<T>(values, comparer);
+        }
+
+        sealed partial class SelectorEqualityComparer<T, TKey> : IEqualityComparer<T>
+        {
+            static readonly IEqualityComparer<TKey> s_defaultComparer = EqualityComparer<TKey>.Default;
+
+            readonly Func<T, TKey> m_selector;
+
+            public SelectorEqualityComparer (Func<T, TKey> selector)
+            {
+                System.Diagnostics.Debug.Assert (selector != null);
+                m_selector = selector;
+            }
+
+            public bool Equals (T x, T y)
+            {
+                return s_defaultComparer.Equals (m_selector (x), m_selector (y));
+            }
+
+            public int GetHashCode (T obj)
+            {
+                return s_defaultComparer.GetHashCode (m_selector (obj));
+            }
+
+        }
+
+        public static IEnumerable<T> Distinct<T, TKey> (
+            this IEnumerable<T> values, 
+            Func<T, TKey> selector)
+        {
+            if (selector == null) throw new ArgumentNullException ("selector");
+
+            values = values ?? Array<T>.Empty;
+
+            return values.Distinct (new SelectorEqualityComparer<T, TKey>(selector));
+        }
+
+        public static IEnumerable<T> Union<T, TKey>(
+            this IEnumerable<T> values,
+            IEnumerable<T> otherValue,
+            Func<T, TKey> selector)
+        {
+            if (selector == null) throw new ArgumentNullException ("selector");
+
+            values = values ?? Array<T>.Empty;
+            otherValue = otherValue ?? Array<T>.Empty;
+
+            return values.Union (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+        }
+
+        public static IEnumerable<T> Intersect<T, TKey>(
+            this IEnumerable<T> values,
+            IEnumerable<T> otherValue,
+            Func<T, TKey> selector)
+        {
+            if (selector == null) throw new ArgumentNullException ("selector");
+
+            values = values ?? Array<T>.Empty;
+            otherValue = otherValue ?? Array<T>.Empty;
+
+            return values.Intersect (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+        }
+
+        public static IEnumerable<T> Except<T, TKey>(
+            this IEnumerable<T> values,
+            IEnumerable<T> otherValue,
+            Func<T, TKey> selector)
+        {
+            if (selector == null) throw new ArgumentNullException ("selector");
+
+            values = values ?? Array<T>.Empty;
+            otherValue = otherValue ?? Array<T>.Empty;
+
+            return values.Except (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+        }
+
+        public static bool SequenceEqual<T, TKey>(
+            this IEnumerable<T> values,
+            IEnumerable<T> otherValue,
+            Func<T, TKey> selector)
+        {
+            if (selector == null) throw new ArgumentNullException ("selector");
+
+            values = values ?? Array<T>.Empty;
+            otherValue = otherValue ?? Array<T>.Empty;
+
+            return values.SequenceEqual (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
         }
 
     }

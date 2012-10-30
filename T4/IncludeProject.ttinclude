@@ -49,7 +49,7 @@
                         compileElement.Attribute ("Include").Value)))
             .Where (p => 
                 {
-                    if (BlackList.Any (bl => p.Contains(bl.Fragment)))
+                    if (BlackList.Any (bl => p.Contains (bl.Fragment)))
                     {
 #>
 // @@@ SKIPPING (Blacklisted): <#=p#>

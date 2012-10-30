@@ -56,7 +56,7 @@ namespace Source.Common
             }
         }
 
-        static string GetLevelMessage(Level level)
+        static string GetLevelMessage (Level level)
         {
             switch (level)
             {
@@ -77,20 +77,20 @@ namespace Source.Common
             }
         }
 
-        public static void LogMessage(Level level, string format, params object[] args)
+        public static void LogMessage (Level level, string format, params object[] args)
         {
             try
             {
-                Partial_LogMessage(level, GetLevelColor(level), GetLevelMessage(level), GetMessage(format, args));
+                Partial_LogMessage (level, GetLevelColor (level), GetLevelMessage (level), GetMessage (format, args));
             }
             catch (Exception exc)
             {
-                Partial_ExceptionOnLog(level, format, args, exc);
+                Partial_ExceptionOnLog (level, format, args, exc);
             }
             
         }
 
-        static string GetMessage(string format, object[] args)
+        static string GetMessage (string format, object[] args)
         {
             format = format ?? "";
             args = args ?? Array<object>.Empty;
@@ -99,7 +99,7 @@ namespace Source.Common
             {
                 return args.Length == 0
                            ? format
-                           : string.Format(CultureInfo.InvariantCulture, format, args)
+                           : string.Format (CultureInfo.InvariantCulture, format, args)
                     ;
             }
             catch (FormatException)

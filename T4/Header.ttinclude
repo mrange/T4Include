@@ -89,8 +89,8 @@
                 be.SetParent (this);
             }
 
-            m_contained.Clear();
-            m_contained.AddRange(range);
+            m_contained.Clear ();
+            m_contained.AddRange (range);
         }
 
         public IEnumerator<TContained> GetEnumerator ()

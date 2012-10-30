@@ -138,7 +138,7 @@ namespace Source.Extensions
             <#=nd.Name#> to
             )
         {
-            return t.Clamp(0,1) * (to - from) + from;
+            return t.Clamp (0,1) * (to - from) + from;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
@@ -156,7 +156,7 @@ namespace Source.Extensions
          
         public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
         {                                                  
-            return Enum.TryParse(s ?? "", true, out result);              
+            return Enum.TryParse (s ?? "", true, out result);              
         }
 <#
     }

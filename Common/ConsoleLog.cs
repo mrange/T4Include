@@ -21,11 +21,11 @@ namespace Source.Common
 
     partial class Log
     {
-        static readonly object s_colorLock = new object();
-        static partial void Partial_LogMessage(Level level, ConsoleColor levelColor, string levelMessage, string message)
+        static readonly object s_colorLock = new object ();
+        static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message)
         {
             var now = DateTime.Now;
-            var finalMessage = string.Format(
+            var finalMessage = string.Format (
                 CultureInfo.InvariantCulture,
                 "{0:HHmmss} {1}:{2}",
                 now,
@@ -38,7 +38,7 @@ namespace Source.Common
                 Console.ForegroundColor = levelColor;
                 try
                 {
-                    Console.WriteLine(finalMessage);
+                    Console.WriteLine (finalMessage);
                 }
                 finally
                 {
