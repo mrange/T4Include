@@ -17,15 +17,14 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantNameQualifier
 
-using System.Text;
-
 namespace Source.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using Source.Common;
+    using System.Text;
 
+    using Source.Common;
 
     static partial class BasicExtensions
     {

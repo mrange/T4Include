@@ -26,6 +26,7 @@
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
@@ -89,11 +90,11 @@ namespace ProjectInclude
     
         partial class Log
         {
-            static readonly object s_colorLock = new object();
-            static partial void Partial_LogMessage(Level level, ConsoleColor levelColor, string levelMessage, string message)
+            static readonly object s_colorLock = new object ();
+            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message)
             {
                 var now = DateTime.Now;
-                var finalMessage = string.Format(
+                var finalMessage = string.Format (
                     CultureInfo.InvariantCulture,
                     "{0:HHmmss} {1}:{2}",
                     now,
@@ -106,7 +107,7 @@ namespace ProjectInclude
                     Console.ForegroundColor = levelColor;
                     try
                     {
-                        Console.WriteLine(finalMessage);
+                        Console.WriteLine (finalMessage);
                     }
                     finally
                     {
@@ -176,7 +177,7 @@ namespace ProjectInclude
                 }
             }
     
-            static string GetLevelMessage(Level level)
+            static string GetLevelMessage (Level level)
             {
                 switch (level)
                 {
@@ -197,20 +198,20 @@ namespace ProjectInclude
                 }
             }
     
-            public static void LogMessage(Level level, string format, params object[] args)
+            public static void LogMessage (Level level, string format, params object[] args)
             {
                 try
                 {
-                    Partial_LogMessage(level, GetLevelColor(level), GetLevelMessage(level), GetMessage(format, args));
+                    Partial_LogMessage (level, GetLevelColor (level), GetLevelMessage (level), GetMessage (format, args));
                 }
                 catch (Exception exc)
                 {
-                    Partial_ExceptionOnLog(level, format, args, exc);
+                    Partial_ExceptionOnLog (level, format, args, exc);
                 }
                 
             }
     
-            static string GetMessage(string format, object[] args)
+            static string GetMessage (string format, object[] args)
             {
                 format = format ?? "";
                 args = args ?? Array<object>.Empty;
@@ -219,7 +220,7 @@ namespace ProjectInclude
                 {
                     return args.Length == 0
                                ? format
-                               : string.Format(CultureInfo.InvariantCulture, format, args)
+                               : string.Format (CultureInfo.InvariantCulture, format, args)
                         ;
                 }
                 catch (FormatException)
@@ -271,6 +272,27 @@ namespace ProjectInclude
         static partial class NumericalExtensions
         {
             // Byte (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+            public static Byte Min (this Byte left, Byte right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Byte Max (this Byte left, Byte right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Byte Clamp (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
             {
@@ -344,7 +366,30 @@ namespace ProjectInclude
                 return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+    
             // Int16 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+            public static Int16 Min (this Int16 left, Int16 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int16 Max (this Int16 left, Int16 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Int16 Clamp (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
             {
@@ -418,7 +463,30 @@ namespace ProjectInclude
                 return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+    
             // Int32 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+            public static Int32 Min (this Int32 left, Int32 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int32 Max (this Int32 left, Int32 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Int32 Clamp (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
             {
@@ -492,7 +560,30 @@ namespace ProjectInclude
                 return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+    
             // Int64 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+            public static Int64 Min (this Int64 left, Int64 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int64 Max (this Int64 left, Int64 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Int64 Clamp (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
             {
@@ -566,7 +657,30 @@ namespace ProjectInclude
                 return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+    
             // Single (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+            public static Single Min (this Single left, Single right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Single Max (this Single left, Single right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Single Clamp (this Single value, Single inclusiveMin, Single inclusiveMax) 
             {
@@ -615,12 +729,44 @@ namespace ProjectInclude
                 return s.Parse (CultureInfo.InvariantCulture, defaultValue);
             }
     
+            public static Single Lerp (
+                this Single t,
+                Single from,
+                Single to
+                )
+            {
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Single result)
             {                                                  
                 return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+    
             // Double (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+            public static Double Min (this Double left, Double right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Double Max (this Double left, Double right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Double Clamp (this Double value, Double inclusiveMin, Double inclusiveMax) 
             {
@@ -669,12 +815,44 @@ namespace ProjectInclude
                 return s.Parse (CultureInfo.InvariantCulture, defaultValue);
             }
     
+            public static Double Lerp (
+                this Double t,
+                Double from,
+                Double to
+                )
+            {
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Double result)
             {                                                  
                 return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
             }
     
+    #endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+    
             // Decimal (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+            public static Decimal Min (this Decimal left, Decimal right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Decimal Max (this Decimal left, Decimal right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
     
             public static Decimal Clamp (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
             {
@@ -723,10 +901,175 @@ namespace ProjectInclude
                 return s.Parse (CultureInfo.InvariantCulture, defaultValue);
             }
     
+            public static Decimal Lerp (
+                this Decimal t,
+                Decimal from,
+                Decimal to
+                )
+            {
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal result)
             {                                                  
                 return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
             }
+    
+    #endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+    
+            // TimeSpan (TimeSpanLike)
+    
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+            public static TimeSpan Min (this TimeSpan left, TimeSpan right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static TimeSpan Max (this TimeSpan left, TimeSpan right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static TimeSpan Clamp (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out TimeSpan result)
+            {
+                return s.TryParse (CultureInfo.InvariantCulture, out result);
+            }
+    
+            public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
+            {
+                TimeSpan value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static TimeSpan Parse (this string s, TimeSpan defaultValue)
+            {
+                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan result)
+            {                                                  
+                return TimeSpan.TryParse (s ?? "", cultureInfo, out result);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+    
+            // DateTime (DateTimeLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+            public static DateTime Min (this DateTime left, DateTime right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static DateTime Max (this DateTime left, DateTime right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static DateTime Clamp (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out DateTime result)
+            {
+                return s.TryParse (CultureInfo.InvariantCulture, out result);
+            }
+    
+            public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
+            {
+                DateTime value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static DateTime Parse (this string s, DateTime defaultValue)
+            {
+                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime result)
+            {                                                  
+                return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
     
         }
     }
@@ -756,8 +1099,9 @@ namespace ProjectInclude
         using System;
         using System.Collections.Generic;
         using System.Globalization;
-        using Source.Common;
+        using System.Text;
     
+        using Source.Common;
     
         static partial class BasicExtensions
         {
@@ -771,9 +1115,9 @@ namespace ProjectInclude
                 return string.IsNullOrEmpty (v);
             }
     
-            public static string DefaultTo (this string v, string defaultValue = "")
+            public static string DefaultTo (this string v, string defaultValue = null)
             {
-                return !v.IsNullOrEmpty () ? v : defaultValue;
+                return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
             }
     
             public static IEnumerable<T> DefaultTo<T>(
@@ -781,12 +1125,12 @@ namespace ProjectInclude
                 IEnumerable<T> defaultValue = null
                 )
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T DefaultTo<T>(this T v, T defaultValue = default (T))
@@ -797,12 +1141,12 @@ namespace ProjectInclude
     
             public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
             {
-                return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+                return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
             }
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith(CultureInfo.InvariantCulture, args);
+                return format.FormatWith (CultureInfo.InvariantCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -816,7 +1160,7 @@ namespace ProjectInclude
                 }
     
                 TValue value;
-                return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+                return dictionary.TryGetValue (key, out value) ? value : defaultValue;
             }
     
             public static TValue GetOrAdd<TKey, TValue>(
@@ -830,7 +1174,7 @@ namespace ProjectInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = defaultValue;
                     dictionary[key] = value;
@@ -851,7 +1195,7 @@ namespace ProjectInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = valueCreator ();
                     dictionary[key] = value;
@@ -860,15 +1204,13 @@ namespace ProjectInclude
                 return value;
             }
     
-            public static void DisposeNoThrow (this object value)
+            public static void DisposeNoThrow (this IDisposable disposable)
             {
                 try
                 {
-                    var disposable = value as IDisposable;
-    
                     if (disposable != null)
                     {
-                        disposable.Dispose();
+                        disposable.Dispose ();
                     }
                 }
                 catch (Exception exc)
@@ -880,6 +1222,31 @@ namespace ProjectInclude
             public static TTo CastTo<TTo> (object value, TTo defaultValue)
             {
                 return value is TTo ? (TTo) value : defaultValue;
+            }
+    
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            {
+                values = values ?? Array<string>.Empty;
+                delimiter = delimiter ?? ", ";
+                var first = true;
+    
+                var sb = new StringBuilder (capacity);     
+    
+                foreach (var v in values)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append (delimiter);
+                    }
+    
+                    sb.Append (v);
+                }
+    
+                return sb.ToString ();
             }
         }
     }
@@ -906,6 +1273,8 @@ namespace ProjectInclude
     {
         using System;
         using System.Collections.Generic;
+        using System.Linq;
+    
         using Source.Common;
     
         static partial class EnumerableExtensions
@@ -919,22 +1288,26 @@ namespace ProjectInclude
                 IEqualityComparer<TKey> comparer = null
                 )
             {
+                if (keySelector == null) throw new ArgumentNullException ("keySelector");
+                if (valueSelector == null) throw new ArgumentNullException ("valueSelector");
+                if (duplicateResolver == null) throw new ArgumentNullException ("duplicateResolver");
+    
                 var dic = new Dictionary<TKey, TValue>(capacity, comparer);
     
                 values = values ?? Array<T>.Empty;
     
                 foreach (var value in values)
                 {
-                    var key = keySelector(value);
+                    var key = keySelector (value);
                     TValue existingValue;
-                    if (dic.TryGetValue(key, out existingValue))
+                    if (dic.TryGetValue (key, out existingValue))
                     {
-                        var newValue = duplicateResolver(existingValue, value);
+                        var newValue = duplicateResolver (existingValue, value);
                         dic[key] = newValue;
                     }
                     else
                     {
-                        var newValue = valueSelector(value);
+                        var newValue = valueSelector (value);
                         dic[key] = newValue;
                     }
     
@@ -951,7 +1324,7 @@ namespace ProjectInclude
                 IEqualityComparer<TKey> comparer = null
                 )
             {
-                return values.ToDictionaryAndResolveDuplicates(
+                return values.ToDictionaryAndResolveDuplicates (
                     keySelector,
                     v => v,
                     duplicateResolver,
@@ -968,7 +1341,7 @@ namespace ProjectInclude
                 IEqualityComparer<TKey> comparer = null
                 )
             {
-                return values.ToDictionaryAndResolveDuplicates(
+                return values.ToDictionaryAndResolveDuplicates (
                     keySelector,
                     valueSelector,
                     (existingValue, newValue) => existingValue,
@@ -984,7 +1357,7 @@ namespace ProjectInclude
                 IEqualityComparer<TKey> comparer = null
                 )
             {
-                return values.ToDictionaryAndKeepFirst(
+                return values.ToDictionaryAndKeepFirst (
                     keySelector,
                     v => v,
                     capacity,
@@ -999,6 +1372,156 @@ namespace ProjectInclude
                 return new HashSet<T>(values, comparer);
             }
     
+            sealed partial class SelectorEqualityComparer<T, TKey> : IEqualityComparer<T>
+            {
+                static readonly IEqualityComparer<TKey> s_defaultComparer = EqualityComparer<TKey>.Default;
+    
+                readonly Func<T, TKey> m_selector;
+    
+                public SelectorEqualityComparer (Func<T, TKey> selector)
+                {
+                    System.Diagnostics.Debug.Assert (selector != null);
+                    m_selector = selector;
+                }
+    
+                public bool Equals (T x, T y)
+                {
+                    return s_defaultComparer.Equals (m_selector (x), m_selector (y));
+                }
+    
+                public int GetHashCode (T obj)
+                {
+                    return s_defaultComparer.GetHashCode (m_selector (obj));
+                }
+    
+            }
+    
+            public static IEnumerable<T> Distinct<T, TKey> (
+                this IEnumerable<T> values, 
+                Func<T, TKey> selector)
+            {
+                if (selector == null) throw new ArgumentNullException ("selector");
+    
+                values = values ?? Array<T>.Empty;
+    
+                return values.Distinct (new SelectorEqualityComparer<T, TKey>(selector));
+            }
+    
+            public static IEnumerable<T> Union<T, TKey>(
+                this IEnumerable<T> values,
+                IEnumerable<T> otherValue,
+                Func<T, TKey> selector)
+            {
+                if (selector == null) throw new ArgumentNullException ("selector");
+    
+                values = values ?? Array<T>.Empty;
+                otherValue = otherValue ?? Array<T>.Empty;
+    
+                return values.Union (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+            }
+    
+            public static IEnumerable<T> Intersect<T, TKey>(
+                this IEnumerable<T> values,
+                IEnumerable<T> otherValue,
+                Func<T, TKey> selector)
+            {
+                if (selector == null) throw new ArgumentNullException ("selector");
+    
+                values = values ?? Array<T>.Empty;
+                otherValue = otherValue ?? Array<T>.Empty;
+    
+                return values.Intersect (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+            }
+    
+            public static IEnumerable<T> Except<T, TKey>(
+                this IEnumerable<T> values,
+                IEnumerable<T> otherValue,
+                Func<T, TKey> selector)
+            {
+                if (selector == null) throw new ArgumentNullException ("selector");
+    
+                values = values ?? Array<T>.Empty;
+                otherValue = otherValue ?? Array<T>.Empty;
+    
+                return values.Except (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+            }
+    
+            public static bool SequenceEqual<T, TKey>(
+                this IEnumerable<T> values,
+                IEnumerable<T> otherValue,
+                Func<T, TKey> selector)
+            {
+                if (selector == null) throw new ArgumentNullException ("selector");
+    
+                values = values ?? Array<T>.Empty;
+                otherValue = otherValue ?? Array<T>.Empty;
+    
+                return values.SequenceEqual (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+            }
+    
+        }
+    }
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Windows.Threading;
+        using System.Windows;
+    
+        using Source.Common;
+    
+        static partial class WpfExtensions
+        {
+            public static void Async_Invoke(this Dispatcher dispatcher, string actionName, Action action)
+            {
+                if (action == null)
+                {
+                    return;
+                }
+    
+                Action act = () =>
+                                 {
+    #if DEBUG
+                                     Log.LogMessage(Log.Level.Info, "Async_Invoke: {0}", actionName ?? "Unknown");
+    #endif
+    
+                                     try
+                                     {
+                                         action();
+                                     }
+                                     catch (Exception exc)
+                                     {
+                                         Log.LogMessage(Log.Level.Exception, "Async_Invoke: Caught exception: {0}", exc);
+                                     }
+                                 };
+    
+                dispatcher = dispatcher ?? Dispatcher.CurrentDispatcher;
+                dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, act);
+            }
+    
+            public static void Async_Invoke(this DependencyObject dependencyObject, string actionName, Action action)
+            {
+                var dispatcher = dependencyObject == null ? Dispatcher.CurrentDispatcher : dependencyObject.Dispatcher;
+    
+                dispatcher.Async_Invoke(actionName, action);
+            }
         }
     }
 }
@@ -1010,7 +1533,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2012-10-28T20:11:20";
+        public const string IncludeDate     = @"2012-10-31T21:36:51";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
@@ -1018,6 +1541,7 @@ namespace ProjectInclude.Include
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
         public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
     }
 }
 // ############################################################################

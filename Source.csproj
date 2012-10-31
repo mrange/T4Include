@@ -39,6 +39,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Array.cs" />
@@ -51,6 +52,7 @@
     </Compile>
     <Compile Include="Extensions\BasicExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\WpfExtensions.cs" />
     <Compile Include="NonSource\Source\Program.cs" />
   </ItemGroup>
   <ItemGroup>
