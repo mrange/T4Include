@@ -18,9 +18,9 @@
 // @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ INCLUDE_FOUND: Array.cs
+// @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -53,8 +53,9 @@ namespace FileInclude
         using System;
         using System.Collections.Generic;
         using System.Globalization;
-        using Source.Common;
+        using System.Text;
     
+        using Source.Common;
     
         static partial class BasicExtensions
         {
@@ -68,9 +69,9 @@ namespace FileInclude
                 return string.IsNullOrEmpty (v);
             }
     
-            public static string DefaultTo (this string v, string defaultValue = "")
+            public static string DefaultTo (this string v, string defaultValue = null)
             {
-                return !v.IsNullOrEmpty () ? v : defaultValue;
+                return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
             }
     
             public static IEnumerable<T> DefaultTo<T>(
@@ -78,12 +79,12 @@ namespace FileInclude
                 IEnumerable<T> defaultValue = null
                 )
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T DefaultTo<T>(this T v, T defaultValue = default (T))
@@ -94,12 +95,12 @@ namespace FileInclude
     
             public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
             {
-                return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+                return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
             }
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith(CultureInfo.InvariantCulture, args);
+                return format.FormatWith (CultureInfo.InvariantCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -113,7 +114,7 @@ namespace FileInclude
                 }
     
                 TValue value;
-                return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+                return dictionary.TryGetValue (key, out value) ? value : defaultValue;
             }
     
             public static TValue GetOrAdd<TKey, TValue>(
@@ -127,7 +128,7 @@ namespace FileInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = defaultValue;
                     dictionary[key] = value;
@@ -148,7 +149,7 @@ namespace FileInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = valueCreator ();
                     dictionary[key] = value;
@@ -157,26 +158,49 @@ namespace FileInclude
                 return value;
             }
     
-            public static void DisposeNoThrow (this object value)
+            public static void DisposeNoThrow (this IDisposable disposable)
             {
                 try
                 {
-                    var disposable = value as IDisposable;
-    
                     if (disposable != null)
                     {
-                        disposable.Dispose();
+                        disposable.Dispose ();
                     }
                 }
                 catch (Exception exc)
                 {
-                    Log.LogMessage (Log.Level.Exception, "DisposeNoThrow: Dispose threw: {0}", exc);
+                    Log.Exception ("DisposeNoThrow: Dispose threw: {0}", exc);
                 }
             }
     
             public static TTo CastTo<TTo> (object value, TTo defaultValue)
             {
                 return value is TTo ? (TTo) value : defaultValue;
+            }
+    
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            {
+                values = values ?? Array<string>.Empty;
+                delimiter = delimiter ?? ", ";
+                var first = true;
+    
+                var sb = new StringBuilder (capacity);     
+    
+                foreach (var v in values)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append (delimiter);
+                    }
+    
+                    sb.Append (v);
+                }
+    
+                return sb.ToString ();
             }
         }
     }
@@ -206,24 +230,24 @@ namespace FileInclude
     
         partial class Log
         {
-            static readonly object s_colorLock = new object();
-            static partial void Partial_LogMessage(Level level, ConsoleColor levelColor, string levelMessage, string message)
+            static readonly object s_colorLock = new object ();
+            static partial void Partial_LogMessage (Level level, string message)
             {
                 var now = DateTime.Now;
-                var finalMessage = string.Format(
+                var finalMessage = string.Format (
                     CultureInfo.InvariantCulture,
-                    "{0:HHmmss} {1} : {2}",
+                    "{0:HHmmss} {1}:{2}",
                     now,
-                    levelMessage,
+                    GetLevelMessage (level),
                     message
                     );
                 lock (s_colorLock)
                 {
                     var oldColor = Console.ForegroundColor;
-                    Console.ForegroundColor = levelColor;
+                    Console.ForegroundColor = GetLevelColor (level);
                     try
                     {
-                        Console.WriteLine(finalMessage);
+                        Console.WriteLine (finalMessage);
                     }
                     finally
                     {
@@ -284,19 +308,110 @@ namespace FileInclude
     
         static partial class Log
         {
-            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message);
+            static partial void Partial_LogMessage (Level level, string message);
             static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
     
-            public enum Level
+            public static void LogMessage (Level level, string format, params object[] args)
             {
-                Success     =  1000,
-                HighLight   =  2000,
-                Info        =  3000,
-                Warning     = 10000,
-                Error       = 20000,
-                Exception   = 21000,
+                try
+                {
+                    Partial_LogMessage (level, GetMessage (format, args));
+                }
+                catch (Exception exc)
+                {
+                    Partial_ExceptionOnLog (level, format, args, exc);
+                }
+                
             }
     
+            static string GetMessage (string format, object[] args)
+            {
+                format = format ?? "";
+                try
+                {
+                    return (args == null || args.Length == 0)
+                               ? format
+                               : string.Format (CultureInfo.InvariantCulture, format, args)
+                        ;
+                }
+                catch (FormatException)
+                {
+    
+                    return format;
+                }
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    namespace Source.Common
+    {
+        using System;
+    
+        partial class Log
+        {
+            public enum Level
+            {
+                Success = 1000,
+                HighLight = 2000,
+                Info = 3000,
+                Warning = 10000,
+                Error = 20000,
+                Exception = 21000,
+            }
+    
+            public static void Success (string format, params object[] args)
+            {
+                LogMessage (Level.Success, format, args);
+            }
+            public static void HighLight (string format, params object[] args)
+            {
+                LogMessage (Level.HighLight, format, args);
+            }
+            public static void Info (string format, params object[] args)
+            {
+                LogMessage (Level.Info, format, args);
+            }
+            public static void Warning (string format, params object[] args)
+            {
+                LogMessage (Level.Warning, format, args);
+            }
+            public static void Error (string format, params object[] args)
+            {
+                LogMessage (Level.Error, format, args);
+            }
+            public static void Exception (string format, params object[] args)
+            {
+                LogMessage (Level.Exception, format, args);
+            }
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -310,6 +425,7 @@ namespace FileInclude
                     case Level.Warning:
                         return ConsoleColor.Yellow;
                     case Level.Error:
+                        return ConsoleColor.Red;
                     case Level.Exception:
                         return ConsoleColor.Red;
                     default:
@@ -317,7 +433,7 @@ namespace FileInclude
                 }
             }
     
-            static string GetLevelMessage(Level level)
+            static string GetLevelMessage (Level level)
             {
                 switch (level)
                 {
@@ -338,39 +454,9 @@ namespace FileInclude
                 }
             }
     
-            public static void LogMessage(Level level, string format, params object[] args)
-            {
-                try
-                {
-                    Partial_LogMessage(level, GetLevelColor(level), GetLevelMessage(level), GetMessage(format, args));
-                }
-                catch (Exception exc)
-                {
-                    Partial_ExceptionOnLog(level, format, args, exc);
-                }
-                
-            }
-    
-            static string GetMessage(string format, object[] args)
-            {
-                format = format ?? "";
-                args = args ?? Array<object>.Empty;
-    
-                try
-                {
-                    return args.Length == 0
-                               ? format
-                               : string.Format(CultureInfo.InvariantCulture, format, args)
-                        ;
-                }
-                catch (FormatException)
-                {
-    
-                    return format;
-                }
-            }
         }
     }
+    
 }
 // ############################################################################
 
@@ -380,12 +466,13 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-10-28T09:37:02";
+        public const string IncludeDate     = @"2012-11-01T07:36:39";
 
         public const string Include_0       = @"Extensions\BasicExtensions.cs";
         public const string Include_1       = @"Common\ConsoleLog.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

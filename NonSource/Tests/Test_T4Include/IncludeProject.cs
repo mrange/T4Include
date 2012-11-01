@@ -18,8 +18,9 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ INCLUDE_FOUND: Array.cs
+// @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
@@ -27,11 +28,13 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -91,20 +94,20 @@ namespace ProjectInclude
         partial class Log
         {
             static readonly object s_colorLock = new object ();
-            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message)
+            static partial void Partial_LogMessage (Level level, string message)
             {
                 var now = DateTime.Now;
                 var finalMessage = string.Format (
                     CultureInfo.InvariantCulture,
                     "{0:HHmmss} {1}:{2}",
                     now,
-                    levelMessage,
+                    GetLevelMessage (level),
                     message
                     );
                 lock (s_colorLock)
                 {
                     var oldColor = Console.ForegroundColor;
-                    Console.ForegroundColor = levelColor;
+                    Console.ForegroundColor = GetLevelColor (level);
                     try
                     {
                         Console.WriteLine (finalMessage);
@@ -135,28 +138,59 @@ namespace ProjectInclude
     // You must not remove this notice, or any other, from this software.
     // ----------------------------------------------------------------------------------------------
     
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
     
     
     namespace Source.Common
     {
         using System;
-        using System.Globalization;
     
-        static partial class Log
+        partial class Log
         {
-            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message);
-            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
-    
             public enum Level
             {
-                Success     =  1000,
-                HighLight   =  2000,
-                Info        =  3000,
-                Warning     = 10000,
-                Error       = 20000,
-                Exception   = 21000,
+                Success = 1000,
+                HighLight = 2000,
+                Info = 3000,
+                Warning = 10000,
+                Error = 20000,
+                Exception = 21000,
             }
     
+            public static void Success (string format, params object[] args)
+            {
+                LogMessage (Level.Success, format, args);
+            }
+            public static void HighLight (string format, params object[] args)
+            {
+                LogMessage (Level.HighLight, format, args);
+            }
+            public static void Info (string format, params object[] args)
+            {
+                LogMessage (Level.Info, format, args);
+            }
+            public static void Warning (string format, params object[] args)
+            {
+                LogMessage (Level.Warning, format, args);
+            }
+            public static void Error (string format, params object[] args)
+            {
+                LogMessage (Level.Error, format, args);
+            }
+            public static void Exception (string format, params object[] args)
+            {
+                LogMessage (Level.Exception, format, args);
+            }
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -170,6 +204,7 @@ namespace ProjectInclude
                     case Level.Warning:
                         return ConsoleColor.Yellow;
                     case Level.Error:
+                        return ConsoleColor.Red;
                     case Level.Exception:
                         return ConsoleColor.Red;
                     default:
@@ -198,11 +233,43 @@ namespace ProjectInclude
                 }
             }
     
+        }
+    }
+    
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Globalization;
+    
+        static partial class Log
+        {
+            static partial void Partial_LogMessage (Level level, string message);
+            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
+    
             public static void LogMessage (Level level, string format, params object[] args)
             {
                 try
                 {
-                    Partial_LogMessage (level, GetLevelColor (level), GetLevelMessage (level), GetMessage (format, args));
+                    Partial_LogMessage (level, GetMessage (format, args));
                 }
                 catch (Exception exc)
                 {
@@ -214,11 +281,9 @@ namespace ProjectInclude
             static string GetMessage (string format, object[] args)
             {
                 format = format ?? "";
-                args = args ?? Array<object>.Empty;
-    
                 try
                 {
-                    return args.Length == 0
+                    return (args == null || args.Length == 0)
                                ? format
                                : string.Format (CultureInfo.InvariantCulture, format, args)
                         ;
@@ -1215,7 +1280,7 @@ namespace ProjectInclude
                 }
                 catch (Exception exc)
                 {
-                    Log.LogMessage (Log.Level.Exception, "DisposeNoThrow: Dispose threw: {0}", exc);
+                    Log.Exception ("DisposeNoThrow: Dispose threw: {0}", exc);
                 }
             }
     
@@ -1479,17 +1544,23 @@ namespace ProjectInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    
     namespace Source.Extensions
     {
         using System;
         using System.Windows.Threading;
         using System.Windows;
+        using System.Windows.Data;
     
         using Source.Common;
     
         static partial class WpfExtensions
         {
-            public static void Async_Invoke(this Dispatcher dispatcher, string actionName, Action action)
+            public static void Async_Invoke (
+                this Dispatcher dispatcher, 
+                string actionName, 
+                Action action
+                )
             {
                 if (action == null)
                 {
@@ -1499,28 +1570,92 @@ namespace ProjectInclude
                 Action act = () =>
                                  {
     #if DEBUG
-                                     Log.LogMessage(Log.Level.Info, "Async_Invoke: {0}", actionName ?? "Unknown");
+                                     Log.Info ("Async_Invoke: {0}", actionName ?? "Unknown");
     #endif
     
                                      try
                                      {
-                                         action();
+                                         action ();
                                      }
                                      catch (Exception exc)
                                      {
-                                         Log.LogMessage(Log.Level.Exception, "Async_Invoke: Caught exception: {0}", exc);
+                                         Log.Exception ("Async_Invoke: Caught exception: {0}", exc);
                                      }
                                  };
     
                 dispatcher = dispatcher ?? Dispatcher.CurrentDispatcher;
-                dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, act);
+                dispatcher.BeginInvoke (DispatcherPriority.ApplicationIdle, act);
             }
     
-            public static void Async_Invoke(this DependencyObject dependencyObject, string actionName, Action action)
+            public static void Async_Invoke (
+                this DependencyObject dependencyObject, 
+                string actionName, 
+                Action action
+                )
             {
                 var dispatcher = dependencyObject == null ? Dispatcher.CurrentDispatcher : dependencyObject.Dispatcher;
     
-                dispatcher.Async_Invoke(actionName, action);
+                dispatcher.Async_Invoke (actionName, action);
+            }
+    
+            public static BindingBase GetBindingOf (
+                this DependencyObject dependencyObject, 
+                DependencyProperty dependencyProperty 
+                )
+            {
+                if (dependencyObject == null)
+                {
+                    return null;
+                }
+    
+                if (dependencyProperty == null)
+                {
+                    return null;
+                }
+    
+                return BindingOperations.GetBindingBase (dependencyObject, dependencyProperty);
+            }
+    
+            public static bool IsBoundTo (
+                this DependencyObject dependencyObject, 
+                DependencyProperty dependencyProperty 
+                )
+            {
+                if (dependencyObject == null)
+                {
+                    return false;
+                }
+    
+                if (dependencyProperty == null)
+                {
+                    return false;
+                }
+    
+                return BindingOperations.IsDataBound (dependencyObject, dependencyProperty);
+            }
+    
+            public static void ResetBindingOf (
+                this DependencyObject dependencyObject, 
+                DependencyProperty dependencyProperty, 
+                BindingBase binding = null
+                )
+            {
+                if (dependencyObject == null)
+                {
+                    return;
+                }
+    
+                if (dependencyProperty == null)
+                {
+                    return;
+                }
+    
+                BindingOperations.ClearBinding (dependencyObject, dependencyProperty);
+    
+                if (binding != null)
+                {
+                    BindingOperations.SetBinding (dependencyObject, dependencyProperty, binding);
+                }
             }
         }
     }
@@ -1533,15 +1668,16 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2012-10-31T21:36:51";
+        public const string IncludeDate     = @"2012-11-01T07:37:05";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
     }
 }
 // ############################################################################

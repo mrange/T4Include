@@ -138,7 +138,7 @@ namespace Source.Extensions
             }
             catch (Exception exc)
             {
-                Log.LogMessage (Log.Level.Exception, "DisposeNoThrow: Dispose threw: {0}", exc);
+                Log.Exception ("DisposeNoThrow: Dispose threw: {0}", exc);
             }
         }
 

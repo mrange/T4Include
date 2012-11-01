@@ -22,20 +22,20 @@ namespace Source.Common
     partial class Log
     {
         static readonly object s_colorLock = new object ();
-        static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message)
+        static partial void Partial_LogMessage (Level level, string message)
         {
             var now = DateTime.Now;
             var finalMessage = string.Format (
                 CultureInfo.InvariantCulture,
                 "{0:HHmmss} {1}:{2}",
                 now,
-                levelMessage,
+                GetLevelMessage (level),
                 message
                 );
             lock (s_colorLock)
             {
                 var oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = levelColor;
+                Console.ForegroundColor = GetLevelColor (level);
                 try
                 {
                     Console.WriteLine (finalMessage);

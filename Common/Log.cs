@@ -10,7 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: Array.cs
+// ### INCLUDE: Generated_Log.cs
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
@@ -23,65 +23,14 @@ namespace Source.Common
 
     static partial class Log
     {
-        static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message);
+        static partial void Partial_LogMessage (Level level, string message);
         static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
-
-        public enum Level
-        {
-            Success     =  1000,
-            HighLight   =  2000,
-            Info        =  3000,
-            Warning     = 10000,
-            Error       = 20000,
-            Exception   = 21000,
-        }
-
-        static ConsoleColor GetLevelColor (Level level)
-        {
-            switch (level)
-            {
-                case Level.Success:
-                    return ConsoleColor.Green;
-                case Level.HighLight:
-                    return ConsoleColor.White;
-                case Level.Info:
-                    return ConsoleColor.Gray;
-                case Level.Warning:
-                    return ConsoleColor.Yellow;
-                case Level.Error:
-                case Level.Exception:
-                    return ConsoleColor.Red;
-                default:
-                    return ConsoleColor.Magenta;
-            }
-        }
-
-        static string GetLevelMessage (Level level)
-        {
-            switch (level)
-            {
-                case Level.Success:
-                    return "SUCCESS  ";
-                case Level.HighLight:
-                    return "HIGHLIGHT";
-                case Level.Info:
-                    return "INFO     ";
-                case Level.Warning:
-                    return "WARNING  ";
-                case Level.Error:
-                    return "ERROR    ";
-                case Level.Exception:
-                    return "EXCEPTION";
-                default:
-                    return "UNKNOWN  ";
-            }
-        }
 
         public static void LogMessage (Level level, string format, params object[] args)
         {
             try
             {
-                Partial_LogMessage (level, GetLevelColor (level), GetLevelMessage (level), GetMessage (format, args));
+                Partial_LogMessage (level, GetMessage (format, args));
             }
             catch (Exception exc)
             {
@@ -93,11 +42,9 @@ namespace Source.Common
         static string GetMessage (string format, object[] args)
         {
             format = format ?? "";
-            args = args ?? Array<object>.Empty;
-
             try
             {
-                return args.Length == 0
+                return (args == null || args.Length == 0)
                            ? format
                            : string.Format (CultureInfo.InvariantCulture, format, args)
                     ;

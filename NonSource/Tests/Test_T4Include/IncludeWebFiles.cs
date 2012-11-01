@@ -53,8 +53,9 @@ namespace WebInclude
         using System;
         using System.Collections.Generic;
         using System.Globalization;
-        using Source.Common;
+        using System.Text;
     
+        using Source.Common;
     
         static partial class BasicExtensions
         {
@@ -68,9 +69,9 @@ namespace WebInclude
                 return string.IsNullOrEmpty (v);
             }
     
-            public static string DefaultTo (this string v, string defaultValue = "")
+            public static string DefaultTo (this string v, string defaultValue = null)
             {
-                return !v.IsNullOrEmpty () ? v : defaultValue;
+                return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
             }
     
             public static IEnumerable<T> DefaultTo<T>(
@@ -78,12 +79,12 @@ namespace WebInclude
                 IEnumerable<T> defaultValue = null
                 )
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
             {
-                return values ?? Array<T>.Empty;
+                return values ?? defaultValue ?? Array<T>.Empty;
             }
     
             public static T DefaultTo<T>(this T v, T defaultValue = default (T))
@@ -94,12 +95,12 @@ namespace WebInclude
     
             public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
             {
-                return string.Format(cultureInfo, format ?? "", args.DefaultTo());
+                return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
             }
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith(CultureInfo.InvariantCulture, args);
+                return format.FormatWith (CultureInfo.InvariantCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -113,7 +114,7 @@ namespace WebInclude
                 }
     
                 TValue value;
-                return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+                return dictionary.TryGetValue (key, out value) ? value : defaultValue;
             }
     
             public static TValue GetOrAdd<TKey, TValue>(
@@ -127,7 +128,7 @@ namespace WebInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = defaultValue;
                     dictionary[key] = value;
@@ -148,7 +149,7 @@ namespace WebInclude
                 }
     
                 TValue value;
-                if (!dictionary.TryGetValue(key, out value))
+                if (!dictionary.TryGetValue (key, out value))
                 {
                     value = valueCreator ();
                     dictionary[key] = value;
@@ -157,15 +158,13 @@ namespace WebInclude
                 return value;
             }
     
-            public static void DisposeNoThrow (this object value)
+            public static void DisposeNoThrow (this IDisposable disposable)
             {
                 try
                 {
-                    var disposable = value as IDisposable;
-    
                     if (disposable != null)
                     {
-                        disposable.Dispose();
+                        disposable.Dispose ();
                     }
                 }
                 catch (Exception exc)
@@ -177,6 +176,31 @@ namespace WebInclude
             public static TTo CastTo<TTo> (object value, TTo defaultValue)
             {
                 return value is TTo ? (TTo) value : defaultValue;
+            }
+    
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            {
+                values = values ?? Array<string>.Empty;
+                delimiter = delimiter ?? ", ";
+                var first = true;
+    
+                var sb = new StringBuilder (capacity);     
+    
+                foreach (var v in values)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append (delimiter);
+                    }
+    
+                    sb.Append (v);
+                }
+    
+                return sb.ToString ();
             }
         }
     }
@@ -206,11 +230,11 @@ namespace WebInclude
     
         partial class Log
         {
-            static readonly object s_colorLock = new object();
-            static partial void Partial_LogMessage(Level level, ConsoleColor levelColor, string levelMessage, string message)
+            static readonly object s_colorLock = new object ();
+            static partial void Partial_LogMessage (Level level, ConsoleColor levelColor, string levelMessage, string message)
             {
                 var now = DateTime.Now;
-                var finalMessage = string.Format(
+                var finalMessage = string.Format (
                     CultureInfo.InvariantCulture,
                     "{0:HHmmss} {1}:{2}",
                     now,
@@ -223,7 +247,7 @@ namespace WebInclude
                     Console.ForegroundColor = levelColor;
                     try
                     {
-                        Console.WriteLine(finalMessage);
+                        Console.WriteLine (finalMessage);
                     }
                     finally
                     {
@@ -317,7 +341,7 @@ namespace WebInclude
                 }
             }
     
-            static string GetLevelMessage(Level level)
+            static string GetLevelMessage (Level level)
             {
                 switch (level)
                 {
@@ -338,20 +362,20 @@ namespace WebInclude
                 }
             }
     
-            public static void LogMessage(Level level, string format, params object[] args)
+            public static void LogMessage (Level level, string format, params object[] args)
             {
                 try
                 {
-                    Partial_LogMessage(level, GetLevelColor(level), GetLevelMessage(level), GetMessage(format, args));
+                    Partial_LogMessage (level, GetLevelColor (level), GetLevelMessage (level), GetMessage (format, args));
                 }
                 catch (Exception exc)
                 {
-                    Partial_ExceptionOnLog(level, format, args, exc);
+                    Partial_ExceptionOnLog (level, format, args, exc);
                 }
                 
             }
     
-            static string GetMessage(string format, object[] args)
+            static string GetMessage (string format, object[] args)
             {
                 format = format ?? "";
                 args = args ?? Array<object>.Empty;
@@ -360,7 +384,7 @@ namespace WebInclude
                 {
                     return args.Length == 0
                                ? format
-                               : string.Format(CultureInfo.InvariantCulture, format, args)
+                               : string.Format (CultureInfo.InvariantCulture, format, args)
                         ;
                 }
                 catch (FormatException)
@@ -380,7 +404,7 @@ namespace WebInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"https://raw.github.com/";
-        public const string IncludeDate     = @"2012-10-28T09:43:10";
+        public const string IncludeDate     = @"2012-11-01T07:37:04";
 
         public const string Include_0       = @"mrange/T4Include/master/Extensions/BasicExtensions.cs";
         public const string Include_1       = @"mrange/T4Include/master/Common/ConsoleLog.cs";

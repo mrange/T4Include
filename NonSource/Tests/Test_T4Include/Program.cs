@@ -18,8 +18,8 @@ namespace Test_T4Include
     {
         static void Main(string[] args)
         {
-            Log.LogMessage(Log.Level.Success, "Hi there!");
-            Log.LogMessage(Log.Level.Info, "Shutting down");
+            Log.Success ("Hi there!");
+            Log.Info ("Shutting down");
         }
     }
 }

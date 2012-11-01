@@ -10,6 +10,8 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: ../Common/Log.cs
+
 // ReSharper disable InconsistentNaming
 
 namespace Source.Extensions
@@ -17,12 +19,17 @@ namespace Source.Extensions
     using System;
     using System.Windows.Threading;
     using System.Windows;
+    using System.Windows.Data;
 
     using Source.Common;
 
     static partial class WpfExtensions
     {
-        public static void Async_Invoke(this Dispatcher dispatcher, string actionName, Action action)
+        public static void Async_Invoke (
+            this Dispatcher dispatcher, 
+            string actionName, 
+            Action action
+            )
         {
             if (action == null)
             {
@@ -32,28 +39,92 @@ namespace Source.Extensions
             Action act = () =>
                              {
 #if DEBUG
-                                 Log.LogMessage(Log.Level.Info, "Async_Invoke: {0}", actionName ?? "Unknown");
+                                 Log.Info ("Async_Invoke: {0}", actionName ?? "Unknown");
 #endif
 
                                  try
                                  {
-                                     action();
+                                     action ();
                                  }
                                  catch (Exception exc)
                                  {
-                                     Log.LogMessage(Log.Level.Exception, "Async_Invoke: Caught exception: {0}", exc);
+                                     Log.Exception ("Async_Invoke: Caught exception: {0}", exc);
                                  }
                              };
 
             dispatcher = dispatcher ?? Dispatcher.CurrentDispatcher;
-            dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, act);
+            dispatcher.BeginInvoke (DispatcherPriority.ApplicationIdle, act);
         }
 
-        public static void Async_Invoke(this DependencyObject dependencyObject, string actionName, Action action)
+        public static void Async_Invoke (
+            this DependencyObject dependencyObject, 
+            string actionName, 
+            Action action
+            )
         {
             var dispatcher = dependencyObject == null ? Dispatcher.CurrentDispatcher : dependencyObject.Dispatcher;
 
-            dispatcher.Async_Invoke(actionName, action);
+            dispatcher.Async_Invoke (actionName, action);
+        }
+
+        public static BindingBase GetBindingOf (
+            this DependencyObject dependencyObject, 
+            DependencyProperty dependencyProperty 
+            )
+        {
+            if (dependencyObject == null)
+            {
+                return null;
+            }
+
+            if (dependencyProperty == null)
+            {
+                return null;
+            }
+
+            return BindingOperations.GetBindingBase (dependencyObject, dependencyProperty);
+        }
+
+        public static bool IsBoundTo (
+            this DependencyObject dependencyObject, 
+            DependencyProperty dependencyProperty 
+            )
+        {
+            if (dependencyObject == null)
+            {
+                return false;
+            }
+
+            if (dependencyProperty == null)
+            {
+                return false;
+            }
+
+            return BindingOperations.IsDataBound (dependencyObject, dependencyProperty);
+        }
+
+        public static void ResetBindingOf (
+            this DependencyObject dependencyObject, 
+            DependencyProperty dependencyProperty, 
+            BindingBase binding = null
+            )
+        {
+            if (dependencyObject == null)
+            {
+                return;
+            }
+
+            if (dependencyProperty == null)
+            {
+                return;
+            }
+
+            BindingOperations.ClearBinding (dependencyObject, dependencyProperty);
+
+            if (binding != null)
+            {
+                BindingOperations.SetBinding (dependencyObject, dependencyProperty, binding);
+            }
         }
     }
 }

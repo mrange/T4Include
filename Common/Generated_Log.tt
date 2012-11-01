@@ -1,0 +1,102 @@
+﻿<#@ include     file        ="..\T4\Header.ttinclude"          #>
+
+<#
+    var model = new []
+        {
+            LogLevel ("Success"     ,  1000, "Green"    ),
+            LogLevel ("HighLight"   ,  2000, "White"    ),
+            LogLevel ("Info"        ,  3000, "Gray"     ),
+            LogLevel ("Warning"     , 10000, "Yellow"   ),
+            LogLevel ("Error"       , 20000, "Red"      ),
+            LogLevel ("Exception"   , 21000, "Red"      ),
+        };
+#>
+
+namespace Source.Common
+{
+    using System;
+
+    partial class Log
+    {
+        public enum Level
+        {
+<#
+    foreach (var ll in model)
+    {
+#>
+            <#=ll.Name#> = <#=ll.Level#>,
+<#
+    }
+#>
+        }
+
+<#
+    foreach (var ll in model)
+    {
+#>
+        public static void <#=ll.Name#> (string format, params object[] args)
+        {
+            LogMessage (Level.<#=ll.Name#>, format, args);
+        }
+<#
+    }
+#>
+        static ConsoleColor GetLevelColor (Level level)
+        {
+            switch (level)
+            {
+<#
+    foreach (var ll in model)
+    {
+#>
+                case Level.<#=ll.Name#>:
+                    return ConsoleColor.<#=ll.Color#>;
+<#
+    }
+#>
+                default:
+                    return ConsoleColor.Magenta;
+            }
+        }
+
+        static string GetLevelMessage (Level level)
+        {
+            switch (level)
+            {
+<#
+    var maxLength = model.Select (ll => ll.Name.Length).Max ();
+    foreach (var ll in model)
+    {
+#>
+                case Level.<#=ll.Name#>:
+                    return "<#=LeftJustify (ll.Name.ToUpperInvariant (), maxLength)#>";
+<#
+    }
+#>
+                default:
+                    return "<#=LeftJustify ("UNKNOWN", maxLength)#>";
+            }
+        }
+
+    }
+}
+
+<#+
+    class LogLevelDefinition
+    {
+        public string   Name    ;
+        public int      Level   ;
+        public string   Color   ;
+    }
+
+    static LogLevelDefinition LogLevel (string name, int level, string color = null)
+    {
+        return new LogLevelDefinition
+        {
+            Name    = name  ?? S_NoName     ,
+            Level   = level                 ,
+            Color   = color ?? "Gray"       , 
+        };
+    } 
+
+#>
