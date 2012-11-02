@@ -21,7 +21,7 @@ namespace Source.Concurrency
     foreach (var atomic in Model)
     {
 #>
-    partial struct Atomic<#=atomic.Name#> : IAtomic<<#=atomic.Name#>>
+    partial class Atomic<#=atomic.Name#> : IAtomic<<#=atomic.Name#>>
     {
         <#=atomic.Name#> m_value;
 
@@ -45,7 +45,7 @@ namespace Source.Concurrency
     }
 #>
 
-    partial struct Atomic<T> : IAtomic<T>
+    partial class Atomic<T> : IAtomic<T>
         where T : class
     {
         T m_value;

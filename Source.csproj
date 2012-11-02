@@ -54,6 +54,12 @@
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
     <Compile Include="Common\Log.cs" />
+    <Compile Include="Concurrency\Atomic.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Atomic.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Concurrency\IAtomic.cs" />
     <Compile Include="Extensions\NumericalExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -71,6 +77,10 @@
     <None Include="Common\Generated_Log.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_Log.cs</LastGenOutput>
+    </None>
+    <None Include="Concurrency\Atomic.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Atomic.cs</LastGenOutput>
     </None>
     <None Include="Extensions\NumericalExtensions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

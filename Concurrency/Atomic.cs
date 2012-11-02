@@ -19,7 +19,7 @@ namespace Source.Concurrency
     using System;
     using System.Threading;
 
-    partial struct AtomicInt32 : IAtomic<Int32>
+    partial class AtomicInt32 : IAtomic<Int32>
     {
         Int32 m_value;
 
@@ -39,7 +39,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial struct AtomicInt64 : IAtomic<Int64>
+    partial class AtomicInt64 : IAtomic<Int64>
     {
         Int64 m_value;
 
@@ -59,7 +59,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial struct AtomicSingle : IAtomic<Single>
+    partial class AtomicSingle : IAtomic<Single>
     {
         Single m_value;
 
@@ -79,7 +79,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial struct AtomicDouble : IAtomic<Double>
+    partial class AtomicDouble : IAtomic<Double>
     {
         Double m_value;
 
@@ -100,7 +100,7 @@ namespace Source.Concurrency
 
     }
 
-    partial struct Atomic<T> : IAtomic<T>
+    partial class Atomic<T> : IAtomic<T>
         where T : class
     {
         T m_value;
