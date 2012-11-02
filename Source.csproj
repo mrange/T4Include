@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Array.cs" />
+    <Compile Include="Common\BaseDisposable.cs" />
     <Compile Include="Common\ConsoleLog.cs" />
     <Compile Include="Common\Generated_Log.cs">
       <AutoGen>True</AutoGen>
