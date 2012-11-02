@@ -1,0 +1,89 @@
+﻿<#@ include     file        ="..\T4\Header.ttinclude"          #>
+
+<#
+    Model = new []
+    {
+        V ("Int32")     ,
+        V ("Int64")     ,
+        V ("Single")    ,
+        V ("Double")    ,
+    };    
+#>
+
+// ### INCLUDE: IAtomic.cs
+
+namespace Source.Concurrency
+{
+    using System;
+    using System.Threading;
+
+<#
+    foreach (var atomic in Model)
+    {
+#>
+    partial struct Atomic<#=atomic.Name#> : IAtomic<<#=atomic.Name#>>
+    {
+        <#=atomic.Name#> m_value;
+
+        public Atomic<#=atomic.Name#> (<#=atomic.Name#> value = default (<#=atomic.Name#>))
+        {
+            m_value = value;
+        }
+
+        public bool CompareExchange (<#=atomic.Name#> newValue, <#=atomic.Name#> comparand)
+        {
+            return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+        }
+
+        public <#=atomic.Name#> Value
+        {
+            get { return Interlocked.CompareExchange (ref m_value, default (<#=atomic.Name#>), default (<#=atomic.Name#>)); }
+        }
+
+    }
+<#
+    }
+#>
+
+    partial struct Atomic<T> : IAtomic<T>
+        where T : class
+    {
+        T m_value;
+
+        public Atomic (T value = null)
+        {
+            m_value = value;
+        }
+
+        public bool CompareExchange (T newValue, T comparand)
+        {
+            return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+        }
+
+        public T Value
+        {
+            get { return Interlocked.CompareExchange (ref m_value, null, null); }
+        }
+
+    }
+
+}
+
+<#+
+
+    AtomicDefinition[] Model = new AtomicDefinition[0];
+
+    class AtomicDefinition : BaseEntity<Root>
+    {
+        public string Name      ;
+    }
+
+    static AtomicDefinition V (string name)
+    {
+        return new AtomicDefinition
+        {
+            Name = name ?? S_NoName         ,
+        };
+    }
+
+#>
