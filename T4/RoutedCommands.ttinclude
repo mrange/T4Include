@@ -1,0 +1,68 @@
+﻿<#@ include     file        ="Header.ttinclude"  #>
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+
+namespace <#=Namespace#>
+{
+    using System.Windows.Input;
+
+    static partial class Commands
+    {
+<#
+    foreach (var command in Model)
+    {
+#>
+        public static RoutedUICommand <#=command.Name#> = new RoutedUICommand (
+            "<#=command.Name#>",
+            "<#=command.Name#>",
+            typeof (Commands),
+            new InputGestureCollection
+                {
+<#
+    if (command.Key != null)
+    {
+#>
+                    new KeyGesture(Key.<#=command.Key#>, ModifierKeys.<#=command.Modifier#>),
+<#
+    }
+#>
+                }
+            );
+<#
+    }
+#>
+    }
+}
+<#+
+    string              Namespace   = "T4Include"               ;
+    CommandDefinition[] Model       = new CommandDefinition[0]  ;
+
+    sealed class CommandDefinition 
+    {
+        public string Name      ;
+        public string Key       ;
+        public string Modifier  ;
+    }
+
+    static CommandDefinition C (string name, string modifier = null, string key = null)
+    {
+        return new CommandDefinition 
+            {
+                Name    = name      ?? S_NoName ,
+                Key     = key                   ,
+                Modifier= modifier  ?? "None"   ,
+            };
+    }
+
+#>

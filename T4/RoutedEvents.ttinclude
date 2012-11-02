@@ -1,0 +1,171 @@
+﻿<#@ include     file        ="Header.ttinclude"                #>
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantNameQualifier
+
+namespace <#=Namespace#>
+{
+   using System.Windows;
+
+<#
+   foreach (var eventDefinition in Model)
+   {
+#>
+   // -------------------------------------------------------------------------
+
+   partial class <#=eventDefinition.EventType#> : <#=eventDefinition.BaseEventType#>
+   {
+       public delegate void Handler (object sender, <#=eventDefinition.EventType#> eventArgs);
+   }
+   // -------------------------------------------------------------------------
+
+<#
+   }
+#>
+
+<#
+   var groupedDefinitions = Model
+    .Where (k => k.OwnerClass != null)
+    .GroupBy (k => k.OwnerClass)
+    ;
+   foreach (var groupedDefinition in groupedDefinitions)
+   {
+#>
+   partial class <#=groupedDefinition.Key#>
+   {
+<#
+      foreach (var eventDefinition in groupedDefinition)
+      {
+#>
+      // ----------------------------------------------------------------------
+      public readonly static RoutedEvent <#=eventDefinition.Name#>Event = EventManager.RegisterRoutedEvent (
+         "<#=eventDefinition.Name#>",
+         RoutingStrategy.Bubble,
+         typeof (<#=eventDefinition.DelegateType#>),
+         typeof (<#=eventDefinition.OwnerClass#>)
+         );
+
+      public event <#=eventDefinition.DelegateType#> <#=eventDefinition.Name#>
+      {
+          add { this.AddHandler_<#=eventDefinition.Name#> (value); }
+          remove { this.RemoveHandler_<#=eventDefinition.Name#> (value); }
+      }
+      // ----------------------------------------------------------------------
+<#
+      }
+#>
+   }
+<#
+   }
+#>
+
+   static partial class RoutedEvents
+   {
+<#
+   foreach (var eventDefinition in Model)
+   {
+#>
+
+      // ----------------------------------------------------------------------
+<#
+    if (eventDefinition.OwnerClass == null)
+    {
+#>
+      public readonly static RoutedEvent <#=eventDefinition.Name#>Event = EventManager.RegisterRoutedEvent (
+         "<#=eventDefinition.Name#>",
+         RoutingStrategy.Bubble,
+         typeof (<#=eventDefinition.DelegateType#>),
+         typeof (RoutedEvents)
+         );
+<#
+    }
+#>
+
+      public static void Raise_<#=eventDefinition.Name#> (
+         this UIElement uiElement, 
+         <#=eventDefinition.EventType#> routedEventArgs = null
+         )
+      {
+         if (uiElement != null)
+         {
+            routedEventArgs = routedEventArgs ?? new <#=eventDefinition.EventType#> ();
+            routedEventArgs.RoutedEvent = <#=eventDefinition.FullName#>Event;
+            uiElement.RaiseEvent (routedEventArgs);
+         }
+      }
+
+      public static void AddHandler_<#=eventDefinition.Name#> (
+         this UIElement uiElement,
+         <#=eventDefinition.DelegateType#> eventHandler,
+         bool handledEventsToo = false
+         )
+      {
+         if (uiElement != null)
+         {
+            uiElement.AddHandler (<#=eventDefinition.FullName#>Event, eventHandler, handledEventsToo);
+         }
+      }
+
+      public static void RemoveHandler_<#=eventDefinition.Name#> (
+         this UIElement uiElement,
+         <#=eventDefinition.DelegateType#> eventHandler
+         )
+      {
+         if (uiElement != null)
+         {
+            uiElement.RemoveHandler (<#=eventDefinition.FullName#>Event, eventHandler);
+         }
+      }
+
+      // ----------------------------------------------------------------------
+<#
+   }
+#>
+   }
+}
+<#+
+    string              Namespace   = "T4Include"               ;
+    EventDefinition[]   Model       = new EventDefinition[0]    ;
+
+   class EventDefinition
+   {
+      public string Name;
+      public string DelegateType;
+      public string EventType;
+      public string BaseEventType;
+      public string OwnerClass;
+
+      public string FullName 
+      {
+         get { return (OwnerClass ?? "RoutedEvents") + "." + Name; }
+      }
+        
+   }
+
+   static EventDefinition E (string name, string ownerClass = null, string baseEventType = null)
+   {
+      return new EventDefinition
+      {
+         Name           = name,
+         DelegateType   = name + "EventArgs.Handler",
+         EventType      = name + "EventArgs",
+         BaseEventType  = (baseEventType ?? "Routed") + "EventArgs",
+         OwnerClass     = ownerClass,
+      };
+   }
+
+#>

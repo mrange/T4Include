@@ -79,12 +79,15 @@
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
     <None Include="NonSource\NuGet\T4Include.nuspec" />
     <None Include="README.md" />
+    <None Include="T4\DependencyProperties.ttinclude" />
     <None Include="T4\Header.ttinclude" />
     <None Include="T4\IncludeHeader.ttinclude" />
     <None Include="T4\IncludeLocalFile.ttinclude" />
     <None Include="T4\IncludeProject.ttinclude" />
     <None Include="T4\IncludeWebFile.ttinclude" />
     <None Include="T4\NumericalExtensions.ttinclude" />
+    <None Include="T4\RoutedCommands.ttinclude" />
+    <None Include="T4\RoutedEvents.ttinclude" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

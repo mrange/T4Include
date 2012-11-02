@@ -1,4 +1,14 @@
-﻿// ----------------------------------------------------------------------------------------------
+﻿// ############################################################################
+// #                                                                          #
+// #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+// #                                                                          #
+// # This means that any edits to the .cs file will be lost when its          #
+// # regenerated. Changes should instead be applied to the corresponding      #
+// # template file (.tt)                                                      #
+// ############################################################################
+
+<#
+// ----------------------------------------------------------------------------------------------
 // Copyright (c) Mårten Rånge.
 // ----------------------------------------------------------------------------------------------
 // This source code is subject to terms and conditions of the Microsoft Public License. A 
@@ -9,15 +19,7 @@
 // ----------------------------------------------------------------------------------------------
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
-
-// ############################################################################
-// #                                                                          #
-// #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
-// #                                                                          #
-// # This means that any edits to the .cs file will be lost when its          #
-// # regenerated. Changes should instead be applied to the corresponding      #
-// # template file (.tt)                                                      #
-// ############################################################################
+#>
 
 <#@ output      extension   = ".cs"                         #>
 <#@ assembly    name        ="System.Core"                  #>
