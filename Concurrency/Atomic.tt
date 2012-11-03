@@ -12,6 +12,7 @@
 
 // ### INCLUDE: IAtomic.cs
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable PartialTypeWithSinglePart
 
 namespace Source.Concurrency

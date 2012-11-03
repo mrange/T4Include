@@ -14,6 +14,7 @@
 
 // ### INCLUDE: IAtomic.cs
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable PartialTypeWithSinglePart
 
 namespace Source.Concurrency
@@ -72,9 +73,7 @@ namespace Source.Concurrency
 
         public bool CompareExchange (Single newValue, Single comparand)
         {
-// ReSharper disable CompareOfFloatsByEqualityOperator
             return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-// ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         public Single Value
@@ -94,9 +93,7 @@ namespace Source.Concurrency
 
         public bool CompareExchange (Double newValue, Double comparand)
         {
-// ReSharper disable CompareOfFloatsByEqualityOperator
             return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-// ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         public Double Value
