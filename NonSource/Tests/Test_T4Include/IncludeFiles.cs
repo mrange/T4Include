@@ -466,7 +466,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-01T07:36:39";
+        public const string IncludeDate     = @"2012-11-03T10:47:08";
 
         public const string Include_0       = @"Extensions\BasicExtensions.cs";
         public const string Include_1       = @"Common\ConsoleLog.cs";

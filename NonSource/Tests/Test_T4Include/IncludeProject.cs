@@ -26,6 +26,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
 // @@@ INCLUDE_FOUND: IAtomic.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
@@ -38,6 +40,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
@@ -46,6 +49,7 @@
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
@@ -112,7 +116,7 @@ namespace ProjectInclude
                 {
                     try
                     {
-                        OnDispose();
+                        OnDispose ();
                     }
                     catch (Exception exc)
                     {
@@ -378,12 +382,13 @@ namespace ProjectInclude
     
     
     
+    
     namespace Source.Concurrency
     {
         using System;
         using System.Threading;
     
-        partial class AtomicInt32 : IAtomic<Int32>
+        sealed partial class AtomicInt32 : IAtomic<Int32>
         {
             Int32 m_value;
     
@@ -403,7 +408,7 @@ namespace ProjectInclude
             }
     
         }
-        partial class AtomicInt64 : IAtomic<Int64>
+        sealed partial class AtomicInt64 : IAtomic<Int64>
         {
             Int64 m_value;
     
@@ -423,7 +428,7 @@ namespace ProjectInclude
             }
     
         }
-        partial class AtomicSingle : IAtomic<Single>
+        sealed partial class AtomicSingle : IAtomic<Single>
         {
             Single m_value;
     
@@ -443,7 +448,7 @@ namespace ProjectInclude
             }
     
         }
-        partial class AtomicDouble : IAtomic<Double>
+        sealed partial class AtomicDouble : IAtomic<Double>
         {
             Double m_value;
     
@@ -499,6 +504,184 @@ namespace ProjectInclude
         {
             bool CompareExchange (T newValue, T comparand);
             T Value { get; }
+        }
+    }
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Concurrency
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Collections.Generic;
+        using System.Threading;
+        using System.Threading.Tasks;
+    
+        using Source.Common;
+    
+        sealed partial class SequentialTaskScheduler : TaskScheduler, IDisposable
+        {
+            public readonly string              Name    ;
+            public readonly TimeSpan            TimeOut ;
+    
+            readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
+            Thread                              m_executingThread   ;
+            bool                                m_done              ;
+    
+            int                                 m_taskFailureCount;
+    
+            public SequentialTaskScheduler (string name, TimeSpan timeOut, ApartmentState apartmentState)
+            {
+                Name                = name ?? "UnnamedTaskScheduler";
+                TimeOut             = timeOut;
+                m_executingThread   = new Thread (OnRun)
+                               {
+                                   IsBackground = true
+                               };
+    
+                m_executingThread.SetApartmentState (apartmentState);
+    
+                m_executingThread.Start ();
+            }
+    
+            void OnRun (object context)
+            {
+                while (!m_done)
+                {
+                    Task task;
+                    try
+                    {
+                        if (m_tasks.TryTake (out task, TimeOut))
+                        {
+                            // null task means exit
+                            if (task == null)
+                            {
+                                m_done = true;
+                                continue;
+                            }
+    
+                            if (!TryExecuteTask (task))
+                            {
+                                Log.Warning (
+                                    "SequentialTaskScheduler.OnRun: {0} - TryExecuteTask failed for task: {1}",
+                                    Name,
+                                    task.Id
+                                    );
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        ++m_taskFailureCount;
+    
+                        Log.Exception (
+                            "SequentialTaskScheduler.OnRun: {0} - Caught exception: {1}",
+                            Name,
+                            exc
+                            );
+    
+                        Partial_TaskFailed (task, exc, m_taskFailureCount, ref m_done);
+                    }
+                }
+            }
+    
+            protected override bool TryDequeue (Task task)
+            {
+                Log.Warning ("SequentialTaskScheduler.TryDequeue: {0} - Task dequeing not supported", Name);
+                return false;
+            }
+    
+            protected override void QueueTask (Task task)
+            {
+                m_tasks.Add (task);
+            }
+    
+            protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
+            {
+                Log.Warning ("SequentialTaskScheduler.TryExecuteTaskInline: {0} - Task inline execute not supported", Name);
+                return false;
+            }
+    
+            protected override IEnumerable<Task> GetScheduledTasks ()
+            {
+                return m_tasks.ToArray ();
+            }
+    
+            public int TasksInQueue
+            {
+                get { return m_tasks.Count; }
+            }
+    
+            public bool IsDisposed
+            {
+                get { return m_executingThread == null; }
+            }
+    
+            public void ShutDown ()
+            {
+                if (!m_done)
+                {
+                    m_done = true;
+                    // null task to wake up thread
+                    m_tasks.Add (null);                
+                }
+            }
+    
+            public void Dispose ()
+            {
+                var thread = Interlocked.Exchange (ref m_executingThread, null);
+                if (thread != null)
+                {
+                    try
+                    {
+                        ShutDown ();
+                        if (!thread.Join (TimeOut + TimeOut))
+                        {
+                            Log.Warning (
+                                "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
+                                Name
+                                );
+    
+                            thread.Abort ();
+                            if (!thread.Join (TimeOut))
+                            {
+                                Log.Warning (
+                                    "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
+                                    Name
+                                    );
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception (
+                            "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}", 
+                            Name,
+                            exc
+                            );
+                    }
+                }
+            }
+    
+            partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
+    
+        
         }
     }
 }
@@ -1873,7 +2056,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2012-11-02T18:08:58";
+        public const string IncludeDate     = @"2012-11-03T10:50:30";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
@@ -1882,10 +2065,11 @@ namespace ProjectInclude.Include
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
         public const string Include_5       = @"C:\temp\GitHub\T4Include\Concurrency\Atomic.cs";
         public const string Include_6       = @"C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
     }
 }
 // ############################################################################
