@@ -33,7 +33,7 @@ namespace <#=Namespace#>
     if (command.Key != null)
     {
 #>
-                    new KeyGesture(Key.<#=command.Key#>, ModifierKeys.<#=command.Modifier#>),
+                    new KeyGesture (Key.<#=command.Key#>, ModifierKeys.<#=command.Modifier#>),
 <#
     }
 #>

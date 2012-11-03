@@ -12,6 +12,8 @@
 
 // ### INCLUDE: IAtomic.cs
 
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Source.Concurrency
 {
     using System;
@@ -21,7 +23,7 @@ namespace Source.Concurrency
     foreach (var atomic in Model)
     {
 #>
-    partial class Atomic<#=atomic.Name#> : IAtomic<<#=atomic.Name#>>
+    sealed partial class Atomic<#=atomic.Name#> : IAtomic<<#=atomic.Name#>>
     {
         <#=atomic.Name#> m_value;
 

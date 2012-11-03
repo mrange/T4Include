@@ -16,7 +16,7 @@ namespace Test_T4Include
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main (string[] args)
         {
             Log.Success ("Hi there!");
             Log.Info ("Shutting down");

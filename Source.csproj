@@ -60,6 +60,7 @@
       <DependentUpon>Atomic.tt</DependentUpon>
     </Compile>
     <Compile Include="Concurrency\IAtomic.cs" />
+    <Compile Include="Concurrency\TaskSchedulers.cs" />
     <Compile Include="Extensions\NumericalExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

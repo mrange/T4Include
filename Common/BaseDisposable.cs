@@ -32,7 +32,7 @@ namespace Source.Common
             {
                 try
                 {
-                    OnDispose();
+                    OnDispose ();
                 }
                 catch (Exception exc)
                 {

@@ -14,12 +14,14 @@
 
 // ### INCLUDE: IAtomic.cs
 
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Source.Concurrency
 {
     using System;
     using System.Threading;
 
-    partial class AtomicInt32 : IAtomic<Int32>
+    sealed partial class AtomicInt32 : IAtomic<Int32>
     {
         Int32 m_value;
 
@@ -39,7 +41,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial class AtomicInt64 : IAtomic<Int64>
+    sealed partial class AtomicInt64 : IAtomic<Int64>
     {
         Int64 m_value;
 
@@ -59,7 +61,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial class AtomicSingle : IAtomic<Single>
+    sealed partial class AtomicSingle : IAtomic<Single>
     {
         Single m_value;
 
@@ -70,7 +72,9 @@ namespace Source.Concurrency
 
         public bool CompareExchange (Single newValue, Single comparand)
         {
+// ReSharper disable CompareOfFloatsByEqualityOperator
             return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+// ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         public Single Value
@@ -79,7 +83,7 @@ namespace Source.Concurrency
         }
 
     }
-    partial class AtomicDouble : IAtomic<Double>
+    sealed partial class AtomicDouble : IAtomic<Double>
     {
         Double m_value;
 
@@ -90,7 +94,9 @@ namespace Source.Concurrency
 
         public bool CompareExchange (Double newValue, Double comparand)
         {
+// ReSharper disable CompareOfFloatsByEqualityOperator
             return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+// ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         public Double Value

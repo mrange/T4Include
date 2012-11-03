@@ -16,11 +16,16 @@
 
 // ############################################################################
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
+// @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
+// @@@ INCLUDE_FOUND: IAtomic.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
@@ -30,7 +35,9 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
@@ -66,6 +73,61 @@ namespace ProjectInclude
         {
             public static readonly T[] Empty = new T[0];
         }
+    }
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Threading;
+    
+        abstract partial class BaseDisposable : IDisposable
+        {
+            int m_isDisposed;
+    
+            public bool IsDisposed
+            {
+                get { return m_isDisposed != 0; }
+            }
+    
+            public void Dispose ()
+            {
+                if (Interlocked.Exchange (ref m_isDisposed, 1) == 0)
+                {
+                    try
+                    {
+                        OnDispose();
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception (
+                            "BaseDisposable.Dispose for {0}, caught exception: {1}", 
+                            GetType ().FullName,
+                            exc
+                            );
+                    }
+                }            
+            }
+    
+            protected abstract void OnDispose ();
+        }
+    
     }
 }
 
@@ -294,6 +356,149 @@ namespace ProjectInclude
                     return format;
                 }
             }
+        }
+    }
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    
+    
+    namespace Source.Concurrency
+    {
+        using System;
+        using System.Threading;
+    
+        partial class AtomicInt32 : IAtomic<Int32>
+        {
+            Int32 m_value;
+    
+            public AtomicInt32 (Int32 value = default (Int32))
+            {
+                m_value = value;
+            }
+    
+            public bool CompareExchange (Int32 newValue, Int32 comparand)
+            {
+                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+            }
+    
+            public Int32 Value
+            {
+                get { return Interlocked.CompareExchange (ref m_value, default (Int32), default (Int32)); }
+            }
+    
+        }
+        partial class AtomicInt64 : IAtomic<Int64>
+        {
+            Int64 m_value;
+    
+            public AtomicInt64 (Int64 value = default (Int64))
+            {
+                m_value = value;
+            }
+    
+            public bool CompareExchange (Int64 newValue, Int64 comparand)
+            {
+                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+            }
+    
+            public Int64 Value
+            {
+                get { return Interlocked.CompareExchange (ref m_value, default (Int64), default (Int64)); }
+            }
+    
+        }
+        partial class AtomicSingle : IAtomic<Single>
+        {
+            Single m_value;
+    
+            public AtomicSingle (Single value = default (Single))
+            {
+                m_value = value;
+            }
+    
+            public bool CompareExchange (Single newValue, Single comparand)
+            {
+                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+            }
+    
+            public Single Value
+            {
+                get { return Interlocked.CompareExchange (ref m_value, default (Single), default (Single)); }
+            }
+    
+        }
+        partial class AtomicDouble : IAtomic<Double>
+        {
+            Double m_value;
+    
+            public AtomicDouble (Double value = default (Double))
+            {
+                m_value = value;
+            }
+    
+            public bool CompareExchange (Double newValue, Double comparand)
+            {
+                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+            }
+    
+            public Double Value
+            {
+                get { return Interlocked.CompareExchange (ref m_value, default (Double), default (Double)); }
+            }
+    
+        }
+    
+        partial class Atomic<T> : IAtomic<T>
+            where T : class
+        {
+            T m_value;
+    
+            public Atomic (T value = null)
+            {
+                m_value = value;
+            }
+    
+            public bool CompareExchange (T newValue, T comparand)
+            {
+                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
+            }
+    
+            public T Value
+            {
+                get { return Interlocked.CompareExchange (ref m_value, null, null); }
+            }
+    
+        }
+    
+    }
+    
+}
+
+// ############################################################################
+namespace ProjectInclude
+{
+    namespace Source.Concurrency
+    {
+        partial interface IAtomic<T>
+        {
+            bool CompareExchange (T newValue, T comparand);
+            T Value { get; }
         }
     }
 }
@@ -1668,16 +1873,19 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2012-11-01T07:37:05";
+        public const string IncludeDate     = @"2012-11-02T18:08:58";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Concurrency\Atomic.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
     }
 }
 // ############################################################################
