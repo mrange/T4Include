@@ -29,6 +29,7 @@ namespace Source.Concurrency
 
     sealed partial class SequentialTaskScheduler : TaskScheduler, IDisposable
     {
+        const int                           DefaultTimeOutInMs = 250;
         public readonly string              Name    ;
         public readonly TimeSpan            TimeOut ;
 
@@ -38,10 +39,13 @@ namespace Source.Concurrency
 
         int                                 m_taskFailureCount;
 
-        public SequentialTaskScheduler (string name, TimeSpan timeOut, ApartmentState apartmentState)
+
+        partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
+
+        public SequentialTaskScheduler (string name, TimeSpan? timeOut = null, ApartmentState apartmentState = ApartmentState.Unknown)
         {
-            Name                = name ?? "UnnamedTaskScheduler";
-            TimeOut             = timeOut;
+            Name                = name      ?? "UnnamedTaskScheduler";
+            TimeOut             = timeOut   ?? TimeSpan.FromMilliseconds (DefaultTimeOutInMs);
             m_executingThread   = new Thread (OnRun)
                            {
                                IsBackground = true
@@ -171,7 +175,6 @@ namespace Source.Concurrency
             }
         }
 
-        partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
 
     
     }
