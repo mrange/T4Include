@@ -322,6 +322,8 @@ namespace ProjectInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    using System.Collections;
+    
     namespace Source.Common
     {
         using System.Collections.Generic;
@@ -331,22 +333,37 @@ namespace ProjectInclude
         {
             public readonly int LineNo;
             public readonly string Line;
-            public readonly string Message;
+            public readonly HRON.ParseError ParseError;
     
-            public HRONParseError(int lineNo, string line, string message)
+            public HRONParseError(int lineNo, string line, HRON.ParseError parseError)
             {
                 LineNo = lineNo;
                 Line = line;
-                Message = message;
+                ParseError = parseError;
             }
         }
     
         partial interface IHRONEntity
         {
             HRON.Type Type { get; }
+    
+            void ToString (StringBuilder sb);
         }
     
-        sealed partial class HRONObject : IHRONEntity
+        abstract partial class BaseHRONEntity : IHRONEntity
+        {
+            public abstract HRON.Type Type { get; }
+            public abstract void ToString(StringBuilder sb);
+    
+            public override string ToString()
+            {
+                var sb = new StringBuilder(128);
+                ToString(sb);
+                return sb.ToString();
+            }
+        }
+    
+        sealed partial class HRONObject : BaseHRONEntity
         {
             public struct Pair
             {
@@ -369,6 +386,11 @@ namespace ProjectInclude
                 {
                     get { return m_value ?? HRONEmpty.DefaultValue; }
                 }
+    
+                public override string ToString()
+                {
+                    return Name + " : " + Value;
+                }
             }
     
             public readonly Pair[] Pairs;
@@ -378,13 +400,26 @@ namespace ProjectInclude
                 Pairs = pairs ?? Array<Pair>.Empty;
             }
     
-            public HRON.Type Type
+            public override HRON.Type Type
             {
                 get { return HRON.Type.Object; }
             }
+    
+            public override void ToString(StringBuilder sb)
+            {
+                sb.Append("{Object");
+                foreach (var pair in Pairs)
+                {
+                    sb.Append(", ");
+                    sb.Append(pair.Name);
+                    sb.Append(" : ");
+                    pair.Value.ToString(sb);
+                }
+                sb.Append("}");
+            }
         }
     
-        sealed partial class HRONValue : IHRONEntity
+        sealed partial class HRONValue : BaseHRONEntity
         {
             public readonly string Value;
     
@@ -393,14 +428,20 @@ namespace ProjectInclude
                 Value = value ?? "";
             }
     
-            public HRON.Type Type
+            public override HRON.Type Type
             {
                 get { return HRON.Type.Value; }
             }
     
+            public override void ToString(StringBuilder sb)
+            {
+                sb.Append("Value = '");
+                sb.Append(Value);
+                sb.Append("'");
+            }
         }
     
-        sealed partial class HRONComment : IHRONEntity
+        sealed partial class HRONComment : BaseHRONEntity
         {
             public readonly string Comment;
     
@@ -409,25 +450,37 @@ namespace ProjectInclude
                 Comment = comment ?? "";
             }
     
-            public HRON.Type Type
+            public override HRON.Type Type
             {
                 get { return HRON.Type.Comment; }
             }
+    
+            public override void ToString(StringBuilder sb)
+            {
+                sb.Append("Comment = '");
+                sb.Append(Comment);
+                sb.Append("'");
+            }
         }
     
-        sealed partial class HRONEmpty : IHRONEntity
+        sealed partial class HRONEmpty : BaseHRONEntity
         {
             public static readonly HRONEmpty DefaultValue = new HRONEmpty();
     
-            public HRON.Type Type
+            public override HRON.Type Type
             {
                 get { return HRON.Type.Empty; }
+            }
+    
+            public override void ToString(StringBuilder sb)
+            {
+                sb.Append("Empty");
             }
         }
     
         partial interface IHRONParseVisitor
         {
-            void Empty();
+            void Empty(string name);
             void Comment(string comment);
             void Value(string name, string value);
             void BeginObject(string name);
@@ -459,6 +512,92 @@ namespace ProjectInclude
                 TagIsNotCorrectlyFormatted
             }
     
+            sealed partial class BuildObjectVisitor : IHRONParseVisitor
+            {
+                public struct Item
+                {
+                    public readonly string Name;
+                    public List<HRONObject.Pair> Pairs;
+    
+                    public Item (string name): this()
+                    {
+                        Name = name ?? "";
+                        Pairs = new List<HRONObject.Pair>();
+                    }
+                }
+    
+                public readonly Stack<Item> Stack = new Stack<Item>();
+                public readonly List<HRONParseError> Errors = new List<HRONParseError>();
+                public readonly int MaxErrors;
+    
+                public BuildObjectVisitor (int maxErrors)
+                {
+                    MaxErrors = maxErrors;
+                    Stack.Push(new Item("Root"));
+                }
+    
+                public void Empty (string name)
+                {
+                    AddEntity(name, new HRONEmpty()); 
+                }
+    
+                public void Comment(string comment)
+                {
+    //                AddEntity("", new HRONComment(comment));
+                }
+    
+                public void Value(string name, string value)
+                {
+                    AddEntity(name, new HRONValue(value));
+                }
+    
+                public void BeginObject(string name)
+                {
+                    Stack.Push(new Item(name));
+                }
+    
+                public void EndObject(string name)
+                {
+                    var pop = Stack.Pop();
+                    AddEntity(pop.Name, new HRONObject (pop.Pairs.ToArray()));
+                }
+    
+                void AddEntity(string name, IHRONEntity entity)
+                {
+                    Stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
+                }
+    
+                public void ParseError(int lineNo, string line, ParseError parseError)
+                {
+                    Errors.Add(new HRONParseError(lineNo, line, parseError));
+                }
+            }
+    
+            public static bool TryParse(
+                int maxErrorCount,
+                IEnumerable<string> lines,
+                out HRONObject hronObject,
+                out HRONParseError[] errors
+                )
+            {
+                hronObject = null;
+                errors = Array<HRONParseError>.Empty;
+    
+                var visitor = new BuildObjectVisitor(maxErrorCount);
+    
+                Parse(maxErrorCount, lines, visitor);
+    
+                if (visitor.Errors.Count > 0)
+                {
+                    errors = visitor.Errors.ToArray();
+                    return false;
+                }
+    
+                hronObject = new HRONObject(visitor.Stack.Peek().Pairs.ToArray());
+    
+                return true;
+            }
+    
             public static void Parse(
                 int maxErrorCount,
                 IEnumerable<string> lines,
@@ -483,7 +622,7 @@ namespace ProjectInclude
                     ++lineNo;
                     if (string.IsNullOrEmpty(line))
                     {
-                        visitor.Empty();
+                        visitor.Empty(context.Peek());
                         continue;
                     }
     
@@ -506,6 +645,7 @@ namespace ProjectInclude
                     if (lineIndention > indention)
                     {
                         visitor.ParseError(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                        continue;
                     }
     
                     var isComment = lineIndention < lineLength && line[lineIndention] == '#';
@@ -579,6 +719,7 @@ namespace ProjectInclude
                                 {
                                     visitor.ParseError(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
                                 }
+    
                                 // TODO: Validate no trailing characters
     
                                 break;
@@ -2393,7 +2534,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_Functionality\..\..\..";
-        public const string IncludeDate     = @"2012-11-04T14:10:31";
+        public const string IncludeDate     = @"2012-11-04T19:46:43";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";

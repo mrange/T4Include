@@ -18,7 +18,17 @@ namespace Test_Functionality
                 HRON.Parse(int.MaxValue, stringReader.ReadLines(), visitor);
             }
 
-            using (var streamReader = new StreamReader (@".\Test_Functionality.ini"))
+            using (var stringReader = new StringReader(hron))
+            {
+                HRONObject hronObject;
+                HRONParseError[] errors;
+                if (HRON.TryParse(int.MaxValue, stringReader.ReadLines(), out hronObject, out errors))
+                {
+                    Console.WriteLine(hronObject);
+                }
+            }
+
+            using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
                 HRON.Parse(int.MaxValue, streamReader.ReadLines(), visitor);                
             }
@@ -29,9 +39,9 @@ namespace Test_Functionality
     {
         #region Implementation of IHRONParseVisitor
 
-        public void Empty()
+        public void Empty(string name)
         {
-            Console.WriteLine("EMPTY");
+            Console.WriteLine("EMPTY: {0}", name);
         }
 
         public void Comment(string comment)
