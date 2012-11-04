@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{41C19388-E1BD-4387-8073-98D5761D6753}</ProjectGuid>
+    <ProjectGuid>{8D7DB487-2771-4834-931E-C093E861B650}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Source</RootNamespace>
-    <AssemblyName>Source</AssemblyName>
+    <RootNamespace>Test_Functionality</RootNamespace>
+    <AssemblyName>Test_Functionality</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>NonSource\Output\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>NonSource\Output\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,61 +45,26 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Array.cs" />
-    <Compile Include="Common\BaseDisposable.cs" />
-    <Compile Include="Common\ConsoleLog.cs" />
-    <Compile Include="Common\Generated_Log.cs">
+    <Compile Include="IncludeProject.cs">
+      <DependentUpon>IncludeProject.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
-    <Compile Include="Common\HRON.cs" />
-    <Compile Include="Common\Log.cs" />
-    <Compile Include="Concurrency\Atomic.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Atomic.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Concurrency\IAtomic.cs" />
-    <Compile Include="Concurrency\TaskSchedulers.cs" />
-    <Compile Include="Extensions\NumericalExtensions.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NumericalExtensions.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Extensions\BasicExtensions.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\WpfExtensions.cs" />
-    <Compile Include="NonSource\Source\Program.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <None Include="App.config" />
+    <None Include="IncludeProject.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IncludeProject.cs</LastGenOutput>
+    </None>
+    <None Include="Test_Functionality.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Common\Generated_Log.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Generated_Log.cs</LastGenOutput>
-    </None>
-    <None Include="Concurrency\Atomic.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Atomic.cs</LastGenOutput>
-    </None>
-    <None Include="Extensions\NumericalExtensions.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NumericalExtensions.cs</LastGenOutput>
-    </None>
-    <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
-    <None Include="NonSource\NuGet\T4Include.nuspec" />
-    <None Include="README.md" />
-    <None Include="T4\DependencyProperties.ttinclude" />
-    <None Include="T4\Header.ttinclude" />
-    <None Include="T4\IncludeHeader.ttinclude" />
-    <None Include="T4\IncludeLocalFile.ttinclude" />
-    <None Include="T4\IncludeProject.ttinclude" />
-    <None Include="T4\IncludeWebFile.ttinclude" />
-    <None Include="T4\NumericalExtensions.ttinclude" />
-    <None Include="T4\RoutedCommands.ttinclude" />
-    <None Include="T4\RoutedEvents.ttinclude" />
+    <EmbeddedResource Include="hron.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
