@@ -22,7 +22,8 @@ namespace Source.Extensions
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Text;
+    using System.IO;
+    using System.Reflection;
 
     using Source.Common;
 
@@ -142,7 +143,7 @@ namespace Source.Extensions
             }
         }
 
-        public static TTo CastTo<TTo> (object value, TTo defaultValue)
+        public static TTo CastTo<TTo> (this object value, TTo defaultValue)
         {
             return value is TTo ? (TTo) value : defaultValue;
         }
@@ -151,25 +152,46 @@ namespace Source.Extensions
         {
             values = values ?? Array<string>.Empty;
             delimiter = delimiter ?? ", ";
-            var first = true;
 
-            var sb = new StringBuilder (capacity);     
+            return string.Join(delimiter, values);
+        }
 
-            foreach (var v in values)
+        public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
+        {
+            defaultValue = defaultValue ?? "";
+
+            if (assembly == null)
             {
-                if (first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    sb.Append (delimiter);
-                }
-
-                sb.Append (v);
+                return defaultValue;
             }
 
-            return sb.ToString ();
+            var stream = assembly.GetManifestResourceStream(name ?? "");
+            if (stream == null)
+            {
+                return defaultValue;
+            }
+
+            using (stream)
+            using (var streamReader = new StreamReader (stream))
+            {
+                return streamReader.ReadToEnd();
+            }
         }
+
+        public static IEnumerable<string> ReadLines(this TextReader textReader)
+        {
+            if (textReader == null)
+            {
+                yield break;
+            }
+
+            string line;
+
+            while ((line = textReader.ReadLine()) != null)
+            {
+                yield return line;
+            }
+        }
+
     }
 }
