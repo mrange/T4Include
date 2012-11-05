@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Common\HRON.cs" />
     <Compile Include="Common\Log.cs" />
+    <Compile Include="Common\SubString.cs" />
     <Compile Include="Concurrency\Atomic.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

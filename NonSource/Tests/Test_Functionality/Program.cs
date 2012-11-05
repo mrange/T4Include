@@ -37,38 +37,39 @@ namespace Test_Functionality
 
     class Visitor : IHRONParseVisitor
     {
-        #region Implementation of IHRONParseVisitor
-
-        public void Empty(string name)
-        {
-            Console.WriteLine("EMPTY: {0}", name);
-        }
-
-        public void Comment(string comment)
+        public void Comment(SubString comment)
         {
             Console.WriteLine("COMMENT: {0}", comment);
         }
 
-        public void Value(string name, string value)
+        public void Value_Begin(SubString name)
         {
-            Console.WriteLine("VALUE: {0} = {1}", name, value);
+            Console.WriteLine("BEGIN_VALUE: {0}", name);
         }
 
-        public void BeginObject(string name)
+        public void Value_Line(SubString line)
+        {
+            Console.WriteLine("VALUE: {0}", line);
+        }
+
+        public void Value_End(SubString name)
+        {
+            Console.WriteLine("END_VALUE: {0}", name);
+        }
+
+        public void Object_Begin(SubString name)
         {
             Console.WriteLine("BEGIN_OBJECT: {0}", name);
         }
 
-        public void EndObject(string name)
+        public void Object_End(SubString name)
         {
             Console.WriteLine("END_OBJECT: {0}", name);
         }
 
-        public void ParseError(int lineNo, string line, HRON.ParseError parseError)
+        public void Error(int lineNo, SubString line, HRON.ParseError parseError)
         {
             Console.WriteLine("PARSE_ERROR: {0} {1}: {2}", lineNo, line, parseError);
         }
-
-        #endregion
     }
 }

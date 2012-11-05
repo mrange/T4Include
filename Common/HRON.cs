@@ -10,10 +10,12 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: Array.cs
+// ### INCLUDE: SubString.cs
+
+// ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
-
-using System.Collections;
 
 namespace Source.Common
 {
@@ -75,7 +77,7 @@ namespace Source.Common
 
             public IHRONEntity Value
             {
-                get { return m_value ?? HRONEmpty.DefaultValue; }
+                get { return m_value ?? HRONValue.Empty; }
             }
 
             public override string ToString()
@@ -113,6 +115,7 @@ namespace Source.Common
     sealed partial class HRONValue : BaseHRONEntity
     {
         public readonly string Value;
+        public static readonly HRONValue Empty = new HRONValue("");
 
         public HRONValue(string value)
         {
@@ -154,30 +157,18 @@ namespace Source.Common
         }
     }
 
-    sealed partial class HRONEmpty : BaseHRONEntity
-    {
-        public static readonly HRONEmpty DefaultValue = new HRONEmpty();
-
-        public override HRON.Type Type
-        {
-            get { return HRON.Type.Empty; }
-        }
-
-        public override void ToString(StringBuilder sb)
-        {
-            sb.Append("Empty");
-        }
-    }
-
     partial interface IHRONParseVisitor
     {
-        void Empty(string name);
-        void Comment(string comment);
-        void Value(string name, string value);
-        void BeginObject(string name);
-        void EndObject(string name);
+        void Comment(SubString comment);
 
-        void ParseError(int lineNo, string line, HRON.ParseError parseError);
+        void Value_Begin(SubString name);
+        void Value_Line(SubString value);
+        void Value_End(SubString name);
+
+        void Object_Begin(SubString name);
+        void Object_End(SubString name);
+
+        void Error(int lineNo, SubString line, HRON.ParseError parseError);
     }
 
     static partial class HRON
@@ -194,73 +185,94 @@ namespace Source.Common
         {
             ExpectingTag,
             ExpectingValue,
-            BuildingValue,
         }
 
         public enum ParseError
         {
             IndentIncreasedMoreThanExpected,
-            TagIsNotCorrectlyFormatted
+            TagIsNotCorrectlyFormatted,
+            TrailingNonWhiteSpaceAfterTag
         }
 
         sealed partial class BuildObjectVisitor : IHRONParseVisitor
         {
             public struct Item
             {
-                public readonly string Name;
-                public List<HRONObject.Pair> Pairs;
+                public readonly SubString Name;
+                public readonly List<HRONObject.Pair> Pairs;
 
-                public Item (string name): this()
+                public Item (SubString name): this()
                 {
-                    Name = name ?? "";
+                    Name = name;
                     Pairs = new List<HRONObject.Pair>();
                 }
             }
+          
+            readonly Stack<Item> m_stack = new Stack<Item>();
+            readonly StringBuilder m_value = new StringBuilder(128);
+            bool m_firstLine = true;
 
-            public readonly Stack<Item> Stack = new Stack<Item>();
             public readonly List<HRONParseError> Errors = new List<HRONParseError>();
             public readonly int MaxErrors;
 
             public BuildObjectVisitor (int maxErrors)
             {
                 MaxErrors = maxErrors;
-                Stack.Push(new Item("Root"));
+                m_stack.Push(new Item("Root".ToSubString()));
             }
 
-            public void Empty (string name)
+            public Item Top
             {
-                AddEntity(name, new HRONEmpty()); 
+                get { return m_stack.Peek(); }
             }
 
-            public void Comment(string comment)
+            public void Comment(SubString comment)
             {
-//                AddEntity("", new HRONComment(comment));
             }
 
-            public void Value(string name, string value)
+            public void Value_Begin(SubString name)
             {
-                AddEntity(name, new HRONValue(value));
+                m_value.Clear();
+                m_firstLine = true;
             }
 
-            public void BeginObject(string name)
+            public void Value_Line(SubString value)
             {
-                Stack.Push(new Item(name));
+                if (m_firstLine)
+                {
+                    m_firstLine = false;
+                }
+                else
+                {
+                    m_value.AppendLine();
+                }
+                m_value.Append(value);
             }
 
-            public void EndObject(string name)
+            public void Value_End(SubString name)
             {
-                var pop = Stack.Pop();
-                AddEntity(pop.Name, new HRONObject (pop.Pairs.ToArray()));
+                AddEntity(name.Value, new HRONValue(m_value.ToString()));
+            }
+
+            public void Object_Begin(SubString name)
+            {
+                m_stack.Push(new Item(name));
+            }
+
+            public void Object_End(SubString name)
+            {
+                var pop = m_stack.Pop();
+                AddEntity(pop.Name.Value, new HRONObject (pop.Pairs.ToArray()));
             }
 
             void AddEntity(string name, IHRONEntity entity)
             {
-                Stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
+                m_stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
             }
 
-            public void ParseError(int lineNo, string line, ParseError parseError)
+            public void Error(int lineNo, SubString line, ParseError parseError)
             {
-                Errors.Add(new HRONParseError(lineNo, line, parseError));
+                Errors.Add(new HRONParseError(lineNo, line.Value, parseError));
             }
         }
 
@@ -284,7 +296,7 @@ namespace Source.Common
                 return false;
             }
 
-            hronObject = new HRONObject(visitor.Stack.Peek().Pairs.ToArray());
+            hronObject = new HRONObject(visitor.Top.Pairs.ToArray());
 
             return true;
         }
@@ -303,21 +315,17 @@ namespace Source.Common
             lines = lines ?? Array<string>.Empty;
 
             var state = ParseState.ExpectingTag;
-            var indention = 0;
+            var expectedIndent = 0;
             var lineNo = 0;
             var sb = new StringBuilder(80);
-            var context = new Stack<string>();
+            var context = new Stack<SubString>();
 
-            foreach (var line in lines)
+            foreach (var l in lines)
             {
                 ++lineNo;
-                if (string.IsNullOrEmpty(line))
-                {
-                    visitor.Empty(context.Peek());
-                    continue;
-                }
+                var line = l.ToSubString();
 
-                var lineIndention = 0;
+                var currentIndent = 0;
                 var lineLength = line.Length;
 
                 for (var iter = 0; iter < lineLength; ++iter)
@@ -325,7 +333,7 @@ namespace Source.Common
                     var ch = line[iter];
                     if (ch == '\t')
                     {
-                        ++lineIndention;
+                        ++currentIndent;
                     }
                     else
                     {
@@ -333,71 +341,112 @@ namespace Source.Common
                     }
                 }
 
-                if (lineIndention > indention)
+                if (currentIndent > expectedIndent)
                 {
-                    visitor.ParseError(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                    visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
                     continue;
                 }
 
-                var isComment = lineIndention < lineLength && line[lineIndention] == '#';
+                bool isComment;
+                switch (state)
+                {
+                    case ParseState.ExpectingTag:
+                        isComment = currentIndent < lineLength
+                            && line[currentIndent] == '#'
+                            ;
+                        break;
+                    case ParseState.ExpectingValue:
+                    default:
+                        isComment = currentIndent < expectedIndent
+                            && currentIndent < lineLength
+                            && line[currentIndent] == '#'
+                            ;
+                        break;
+                }
+
+                var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
 
                 if (isComment)
                 {
-                    visitor.Comment(line.Substring(lineIndention + 1));
+                    visitor.Comment(line.ToSubString(currentIndent + 1));
+                }
+                else if (isWhiteSpace && currentIndent < expectedIndent)
+                {
+                    switch (state)
+                    {
+                        case ParseState.ExpectingValue:
+                            visitor.Value_Line(SubString.Empty);
+                            break;
+                        case ParseState.ExpectingTag:
+                        default:
+                            break;
+                    }
+                }
+                else if (isWhiteSpace)
+                {
+                    switch (state)
+                    {
+                        case ParseState.ExpectingValue:
+                            visitor.Value_Line(line.ToSubString(expectedIndent));
+                            break;
+                        case ParseState.ExpectingTag:
+                        default:
+                            break;
+                    }
                 }
                 else
                 {
-                    if (lineIndention < indention)
+                    if (currentIndent < expectedIndent)
                     {
                         switch (state)
                         {
                             case ParseState.ExpectingTag:
-                                for (var iter = lineIndention; iter < indention; ++iter)
+                                for (var iter = currentIndent; iter < expectedIndent; ++iter)
                                 {
-                                    visitor.EndObject(context.Peek());
+                                    visitor.Object_End(context.Peek());
                                     context.Pop();
                                 }
                                 break;
                             case ParseState.ExpectingValue:
-                            case ParseState.BuildingValue:
                             default:
-                                visitor.Value(context.Peek(), sb.ToString());
-                                // Popping the string name
+                                visitor.Value_End(context.Peek());
+                                // Popping the value name
                                 context.Pop();
-                                for (var iter = lineIndention + 1; iter < indention; ++iter)
+                                for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
                                 {
-                                    visitor.EndObject(context.Peek());
+                                    visitor.Object_End(context.Peek());
                                     context.Pop();
                                 }
                                 break;
                         }
 
-                        indention = lineIndention;
+                        expectedIndent = currentIndent;
                         state = ParseState.ExpectingTag;
                     }
 
                     switch (state)
                     {
                         case ParseState.ExpectingTag:
-                            var existingIndention = indention;
+                            var existingIndention = expectedIndent;
                             sb.Clear();
-                            for (var iter = lineIndention; iter < lineLength; ++iter)
+                            for (var iter = currentIndent; iter < lineLength; ++iter)
                             {
                                 var ch = line[iter];
                                 switch (ch)
                                 {
                                     case ':':
                                         state = ParseState.ExpectingTag;
-                                        ++indention;
+                                        ++expectedIndent;
                                         iter = lineLength;
-                                        context.Push(sb.ToString());
-                                        visitor.BeginObject(context.Peek());
+                                        context.Push(sb.ToSubString());
+                                        visitor.Object_Begin(context.Peek());
                                         break;
                                     case '=':
                                         state = ParseState.ExpectingValue;
-                                        ++indention;
+                                        ++expectedIndent;
                                         iter = lineLength;
-                                        context.Push(sb.ToString());
+                                        context.Push(sb.ToSubString());
+                                        visitor.Value_Begin(context.Peek());
                                         break;
                                     default:
                                         sb.Append(ch);
@@ -406,28 +455,46 @@ namespace Source.Common
 
                             }
 
-                            if (existingIndention == indention)
+                            if (existingIndention == expectedIndent)
                             {
-                                visitor.ParseError(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
+                                visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
                             }
 
-                            // TODO: Validate no trailing characters
+                            if (!line.ToSubString(currentIndent + sb.Length + 1).IsWhiteSpace)
+                            {
+                                visitor.Error(lineNo, line, ParseError.TrailingNonWhiteSpaceAfterTag);                                
+                            }
 
                             break;
                         case ParseState.ExpectingValue:
-                            sb.Clear();
-                            sb.Append(line, indention, lineLength - indention);
-                            state = ParseState.BuildingValue;
-                            break;
-                        case ParseState.BuildingValue:
-                        default:
-                            sb.AppendLine();
-                            sb.Append(line, indention, lineLength - indention);
+                            visitor.Value_Line(line.ToSubString(expectedIndent));
                             break;
                     }
                 }
-
             }
+
+            switch (state)
+            {
+                case ParseState.ExpectingTag:
+                    for (var iter = 0; iter < expectedIndent; ++iter)
+                    {
+                        visitor.Object_End(context.Peek());
+                        context.Pop();
+                    }
+                    break;
+                case ParseState.ExpectingValue:
+                default:
+                    visitor.Value_End(context.Peek());
+                    // Popping the value name
+                    context.Pop();
+                    for (var iter = 0 + 1; iter < expectedIndent; ++iter)
+                    {
+                        visitor.Object_End(context.Peek());
+                        context.Pop();
+                    }
+                    break;
+            }
+
         }
 
     }
