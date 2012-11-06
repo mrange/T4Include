@@ -10,34 +10,32 @@ namespace Test_Functionality
     {
         static void Main(string[] args)
         {
-            IHRONParseVisitor visitor = new Visitor();
-            var hron = Assembly.GetExecutingAssembly().GetResourceString("Test_Functionality.hron.txt");
+            var visitor = new Visitor();
 
-            using (var stringReader = new StringReader(hron))
+            using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
-                HRON.Parse(int.MaxValue, stringReader.ReadLines(), visitor);
-            }
-
-            using (var stringReader = new StringReader(hron))
-            {
-                HRONObject hronObject;
-                HRONParseError[] errors;
-                if (HRON.TryParse(int.MaxValue, stringReader.ReadLines(), out hronObject, out errors))
-                {
-                    Console.WriteLine(hronObject);
-                }
+                HRON.Parse(int.MaxValue, streamReader.ReadLines(), visitor);
             }
 
             using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
-                HRON.Parse(int.MaxValue, streamReader.ReadLines(), visitor);                
+                HRONObject hron;
+                HRONParseError[] errors;
+                if (HRON.TryParse(int.MaxValue, streamReader.ReadLines(), out hron, out errors))
+                {
+                    Console.WriteLine(hron);
+                    var doc = HRON.WriteDocument(hron);
+                    Console.WriteLine(doc);
+                }
+
+
             }
         }
     }
 
-    class Visitor : IHRONParseVisitor
+    class Visitor : IHRONDocumentVisitor
     {
-        public void Comment(SubString comment)
+        public void Comment(int indent, SubString comment)
         {
             Console.WriteLine("COMMENT: {0}", comment);
         }

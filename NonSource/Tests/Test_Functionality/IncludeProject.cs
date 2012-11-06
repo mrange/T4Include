@@ -328,8 +328,12 @@ namespace ProjectInclude
     
     
     
+    using System.Globalization;
+    using System.IO;
+    
     namespace Source.Common
     {
+        using System;
         using System.Collections.Generic;
         using System.Text;
     
@@ -351,12 +355,14 @@ namespace ProjectInclude
         {
             HRON.Type Type { get; }
     
+            void Apply (IHRONDocumentVisitor visitor);
             void ToString (StringBuilder sb);
         }
     
         abstract partial class BaseHRONEntity : IHRONEntity
         {
             public abstract HRON.Type Type { get; }
+            public abstract void Apply(IHRONDocumentVisitor visitor);
             public abstract void ToString(StringBuilder sb);
     
             public override string ToString()
@@ -409,17 +415,45 @@ namespace ProjectInclude
                 get { return HRON.Type.Object; }
             }
     
+            public override void Apply(IHRONDocumentVisitor visitor)
+            {
+                if (visitor == null)
+                {
+                    return;
+                }
+                foreach (var pair in Pairs)
+                {
+                    var type = pair.Value.Type;
+                    var name = pair.Name.ToSubString();
+                    switch (type)
+                    {
+                        case HRON.Type.Object:
+                            visitor.Object_Begin(name);
+                            pair.Value.Apply(visitor);
+                            visitor.Object_End(name);
+                            break;
+                        case HRON.Type.Value:
+                            visitor.Value_Begin(name);
+                            pair.Value.Apply(visitor);
+                            visitor.Value_End(name);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+    
             public override void ToString(StringBuilder sb)
             {
                 sb.Append("{Object");
                 foreach (var pair in Pairs)
                 {
-                    sb.Append(", ");
+                    sb.Append(", '");
                     sb.Append(pair.Name);
-                    sb.Append(" : ");
+                    sb.Append("' : ");
                     pair.Value.ToString(sb);
                 }
-                sb.Append("}");
+                sb.Append('}');
             }
         }
     
@@ -438,39 +472,33 @@ namespace ProjectInclude
                 get { return HRON.Type.Value; }
             }
     
+            public override void Apply(IHRONDocumentVisitor visitor)
+            {
+                if (visitor == null)
+                {
+                    return;
+                }
+                using (var stringReader = new StringReader (Value))
+                {
+                    string line;
+                    while ((line = stringReader.ReadLine()) != null)
+                    {
+                        visitor.Value_Line(line.ToSubString());
+                    }
+                }
+            }
+    
             public override void ToString(StringBuilder sb)
             {
-                sb.Append("Value = '");
+                sb.Append('"');
                 sb.Append(Value);
-                sb.Append("'");
+                sb.Append('"');
             }
         }
     
-        sealed partial class HRONComment : BaseHRONEntity
+        partial interface IHRONDocumentVisitor
         {
-            public readonly string Comment;
-    
-            public HRONComment(string comment)
-            {
-                Comment = comment ?? "";
-            }
-    
-            public override HRON.Type Type
-            {
-                get { return HRON.Type.Comment; }
-            }
-    
-            public override void ToString(StringBuilder sb)
-            {
-                sb.Append("Comment = '");
-                sb.Append(Comment);
-                sb.Append("'");
-            }
-        }
-    
-        partial interface IHRONParseVisitor
-        {
-            void Comment(SubString comment);
+            void Comment(int indent, SubString comment);
     
             void Value_Begin(SubString name);
             void Value_Line(SubString value);
@@ -482,6 +510,178 @@ namespace ProjectInclude
             void Error(int lineNo, SubString line, HRON.ParseError parseError);
         }
     
+        abstract partial class BaseHRONDocumentWriterVisitor : IHRONDocumentVisitor
+        {
+            readonly StringBuilder m_sb = new StringBuilder();
+            int m_indent;
+            
+            protected abstract void WriteLine (string line);
+            protected abstract void WriteLine (StringBuilder line);
+    
+    
+            public void Comment(int indent, SubString comment)
+            {
+                m_sb.Clear();
+                m_sb.Append('\t', indent);
+                m_sb.Append('#');
+                m_sb.Append(comment);
+                WriteLine(m_sb);
+            }
+    
+            public void Value_Begin(SubString name)
+            {
+                m_sb.Clear();
+                m_sb.Append('\t', m_indent);
+                m_sb.Append('=');
+                m_sb.Append(name);
+                ++m_indent;
+                WriteLine(m_sb);
+            }
+    
+            public void Value_Line(SubString value)
+            {
+                m_sb.Clear();
+                m_sb.Append('\t', m_indent);
+                m_sb.Append(value);
+                WriteLine(m_sb);
+            }
+    
+            public void Value_End(SubString name)
+            {
+                --m_indent;
+            }
+    
+            public void Object_Begin(SubString name)
+            {
+                m_sb.Clear();
+                m_sb.Append('\t', m_indent);
+                m_sb.Append('@');
+                m_sb.Append(name);
+                WriteLine(m_sb);
+                ++m_indent;
+            }
+    
+            public void Object_End(SubString name)
+            {
+                --m_indent;
+            }
+    
+            public void Error(int lineNo, SubString line, HRON.ParseError parseError)
+            {
+                m_sb.Clear();
+                m_sb.AppendFormat(CultureInfo.InvariantCulture, "# Error at line {0}: {1}", lineNo, parseError);
+                WriteLine(m_sb);
+            }
+    
+        }
+    
+        sealed partial class HRONDocumentWriterVisitor : BaseHRONDocumentWriterVisitor
+        {
+            readonly StringBuilder m_sb = new StringBuilder(128);
+    
+            public string GetValue ()
+            {
+                return m_sb.ToString();
+            }
+    
+            protected override void WriteLine(string line)
+            {
+                m_sb.AppendLine(line);
+            }
+    
+            protected override void WriteLine(StringBuilder line)
+            {
+                var count = line.Length;
+                for (var iter = 0; iter < count; ++iter)
+                {
+                    m_sb.Append(line[iter]);
+                }
+                m_sb.AppendLine();
+            }
+        }
+        sealed partial class HRONObjectBuilderVisitor : IHRONDocumentVisitor
+        {
+            public struct Item
+            {
+                public readonly SubString Name;
+                public readonly List<HRONObject.Pair> Pairs;
+    
+                public Item(SubString name)
+                    : this()
+                {
+                    Name = name;
+                    Pairs = new List<HRONObject.Pair>();
+                }
+            }
+    
+            readonly Stack<Item> m_stack = new Stack<Item>();
+            readonly StringBuilder m_value = new StringBuilder(128);
+            bool m_firstLine = true;
+    
+            public readonly List<HRONParseError> Errors = new List<HRONParseError>();
+            public readonly int MaxErrors;
+    
+            public HRONObjectBuilderVisitor(int maxErrors)
+            {
+                MaxErrors = maxErrors;
+                m_stack.Push(new Item("Root".ToSubString()));
+            }
+    
+            public Item Top
+            {
+                get { return m_stack.Peek(); }
+            }
+    
+            public void Comment(int indent, SubString comment)
+            {
+            }
+    
+            public void Value_Begin(SubString name)
+            {
+                m_value.Clear();
+                m_firstLine = true;
+            }
+    
+            public void Value_Line(SubString value)
+            {
+                if (m_firstLine)
+                {
+                    m_firstLine = false;
+                }
+                else
+                {
+                    m_value.AppendLine();
+                }
+                m_value.Append(value);
+            }
+    
+            public void Value_End(SubString name)
+            {
+                AddEntity(name.Value, new HRONValue(m_value.ToString()));
+            }
+    
+            public void Object_Begin(SubString name)
+            {
+                m_stack.Push(new Item(name));
+            }
+    
+            public void Object_End(SubString name)
+            {
+                var pop = m_stack.Pop();
+                AddEntity(pop.Name.Value, new HRONObject(pop.Pairs.ToArray()));
+            }
+    
+            void AddEntity(string name, IHRONEntity entity)
+            {
+                m_stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
+            }
+    
+            public void Error(int lineNo, SubString line, HRON.ParseError parseError)
+            {
+                Errors.Add(new HRONParseError(lineNo, line.Value, parseError));
+            }
+        }
+    
         static partial class HRON
         {
             public enum Type
@@ -489,7 +689,6 @@ namespace ProjectInclude
                 Value,
                 Object,
                 Comment,
-                Empty,
             }
     
             enum ParseState
@@ -502,90 +701,51 @@ namespace ProjectInclude
             {
                 IndentIncreasedMoreThanExpected,
                 TagIsNotCorrectlyFormatted,
-                TrailingNonWhiteSpaceAfterTag
             }
     
-            sealed partial class BuildObjectVisitor : IHRONParseVisitor
+            public static void WriteDocument (
+                IHRONDocumentVisitor visitor,
+                Action<string> writeLine
+                )
             {
-                public struct Item
+                if (visitor == null)
                 {
-                    public readonly SubString Name;
-                    public readonly List<HRONObject.Pair> Pairs;
-    
-                    public Item (SubString name): this()
-                    {
-                        Name = name;
-                        Pairs = new List<HRONObject.Pair>();
-                    }
-                }
-              
-                readonly Stack<Item> m_stack = new Stack<Item>();
-                readonly StringBuilder m_value = new StringBuilder(128);
-                bool m_firstLine = true;
-    
-                public readonly List<HRONParseError> Errors = new List<HRONParseError>();
-                public readonly int MaxErrors;
-    
-                public BuildObjectVisitor (int maxErrors)
-                {
-                    MaxErrors = maxErrors;
-                    m_stack.Push(new Item("Root".ToSubString()));
+                    return;
                 }
     
-                public Item Top
+                if (writeLine == null)
                 {
-                    get { return m_stack.Peek(); }
-                }
-    
-                public void Comment(SubString comment)
-                {
-                }
-    
-                public void Value_Begin(SubString name)
-                {
-                    m_value.Clear();
-                    m_firstLine = true;
-                }
-    
-                public void Value_Line(SubString value)
-                {
-                    if (m_firstLine)
-                    {
-                        m_firstLine = false;
-                    }
-                    else
-                    {
-                        m_value.AppendLine();
-                    }
-                    m_value.Append(value);
-                }
-    
-                public void Value_End(SubString name)
-                {
-                    AddEntity(name.Value, new HRONValue(m_value.ToString()));
-                }
-    
-                public void Object_Begin(SubString name)
-                {
-                    m_stack.Push(new Item(name));
-                }
-    
-                public void Object_End(SubString name)
-                {
-                    var pop = m_stack.Pop();
-                    AddEntity(pop.Name.Value, new HRONObject (pop.Pairs.ToArray()));
-                }
-    
-                void AddEntity(string name, IHRONEntity entity)
-                {
-                    m_stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
-                }
-    
-                public void Error(int lineNo, SubString line, ParseError parseError)
-                {
-                    Errors.Add(new HRONParseError(lineNo, line.Value, parseError));
+                    return;
                 }
             }
+    
+            public static void VisitObject(
+                HRONObject hronObject,
+                IHRONDocumentVisitor visitor
+                )
+            {
+                if (hronObject == null)
+                {
+                    return;
+                }
+    
+                hronObject.Apply(visitor);
+            }
+    
+            public static string WriteDocument (
+                HRONObject hronObject
+                )
+            {
+                if (hronObject == null)
+                {
+                    return "";
+                }
+    
+                var v = new HRONDocumentWriterVisitor();
+                VisitObject(hronObject, v);
+                return v.GetValue();
+            }
+    
     
             public static bool TryParse(
                 int maxErrorCount,
@@ -597,7 +757,7 @@ namespace ProjectInclude
                 hronObject = null;
                 errors = Array<HRONParseError>.Empty;
     
-                var visitor = new BuildObjectVisitor(maxErrorCount);
+                var visitor = new HRONObjectBuilderVisitor(maxErrorCount);
     
                 Parse(maxErrorCount, lines, visitor);
     
@@ -615,7 +775,7 @@ namespace ProjectInclude
             public static void Parse(
                 int maxErrorCount,
                 IEnumerable<string> lines,
-                IHRONParseVisitor visitor
+                IHRONDocumentVisitor visitor
                 )
             {
                 if (visitor == null)
@@ -628,7 +788,6 @@ namespace ProjectInclude
                 var state = ParseState.ExpectingTag;
                 var expectedIndent = 0;
                 var lineNo = 0;
-                var sb = new StringBuilder(80);
                 var context = new Stack<SubString>();
     
                 foreach (var l in lines)
@@ -679,7 +838,7 @@ namespace ProjectInclude
     
                     if (isComment)
                     {
-                        visitor.Comment(line.ToSubString(currentIndent + 1));
+                        visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
                     }
                     else if (isWhiteSpace && currentIndent < expectedIndent)
                     {
@@ -738,44 +897,28 @@ namespace ProjectInclude
                         switch (state)
                         {
                             case ParseState.ExpectingTag:
-                                var existingIndention = expectedIndent;
-                                sb.Clear();
-                                for (var iter = currentIndent; iter < lineLength; ++iter)
+                                if (currentIndent < lineLength)
                                 {
-                                    var ch = line[iter];
-                                    switch (ch)
+                                    var first = line[currentIndent];
+                                    switch (first)
                                     {
-                                        case ':':
+                                        case '@':
                                             state = ParseState.ExpectingTag;
                                             ++expectedIndent;
-                                            iter = lineLength;
-                                            context.Push(sb.ToSubString());
+                                            context.Push(line.ToSubString(currentIndent + 1));
                                             visitor.Object_Begin(context.Peek());
                                             break;
                                         case '=':
                                             state = ParseState.ExpectingValue;
                                             ++expectedIndent;
-                                            iter = lineLength;
-                                            context.Push(sb.ToSubString());
+                                            context.Push(line.ToSubString(currentIndent + 1));
                                             visitor.Value_Begin(context.Peek());
                                             break;
                                         default:
-                                            sb.Append(ch);
+                                            visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
                                             break;
                                     }
-    
                                 }
-    
-                                if (existingIndention == expectedIndent)
-                                {
-                                    visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
-                                }
-    
-                                if (!line.ToSubString(currentIndent + sb.Length + 1).IsWhiteSpace)
-                                {
-                                    visitor.Error(lineNo, line, ParseError.TrailingNonWhiteSpaceAfterTag);                                
-                                }
-    
                                 break;
                             case ParseState.ExpectingValue:
                                 visitor.Value_Line(line.ToSubString(expectedIndent));
@@ -2853,7 +2996,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_Functionality\..\..\..";
-        public const string IncludeDate     = @"2012-11-05T20:01:20";
+        public const string IncludeDate     = @"2012-11-06T07:46:44";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
