@@ -53,10 +53,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
-    <Compile Include="Common\HRON.cs" />
+    <Compile Include="HRON\HRON.cs" />
     <Compile Include="Common\Log.cs" />
+    <Compile Include="Reflection\ClassDescriptor.cs" />
+    <Compile Include="Reflection\StaticReflection.cs" />
     <Compile Include="Common\SubString.cs" />
-    <Compile Include="Common\TrieMap.cs" />
+    <Compile Include="Collections\TrieMap.cs" />
     <Compile Include="Concurrency\Atomic.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

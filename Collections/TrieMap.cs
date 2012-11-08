@@ -12,7 +12,7 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace Source.Common
+namespace Source.Collections
 {
     using System;
     using System.Collections.Generic;

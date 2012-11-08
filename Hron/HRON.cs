@@ -19,6 +19,10 @@
 
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using Source.Reflection;
 
 namespace Source.Common
 {
@@ -110,6 +114,7 @@ namespace Source.Common
             {
                 return;
             }
+
             foreach (var pair in Pairs)
             {
                 var type = pair.Value.Type;
@@ -288,6 +293,7 @@ namespace Source.Common
             m_sb.AppendLine();
         }
     }
+
     sealed partial class HRONObjectBuilderVisitor : IHRONDocumentVisitor
     {
         public struct Item
@@ -371,6 +377,65 @@ namespace Source.Common
         }
     }
 
+    sealed partial class HRONObjectBuilderVisitor<T> : IHRONDocumentVisitor
+    {
+        partial struct Item
+        {
+            public readonly ClassDescriptor ClassDescriptor;
+            public readonly object Value;
+
+            public Item(Type type)
+            {
+                ClassDescriptor = ClassDescriptor.GetClassDescriptor(type);
+                Value = ClassDescriptor.Creator();
+            }
+        }
+
+        readonly Stack<Item> m_stack = new Stack<Item>();
+        public readonly List<HRONParseError> Errors = new List<HRONParseError>();
+        public readonly int MaxErrors;
+
+        public HRONObjectBuilderVisitor (int maxErrorCount)
+        {
+            MaxErrors = maxErrorCount;
+            m_stack.Push(new Item(typeof(T)));
+        }
+
+        public T Instance
+        {
+            get { return (T) m_stack.Peek().Value; }
+        }
+
+        public void Comment(int indent, SubString comment)
+        {
+        }
+
+        public void Value_Begin(SubString name)
+        {
+        }
+
+        public void Value_Line(SubString value)
+        {
+        }
+
+        public void Value_End(SubString name)
+        {
+        }
+
+        public void Object_Begin(SubString name)
+        {
+        }
+
+        public void Object_End(SubString name)
+        {
+        }
+
+        public void Error(int lineNo, SubString line, HRON.ParseError parseError)
+        {
+            // TODO
+        }
+    }
+
     static partial class HRON
     {
         public enum Type
@@ -435,6 +500,30 @@ namespace Source.Common
             return v.GetValue();
         }
 
+        public static bool TryParse<T>(
+            int maxErrorCount,
+            IEnumerable<string> lines,
+            out T hronObject,
+            out HRONParseError[] errors
+            )
+        {
+            hronObject = default(T);
+            errors = Array<HRONParseError>.Empty;
+
+            var visitor = new HRONObjectBuilderVisitor<T>(maxErrorCount);
+
+            Parse(maxErrorCount, lines, visitor);
+
+            if (visitor.Errors.Count > 0)
+            {
+                errors = visitor.Errors.ToArray();
+                return false;
+            }
+
+            hronObject = visitor.Instance;
+
+            return true;            
+        }
 
         public static bool TryParse(
             int maxErrorCount,
