@@ -39,6 +39,7 @@ namespace Source.Reflection
                     |   BindingFlags.Public
                     |   BindingFlags.NonPublic
                     )
+                .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
                 .Select(mi => new MemberDescriptor(mi))
                 .ToDictionary(mi => mi.MemberInfo.Name)
                 ;
@@ -76,12 +77,34 @@ namespace Source.Reflection
         public readonly MemberInfo MemberInfo;
         public readonly Func<object, object> Getter;
         public readonly Action<object, object> Setter;
+        public readonly Type MemberType;
+
+        public readonly bool HasGetter;
+        public readonly bool HasSetter;
 
         public MemberDescriptor(MemberInfo mi)
         {
             MemberInfo = mi;
             Getter = GetGetter(mi);
             Setter = GetSetter(mi);
+            var pi = mi as PropertyInfo;
+            var fi = mi as FieldInfo;
+            if (pi != null)
+            {
+                HasGetter = pi.GetGetMethod() != null;
+                HasSetter = pi.GetSetMethod() != null;
+                MemberType = pi.PropertyType;
+            }
+            else if (fi != null)
+            {
+                HasGetter = true;
+                HasSetter = !fi.IsInitOnly;
+                MemberType = fi.FieldType;
+            }
+            else
+            {
+                MemberType = typeof (object);
+            }
         }
 
         Func<object, object> GetGetter(MemberInfo mi)

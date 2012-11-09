@@ -1,16 +1,6 @@
 ﻿
+// ### INCLUDE: ../Common/Config.cs
 
-// ----------------------------------------------------------------------------------------------
-// Copyright (c) Mårten Rånge.
-// ----------------------------------------------------------------------------------------------
-// This source code is subject to terms and conditions of the Microsoft Public License. A 
-// copy of the license can be found in the License.html file at the root of this distribution. 
-// If you cannot locate the  Microsoft Public License, please send an email to 
-// dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-//  by the terms of the Microsoft Public License.
-// ----------------------------------------------------------------------------------------------
-// You must not remove this notice, or any other, from this software.
-// ----------------------------------------------------------------------------------------------
 
 // ############################################################################
 // #                                                                          #
@@ -25,15 +15,84 @@
 
 
 
+
 // ReSharper disable PartialTypeWithSinglePart
 
 namespace Source.Extensions
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
+
+    using Source.Common;
 
     static partial class NumericalExtensions
     {
+        static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
+            {
+#if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+                { typeof(Byte), (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+                { typeof(Int16), (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+                { typeof(Int32), (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+                { typeof(Int64), (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+                { typeof(Single), (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+                { typeof(Double), (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+                { typeof(Decimal), (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+                { typeof(TimeSpan), (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+#if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+                { typeof(DateTime), (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+            };
+
+        public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
+        {
+            value = null;
+            if (type == null)
+            {
+                return false;
+            }                
+            
+            Func<string, CultureInfo, object> parser;
+
+            if (s_parsers.TryGetValue (type, out parser))
+            {
+                value = parser (s, cultureInfo);
+            }
+
+            return value != null;
+        }
+
+        public static bool TryParse (this string s, Type type, out object value)
+        {
+            return s.TryParse (Config.DefaultCulture, type, out value);
+        }
+
+        public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
+        {
+            object value;
+            return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
+        }
+
+        public static object Parse (this string s, Type type, object defaultValue)
+        {
+            return s.Parse (Config.DefaultCulture, type, defaultValue);
+        }
+
         // Byte (IntLike)
 
 #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
@@ -87,9 +146,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Byte result)
+        public static bool TryParse (this string s, out Byte value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
@@ -101,7 +160,7 @@ namespace Source.Extensions
 
         public static Byte Parse (this string s, Byte defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static bool IsAnyOn (this Byte value, Byte test)
@@ -124,9 +183,9 @@ namespace Source.Extensions
             return (value & test) == 0;
         }
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
         {
-            return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+            return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
@@ -184,9 +243,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Int16 result)
+        public static bool TryParse (this string s, out Int16 value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
@@ -198,7 +257,7 @@ namespace Source.Extensions
 
         public static Int16 Parse (this string s, Int16 defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static bool IsAnyOn (this Int16 value, Int16 test)
@@ -221,9 +280,9 @@ namespace Source.Extensions
             return (value & test) == 0;
         }
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
         {
-            return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+            return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
@@ -281,9 +340,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Int32 result)
+        public static bool TryParse (this string s, out Int32 value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
@@ -295,7 +354,7 @@ namespace Source.Extensions
 
         public static Int32 Parse (this string s, Int32 defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static bool IsAnyOn (this Int32 value, Int32 test)
@@ -318,9 +377,9 @@ namespace Source.Extensions
             return (value & test) == 0;
         }
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
         {
-            return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+            return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
@@ -378,9 +437,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Int64 result)
+        public static bool TryParse (this string s, out Int64 value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
@@ -392,7 +451,7 @@ namespace Source.Extensions
 
         public static Int64 Parse (this string s, Int64 defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static bool IsAnyOn (this Int64 value, Int64 test)
@@ -415,9 +474,9 @@ namespace Source.Extensions
             return (value & test) == 0;
         }
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
         {
-            return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+            return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
@@ -475,9 +534,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Single result)
+        public static bool TryParse (this string s, out Single value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
@@ -489,7 +548,7 @@ namespace Source.Extensions
 
         public static Single Parse (this string s, Single defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static Single Lerp (
@@ -501,9 +560,9 @@ namespace Source.Extensions
             return t.Clamp (0,1) * (to - from) + from;
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Single result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
         {                                                  
-            return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
+            return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
@@ -561,9 +620,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Double result)
+        public static bool TryParse (this string s, out Double value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
@@ -575,7 +634,7 @@ namespace Source.Extensions
 
         public static Double Parse (this string s, Double defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static Double Lerp (
@@ -587,9 +646,9 @@ namespace Source.Extensions
             return t.Clamp (0,1) * (to - from) + from;
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Double result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
         {                                                  
-            return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
+            return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
@@ -647,9 +706,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out Decimal result)
+        public static bool TryParse (this string s, out Decimal value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
@@ -661,7 +720,7 @@ namespace Source.Extensions
 
         public static Decimal Parse (this string s, Decimal defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
         public static Decimal Lerp (
@@ -673,9 +732,9 @@ namespace Source.Extensions
             return t.Clamp (0,1) * (to - from) + from;
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
         {                                                  
-            return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
+            return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
@@ -733,9 +792,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out TimeSpan result)
+        public static bool TryParse (this string s, out TimeSpan value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
@@ -747,12 +806,12 @@ namespace Source.Extensions
 
         public static TimeSpan Parse (this string s, TimeSpan defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
         {                                                  
-            return TimeSpan.TryParse (s ?? "", cultureInfo, out result);
+            return TimeSpan.TryParse (s ?? "", cultureInfo, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
@@ -810,9 +869,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out DateTime result)
+        public static bool TryParse (this string s, out DateTime value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
@@ -824,12 +883,12 @@ namespace Source.Extensions
 
         public static DateTime Parse (this string s, DateTime defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)
         {                                                  
-            return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
+            return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
         }
 
 #endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS

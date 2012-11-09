@@ -10,43 +10,34 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: Config.cs
-// ### INCLUDE: Log.cs
-
 // ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable PartialMethodWithSinglePart
 
 namespace Source.Common
 {
-    using System;
     using System.Globalization;
 
-    partial class Log
+    sealed partial class InitConfig
     {
-        static readonly object s_colorLock = new object ();
-        static partial void Partial_LogMessage (Level level, string message)
-        {
-            var now = DateTime.Now;
-            var finalMessage = string.Format (
-                Config.DefaultCulture,
-                "{0:HHmmss} {1}:{2}",
-                now,
-                GetLevelMessage (level),
-                message
-                );
-            lock (s_colorLock)
-            {
-                var oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = GetLevelColor (level);
-                try
-                {
-                    Console.WriteLine (finalMessage);
-                }
-                finally
-                {
-                    Console.ForegroundColor = oldColor;
-                }
+        public CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
+    }
 
-            }
+    static partial class Config
+    {
+        static partial void Partial_Constructed(ref InitConfig initConfig);
+
+        public readonly static CultureInfo DefaultCulture;
+
+        static Config ()
+        {
+            var initConfig = new InitConfig();
+
+            Partial_Constructed (ref initConfig);
+
+            initConfig = initConfig ?? new InitConfig();
+
+            DefaultCulture = initConfig.DefaultCulture;
         }
     }
 }

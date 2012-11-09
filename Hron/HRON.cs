@@ -10,25 +10,25 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: Array.cs
-// ### INCLUDE: SubString.cs
+// ### INCLUDE: ../Common/Array.cs
+// ### INCLUDE: ../Common/Config.cs
+// ### INCLUDE: ../Common/SubString.cs
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
 
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using Source.Reflection;
 
-namespace Source.Common
+namespace Source.HRON
 {
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.IO;
+
+    using Source.Common;
+    using Source.Extensions;
+    using Source.Reflection;
 
     partial class HRONParseError
     {
@@ -263,7 +263,7 @@ namespace Source.Common
         public void Error(int lineNo, SubString line, HRON.ParseError parseError)
         {
             m_sb.Clear();
-            m_sb.AppendFormat(CultureInfo.InvariantCulture, "# Error at line {0}: {1}", lineNo, parseError);
+            m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
             WriteLine(m_sb);
         }
 
@@ -394,6 +394,8 @@ namespace Source.Common
         readonly Stack<Item> m_stack = new Stack<Item>();
         public readonly List<HRONParseError> Errors = new List<HRONParseError>();
         public readonly int MaxErrors;
+        readonly StringBuilder m_value = new StringBuilder(128);
+        bool m_firstLine = true;
 
         public HRONObjectBuilderVisitor (int maxErrorCount)
         {
@@ -412,14 +414,59 @@ namespace Source.Common
 
         public void Value_Begin(SubString name)
         {
+            m_firstLine = true;
+            m_value.Clear();
         }
 
         public void Value_Line(SubString value)
         {
+            if (m_firstLine)
+            {
+                m_firstLine = false;
+            }
+            else
+            {
+                m_value.AppendLine();
+            }
+            m_value.Append(value);
         }
 
         public void Value_End(SubString name)
         {
+            var top = m_stack.Peek();
+            MemberDescriptor memberDescriptor;
+
+            if (!top.ClassDescriptor.Members.TryGetValue(
+                name.ToString (), 
+                out memberDescriptor
+                ))
+            {
+                // TODO: Log?
+                return;
+            }
+
+            if (!memberDescriptor.HasSetter)
+            {
+                // TODO: Log?
+                return;
+            }
+
+            if (memberDescriptor.MemberType == typeof(string))
+            {
+                memberDescriptor.Setter(top.Value, m_value.ToString());
+            }
+
+            var value = m_value.ToString().Parse(
+                Config.DefaultCulture,
+                memberDescriptor.MemberType,
+                null
+                );
+
+            if (value != null)
+            {
+                // TODO: Log?
+                memberDescriptor.Setter(top.Value, value);
+            }
         }
 
         public void Object_Begin(SubString name)

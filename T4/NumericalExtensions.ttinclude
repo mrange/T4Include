@@ -19,10 +19,61 @@
 namespace Source.Extensions
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
+
+    using Source.Common;
 
     static partial class NumericalExtensions
     {
+        static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
+            {
+<#
+    foreach (var nd in Model)
+    {
+#>
+#if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
+                { typeof(<#=nd.Name#>), (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
+#endif
+<#
+    }
+#>
+            };
+
+        public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
+        {
+            value = null;
+            if (type == null)
+            {
+                return false;
+            }                
+            
+            Func<string, CultureInfo, object> parser;
+
+            if (s_parsers.TryGetValue (type, out parser))
+            {
+                value = parser (s, cultureInfo);
+            }
+
+            return value != null;
+        }
+
+        public static bool TryParse (this string s, Type type, out object value)
+        {
+            return s.TryParse (Config.DefaultCulture, type, out value);
+        }
+
+        public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
+        {
+            object value;
+            return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
+        }
+
+        public static object Parse (this string s, Type type, object defaultValue)
+        {
+            return s.Parse (Config.DefaultCulture, type, defaultValue);
+        }
+
 <#
     foreach (var nd in Model)
     {
@@ -80,9 +131,9 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, out <#=nd.Name#> value)
         {
-            return s.TryParse (CultureInfo.InvariantCulture, out result);
+            return s.TryParse (Config.DefaultCulture, out value);
         }
 
         public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
@@ -94,7 +145,7 @@ namespace Source.Extensions
 
         public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
         {
-            return s.Parse (CultureInfo.InvariantCulture, defaultValue);
+            return s.Parse (Config.DefaultCulture, defaultValue);
         }
 
 <#
@@ -105,27 +156,27 @@ namespace Source.Extensions
         OutputBitTests (nd.Name);
 #>
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
         {
-            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
+            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
         }
 <#
     }
     else if (nd.Type == NumericalType.DateTimeLike)
     {
 #>
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
         {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
+            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
         }
 <#
     }
     else if (nd.Type == NumericalType.TimeSpanLike)
     {
 #>
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
         {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, out result);
+            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, out value);
         }
 <#
     }
@@ -141,9 +192,9 @@ namespace Source.Extensions
             return t.Clamp (0,1) * (to - from) + from;
         }
 
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
         {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
+            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
         }
 <#
     }
@@ -154,9 +205,9 @@ namespace Source.Extensions
         OutputBitTests (nd.Name);
 #>
          
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> result)
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
         {                                                  
-            return Enum.TryParse (s ?? "", true, out result);              
+            return Enum.TryParse (s ?? "", true, out value);              
         }
 <#
     }

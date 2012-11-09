@@ -46,7 +46,7 @@ namespace Source.Common
             {
                 return (args == null || args.Length == 0)
                            ? format
-                           : string.Format (CultureInfo.InvariantCulture, format, args)
+                           : string.Format (Config.DefaultCulture, format, args)
                     ;
             }
             catch (FormatException)

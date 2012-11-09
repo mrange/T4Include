@@ -11,6 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Array.cs
+// ### INCLUDE: ../Common/Config.cs
 // ### INCLUDE: ../Common/Log.cs
 
 // ReSharper disable InconsistentNaming
@@ -70,7 +71,7 @@ namespace Source.Extensions
 
         public static string FormatWith (this string format, params object[] args)
         {
-            return format.FormatWith (CultureInfo.InvariantCulture, args);
+            return format.FormatWith (Config.DefaultCulture, args);
         }
 
         public static TValue Lookup<TKey, TValue>(
