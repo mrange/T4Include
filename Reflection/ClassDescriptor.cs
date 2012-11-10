@@ -36,8 +36,12 @@ namespace Source.Reflection
         static readonly ConcurrentDictionary<Type, ClassDescriptor> s_classDescriptors =
             new ConcurrentDictionary<Type, ClassDescriptor>();
 
-        public readonly Dictionary<string, MemberDescriptor>    m_members           ;
+        readonly Dictionary<string, MemberDescriptor>           m_memberLookup           ;
 
+        public readonly string                                  Name                ;
+
+        public readonly MemberDescriptor[]                      Members             ;
+        public readonly MemberDescriptor[]                      PublicGetMembers    ;
         public readonly Type                                    Type                ;
         public readonly Func<object>                            Creator             ;
         public readonly bool                                    HasCreator          ;
@@ -55,7 +59,8 @@ namespace Source.Reflection
         public ClassDescriptor(Type type)
         {
             Type = type ?? typeof(object);
-            m_members = Type
+            Name = Type.Name;
+            Members = Type
                 .GetMembers(
                         BindingFlags.Instance
                     |   BindingFlags.Public
@@ -63,8 +68,11 @@ namespace Source.Reflection
                     )
                 .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
                 .Select(mi => new MemberDescriptor(mi))
-                .ToDictionary(mi => mi.MemberInfo.Name)
+                .ToArray()
                 ;
+            PublicGetMembers= Members.Where (mi => mi.HasPublicGetter).ToArray ();
+            m_memberLookup  = Members.ToDictionary (mi => mi.Name);
+
             Creator = GetCreator(Type);
             HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
 
@@ -112,7 +120,7 @@ namespace Source.Reflection
         public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
         {
             MemberDescriptor value;
-            if (!m_members.TryGetValue(name ?? "", out value))
+            if (!m_memberLookup.TryGetValue(name ?? "", out value))
             {
                 return null;
             }
@@ -163,6 +171,8 @@ namespace Source.Reflection
 
     partial class MemberDescriptor
     {
+        public readonly string                  Name                ;
+
         public readonly MemberInfo              MemberInfo          ;
         public readonly Type                    MemberType          ;
 
@@ -176,14 +186,15 @@ namespace Source.Reflection
 
         ClassDescriptor m_lazyClassDescriptor;
 
-        static readonly Func<object, object> s_defaultGetter = instance => null;
-        static readonly Action<object, object>  s_defaultSetter = (x,v) => {}       ;
+        static readonly Func<object, object>    s_defaultGetter    = instance => null  ;
+        static readonly Action<object, object>  s_defaultSetter  = (x, v) => { }     ;
 
         public MemberDescriptor(MemberInfo mi)
         {
-            MemberInfo = mi;
-            Getter = GetGetter(mi);
-            Setter = GetSetter(mi);
+            MemberInfo  = mi;
+            Name        = mi.Name; 
+            Getter  = GetGetter(mi);
+            Setter  = GetSetter(mi);
 
             HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
             HasSetter = !ReferenceEquals(Setter, s_defaultSetter);

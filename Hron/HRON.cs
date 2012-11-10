@@ -857,6 +857,103 @@ namespace Source.HRON
             return v.GetValue();
         }
 
+        public static string ToString<T> (T value)
+        {
+            var visitor = new HRONDocumentWriterVisitor();
+            Visit(value, visitor);
+            return visitor.GetValue();
+        }
+
+        public static void Visit (
+            object value,
+            IHRONDocumentVisitor visitor
+            )
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            var type = value.GetType();
+            var classDescriptor = type.GetClassDescriptor();
+
+            foreach (var mi in classDescriptor.PublicGetMembers)
+            {
+                var memberName = mi.Name.ToSubString();
+                var memberValue = mi.Getter(value);
+                VisitMember(memberName, memberValue, visitor);
+            }
+        }
+
+        static void VisitMember(SubString memberName, object memberValue, IHRONDocumentVisitor visitor)
+        {
+            if (memberValue == null)
+            {
+                return;
+            }
+
+            var classDescriptor = memberValue.GetType().GetClassDescriptor();
+
+            if (classDescriptor.IsDictionaryLike)
+            {
+                visitor.Object_Begin(memberName);
+                var dictionary = (IDictionary)memberValue;
+                foreach (var key in dictionary.Keys)
+                {
+                    var innerValue = dictionary[key];
+                    var keyAsString = key as string;
+                    if (keyAsString != null)
+                    {
+                        VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                    }
+                }
+                visitor.Object_End(memberName);
+            }
+            else if (classDescriptor.IsListLike)
+            {
+                var list = (IList) memberValue;
+                for (int index = 0; index < list.Count; index++)
+                {
+                    var innerValue = list[index];
+                    VisitMember(memberName, innerValue, visitor);
+                }
+            }
+            else if (memberValue is string)
+            {
+                var innerValue = (string) memberValue;
+                if (!innerValue.IsNullOrEmpty())
+                {
+                    using (var stringReader = new StringReader((string) memberValue))
+                    {
+                        visitor.Value_Begin(memberName);
+                        string line;
+                        while ((line = stringReader.ReadLine()) != null)
+                        {
+                            visitor.Value_Line(line.ToSubString());
+                        }
+                        visitor.Value_End(memberName);
+                    }
+                }
+            }
+            else if (classDescriptor.Type.CanParse())
+            {
+                var memberAsString = memberValue.ToString();
+                // These types are never multilined, but may be empty
+                if (string.IsNullOrEmpty(memberAsString))
+                {
+                    visitor.Value_Begin(memberName);
+                    visitor.Value_Line(memberAsString.ToSubString());
+                    visitor.Value_End(memberName);
+                }
+            }
+            else
+            {
+                visitor.Object_Begin(memberName);
+                Visit(memberValue, visitor);
+                visitor.Object_End(memberName);
+            }
+        }
+
         public static bool TryParse<T>(
             int maxErrorCount,
             IEnumerable<string> lines,

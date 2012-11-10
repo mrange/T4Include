@@ -17,10 +17,16 @@
 <#
     Model = new []
     {
-        I ("Byte")      ,
+        B ("Boolean")   ,
+        C ("Char")      ,
+        I ("SByte")     ,
         I ("Int16")     ,
         I ("Int32")     ,
         I ("Int64")     ,
+        I ("Byte")      ,
+        I ("UInt16")    ,
+        I ("UInt32")    ,
+        I ("UInt64")    ,
         F ("Single")    ,
         F ("Double")    , 
         F ("Decimal")   ,

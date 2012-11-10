@@ -41,6 +41,16 @@ namespace Source.Extensions
 #>
             };
 
+        public static bool CanParse (this Type type)
+        {
+            if (type == null)
+            {
+                return false;
+            }
+
+            return s_parsers.ContainsKey (type);
+        }
+
         public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
         {
             value = null;
@@ -82,6 +92,37 @@ namespace Source.Extensions
         // <#=nd.Name#> (<#=nd.Type#>)
 
 #if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
+
+        public static bool TryParse (this string s, out <#=nd.Name#> value)
+        {
+            return s.TryParse (Config.DefaultCulture, out value);
+        }
+
+        public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
+        {
+            <#=nd.Name#> value;
+
+            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+        }
+
+        public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
+        {
+            return s.Parse (Config.DefaultCulture, defaultValue);
+        }
+
+<#
+    if (nd.Type == NumericalType.BoolLike)
+    {
+#>
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
+        {
+            return <#=nd.Name#>.TryParse (s ?? "", out value);
+        }
+<#
+        goto end_of_loop;
+    }
+#>
+
         public static <#=nd.Name#> Min (this <#=nd.Name#> left, <#=nd.Name#> right) 
         {
             if (left < right)
@@ -132,25 +173,21 @@ namespace Source.Extensions
             return true;
         }
 
-        public static bool TryParse (this string s, out <#=nd.Name#> value)
-        {
-            return s.TryParse (Config.DefaultCulture, out value);
-        }
-
-        public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
-        {
-            <#=nd.Name#> value;
-
-            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-        }
-
-        public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
-        {
-            return s.Parse (Config.DefaultCulture, defaultValue);
-        }
-
 <#
-    if (nd.Type == NumericalType.IntLike)
+    if (nd.Type == NumericalType.CharLike)
+    {
+#>
+<#
+        OutputBitTests (nd.Name);
+#>
+         
+        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
+        {
+            return <#=nd.Name#>.TryParse (s ?? "", out value);
+        }
+<#
+    }
+    else if (nd.Type == NumericalType.IntLike)
     {
 #>
 <#
@@ -212,6 +249,7 @@ namespace Source.Extensions
         }
 <#
     }
+end_of_loop:
 #>
 
 #endif // T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
@@ -225,6 +263,8 @@ namespace Source.Extensions
 <#+
     enum NumericalType
     {
+        BoolLike    ,
+        CharLike    ,
         IntLike     ,
         FloatLike   ,
         EnumLike    ,
@@ -247,6 +287,16 @@ namespace Source.Extensions
             Type = type             ,
             Name = name ?? S_NoName ,
         };
+    }
+
+    static NumericalDefinition B (string name)
+    {
+        return Create (NumericalType.BoolLike, name);
+    }
+
+    static NumericalDefinition C (string name)
+    {
+        return Create (NumericalType.CharLike, name);
     }
 
     static NumericalDefinition F (string name)

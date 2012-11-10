@@ -81,9 +81,9 @@ namespace Test_Functionality
                     var doc = HRON.WriteDocument(hron);
                     Console.WriteLine(doc);
                 }
-
-
             }
+
+            Console.WriteLine("---");
 
             using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
@@ -91,7 +91,8 @@ namespace Test_Functionality
                 HRONParseError[] errors;
                 if (HRON.TryParse(int.MaxValue, streamReader.ReadLines(), out config, out errors))
                 {
-                    Console.WriteLine("Success");
+                    var format = HRON.ToString(config);
+                    Console.WriteLine(format);
                 }
             }
         }

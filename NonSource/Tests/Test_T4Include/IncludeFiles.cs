@@ -13,12 +13,16 @@
 // ############################################################################
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
+// @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
@@ -53,7 +57,8 @@ namespace FileInclude
         using System;
         using System.Collections.Generic;
         using System.Globalization;
-        using System.Text;
+        using System.IO;
+        using System.Reflection;
     
         using Source.Common;
     
@@ -100,7 +105,7 @@ namespace FileInclude
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith (CultureInfo.InvariantCulture, args);
+                return format.FormatWith (Config.DefaultCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -173,7 +178,7 @@ namespace FileInclude
                 }
             }
     
-            public static TTo CastTo<TTo> (object value, TTo defaultValue)
+            public static TTo CastTo<TTo> (this object value, TTo defaultValue)
             {
                 return value is TTo ? (TTo) value : defaultValue;
             }
@@ -182,25 +187,54 @@ namespace FileInclude
             {
                 values = values ?? Array<string>.Empty;
                 delimiter = delimiter ?? ", ";
-                var first = true;
     
-                var sb = new StringBuilder (capacity);     
+                return string.Join(delimiter, values);
+            }
     
-                foreach (var v in values)
+            public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
+            {
+                defaultValue = defaultValue ?? "";
+    
+                if (assembly == null)
                 {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        sb.Append (delimiter);
-                    }
-    
-                    sb.Append (v);
+                    return defaultValue;
                 }
     
-                return sb.ToString ();
+                var stream = assembly.GetManifestResourceStream(name ?? "");
+                if (stream == null)
+                {
+                    return defaultValue;
+                }
+    
+                using (stream)
+                using (var streamReader = new StreamReader (stream))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+    
+            public static IEnumerable<string> ReadLines(this TextReader textReader)
+            {
+                if (textReader == null)
+                {
+                    yield break;
+                }
+    
+                string line;
+    
+                while ((line = textReader.ReadLine()) != null)
+                {
+                    yield return line;
+                }
+            }
+    
+            public static IEnumerable<Type> GetInheritanceChain (this Type type)
+            {
+                while (type != null)
+                {
+                    yield return type;
+                    type = type.BaseType;
+                }
             }
         }
     }
@@ -235,7 +269,7 @@ namespace FileInclude
             {
                 var now = DateTime.Now;
                 var finalMessage = string.Format (
-                    CultureInfo.InvariantCulture,
+                    Config.DefaultCulture,
                     "{0:HHmmss} {1}:{2}",
                     now,
                     GetLevelMessage (level),
@@ -300,6 +334,51 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    namespace Source.Common
+    {
+        using System.Globalization;
+    
+        sealed partial class InitConfig
+        {
+            public CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
+        }
+    
+        static partial class Config
+        {
+            static partial void Partial_Constructed(ref InitConfig initConfig);
+    
+            public readonly static CultureInfo DefaultCulture;
+    
+            static Config ()
+            {
+                var initConfig = new InitConfig();
+    
+                Partial_Constructed (ref initConfig);
+    
+                initConfig = initConfig ?? new InitConfig();
+    
+                DefaultCulture = initConfig.DefaultCulture;
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
     
     namespace Source.Common
     {
@@ -331,7 +410,7 @@ namespace FileInclude
                 {
                     return (args == null || args.Length == 0)
                                ? format
-                               : string.Format (CultureInfo.InvariantCulture, format, args)
+                               : string.Format (Config.DefaultCulture, format, args)
                         ;
                 }
                 catch (FormatException)
@@ -466,13 +545,14 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-03T10:47:08";
+        public const string IncludeDate     = @"2012-11-10T22:57:47";
 
         public const string Include_0       = @"Extensions\BasicExtensions.cs";
         public const string Include_1       = @"Common\ConsoleLog.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################
