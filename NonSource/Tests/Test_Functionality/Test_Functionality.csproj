@@ -45,8 +45,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IncludeProject.cs">
-      <DependentUpon>IncludeProject.tt</DependentUpon>
+    <Compile Include="IncludeFiles.cs">
+      <DependentUpon>IncludeFiles.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -55,9 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="IncludeProject.tt">
+    <None Include="IncludeFiles.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IncludeProject.cs</LastGenOutput>
+      <LastGenOutput>IncludeFiles.cs</LastGenOutput>
     </None>
     <None Include="Test_Functionality.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

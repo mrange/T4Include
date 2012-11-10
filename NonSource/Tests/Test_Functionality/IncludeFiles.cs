@@ -1,8 +1,4 @@
 ﻿
-
-
-// @@@ SKIPPING (Blacklisted): C:\temp\GitHub\T4Include\NonSource\Source\Program.cs
-
 // ############################################################################
 // #                                                                          #
 // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -15,47 +11,35 @@
 
 
 // ############################################################################
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRON.cs
+// @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
+// @@@ INCLUDE_FOUND: ../Common/SubString.cs
+// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: ../Extensions/NumericalExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
+// @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
-// @@@ INCLUDE_FOUND: Log.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
-// @@@ INCLUDE_FOUND: Log.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\HRON.cs
-// @@@ INCLUDE_FOUND: Array.cs
-// @@@ INCLUDE_FOUND: SubString.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
-// @@@ INCLUDE_FOUND: IAtomic.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
-// @@@ INCLUDE_FOUND: ../Common/Log.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
-// @@@ INCLUDE_FOUND: ../Common/Array.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
-// @@@ INCLUDE_FOUND: ../Common/Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\SubString.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Generated_Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
-// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
@@ -64,86 +48,7 @@
 // ############################################################################
 
 // ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    namespace Source.Common
-    {
-        static class Array<T>
-        {
-            public static readonly T[] Empty = new T[0];
-        }
-    }
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    namespace Source.Common
-    {
-        using System;
-        using System.Threading;
-    
-        abstract partial class BaseDisposable : IDisposable
-        {
-            int m_isDisposed;
-    
-            public bool IsDisposed
-            {
-                get { return m_isDisposed != 0; }
-            }
-    
-            public void Dispose ()
-            {
-                if (Interlocked.Exchange (ref m_isDisposed, 1) == 0)
-                {
-                    try
-                    {
-                        OnDispose ();
-                    }
-                    catch (Exception exc)
-                    {
-                        Log.Exception (
-                            "BaseDisposable.Dispose for {0}, caught exception: {1}", 
-                            GetType ().FullName,
-                            exc
-                            );
-                    }
-                }            
-            }
-    
-            protected abstract void OnDispose ();
-        }
-    
-    }
-}
-
-// ############################################################################
-namespace ProjectInclude
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -159,183 +64,22 @@ namespace ProjectInclude
     
     
     
-    namespace Source.Common
-    {
-        using System;
-        using System.Globalization;
-    
-        partial class Log
-        {
-            static readonly object s_colorLock = new object ();
-            static partial void Partial_LogMessage (Level level, string message)
-            {
-                var now = DateTime.Now;
-                var finalMessage = string.Format (
-                    CultureInfo.InvariantCulture,
-                    "{0:HHmmss} {1}:{2}",
-                    now,
-                    GetLevelMessage (level),
-                    message
-                    );
-                lock (s_colorLock)
-                {
-                    var oldColor = Console.ForegroundColor;
-                    Console.ForegroundColor = GetLevelColor (level);
-                    try
-                    {
-                        Console.WriteLine (finalMessage);
-                    }
-                    finally
-                    {
-                        Console.ForegroundColor = oldColor;
-                    }
-    
-                }
-            }
-        }
-    }
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    // ############################################################################
-    // #                                                                          #
-    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
-    // #                                                                          #
-    // # This means that any edits to the .cs file will be lost when its          #
-    // # regenerated. Changes should instead be applied to the corresponding      #
-    // # template file (.tt)                                                      #
-    // ############################################################################
     
     
     
+    using System.Collections;
+    using System.Linq;
     
-    
-    namespace Source.Common
-    {
-        using System;
-    
-        partial class Log
-        {
-            public enum Level
-            {
-                Success = 1000,
-                HighLight = 2000,
-                Info = 3000,
-                Warning = 10000,
-                Error = 20000,
-                Exception = 21000,
-            }
-    
-            public static void Success (string format, params object[] args)
-            {
-                LogMessage (Level.Success, format, args);
-            }
-            public static void HighLight (string format, params object[] args)
-            {
-                LogMessage (Level.HighLight, format, args);
-            }
-            public static void Info (string format, params object[] args)
-            {
-                LogMessage (Level.Info, format, args);
-            }
-            public static void Warning (string format, params object[] args)
-            {
-                LogMessage (Level.Warning, format, args);
-            }
-            public static void Error (string format, params object[] args)
-            {
-                LogMessage (Level.Error, format, args);
-            }
-            public static void Exception (string format, params object[] args)
-            {
-                LogMessage (Level.Exception, format, args);
-            }
-            static ConsoleColor GetLevelColor (Level level)
-            {
-                switch (level)
-                {
-                    case Level.Success:
-                        return ConsoleColor.Green;
-                    case Level.HighLight:
-                        return ConsoleColor.White;
-                    case Level.Info:
-                        return ConsoleColor.Gray;
-                    case Level.Warning:
-                        return ConsoleColor.Yellow;
-                    case Level.Error:
-                        return ConsoleColor.Red;
-                    case Level.Exception:
-                        return ConsoleColor.Red;
-                    default:
-                        return ConsoleColor.Magenta;
-                }
-            }
-    
-            static string GetLevelMessage (Level level)
-            {
-                switch (level)
-                {
-                    case Level.Success:
-                        return "SUCCESS  ";
-                    case Level.HighLight:
-                        return "HIGHLIGHT";
-                    case Level.Info:
-                        return "INFO     ";
-                    case Level.Warning:
-                        return "WARNING  ";
-                    case Level.Error:
-                        return "ERROR    ";
-                    case Level.Exception:
-                        return "EXCEPTION";
-                    default:
-                        return "UNKNOWN  ";
-                }
-            }
-    
-        }
-    }
-    
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    
-    using System.Globalization;
-    using System.IO;
-    
-    namespace Source.Common
+    namespace Source.HRON
     {
         using System;
         using System.Collections.Generic;
         using System.Text;
+        using System.IO;
+    
+        using Source.Common;
+        using Source.Extensions;
+        using Source.Reflection;
     
         partial class HRONParseError
         {
@@ -421,6 +165,7 @@ namespace ProjectInclude
                 {
                     return;
                 }
+    
                 foreach (var pair in Pairs)
                 {
                     var type = pair.Value.Type;
@@ -569,7 +314,7 @@ namespace ProjectInclude
             public void Error(int lineNo, SubString line, HRON.ParseError parseError)
             {
                 m_sb.Clear();
-                m_sb.AppendFormat(CultureInfo.InvariantCulture, "# Error at line {0}: {1}", lineNo, parseError);
+                m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
                 WriteLine(m_sb);
             }
     
@@ -599,6 +344,7 @@ namespace ProjectInclude
                 m_sb.AppendLine();
             }
         }
+    
         sealed partial class HRONObjectBuilderVisitor : IHRONDocumentVisitor
         {
             public struct Item
@@ -673,7 +419,348 @@ namespace ProjectInclude
     
             void AddEntity(string name, IHRONEntity entity)
             {
-                m_stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
+                Top.Pairs.Add(new HRONObject.Pair(name, entity));
+            }
+    
+            public void Error(int lineNo, SubString line, HRON.ParseError parseError)
+            {
+                Errors.Add(new HRONParseError(lineNo, line.Value, parseError));
+            }
+        }
+    
+        sealed partial class HRONObjectBuilderVisitor<T> : IHRONDocumentVisitor
+        {
+            partial struct Item
+            {
+                public readonly ClassDescriptor ClassDescriptor;
+                public readonly object Value;
+                public readonly HashSet<MemberDescriptor> MembersAssignedTo; 
+    
+                public Item (Type type) : this()
+                {
+                    if (type == null)
+                    {
+                        return;
+                    }
+    
+                    ClassDescriptor = ClassDescriptor.GetClassDescriptor(type);
+                    Value = ClassDescriptor.Creator();
+                    MembersAssignedTo = new HashSet<MemberDescriptor>();
+                }
+            }
+    
+            readonly Stack<Item> m_stack = new Stack<Item>();
+            public readonly List<HRONParseError> Errors = new List<HRONParseError>();
+            public readonly int MaxErrors;
+            readonly StringBuilder m_value = new StringBuilder(128);
+            bool m_firstLine = true;
+    
+            public HRONObjectBuilderVisitor (int maxErrorCount)
+            {
+                MaxErrors = maxErrorCount;
+                m_stack.Push(new Item(typeof(T)));
+            }
+    
+            Item Top
+            {
+                get { return m_stack.Peek(); }
+            }
+    
+            public T Instance
+            {
+                get { return (T) Top.Value; }
+            }
+    
+            public void Comment(int indent, SubString comment)
+            {
+            }
+    
+            public void Value_Begin(SubString name)
+            {
+                if (Top.Value == null)
+                {
+                    return;
+                }
+                m_firstLine = true;
+                m_value.Clear();
+            }
+    
+            public void Value_Line(SubString value)
+            {
+                if (Top.Value == null)
+                {
+                    return;
+                }
+                if (m_firstLine)
+                {
+                    m_firstLine = false;
+                }
+                else
+                {
+                    m_value.AppendLine();
+                }
+                m_value.Append(value);
+            }
+    
+            static bool IsAssignableFromString (Type type)
+            {
+                return
+                        type == typeof(string)
+                    ||  type == typeof(object)
+                    ;
+            }
+    
+            public void Value_End(SubString name)
+            {
+                var top = Top;
+                if (top.Value == null)
+                {
+                    return;
+                }
+    
+                var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                if (memberDescriptor == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+    
+                var value = m_value.ToString();
+    
+                if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                {
+                    var list = (IList)memberDescriptor.Getter(top.Value);
+                    var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+    
+                    if (list == null)
+                    {
+                        if (!memberDescriptor.HasSetter)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        if (!listClassDescriptor.HasCreator)
+                        {
+                            // TODO: Log?
+                            return;                        
+                        }
+    
+                        list = (IList)listClassDescriptor.Creator();
+    
+                        memberDescriptor.Setter(top.Value, list);
+                        top.MembersAssignedTo.Add(memberDescriptor);
+                    }
+    
+                    var possibleListType = memberDescriptor
+                        .MemberType
+                        .GetInterfaces()
+                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
+                        ;
+    
+                    if (possibleListType == null)
+                    {
+                        list.Add (value);
+                        return;
+                    }
+    
+                    if (!possibleListType.IsGenericType)
+                    {
+                        list.Add (value);
+                        return;
+                    }
+    
+                    var itemType = possibleListType.GetGenericArguments()[0];
+    
+                    if (IsAssignableFromString(itemType))
+                    {
+                        list.Add (value);
+                        return;
+                    }
+    
+                    var parsedValue = value.Parse(
+                        Config.DefaultCulture,
+                        itemType,
+                        null
+                        );
+    
+                    if (parsedValue == null)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
+                    list.Add(parsedValue);
+                }
+                else
+                {
+                    if (!memberDescriptor.HasSetter)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
+                    if (top.MembersAssignedTo.Contains(memberDescriptor))
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
+                    if (IsAssignableFromString(memberDescriptor.MemberType))
+                    {
+                        memberDescriptor.Setter(top.Value, value);
+                        return;
+                    }
+    
+                    var parsedValue = value.Parse(
+                        Config.DefaultCulture,
+                        memberDescriptor.MemberType,
+                        null
+                        );
+    
+                    if (parsedValue == null)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
+                    memberDescriptor.Setter(top.Value, parsedValue);
+                    top.MembersAssignedTo.Add(memberDescriptor);
+                }
+            }
+    
+            public void Object_Begin(SubString name)
+            {
+                var top = Top;
+                if (top.Value == null)
+                {
+                    return;
+                }
+    
+                Type type = null;
+                try
+                {
+                    var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                    if (memberDescriptor == null)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
+                    if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                    {
+                        var list = (IList) memberDescriptor.Getter(top.Value);
+                        var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+    
+                        if (list == null)
+                        {
+                            if (!memberDescriptor.HasSetter)
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+    
+                            if (!listClassDescriptor.HasCreator)
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+                        }
+    
+                        var possibleListType = memberDescriptor
+                            .MemberType
+                            .GetInterfaces()
+                            .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
+                            ;
+    
+                        if (possibleListType == null)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        var itemType = possibleListType.GetGenericArguments()[0];
+    
+                        if (IsAssignableFromString(itemType))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        type = itemType;
+                    }
+                    else
+                    {
+                        if (!memberDescriptor.HasSetter)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        if (top.MembersAssignedTo.Contains(memberDescriptor))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        if (IsAssignableFromString(memberDescriptor.MemberType))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        type = memberDescriptor.MemberType;
+                    }
+                }
+                finally
+                {
+                    m_stack.Push(new Item(type));
+                }
+            }
+    
+            public void Object_End(SubString name)
+            {
+                var value = Top; 
+                m_stack.Pop();
+                var top = Top;
+    
+                if (value.Value == null)
+                {
+                    return;
+                }
+    
+                if (top.Value == null)
+                {
+                    return;
+                }
+    
+                var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                if (memberDescriptor == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+    
+                if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                {
+                    var list = (IList) memberDescriptor.Getter(top.Value);
+                    var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+    
+                    if (list == null)
+                    {
+                        list = (IList) listClassDescriptor.Creator();
+    
+                        memberDescriptor.Setter(top.Value, list);
+                        top.MembersAssignedTo.Add(memberDescriptor);
+                    }
+    
+                    list.Add(value.Value);
+                }
+                else
+                {
+                    top.MembersAssignedTo.Add(memberDescriptor);
+                    memberDescriptor.Setter(top.Value, value.Value);
+                }
             }
     
             public void Error(int lineNo, SubString line, HRON.ParseError parseError)
@@ -703,22 +790,6 @@ namespace ProjectInclude
                 TagIsNotCorrectlyFormatted,
             }
     
-            public static void WriteDocument (
-                IHRONDocumentVisitor visitor,
-                Action<string> writeLine
-                )
-            {
-                if (visitor == null)
-                {
-                    return;
-                }
-    
-                if (writeLine == null)
-                {
-                    return;
-                }
-            }
-    
             public static void VisitObject(
                 HRONObject hronObject,
                 IHRONDocumentVisitor visitor
@@ -746,6 +817,30 @@ namespace ProjectInclude
                 return v.GetValue();
             }
     
+            public static bool TryParse<T>(
+                int maxErrorCount,
+                IEnumerable<string> lines,
+                out T hronObject,
+                out HRONParseError[] errors
+                )
+            {
+                hronObject = default(T);
+                errors = Array<HRONParseError>.Empty;
+    
+                var visitor = new HRONObjectBuilderVisitor<T>(maxErrorCount);
+    
+                Parse(maxErrorCount, lines, visitor);
+    
+                if (visitor.Errors.Count > 0)
+                {
+                    errors = visitor.Errors.ToArray();
+                    return false;
+                }
+    
+                hronObject = visitor.Instance;
+    
+                return true;            
+            }
     
             public static bool TryParse(
                 int maxErrorCount,
@@ -957,7 +1052,31 @@ namespace ProjectInclude
 }
 
 // ############################################################################
-namespace ProjectInclude
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Common
+    {
+        static class Array<T>
+        {
+            public static readonly T[] Empty = new T[0];
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -972,52 +1091,37 @@ namespace ProjectInclude
     // ----------------------------------------------------------------------------------------------
     
     
-    
     namespace Source.Common
     {
-        using System;
         using System.Globalization;
     
-        static partial class Log
+        sealed partial class InitConfig
         {
-            static partial void Partial_LogMessage (Level level, string message);
-            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
+            public CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
+        }
     
-            public static void LogMessage (Level level, string format, params object[] args)
+        static partial class Config
+        {
+            static partial void Partial_Constructed(ref InitConfig initConfig);
+    
+            public readonly static CultureInfo DefaultCulture;
+    
+            static Config ()
             {
-                try
-                {
-                    Partial_LogMessage (level, GetMessage (format, args));
-                }
-                catch (Exception exc)
-                {
-                    Partial_ExceptionOnLog (level, format, args, exc);
-                }
-                
-            }
+                var initConfig = new InitConfig();
     
-            static string GetMessage (string format, object[] args)
-            {
-                format = format ?? "";
-                try
-                {
-                    return (args == null || args.Length == 0)
-                               ? format
-                               : string.Format (CultureInfo.InvariantCulture, format, args)
-                        ;
-                }
-                catch (FormatException)
-                {
+                Partial_Constructed (ref initConfig);
     
-                    return format;
-                }
+                initConfig = initConfig ?? new InitConfig();
+    
+                DefaultCulture = initConfig.DefaultCulture;
             }
         }
     }
 }
 
 // ############################################################################
-namespace ProjectInclude
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) M�rten R�nge.
@@ -1267,1189 +1371,7 @@ namespace ProjectInclude
 }
 
 // ############################################################################
-namespace ProjectInclude
-{
-    // ############################################################################
-    // #                                                                          #
-    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
-    // #                                                                          #
-    // # This means that any edits to the .cs file will be lost when its          #
-    // # regenerated. Changes should instead be applied to the corresponding      #
-    // # template file (.tt)                                                      #
-    // ############################################################################
-    
-    
-    
-    
-    
-    
-    
-    
-    namespace Source.Concurrency
-    {
-        using System;
-        using System.Threading;
-    
-        sealed partial class AtomicInt32 : IAtomic<Int32>
-        {
-            Int32 m_value;
-    
-            public AtomicInt32 (Int32 value = default (Int32))
-            {
-                m_value = value;
-            }
-    
-            public bool CompareExchange (Int32 newValue, Int32 comparand)
-            {
-                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-            }
-    
-            public Int32 Value
-            {
-                get { return Interlocked.CompareExchange (ref m_value, default (Int32), default (Int32)); }
-            }
-    
-        }
-        sealed partial class AtomicInt64 : IAtomic<Int64>
-        {
-            Int64 m_value;
-    
-            public AtomicInt64 (Int64 value = default (Int64))
-            {
-                m_value = value;
-            }
-    
-            public bool CompareExchange (Int64 newValue, Int64 comparand)
-            {
-                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-            }
-    
-            public Int64 Value
-            {
-                get { return Interlocked.CompareExchange (ref m_value, default (Int64), default (Int64)); }
-            }
-    
-        }
-        sealed partial class AtomicSingle : IAtomic<Single>
-        {
-            Single m_value;
-    
-            public AtomicSingle (Single value = default (Single))
-            {
-                m_value = value;
-            }
-    
-            public bool CompareExchange (Single newValue, Single comparand)
-            {
-                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-            }
-    
-            public Single Value
-            {
-                get { return Interlocked.CompareExchange (ref m_value, default (Single), default (Single)); }
-            }
-    
-        }
-        sealed partial class AtomicDouble : IAtomic<Double>
-        {
-            Double m_value;
-    
-            public AtomicDouble (Double value = default (Double))
-            {
-                m_value = value;
-            }
-    
-            public bool CompareExchange (Double newValue, Double comparand)
-            {
-                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-            }
-    
-            public Double Value
-            {
-                get { return Interlocked.CompareExchange (ref m_value, default (Double), default (Double)); }
-            }
-    
-        }
-    
-        partial class Atomic<T> : IAtomic<T>
-            where T : class
-        {
-            T m_value;
-    
-            public Atomic (T value = null)
-            {
-                m_value = value;
-            }
-    
-            public bool CompareExchange (T newValue, T comparand)
-            {
-                return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
-            }
-    
-            public T Value
-            {
-                get { return Interlocked.CompareExchange (ref m_value, null, null); }
-            }
-    
-        }
-    
-    }
-    
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    namespace Source.Concurrency
-    {
-        partial interface IAtomic<T>
-        {
-            bool CompareExchange (T newValue, T comparand);
-            T Value { get; }
-        }
-    }
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    
-    namespace Source.Concurrency
-    {
-        using System;
-        using System.Collections.Concurrent;
-        using System.Collections.Generic;
-        using System.Threading;
-        using System.Threading.Tasks;
-    
-        using Source.Common;
-    
-        sealed partial class SequentialTaskScheduler : TaskScheduler, IDisposable
-        {
-            const int                           DefaultTimeOutInMs = 250;
-            public readonly string              Name    ;
-            public readonly TimeSpan            TimeOut ;
-    
-            readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
-            Thread                              m_executingThread   ;
-            bool                                m_done              ;
-    
-            int                                 m_taskFailureCount;
-    
-    
-            partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
-    
-            public SequentialTaskScheduler (string name, TimeSpan? timeOut = null, ApartmentState apartmentState = ApartmentState.Unknown)
-            {
-                Name                = name      ?? "UnnamedTaskScheduler";
-                TimeOut             = timeOut   ?? TimeSpan.FromMilliseconds (DefaultTimeOutInMs);
-                m_executingThread   = new Thread (OnRun)
-                               {
-                                   IsBackground = true
-                               };
-    
-                m_executingThread.SetApartmentState (apartmentState);
-    
-                m_executingThread.Start ();
-            }
-    
-            void OnRun (object context)
-            {
-                while (!m_done)
-                {
-                    Task task;
-                    try
-                    {
-                        if (m_tasks.TryTake (out task, TimeOut))
-                        {
-                            // null task means exit
-                            if (task == null)
-                            {
-                                m_done = true;
-                                continue;
-                            }
-    
-                            if (!TryExecuteTask (task))
-                            {
-                                Log.Warning (
-                                    "SequentialTaskScheduler.OnRun: {0} - TryExecuteTask failed for task: {1}",
-                                    Name,
-                                    task.Id
-                                    );
-                            }
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        ++m_taskFailureCount;
-    
-                        Log.Exception (
-                            "SequentialTaskScheduler.OnRun: {0} - Caught exception: {1}",
-                            Name,
-                            exc
-                            );
-    
-                        Partial_TaskFailed (task, exc, m_taskFailureCount, ref m_done);
-                    }
-                }
-            }
-    
-            protected override bool TryDequeue (Task task)
-            {
-                Log.Warning ("SequentialTaskScheduler.TryDequeue: {0} - Task dequeing not supported", Name);
-                return false;
-            }
-    
-            protected override void QueueTask (Task task)
-            {
-                m_tasks.Add (task);
-            }
-    
-            protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
-            {
-                Log.Warning ("SequentialTaskScheduler.TryExecuteTaskInline: {0} - Task inline execute not supported", Name);
-                return false;
-            }
-    
-            protected override IEnumerable<Task> GetScheduledTasks ()
-            {
-                return m_tasks.ToArray ();
-            }
-    
-            public int TasksInQueue
-            {
-                get { return m_tasks.Count; }
-            }
-    
-            public bool IsDisposed
-            {
-                get { return m_executingThread == null; }
-            }
-    
-            public void ShutDown ()
-            {
-                if (!m_done)
-                {
-                    m_done = true;
-                    // null task to wake up thread
-                    m_tasks.Add (null);                
-                }
-            }
-    
-            public void Dispose ()
-            {
-                var thread = Interlocked.Exchange (ref m_executingThread, null);
-                if (thread != null)
-                {
-                    try
-                    {
-                        ShutDown ();
-                        if (!thread.Join (TimeOut + TimeOut))
-                        {
-                            Log.Warning (
-                                "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
-                                Name
-                                );
-    
-                            thread.Abort ();
-                            if (!thread.Join (TimeOut))
-                            {
-                                Log.Warning (
-                                    "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
-                                    Name
-                                    );
-                            }
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        Log.Exception (
-                            "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}", 
-                            Name,
-                            exc
-                            );
-                    }
-                }
-            }
-    
-    
-        
-        }
-    }
-}
-
-// ############################################################################
-namespace ProjectInclude
-{
-    
-    
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    // ############################################################################
-    // #                                                                          #
-    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
-    // #                                                                          #
-    // # This means that any edits to the .cs file will be lost when its          #
-    // # regenerated. Changes should instead be applied to the corresponding      #
-    // # template file (.tt)                                                      #
-    // ############################################################################
-    
-    
-    
-    
-    
-    
-    namespace Source.Extensions
-    {
-        using System;
-        using System.Globalization;
-    
-        static partial class NumericalExtensions
-        {
-            // Byte (IntLike)
-    
-    #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-            public static Byte Min (this Byte left, Byte right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Byte Max (this Byte left, Byte right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Byte Clamp (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Byte result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
-            {
-                Byte value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Byte Parse (this string s, Byte defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool IsAnyOn (this Byte value, Byte test)
-            {
-                return (value & test) != 0;
-            }
-            
-            public static bool IsAnyOff (this Byte value, Byte test)
-            {
-                return (value & test) != test;
-            }
-            
-            public static bool IsAllOn (this Byte value, Byte test)
-            {
-                return (value & test) == test;
-            }
-            
-            public static bool IsAllOff (this Byte value, Byte test)
-            {
-                return (value & test) == 0;
-            }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte result)
-            {
-                return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-    
-            // Int16 (IntLike)
-    
-    #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-            public static Int16 Min (this Int16 left, Int16 right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Int16 Max (this Int16 left, Int16 right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Int16 Clamp (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Int16 result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
-            {
-                Int16 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int16 Parse (this string s, Int16 defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool IsAnyOn (this Int16 value, Int16 test)
-            {
-                return (value & test) != 0;
-            }
-            
-            public static bool IsAnyOff (this Int16 value, Int16 test)
-            {
-                return (value & test) != test;
-            }
-            
-            public static bool IsAllOn (this Int16 value, Int16 test)
-            {
-                return (value & test) == test;
-            }
-            
-            public static bool IsAllOff (this Int16 value, Int16 test)
-            {
-                return (value & test) == 0;
-            }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 result)
-            {
-                return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-    
-            // Int32 (IntLike)
-    
-    #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-            public static Int32 Min (this Int32 left, Int32 right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Int32 Max (this Int32 left, Int32 right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Int32 Clamp (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Int32 result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
-            {
-                Int32 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int32 Parse (this string s, Int32 defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool IsAnyOn (this Int32 value, Int32 test)
-            {
-                return (value & test) != 0;
-            }
-            
-            public static bool IsAnyOff (this Int32 value, Int32 test)
-            {
-                return (value & test) != test;
-            }
-            
-            public static bool IsAllOn (this Int32 value, Int32 test)
-            {
-                return (value & test) == test;
-            }
-            
-            public static bool IsAllOff (this Int32 value, Int32 test)
-            {
-                return (value & test) == 0;
-            }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 result)
-            {
-                return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-    
-            // Int64 (IntLike)
-    
-    #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-            public static Int64 Min (this Int64 left, Int64 right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Int64 Max (this Int64 left, Int64 right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Int64 Clamp (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Int64 result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
-            {
-                Int64 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int64 Parse (this string s, Int64 defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool IsAnyOn (this Int64 value, Int64 test)
-            {
-                return (value & test) != 0;
-            }
-            
-            public static bool IsAnyOff (this Int64 value, Int64 test)
-            {
-                return (value & test) != test;
-            }
-            
-            public static bool IsAllOn (this Int64 value, Int64 test)
-            {
-                return (value & test) == test;
-            }
-            
-            public static bool IsAllOff (this Int64 value, Int64 test)
-            {
-                return (value & test) == 0;
-            }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 result)
-            {
-                return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-    
-            // Single (FloatLike)
-    
-    #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-            public static Single Min (this Single left, Single right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Single Max (this Single left, Single right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Single Clamp (this Single value, Single inclusiveMin, Single inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Single value, Single inclusiveMin, Single inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Single result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
-            {
-                Single value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Single Parse (this string s, Single defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static Single Lerp (
-                this Single t,
-                Single from,
-                Single to
-                )
-            {
-                return t.Clamp (0,1) * (to - from) + from;
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Single result)
-            {                                                  
-                return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-    
-            // Double (FloatLike)
-    
-    #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-            public static Double Min (this Double left, Double right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Double Max (this Double left, Double right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Double Clamp (this Double value, Double inclusiveMin, Double inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Double value, Double inclusiveMin, Double inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Double result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
-            {
-                Double value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Double Parse (this string s, Double defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static Double Lerp (
-                this Double t,
-                Double from,
-                Double to
-                )
-            {
-                return t.Clamp (0,1) * (to - from) + from;
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Double result)
-            {                                                  
-                return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-    
-            // Decimal (FloatLike)
-    
-    #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-            public static Decimal Min (this Decimal left, Decimal right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static Decimal Max (this Decimal left, Decimal right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static Decimal Clamp (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out Decimal result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
-            {
-                Decimal value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Decimal Parse (this string s, Decimal defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static Decimal Lerp (
-                this Decimal t,
-                Decimal from,
-                Decimal to
-                )
-            {
-                return t.Clamp (0,1) * (to - from) + from;
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal result)
-            {                                                  
-                return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-    
-            // TimeSpan (TimeSpanLike)
-    
-    #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-            public static TimeSpan Min (this TimeSpan left, TimeSpan right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static TimeSpan Max (this TimeSpan left, TimeSpan right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static TimeSpan Clamp (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out TimeSpan result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
-            {
-                TimeSpan value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static TimeSpan Parse (this string s, TimeSpan defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan result)
-            {                                                  
-                return TimeSpan.TryParse (s ?? "", cultureInfo, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-    
-            // DateTime (DateTimeLike)
-    
-    #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-            public static DateTime Min (this DateTime left, DateTime right) 
-            {
-                if (left < right)
-                {
-                    return left;
-                }
-            
-                return right;
-            }
-    
-            public static DateTime Max (this DateTime left, DateTime right) 
-            {
-                if (left < right)
-                {
-                    return right;
-                }
-            
-                return left;
-            }
-    
-            public static DateTime Clamp (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return inclusiveMin;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return inclusiveMax;
-                }
-    
-                return value;
-            }
-    
-            public static bool IsBetween (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
-            {
-                if (value < inclusiveMin)
-                {
-                    return false;
-                }
-            
-                if (value > inclusiveMax)
-                {
-                    return false;
-                }
-    
-                return true;
-            }
-    
-            public static bool TryParse (this string s, out DateTime result)
-            {
-                return s.TryParse (CultureInfo.InvariantCulture, out result);
-            }
-    
-            public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
-            {
-                DateTime value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static DateTime Parse (this string s, DateTime defaultValue)
-            {
-                return s.Parse (CultureInfo.InvariantCulture, defaultValue);
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime result)
-            {                                                  
-                return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out result);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-    
-        }
-    }
-    
-    
-}
-
-// ############################################################################
-namespace ProjectInclude
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -2518,7 +1440,7 @@ namespace ProjectInclude
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith (CultureInfo.InvariantCulture, args);
+                return format.FormatWith (Config.DefaultCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -2641,24 +1563,36 @@ namespace ProjectInclude
                 }
             }
     
+            public static IEnumerable<Type> GetInheritanceChain (this Type type)
+            {
+                while (type != null)
+                {
+                    yield return type;
+                    type = type.BaseType;
+                }
+            }
         }
     }
 }
 
 // ############################################################################
-namespace ProjectInclude
+namespace FileInclude
 {
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
     
     
     
@@ -2666,198 +1600,1142 @@ namespace ProjectInclude
     {
         using System;
         using System.Collections.Generic;
-        using System.Linq;
+        using System.Globalization;
     
         using Source.Common;
     
-        static partial class EnumerableExtensions
+        static partial class NumericalExtensions
         {
-            public static Dictionary<TKey, TValue> ToDictionaryAndResolveDuplicates<T, TKey, TValue>(
-                this IEnumerable<T> values,
-                Func<T, TKey> keySelector,
-                Func<T, TValue> valueSelector,
-                Func<TValue, T, TValue> duplicateResolver,
-                int capacity = 0,
-                IEqualityComparer<TKey> comparer = null
-                )
-            {
-                if (keySelector == null) throw new ArgumentNullException ("keySelector");
-                if (valueSelector == null) throw new ArgumentNullException ("valueSelector");
-                if (duplicateResolver == null) throw new ArgumentNullException ("duplicateResolver");
-    
-                var dic = new Dictionary<TKey, TValue>(capacity, comparer);
-    
-                values = values ?? Array<T>.Empty;
-    
-                foreach (var value in values)
+            static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
                 {
-                    var key = keySelector (value);
-                    TValue existingValue;
-                    if (dic.TryGetValue (key, out existingValue))
-                    {
-                        var newValue = duplicateResolver (existingValue, value);
-                        dic[key] = newValue;
-                    }
-                    else
-                    {
-                        var newValue = valueSelector (value);
-                        dic[key] = newValue;
-                    }
+    #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+                    { typeof(Byte), (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+                    { typeof(Int16), (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+                    { typeof(Int32), (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+                    { typeof(Int64), (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+                    { typeof(Single), (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+                    { typeof(Double), (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+                    { typeof(Decimal), (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+                    { typeof(TimeSpan), (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+                    { typeof(DateTime), (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+    #endif
+                };
     
+            public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
+            {
+                value = null;
+                if (type == null)
+                {
+                    return false;
+                }                
+                
+                Func<string, CultureInfo, object> parser;
+    
+                if (s_parsers.TryGetValue (type, out parser))
+                {
+                    value = parser (s, cultureInfo);
                 }
     
-                return dic;
+                return value != null;
             }
     
-            public static Dictionary<TKey, T> ToDictionaryAndResolveDuplicates<T, TKey>(
-                this IEnumerable<T> values,
-                Func<T, TKey> keySelector,
-                Func<T, T, T> duplicateResolver,
-                int capacity = 0,
-                IEqualityComparer<TKey> comparer = null
+            public static bool TryParse (this string s, Type type, out object value)
+            {
+                return s.TryParse (Config.DefaultCulture, type, out value);
+            }
+    
+            public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
+            {
+                object value;
+                return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
+            }
+    
+            public static object Parse (this string s, Type type, object defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, type, defaultValue);
+            }
+    
+            // Byte (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+            public static Byte Min (this Byte left, Byte right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Byte Max (this Byte left, Byte right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Byte Clamp (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Byte value, Byte inclusiveMin, Byte inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Byte value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
+            {
+                Byte value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Byte Parse (this string s, Byte defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool IsAnyOn (this Byte value, Byte test)
+            {
+                return (value & test) != 0;
+            }
+            
+            public static bool IsAnyOff (this Byte value, Byte test)
+            {
+                return (value & test) != test;
+            }
+            
+            public static bool IsAllOn (this Byte value, Byte test)
+            {
+                return (value & test) == test;
+            }
+            
+            public static bool IsAllOff (this Byte value, Byte test)
+            {
+                return (value & test) == 0;
+            }
+             
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
+            {
+                return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
+    
+            // Int16 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+            public static Int16 Min (this Int16 left, Int16 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int16 Max (this Int16 left, Int16 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Int16 Clamp (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Int16 value, Int16 inclusiveMin, Int16 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Int16 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
+            {
+                Int16 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int16 Parse (this string s, Int16 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool IsAnyOn (this Int16 value, Int16 test)
+            {
+                return (value & test) != 0;
+            }
+            
+            public static bool IsAnyOff (this Int16 value, Int16 test)
+            {
+                return (value & test) != test;
+            }
+            
+            public static bool IsAllOn (this Int16 value, Int16 test)
+            {
+                return (value & test) == test;
+            }
+            
+            public static bool IsAllOff (this Int16 value, Int16 test)
+            {
+                return (value & test) == 0;
+            }
+             
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
+            {
+                return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
+    
+            // Int32 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+            public static Int32 Min (this Int32 left, Int32 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int32 Max (this Int32 left, Int32 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Int32 Clamp (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Int32 value, Int32 inclusiveMin, Int32 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Int32 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
+            {
+                Int32 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int32 Parse (this string s, Int32 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool IsAnyOn (this Int32 value, Int32 test)
+            {
+                return (value & test) != 0;
+            }
+            
+            public static bool IsAnyOff (this Int32 value, Int32 test)
+            {
+                return (value & test) != test;
+            }
+            
+            public static bool IsAllOn (this Int32 value, Int32 test)
+            {
+                return (value & test) == test;
+            }
+            
+            public static bool IsAllOff (this Int32 value, Int32 test)
+            {
+                return (value & test) == 0;
+            }
+             
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
+            {
+                return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
+    
+            // Int64 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+            public static Int64 Min (this Int64 left, Int64 right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Int64 Max (this Int64 left, Int64 right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Int64 Clamp (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Int64 value, Int64 inclusiveMin, Int64 inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Int64 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
+            {
+                Int64 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int64 Parse (this string s, Int64 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool IsAnyOn (this Int64 value, Int64 test)
+            {
+                return (value & test) != 0;
+            }
+            
+            public static bool IsAnyOff (this Int64 value, Int64 test)
+            {
+                return (value & test) != test;
+            }
+            
+            public static bool IsAllOn (this Int64 value, Int64 test)
+            {
+                return (value & test) == test;
+            }
+            
+            public static bool IsAllOff (this Int64 value, Int64 test)
+            {
+                return (value & test) == 0;
+            }
+             
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
+            {
+                return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
+    
+            // Single (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+            public static Single Min (this Single left, Single right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Single Max (this Single left, Single right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Single Clamp (this Single value, Single inclusiveMin, Single inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Single value, Single inclusiveMin, Single inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Single value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
+            {
+                Single value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Single Parse (this string s, Single defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static Single Lerp (
+                this Single t,
+                Single from,
+                Single to
                 )
             {
-                return values.ToDictionaryAndResolveDuplicates (
-                    keySelector,
-                    v => v,
-                    duplicateResolver,
-                    capacity,
-                    comparer
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
+            {                                                  
+                return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
+    
+            // Double (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+            public static Double Min (this Double left, Double right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Double Max (this Double left, Double right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Double Clamp (this Double value, Double inclusiveMin, Double inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Double value, Double inclusiveMin, Double inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Double value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
+            {
+                Double value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Double Parse (this string s, Double defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static Double Lerp (
+                this Double t,
+                Double from,
+                Double to
+                )
+            {
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
+            {                                                  
+                return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
+    
+            // Decimal (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+            public static Decimal Min (this Decimal left, Decimal right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static Decimal Max (this Decimal left, Decimal right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static Decimal Clamp (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this Decimal value, Decimal inclusiveMin, Decimal inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out Decimal value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
+            {
+                Decimal value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Decimal Parse (this string s, Decimal defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static Decimal Lerp (
+                this Decimal t,
+                Decimal from,
+                Decimal to
+                )
+            {
+                return t.Clamp (0,1) * (to - from) + from;
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
+            {                                                  
+                return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
+    
+            // TimeSpan (TimeSpanLike)
+    
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+            public static TimeSpan Min (this TimeSpan left, TimeSpan right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static TimeSpan Max (this TimeSpan left, TimeSpan right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static TimeSpan Clamp (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this TimeSpan value, TimeSpan inclusiveMin, TimeSpan inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out TimeSpan value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
+            {
+                TimeSpan value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static TimeSpan Parse (this string s, TimeSpan defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
+            {                                                  
+                return TimeSpan.TryParse (s ?? "", cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
+    
+            // DateTime (DateTimeLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+            public static DateTime Min (this DateTime left, DateTime right) 
+            {
+                if (left < right)
+                {
+                    return left;
+                }
+            
+                return right;
+            }
+    
+            public static DateTime Max (this DateTime left, DateTime right) 
+            {
+                if (left < right)
+                {
+                    return right;
+                }
+            
+                return left;
+            }
+    
+            public static DateTime Clamp (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return inclusiveMin;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return inclusiveMax;
+                }
+    
+                return value;
+            }
+    
+            public static bool IsBetween (this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) 
+            {
+                if (value < inclusiveMin)
+                {
+                    return false;
+                }
+            
+                if (value > inclusiveMax)
+                {
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            public static bool TryParse (this string s, out DateTime value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
+            {
+                DateTime value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static DateTime Parse (this string s, DateTime defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)
+            {                                                  
+                return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
+    
+        }
+    }
+    
+    
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) M�rten R�nge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Reflection
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Collections.Generic;
+        using System.Linq;
+        using System.Linq.Expressions;
+        using System.Reflection;
+    
+        partial class ClassDescriptor
+        {
+            static readonly ConcurrentDictionary<Type, ClassDescriptor> s_classDescriptors =
+                new ConcurrentDictionary<Type, ClassDescriptor>();
+    
+            public readonly Type Type;
+            public readonly Func<object> Creator;
+            public readonly Dictionary<string, MemberDescriptor> Members;
+            public readonly bool HasCreator;
+    
+            public ClassDescriptor(Type type)
+            {
+                Type = type ?? typeof(object);
+                Members = Type
+                    .GetMembers(
+                            BindingFlags.Instance
+                        |   BindingFlags.Public
+                        |   BindingFlags.NonPublic
+                        )
+                    .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                    .Select(mi => new MemberDescriptor(mi))
+                    .ToDictionary(mi => mi.MemberInfo.Name)
+                    ;
+                Creator = GetCreator(type);
+                HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
+            }
+    
+            Func<object> GetCreator(Type type)
+            {
+                if (type.IsAbstract || type.IsInterface)
+                {
+                    return s_defaultCreator;
+                }
+    
+                var ci = type
+                    .GetConstructors(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic)
+                    .FirstOrDefault (c => c.GetParameters ().Length == 0)
+                    ;
+                if (ci == null)
+                {
+                    return s_defaultCreator;
+                }
+    
+                var expr = Expression.Lambda<Func<object>>(Expression.New(ci));
+    
+                return expr.Compile();
+            }
+    
+            static readonly Func<Type, ClassDescriptor> s_createClassDescriptor = t => new ClassDescriptor(t);
+            static readonly Func<object> s_defaultCreator = () => null;
+    
+            public static ClassDescriptor GetClassDescriptor(Type type)
+            {
+                return s_classDescriptors.GetOrAdd(
+                    type ?? typeof (object),
+                    s_createClassDescriptor
                     );
             }
+        }
     
-            public static Dictionary<TKey, TValue> ToDictionaryAndKeepFirst<T, TKey, TValue>(
-                this IEnumerable<T> values,
-                Func<T, TKey> keySelector,
-                Func<T, TValue> valueSelector,
-                int capacity = 0,
-                IEqualityComparer<TKey> comparer = null
-                )
+        partial class MemberDescriptor
+        {
+            public readonly MemberInfo MemberInfo;
+            public readonly Func<object, object> Getter;
+            public readonly Action<object, object> Setter;
+            public readonly Type MemberType;
+    
+            public readonly bool HasGetter;
+            public readonly bool HasSetter;
+            static readonly Func<object, object> s_defaultGetter = instance => null;
+            static readonly Action<object, object> s_defaultSetter = (x,v) => {};
+    
+            public MemberDescriptor(MemberInfo mi)
             {
-                return values.ToDictionaryAndResolveDuplicates (
-                    keySelector,
-                    valueSelector,
-                    (existingValue, newValue) => existingValue,
-                    capacity,
-                    comparer
-                    );
-            }
-    
-            public static Dictionary<TKey, T> ToDictionaryAndKeepFirst<T, TKey>(
-                this IEnumerable<T> values,
-                Func<T, TKey> keySelector,
-                int capacity = 0,
-                IEqualityComparer<TKey> comparer = null
-                )
-            {
-                return values.ToDictionaryAndKeepFirst (
-                    keySelector,
-                    v => v,
-                    capacity,
-                    comparer
-                    );
-            }
-    
-            public static HashSet<T> ToHashSet<T>(this IEnumerable<T> values, IEqualityComparer<T> comparer = null)
-            {
-                values = values ?? Array<T>.Empty;
-    
-                return new HashSet<T>(values, comparer);
-            }
-    
-            sealed partial class SelectorEqualityComparer<T, TKey> : IEqualityComparer<T>
-            {
-                static readonly IEqualityComparer<TKey> s_defaultComparer = EqualityComparer<TKey>.Default;
-    
-                readonly Func<T, TKey> m_selector;
-    
-                public SelectorEqualityComparer (Func<T, TKey> selector)
+                MemberInfo = mi;
+                Getter = GetGetter(mi);
+                Setter = GetSetter(mi);
+                var pi = mi as PropertyInfo;
+                var fi = mi as FieldInfo;
+                if (pi != null)
                 {
-                    System.Diagnostics.Debug.Assert (selector != null);
-                    m_selector = selector;
+                    MemberType = pi.PropertyType;
+                }
+                else if (fi != null)
+                {
+                    MemberType = fi.FieldType;
+                }
+                else
+                {
+                    MemberType = typeof (object);
                 }
     
-                public bool Equals (T x, T y)
+                HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
+                HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+            }
+    
+            static Func<object, object> GetGetter(MemberInfo mi)
+            {
+                var pi = mi as PropertyInfo;
+                var fi = mi as FieldInfo;
+    
+                if (pi != null && pi.GetMethod != null)
                 {
-                    return s_defaultComparer.Equals (m_selector (x), m_selector (y));
-                }
+                    var instance = Expression.Parameter(typeof(object), "instance");
     
-                public int GetHashCode (T obj)
+                    var expr = Expression.Lambda<Func<object, object>>(
+                        Expression.Convert(
+                            Expression.Property(
+                                Expression.Convert(instance, pi.DeclaringType ?? typeof(object)), 
+                                pi), 
+                            typeof(object)),
+                        instance);
+    
+                    return expr.Compile();                
+                }
+                else if (fi != null)
                 {
-                    return s_defaultComparer.GetHashCode (m_selector (obj));
+                    var instance = Expression.Parameter(typeof(object), "instance");
+    
+                    var expr = Expression.Lambda<Func<object, object>>(
+                        Expression.Convert(
+                            Expression.Field(
+                                Expression.Convert(instance, fi.DeclaringType ?? typeof(object)), fi),
+                            typeof(object)),
+                        instance);
+    
+                    return expr.Compile();
                 }
-    
+                else
+                {
+                    return s_defaultGetter;
+                }
             }
     
-            public static IEnumerable<T> Distinct<T, TKey> (
-                this IEnumerable<T> values, 
-                Func<T, TKey> selector)
+            static Action<object, object> GetSetter(MemberInfo mi)
             {
-                if (selector == null) throw new ArgumentNullException ("selector");
+                var pi = mi as PropertyInfo;
+                var fi = mi as FieldInfo;
     
-                values = values ?? Array<T>.Empty;
+                if (pi != null && pi.SetMethod != null)
+                {
+                    var instance = Expression.Parameter(typeof(object), "instance");
+                    var value = Expression.Parameter(typeof(object), "value");
     
-                return values.Distinct (new SelectorEqualityComparer<T, TKey>(selector));
+                    var expr = Expression.Lambda<Action<object, object>>(
+                        Expression.Assign(
+                            Expression.Property(Expression.Convert(instance, pi.DeclaringType ?? typeof(object)), pi), 
+                            Expression.Convert(value, pi.PropertyType)),
+                        instance,
+                        value
+                        );
+    
+                    return expr.Compile();
+                }
+                else if (fi != null && !fi.IsInitOnly)
+                {
+                    var instance = Expression.Parameter(typeof(object), "instance");
+                    var value = Expression.Parameter(typeof(object), "value");
+    
+                    var expr = Expression.Lambda<Action<object, object>>(
+                        Expression.Assign(
+                            Expression.Field(Expression.Convert(instance, fi.DeclaringType ?? typeof(object)), fi),
+                            Expression.Convert(value, fi.FieldType)),
+                        instance,
+                        value
+                        );
+    
+                    return expr.Compile();
+                }
+                else
+                {
+                    return s_defaultSetter;
+                }
             }
     
-            public static IEnumerable<T> Union<T, TKey>(
-                this IEnumerable<T> values,
-                IEnumerable<T> otherValue,
-                Func<T, TKey> selector)
+        }
+    
+    
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Reflection
+    {
+        using System;
+        using System.Linq.Expressions;
+        using System.Reflection;
+    
+        static partial class StaticReflection<T>
+        {
+            public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
             {
-                if (selector == null) throw new ArgumentNullException ("selector");
-    
-                values = values ?? Array<T>.Empty;
-                otherValue = otherValue ?? Array<T>.Empty;
-    
-                return values.Union (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+                return ((MethodCallExpression)expr.Body).Method;
             }
     
-            public static IEnumerable<T> Intersect<T, TKey>(
-                this IEnumerable<T> values,
-                IEnumerable<T> otherValue,
-                Func<T, TKey> selector)
+            public static MethodInfo GetMethodInfo(Expression<Action> expr)
             {
-                if (selector == null) throw new ArgumentNullException ("selector");
-    
-                values = values ?? Array<T>.Empty;
-                otherValue = otherValue ?? Array<T>.Empty;
-    
-                return values.Intersect (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+                return ((MethodCallExpression)expr.Body).Method;
             }
     
-            public static IEnumerable<T> Except<T, TKey>(
-                this IEnumerable<T> values,
-                IEnumerable<T> otherValue,
-                Func<T, TKey> selector)
+            public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<T, TReturn>> expr)
             {
-                if (selector == null) throw new ArgumentNullException ("selector");
-    
-                values = values ?? Array<T>.Empty;
-                otherValue = otherValue ?? Array<T>.Empty;
-    
-                return values.Except (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+                return ((MemberExpression)expr.Body).Member;
             }
     
-            public static bool SequenceEqual<T, TKey>(
-                this IEnumerable<T> values,
-                IEnumerable<T> otherValue,
-                Func<T, TKey> selector)
+            public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<TReturn>> expr)
             {
-                if (selector == null) throw new ArgumentNullException ("selector");
-    
-                values = values ?? Array<T>.Empty;
-                otherValue = otherValue ?? Array<T>.Empty;
-    
-                return values.SequenceEqual (otherValue, new SelectorEqualityComparer<T, TKey>(selector));
+                return ((MemberExpression)expr.Body).Member;
             }
     
+            public static ConstructorInfo GetConstructorInfo<TReturn>(Expression<Func<TReturn>> expr)
+            {
+                return ((NewExpression)expr.Body).Constructor;
+            }
         }
     }
 }
 
 // ############################################################################
-namespace ProjectInclude
+namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -2873,149 +2751,185 @@ namespace ProjectInclude
     
     
     
-    namespace Source.Extensions
+    namespace Source.Common
     {
         using System;
-        using System.Windows.Threading;
-        using System.Windows;
-        using System.Windows.Data;
+        using System.Globalization;
     
-        using Source.Common;
-    
-        static partial class WpfExtensions
+        static partial class Log
         {
-            public static void Async_Invoke (
-                this Dispatcher dispatcher, 
-                string actionName, 
-                Action action
-                )
+            static partial void Partial_LogMessage (Level level, string message);
+            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
+    
+            public static void LogMessage (Level level, string format, params object[] args)
             {
-                if (action == null)
+                try
                 {
-                    return;
+                    Partial_LogMessage (level, GetMessage (format, args));
                 }
-    
-                Action act = () =>
-                                 {
-    #if DEBUG
-                                     Log.Info ("Async_Invoke: {0}", actionName ?? "Unknown");
-    #endif
-    
-                                     try
-                                     {
-                                         action ();
-                                     }
-                                     catch (Exception exc)
-                                     {
-                                         Log.Exception ("Async_Invoke: Caught exception: {0}", exc);
-                                     }
-                                 };
-    
-                dispatcher = dispatcher ?? Dispatcher.CurrentDispatcher;
-                dispatcher.BeginInvoke (DispatcherPriority.ApplicationIdle, act);
+                catch (Exception exc)
+                {
+                    Partial_ExceptionOnLog (level, format, args, exc);
+                }
+                
             }
     
-            public static void Async_Invoke (
-                this DependencyObject dependencyObject, 
-                string actionName, 
-                Action action
-                )
+            static string GetMessage (string format, object[] args)
             {
-                var dispatcher = dependencyObject == null ? Dispatcher.CurrentDispatcher : dependencyObject.Dispatcher;
-    
-                dispatcher.Async_Invoke (actionName, action);
-            }
-    
-            public static BindingBase GetBindingOf (
-                this DependencyObject dependencyObject, 
-                DependencyProperty dependencyProperty 
-                )
-            {
-                if (dependencyObject == null)
+                format = format ?? "";
+                try
                 {
-                    return null;
+                    return (args == null || args.Length == 0)
+                               ? format
+                               : string.Format (Config.DefaultCulture, format, args)
+                        ;
                 }
-    
-                if (dependencyProperty == null)
+                catch (FormatException)
                 {
-                    return null;
-                }
     
-                return BindingOperations.GetBindingBase (dependencyObject, dependencyProperty);
-            }
-    
-            public static bool IsBoundTo (
-                this DependencyObject dependencyObject, 
-                DependencyProperty dependencyProperty 
-                )
-            {
-                if (dependencyObject == null)
-                {
-                    return false;
-                }
-    
-                if (dependencyProperty == null)
-                {
-                    return false;
-                }
-    
-                return BindingOperations.IsDataBound (dependencyObject, dependencyProperty);
-            }
-    
-            public static void ResetBindingOf (
-                this DependencyObject dependencyObject, 
-                DependencyProperty dependencyProperty, 
-                BindingBase binding = null
-                )
-            {
-                if (dependencyObject == null)
-                {
-                    return;
-                }
-    
-                if (dependencyProperty == null)
-                {
-                    return;
-                }
-    
-                BindingOperations.ClearBinding (dependencyObject, dependencyProperty);
-    
-                if (binding != null)
-                {
-                    BindingOperations.SetBinding (dependencyObject, dependencyProperty, binding);
+                    return format;
                 }
             }
         }
     }
 }
-// ############################################################################
 
 // ############################################################################
-namespace ProjectInclude.Include
+namespace FileInclude
 {
-    static partial class MetaData
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    namespace Source.Common
     {
-        public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_Functionality\..\..\..";
-        public const string IncludeDate     = @"2012-11-06T07:46:44";
-
-        public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\HRON.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Concurrency\Atomic.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        using System;
+    
+        partial class Log
+        {
+            public enum Level
+            {
+                Success = 1000,
+                HighLight = 2000,
+                Info = 3000,
+                Warning = 10000,
+                Error = 20000,
+                Exception = 21000,
+            }
+    
+            public static void Success (string format, params object[] args)
+            {
+                LogMessage (Level.Success, format, args);
+            }
+            public static void HighLight (string format, params object[] args)
+            {
+                LogMessage (Level.HighLight, format, args);
+            }
+            public static void Info (string format, params object[] args)
+            {
+                LogMessage (Level.Info, format, args);
+            }
+            public static void Warning (string format, params object[] args)
+            {
+                LogMessage (Level.Warning, format, args);
+            }
+            public static void Error (string format, params object[] args)
+            {
+                LogMessage (Level.Error, format, args);
+            }
+            public static void Exception (string format, params object[] args)
+            {
+                LogMessage (Level.Exception, format, args);
+            }
+            static ConsoleColor GetLevelColor (Level level)
+            {
+                switch (level)
+                {
+                    case Level.Success:
+                        return ConsoleColor.Green;
+                    case Level.HighLight:
+                        return ConsoleColor.White;
+                    case Level.Info:
+                        return ConsoleColor.Gray;
+                    case Level.Warning:
+                        return ConsoleColor.Yellow;
+                    case Level.Error:
+                        return ConsoleColor.Red;
+                    case Level.Exception:
+                        return ConsoleColor.Red;
+                    default:
+                        return ConsoleColor.Magenta;
+                }
+            }
+    
+            static string GetLevelMessage (Level level)
+            {
+                switch (level)
+                {
+                    case Level.Success:
+                        return "SUCCESS  ";
+                    case Level.HighLight:
+                        return "HIGHLIGHT";
+                    case Level.Info:
+                        return "INFO     ";
+                    case Level.Warning:
+                        return "WARNING  ";
+                    case Level.Error:
+                        return "ERROR    ";
+                    case Level.Exception:
+                        return "EXCEPTION";
+                    default:
+                        return "UNKNOWN  ";
+                }
+            }
+    
+        }
     }
+    
 }
 // ############################################################################
 
+// ############################################################################
+namespace FileInclude.Include
+{
+    static partial class MetaData
+    {
+        public const string RootPath        = @"..\..\..";
+        public const string IncludeDate     = @"2012-11-10T12:29:33";
 
+        public const string Include_0       = @"HRON\HRON.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+    }
+}
+// ############################################################################
 
 

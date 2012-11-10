@@ -14,10 +14,19 @@
 // ### INCLUDE: ../Common/Config.cs
 // ### INCLUDE: ../Common/SubString.cs
 
+// ### INCLUDE: ../Extensions/BasicExtensions.cs
+// ### INCLUDE: ../Extensions/NumericalExtensions.cs
+
+// ### INCLUDE: ../Reflection/ClassDescriptor.cs
+// ### INCLUDE: ../Reflection/StaticReflection.cs
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
 
+
+using System.Collections;
+using System.Linq;
 
 namespace Source.HRON
 {
@@ -368,7 +377,7 @@ namespace Source.HRON
 
         void AddEntity(string name, IHRONEntity entity)
         {
-            m_stack.Peek().Pairs.Add(new HRONObject.Pair(name, entity));
+            Top.Pairs.Add(new HRONObject.Pair(name, entity));
         }
 
         public void Error(int lineNo, SubString line, HRON.ParseError parseError)
@@ -383,11 +392,18 @@ namespace Source.HRON
         {
             public readonly ClassDescriptor ClassDescriptor;
             public readonly object Value;
+            public readonly HashSet<MemberDescriptor> MembersAssignedTo; 
 
-            public Item(Type type)
+            public Item (Type type) : this()
             {
+                if (type == null)
+                {
+                    return;
+                }
+
                 ClassDescriptor = ClassDescriptor.GetClassDescriptor(type);
                 Value = ClassDescriptor.Creator();
+                MembersAssignedTo = new HashSet<MemberDescriptor>();
             }
         }
 
@@ -403,9 +419,14 @@ namespace Source.HRON
             m_stack.Push(new Item(typeof(T)));
         }
 
+        Item Top
+        {
+            get { return m_stack.Peek(); }
+        }
+
         public T Instance
         {
-            get { return (T) m_stack.Peek().Value; }
+            get { return (T) Top.Value; }
         }
 
         public void Comment(int indent, SubString comment)
@@ -414,12 +435,20 @@ namespace Source.HRON
 
         public void Value_Begin(SubString name)
         {
+            if (Top.Value == null)
+            {
+                return;
+            }
             m_firstLine = true;
             m_value.Clear();
         }
 
         public void Value_Line(SubString value)
         {
+            if (Top.Value == null)
+            {
+                return;
+            }
             if (m_firstLine)
             {
                 m_firstLine = false;
@@ -431,55 +460,270 @@ namespace Source.HRON
             m_value.Append(value);
         }
 
+        static bool IsAssignableFromString (Type type)
+        {
+            return
+                    type == typeof(string)
+                ||  type == typeof(object)
+                ;
+        }
+
         public void Value_End(SubString name)
         {
-            var top = m_stack.Peek();
-            MemberDescriptor memberDescriptor;
+            var top = Top;
+            if (top.Value == null)
+            {
+                return;
+            }
 
-            if (!top.ClassDescriptor.Members.TryGetValue(
-                name.ToString (), 
-                out memberDescriptor
-                ))
+            var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+            if (memberDescriptor == null)
             {
                 // TODO: Log?
                 return;
             }
 
-            if (!memberDescriptor.HasSetter)
+            var value = m_value.ToString();
+
+            if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
             {
-                // TODO: Log?
-                return;
+                var list = (IList)memberDescriptor.Getter(top.Value);
+                var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+
+                if (list == null)
+                {
+                    if (!memberDescriptor.HasSetter)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    if (!listClassDescriptor.HasCreator)
+                    {
+                        // TODO: Log?
+                        return;                        
+                    }
+
+                    list = (IList)listClassDescriptor.Creator();
+
+                    memberDescriptor.Setter(top.Value, list);
+                    top.MembersAssignedTo.Add(memberDescriptor);
+                }
+
+                var possibleListType = memberDescriptor
+                    .MemberType
+                    .GetInterfaces()
+                    .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
+                    ;
+
+                if (possibleListType == null)
+                {
+                    list.Add (value);
+                    return;
+                }
+
+                if (!possibleListType.IsGenericType)
+                {
+                    list.Add (value);
+                    return;
+                }
+
+                var itemType = possibleListType.GetGenericArguments()[0];
+
+                if (IsAssignableFromString(itemType))
+                {
+                    list.Add (value);
+                    return;
+                }
+
+                var parsedValue = value.Parse(
+                    Config.DefaultCulture,
+                    itemType,
+                    null
+                    );
+
+                if (parsedValue == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+
+                list.Add(parsedValue);
             }
-
-            if (memberDescriptor.MemberType == typeof(string))
+            else
             {
-                memberDescriptor.Setter(top.Value, m_value.ToString());
-            }
+                if (!memberDescriptor.HasSetter)
+                {
+                    // TODO: Log?
+                    return;
+                }
 
-            var value = m_value.ToString().Parse(
-                Config.DefaultCulture,
-                memberDescriptor.MemberType,
-                null
-                );
+                if (top.MembersAssignedTo.Contains(memberDescriptor))
+                {
+                    // TODO: Log?
+                    return;
+                }
 
-            if (value != null)
-            {
-                // TODO: Log?
-                memberDescriptor.Setter(top.Value, value);
+                if (IsAssignableFromString(memberDescriptor.MemberType))
+                {
+                    memberDescriptor.Setter(top.Value, value);
+                    return;
+                }
+
+                var parsedValue = value.Parse(
+                    Config.DefaultCulture,
+                    memberDescriptor.MemberType,
+                    null
+                    );
+
+                if (parsedValue == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+
+                memberDescriptor.Setter(top.Value, parsedValue);
+                top.MembersAssignedTo.Add(memberDescriptor);
             }
         }
 
         public void Object_Begin(SubString name)
         {
+            var top = Top;
+            if (top.Value == null)
+            {
+                return;
+            }
+
+            Type type = null;
+            try
+            {
+                var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                if (memberDescriptor == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+
+                if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                {
+                    var list = (IList) memberDescriptor.Getter(top.Value);
+                    var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+
+                    if (list == null)
+                    {
+                        if (!memberDescriptor.HasSetter)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+
+                        if (!listClassDescriptor.HasCreator)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+                    }
+
+                    var possibleListType = memberDescriptor
+                        .MemberType
+                        .GetInterfaces()
+                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
+                        ;
+
+                    if (possibleListType == null)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    var itemType = possibleListType.GetGenericArguments()[0];
+
+                    if (IsAssignableFromString(itemType))
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    type = itemType;
+                }
+                else
+                {
+                    if (!memberDescriptor.HasSetter)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    if (top.MembersAssignedTo.Contains(memberDescriptor))
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    if (IsAssignableFromString(memberDescriptor.MemberType))
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    type = memberDescriptor.MemberType;
+                }
+            }
+            finally
+            {
+                m_stack.Push(new Item(type));
+            }
         }
 
         public void Object_End(SubString name)
         {
+            var value = Top; 
+            m_stack.Pop();
+            var top = Top;
+
+            if (value.Value == null)
+            {
+                return;
+            }
+
+            if (top.Value == null)
+            {
+                return;
+            }
+
+            var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+            if (memberDescriptor == null)
+            {
+                // TODO: Log?
+                return;
+            }
+
+            if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+            {
+                var list = (IList) memberDescriptor.Getter(top.Value);
+                var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
+
+                if (list == null)
+                {
+                    list = (IList) listClassDescriptor.Creator();
+
+                    memberDescriptor.Setter(top.Value, list);
+                    top.MembersAssignedTo.Add(memberDescriptor);
+                }
+
+                list.Add(value.Value);
+            }
+            else
+            {
+                top.MembersAssignedTo.Add(memberDescriptor);
+                memberDescriptor.Setter(top.Value, value.Value);
+            }
         }
 
         public void Error(int lineNo, SubString line, HRON.ParseError parseError)
         {
-            // TODO
+            Errors.Add(new HRONParseError(lineNo, line.Value, parseError));
         }
     }
 
@@ -502,22 +746,6 @@ namespace Source.HRON
         {
             IndentIncreasedMoreThanExpected,
             TagIsNotCorrectlyFormatted,
-        }
-
-        public static void WriteDocument (
-            IHRONDocumentVisitor visitor,
-            Action<string> writeLine
-            )
-        {
-            if (visitor == null)
-            {
-                return;
-            }
-
-            if (writeLine == null)
-            {
-                return;
-            }
         }
 
         public static void VisitObject(

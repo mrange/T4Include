@@ -1,11 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using ProjectInclude.Source.Common;
-using ProjectInclude.Source.Extensions;
-
+using FileInclude.Source.Common;
+using FileInclude.Source.Extensions;
+using FileInclude.Source.HRON;
 namespace Test_Functionality
 {
+    class Config
+    {
+        public class CommonConfig
+        {
+            public string LogPath;
+            public string WelcomeMessage;
+        }
+
+        public class DataBaseConnectionConfig
+        {
+            public string Name;
+            public string ConnectionString;
+            public int TimeOut;
+        }
+
+        public CommonConfig Common { get; set; }
+
+        public List<DataBaseConnectionConfig> DataBaseConnection
+        {
+            get;
+            set;
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -26,6 +50,18 @@ namespace Test_Functionality
                     Console.WriteLine(hron);
                     var doc = HRON.WriteDocument(hron);
                     Console.WriteLine(doc);
+                }
+
+
+            }
+
+            using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
+            {
+                Config config;
+                HRONParseError[] errors;
+                if (HRON.TryParse(int.MaxValue, streamReader.ReadLines(), out config, out errors))
+                {
+                    Console.WriteLine("Success");
                 }
 
 

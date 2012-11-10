@@ -12,14 +12,12 @@
     // ----------------------------------------------------------------------------------------------
 #>
 <#
-    Namespace       = @"ProjectInclude"         ;
-    BlackList       = new []
-    {
-        BlackListFragment ("Program.cs"),
-    };
-    ProjectFileName = @"..\..\..\Source.csproj" ;
-
-
+    Namespace = "FileInclude";
+    RootPath    = @"..\..\..";
+    Includes = new []
+        {
+            Include (@"HRON\HRON.cs"),
+        };
 #>
 
-<#@ include file="$(SolutionDir)\T4\IncludeProject.ttinclude" #>
+<#@ include file="$(SolutionDir)\T4\IncludeLocalFile.ttinclude" #>

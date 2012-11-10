@@ -10,6 +10,8 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Source.Reflection
 {
     using System;
@@ -18,7 +20,6 @@ namespace Source.Reflection
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Runtime.Serialization;
 
     partial class ClassDescriptor
     {
@@ -28,6 +29,7 @@ namespace Source.Reflection
         public readonly Type Type;
         public readonly Func<object> Creator;
         public readonly Dictionary<string, MemberDescriptor> Members;
+        public readonly bool HasCreator;
 
         public ClassDescriptor(Type type)
         {
@@ -35,7 +37,6 @@ namespace Source.Reflection
             Members = Type
                 .GetMembers(
                         BindingFlags.Instance
-                    |   BindingFlags.Static
                     |   BindingFlags.Public
                     |   BindingFlags.NonPublic
                     )
@@ -44,17 +45,23 @@ namespace Source.Reflection
                 .ToDictionary(mi => mi.MemberInfo.Name)
                 ;
             Creator = GetCreator(type);
+            HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
         }
 
         Func<object> GetCreator(Type type)
         {
+            if (type.IsAbstract || type.IsInterface)
+            {
+                return s_defaultCreator;
+            }
+
             var ci = type
-                .GetConstructors(BindingFlags.Public|BindingFlags.NonPublic)
+                .GetConstructors(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic)
                 .FirstOrDefault (c => c.GetParameters ().Length == 0)
                 ;
             if (ci == null)
             {
-                return () => FormatterServices.GetUninitializedObject(type);
+                return s_defaultCreator;
             }
 
             var expr = Expression.Lambda<Func<object>>(Expression.New(ci));
@@ -63,6 +70,8 @@ namespace Source.Reflection
         }
 
         static readonly Func<Type, ClassDescriptor> s_createClassDescriptor = t => new ClassDescriptor(t);
+        static readonly Func<object> s_defaultCreator = () => null;
+
         public static ClassDescriptor GetClassDescriptor(Type type)
         {
             return s_classDescriptors.GetOrAdd(
@@ -81,6 +90,8 @@ namespace Source.Reflection
 
         public readonly bool HasGetter;
         public readonly bool HasSetter;
+        static readonly Func<object, object> s_defaultGetter = instance => null;
+        static readonly Action<object, object> s_defaultSetter = (x,v) => {};
 
         public MemberDescriptor(MemberInfo mi)
         {
@@ -91,23 +102,22 @@ namespace Source.Reflection
             var fi = mi as FieldInfo;
             if (pi != null)
             {
-                HasGetter = pi.GetGetMethod() != null;
-                HasSetter = pi.GetSetMethod() != null;
                 MemberType = pi.PropertyType;
             }
             else if (fi != null)
             {
-                HasGetter = true;
-                HasSetter = !fi.IsInitOnly;
                 MemberType = fi.FieldType;
             }
             else
             {
                 MemberType = typeof (object);
             }
+
+            HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
+            HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
         }
 
-        Func<object, object> GetGetter(MemberInfo mi)
+        static Func<object, object> GetGetter(MemberInfo mi)
         {
             var pi = mi as PropertyInfo;
             var fi = mi as FieldInfo;
@@ -117,7 +127,11 @@ namespace Source.Reflection
                 var instance = Expression.Parameter(typeof(object), "instance");
 
                 var expr = Expression.Lambda<Func<object, object>>(
-                    Expression.Property(Expression.Convert(instance, pi.DeclaringType), pi),
+                    Expression.Convert(
+                        Expression.Property(
+                            Expression.Convert(instance, pi.DeclaringType ?? typeof(object)), 
+                            pi), 
+                        typeof(object)),
                     instance);
 
                 return expr.Compile();                
@@ -127,18 +141,21 @@ namespace Source.Reflection
                 var instance = Expression.Parameter(typeof(object), "instance");
 
                 var expr = Expression.Lambda<Func<object, object>>(
-                    Expression.Field(Expression.Convert(instance, fi.DeclaringType), fi),
+                    Expression.Convert(
+                        Expression.Field(
+                            Expression.Convert(instance, fi.DeclaringType ?? typeof(object)), fi),
+                        typeof(object)),
                     instance);
 
                 return expr.Compile();
             }
             else
             {
-                return instance => null;
+                return s_defaultGetter;
             }
         }
 
-        Action<object, object> GetSetter(MemberInfo mi)
+        static Action<object, object> GetSetter(MemberInfo mi)
         {
             var pi = mi as PropertyInfo;
             var fi = mi as FieldInfo;
@@ -150,7 +167,7 @@ namespace Source.Reflection
 
                 var expr = Expression.Lambda<Action<object, object>>(
                     Expression.Assign(
-                        Expression.Property (Expression.Convert(instance, pi.DeclaringType), pi), 
+                        Expression.Property(Expression.Convert(instance, pi.DeclaringType ?? typeof(object)), pi), 
                         Expression.Convert(value, pi.PropertyType)),
                     instance,
                     value
@@ -165,7 +182,7 @@ namespace Source.Reflection
 
                 var expr = Expression.Lambda<Action<object, object>>(
                     Expression.Assign(
-                        Expression.Field(Expression.Convert(instance, fi.DeclaringType), fi),
+                        Expression.Field(Expression.Convert(instance, fi.DeclaringType ?? typeof(object)), fi),
                         Expression.Convert(value, fi.FieldType)),
                     instance,
                     value
@@ -175,7 +192,7 @@ namespace Source.Reflection
             }
             else
             {
-                return (x,v) => {};
+                return s_defaultSetter;
             }
         }
 
