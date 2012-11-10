@@ -443,9 +443,9 @@ namespace FileInclude
                         return;
                     }
     
-                    ClassDescriptor = ClassDescriptor.GetClassDescriptor(type);
-                    Value = ClassDescriptor.Creator();
-                    MembersAssignedTo = new HashSet<MemberDescriptor>();
+                    ClassDescriptor     = type.GetClassDescriptor();
+                    Value               = ClassDescriptor.Creator();
+                    MembersAssignedTo   = new HashSet<MemberDescriptor>();
                 }
             }
     
@@ -518,19 +518,65 @@ namespace FileInclude
                     return;
                 }
     
-                var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                var value = m_value.ToString();
+    
+                var classDescriptor = top.ClassDescriptor;
+                var itemName = name.ToString();
+                var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+    
                 if (memberDescriptor == null)
                 {
-                    // TODO: Log?
+                    if (classDescriptor.IsDictionaryLike)
+                    {
+                        if (!IsAssignableFromString(classDescriptor.DictionaryKeyType))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        var dictionary = (IDictionary) top.Value;
+    
+                        if (dictionary.Contains(itemName))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        var itemType = classDescriptor.DictionaryValueType;
+                        if (IsAssignableFromString(itemType))
+                        {
+                            dictionary.Add(itemName, value);
+                            return;
+                        }
+    
+                        var parsedValue = value.Parse(
+                            Config.DefaultCulture,
+                            itemType,
+                            null
+                            );
+    
+                        if (parsedValue == null)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        dictionary.Add(itemName, parsedValue);
+                    }
+                    else
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
                     return;
                 }
     
-                var value = m_value.ToString();
-    
-                if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                var memberClassDescriptor = memberDescriptor.ClassDescriptor;
+                
+                if (memberClassDescriptor.IsListLike)
                 {
                     var list = (IList)memberDescriptor.Getter(top.Value);
-                    var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
     
                     if (list == null)
                     {
@@ -540,37 +586,25 @@ namespace FileInclude
                             return;
                         }
     
-                        if (!listClassDescriptor.HasCreator)
+                        if (!memberClassDescriptor.HasCreator)
                         {
                             // TODO: Log?
                             return;                        
                         }
     
-                        list = (IList)listClassDescriptor.Creator();
+                        list = (IList)memberClassDescriptor.Creator();
+    
+                        if (list.IsReadOnly)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
     
                         memberDescriptor.Setter(top.Value, list);
                         top.MembersAssignedTo.Add(memberDescriptor);
                     }
     
-                    var possibleListType = memberDescriptor
-                        .MemberType
-                        .GetInterfaces()
-                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                        ;
-    
-                    if (possibleListType == null)
-                    {
-                        list.Add (value);
-                        return;
-                    }
-    
-                    if (!possibleListType.IsGenericType)
-                    {
-                        list.Add (value);
-                        return;
-                    }
-    
-                    var itemType = possibleListType.GetGenericArguments()[0];
+                    var itemType = memberClassDescriptor.ListItemType;
     
                     if (IsAssignableFromString(itemType))
                     {
@@ -640,17 +674,51 @@ namespace FileInclude
                 Type type = null;
                 try
                 {
-                    var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                    var classDescriptor = top.ClassDescriptor;
+                    var itemName = name.ToString();
+                    var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+    
                     if (memberDescriptor == null)
                     {
-                        // TODO: Log?
+                        if (classDescriptor.IsDictionaryLike)
+                        {
+                            if (!IsAssignableFromString(classDescriptor.DictionaryKeyType))
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+    
+                            var dictionary = (IDictionary)top.Value;
+    
+                            if (dictionary.Contains(itemName))
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+    
+                            var itemType = classDescriptor.DictionaryValueType;
+    
+                            if (IsAssignableFromString(itemType))
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+    
+                            type = itemType;
+                        }
+                        else
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
                         return;
                     }
     
-                    if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                    var memberClassDescriptor = memberDescriptor.ClassDescriptor;
+                    if (memberClassDescriptor.IsListLike)
                     {
                         var list = (IList) memberDescriptor.Getter(top.Value);
-                        var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
     
                         if (list == null)
                         {
@@ -660,26 +728,14 @@ namespace FileInclude
                                 return;
                             }
     
-                            if (!listClassDescriptor.HasCreator)
+                            if (!memberClassDescriptor.HasCreator)
                             {
                                 // TODO: Log?
                                 return;
                             }
                         }
     
-                        var possibleListType = memberDescriptor
-                            .MemberType
-                            .GetInterfaces()
-                            .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                            ;
-    
-                        if (possibleListType == null)
-                        {
-                            // TODO: Log?
-                            return;
-                        }
-    
-                        var itemType = possibleListType.GetGenericArguments()[0];
+                        var itemType = memberClassDescriptor.ListItemType;
     
                         if (IsAssignableFromString(itemType))
                         {
@@ -734,21 +790,47 @@ namespace FileInclude
                     return;
                 }
     
-                var memberDescriptor = top.ClassDescriptor.Members.Lookup(name.ToString());
+                var classDescriptor = top.ClassDescriptor;
+                var itemName = name.ToString();
+                var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+    
                 if (memberDescriptor == null)
                 {
-                    // TODO: Log?
+                    if (classDescriptor.IsDictionaryLike)
+                    {
+                        var dictionary = (IDictionary)top.Value;
+    
+                        if (dictionary.Contains(itemName))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        dictionary.Add(itemName, value);
+                    }
+                    else
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+    
                     return;
                 }
+                var memberClassDescriptor = memberDescriptor.ClassDescriptor;
     
-                if (typeof (IList).IsAssignableFrom(memberDescriptor.MemberType))
+                if (memberClassDescriptor.IsListLike)
                 {
                     var list = (IList) memberDescriptor.Getter(top.Value);
-                    var listClassDescriptor = ClassDescriptor.GetClassDescriptor(memberDescriptor.MemberType);
     
                     if (list == null)
                     {
-                        list = (IList) listClassDescriptor.Creator();
+                        list = (IList)memberClassDescriptor.Creator();
+    
+                        if (list.IsReadOnly)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
     
                         memberDescriptor.Setter(top.Value, list);
                         top.MembersAssignedTo.Add(memberDescriptor);
@@ -2493,6 +2575,8 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    using System.Collections;
+    
     namespace Source.Reflection
     {
         using System;
@@ -2502,15 +2586,30 @@ namespace FileInclude
         using System.Linq.Expressions;
         using System.Reflection;
     
+        static class ClassDescriptorExtensions
+        {
+            public static ClassDescriptor GetClassDescriptor (this Type type)
+            {
+                return ClassDescriptor.GetClassDescriptor(type);
+            }
+        }
+    
         partial class ClassDescriptor
         {
             static readonly ConcurrentDictionary<Type, ClassDescriptor> s_classDescriptors =
                 new ConcurrentDictionary<Type, ClassDescriptor>();
     
-            public readonly Type Type;
-            public readonly Func<object> Creator;
-            public readonly Dictionary<string, MemberDescriptor> Members;
-            public readonly bool HasCreator;
+            public readonly Type                                    Type                ;
+            public readonly Func<object>                            Creator             ;
+            public readonly Dictionary<string, MemberDescriptor>    Members             ;
+            public readonly bool                                    HasCreator          ;
+    
+            public readonly bool                                    IsListLike          ;
+            public readonly Type                                    ListItemType        ;
+    
+            public readonly bool                                    IsDictionaryLike    ;
+            public readonly Type                                    DictionaryKeyType   ;
+            public readonly Type                                    DictionaryValueType ;
     
             public ClassDescriptor(Type type)
             {
@@ -2527,6 +2626,43 @@ namespace FileInclude
                     ;
                 Creator = GetCreator(type);
                 HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
+    
+                IsListLike          = false;
+                IsDictionaryLike    = false;
+                ListItemType        = typeof (object);
+                DictionaryKeyType   = typeof (object);
+                DictionaryValueType = typeof (object);
+    
+                if (typeof (IDictionary).IsAssignableFrom (type))
+                {
+                    IsDictionaryLike = true;
+    
+                    var possibleDictionaryType = Type
+                        .GetInterfaces()
+                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                        ;
+    
+                    if (possibleDictionaryType != null)
+                    {
+                        var genericArguments = possibleDictionaryType.GetGenericArguments();
+                        DictionaryKeyType   = genericArguments[0];
+                        DictionaryValueType = genericArguments[1];
+                    }
+                }
+                else if (typeof (IList).IsAssignableFrom (type))
+                {
+                    IsListLike = true;
+    
+                    var possibleListType = Type
+                        .GetInterfaces()
+                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
+                        ;
+    
+                    if (possibleListType != null)
+                    {
+                        ListItemType = possibleListType.GetGenericArguments()[0];
+                    }
+                }
             }
     
             Func<object> GetCreator(Type type)
@@ -2564,15 +2700,18 @@ namespace FileInclude
     
         partial class MemberDescriptor
         {
-            public readonly MemberInfo MemberInfo;
-            public readonly Func<object, object> Getter;
-            public readonly Action<object, object> Setter;
-            public readonly Type MemberType;
+            public readonly MemberInfo              MemberInfo          ;
+            public readonly Type                    MemberType          ;
     
-            public readonly bool HasGetter;
-            public readonly bool HasSetter;
+            public readonly bool                    HasGetter           ;
+            public readonly bool                    HasSetter           ;
+            public readonly Func<object, object>    Getter              ;
+            public readonly Action<object, object>  Setter              ;
+    
+            ClassDescriptor m_lazyClassDescriptor;
+    
             static readonly Func<object, object> s_defaultGetter = instance => null;
-            static readonly Action<object, object> s_defaultSetter = (x,v) => {};
+            static readonly Action<object, object>  s_defaultSetter = (x,v) => {}       ;
     
             public MemberDescriptor(MemberInfo mi)
             {
@@ -2596,6 +2735,12 @@ namespace FileInclude
     
                 HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
                 HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+    
+            }
+    
+            public ClassDescriptor ClassDescriptor
+            {
+                get { return m_lazyClassDescriptor ?? (m_lazyClassDescriptor = MemberType.GetClassDescriptor()); }
             }
     
             static Func<object, object> GetGetter(MemberInfo mi)
@@ -2603,7 +2748,7 @@ namespace FileInclude
                 var pi = mi as PropertyInfo;
                 var fi = mi as FieldInfo;
     
-                if (pi != null && pi.GetMethod != null)
+                if (pi != null && pi.GetMethod != null && pi.GetMethod.GetParameters().Length == 0)
                 {
                     var instance = Expression.Parameter(typeof(object), "instance");
     
@@ -2641,7 +2786,7 @@ namespace FileInclude
                 var pi = mi as PropertyInfo;
                 var fi = mi as FieldInfo;
     
-                if (pi != null && pi.SetMethod != null)
+                if (pi != null && pi.SetMethod != null && pi.SetMethod.GetParameters().Length == 1)
                 {
                     var instance = Expression.Parameter(typeof(object), "instance");
                     var value = Expression.Parameter(typeof(object), "value");
@@ -2916,7 +3061,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-10T12:29:33";
+        public const string IncludeDate     = @"2012-11-10T16:22:28";
 
         public const string Include_0       = @"HRON\HRON.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";

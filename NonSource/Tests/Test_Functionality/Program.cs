@@ -1,4 +1,21 @@
-﻿using System;
+﻿// ----------------------------------------------------------------------------------------------
+// Copyright (c) Mårten Rånge.
+// ----------------------------------------------------------------------------------------------
+// This source code is subject to terms and conditions of the Microsoft Public License. A 
+// copy of the license can be found in the License.html file at the root of this distribution. 
+// If you cannot locate the  Microsoft Public License, please send an email to 
+// dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+//  by the terms of the Microsoft Public License.
+// ----------------------------------------------------------------------------------------------
+// You must not remove this notice, or any other, from this software.
+// ----------------------------------------------------------------------------------------------
+
+// ### INCLUDE: Config.cs
+// ### INCLUDE: Log.cs
+
+// ReSharper disable InconsistentNaming
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using FileInclude.Source.Common;
@@ -8,12 +25,6 @@ namespace Test_Functionality
 {
     class Config
     {
-        public class CommonConfig
-        {
-            public string LogPath;
-            public string WelcomeMessage;
-        }
-
         public class DataBaseConnectionConfig
         {
             public string Name;
@@ -21,9 +32,20 @@ namespace Test_Functionality
             public int TimeOut;
         }
 
-        public CommonConfig Common { get; set; }
+        public Dictionary<string, string> Common { get; set; }
 
         public List<DataBaseConnectionConfig> DataBaseConnection
+        {
+            get;
+            set;
+        }
+    }
+
+    class Config2
+    {
+        public Dictionary<string, string> Common { get; set; }
+
+        public List<Dictionary<string, string>> DataBaseConnection
         {
             get;
             set;
@@ -57,14 +79,12 @@ namespace Test_Functionality
 
             using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
-                Config config;
+                Config2 config;
                 HRONParseError[] errors;
                 if (HRON.TryParse(int.MaxValue, streamReader.ReadLines(), out config, out errors))
                 {
                     Console.WriteLine("Success");
                 }
-
-
             }
         }
     }
