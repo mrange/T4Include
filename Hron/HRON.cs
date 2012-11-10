@@ -14,7 +14,6 @@
 // ### INCLUDE: ../Common/Config.cs
 // ### INCLUDE: ../Common/SubString.cs
 
-// ### INCLUDE: ../Extensions/BasicExtensions.cs
 // ### INCLUDE: ../Extensions/NumericalExtensions.cs
 
 // ### INCLUDE: ../Reflection/ClassDescriptor.cs
@@ -480,7 +479,7 @@ namespace Source.HRON
 
             var classDescriptor = top.ClassDescriptor;
             var itemName = name.ToString();
-            var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+            var memberDescriptor = classDescriptor.FindMember(itemName);
 
             if (memberDescriptor == null)
             {
@@ -601,6 +600,7 @@ namespace Source.HRON
                 if (IsAssignableFromString(memberDescriptor.MemberType))
                 {
                     memberDescriptor.Setter(top.Value, value);
+                    top.MembersAssignedTo.Add(memberDescriptor);
                     return;
                 }
 
@@ -634,7 +634,7 @@ namespace Source.HRON
             {
                 var classDescriptor = top.ClassDescriptor;
                 var itemName = name.ToString();
-                var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+                var memberDescriptor = classDescriptor.FindMember (itemName);
 
                 if (memberDescriptor == null)
                 {
@@ -662,7 +662,7 @@ namespace Source.HRON
                             return;
                         }
 
-                        type = itemType;
+                        type = itemType.GetClassDescriptor().NonNullableType;
                     }
                     else
                     {
@@ -701,7 +701,7 @@ namespace Source.HRON
                         return;
                     }
 
-                    type = itemType;
+                    type = itemType.GetClassDescriptor().NonNullableType;
                 }
                 else
                 {
@@ -723,7 +723,7 @@ namespace Source.HRON
                         return;
                     }
 
-                    type = memberDescriptor.MemberType;
+                    type = memberDescriptor.ClassDescriptor.NonNullableType;
                 }
             }
             finally
@@ -750,7 +750,7 @@ namespace Source.HRON
 
             var classDescriptor = top.ClassDescriptor;
             var itemName = name.ToString();
-            var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+            var memberDescriptor = classDescriptor.FindMember (itemName);
 
             if (memberDescriptor == null)
             {

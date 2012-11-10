@@ -33,7 +33,8 @@ namespace Source.Extensions
     {
 #>
 #if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
-                { typeof(<#=nd.Name#>), (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(<#=nd.Name#>)  , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(<#=nd.Name#>?) , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 <#
     }

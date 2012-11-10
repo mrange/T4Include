@@ -36,10 +36,14 @@ namespace Source.Reflection
         static readonly ConcurrentDictionary<Type, ClassDescriptor> s_classDescriptors =
             new ConcurrentDictionary<Type, ClassDescriptor>();
 
+        public readonly Dictionary<string, MemberDescriptor>    m_members           ;
+
         public readonly Type                                    Type                ;
         public readonly Func<object>                            Creator             ;
-        public readonly Dictionary<string, MemberDescriptor>    Members             ;
         public readonly bool                                    HasCreator          ;
+
+        public readonly bool                                    IsNullable          ;
+        public readonly Type                                    NonNullableType     ;
 
         public readonly bool                                    IsListLike          ;
         public readonly Type                                    ListItemType        ;
@@ -51,7 +55,7 @@ namespace Source.Reflection
         public ClassDescriptor(Type type)
         {
             Type = type ?? typeof(object);
-            Members = Type
+            m_members = Type
                 .GetMembers(
                         BindingFlags.Instance
                     |   BindingFlags.Public
@@ -61,8 +65,11 @@ namespace Source.Reflection
                 .Select(mi => new MemberDescriptor(mi))
                 .ToDictionary(mi => mi.MemberInfo.Name)
                 ;
-            Creator = GetCreator(type);
+            Creator = GetCreator(Type);
             HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
+
+            IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
+            NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
 
             IsListLike          = false;
             IsDictionaryLike    = false;
@@ -70,7 +77,7 @@ namespace Source.Reflection
             DictionaryKeyType   = typeof (object);
             DictionaryValueType = typeof (object);
 
-            if (typeof (IDictionary).IsAssignableFrom (type))
+            if (typeof (IDictionary).IsAssignableFrom (Type))
             {
                 IsDictionaryLike = true;
 
@@ -86,7 +93,7 @@ namespace Source.Reflection
                     DictionaryValueType = genericArguments[1];
                 }
             }
-            else if (typeof (IList).IsAssignableFrom (type))
+            else if (typeof (IList).IsAssignableFrom (Type))
             {
                 IsListLike = true;
 
@@ -102,6 +109,21 @@ namespace Source.Reflection
             }
         }
 
+        public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
+        {
+            MemberDescriptor value;
+            if (!m_members.TryGetValue(name ?? "", out value))
+            {
+                return null;
+            }
+
+            return      (!requirePublicGet || value.HasPublicGetter)
+                   &&   (!requirePublicSet || value.HasPublicSetter)
+                        ?   value
+                        :   null
+                        ;
+        }
+
         Func<object> GetCreator(Type type)
         {
             if (type.IsAbstract || type.IsInterface)
@@ -109,18 +131,22 @@ namespace Source.Reflection
                 return s_defaultCreator;
             }
 
+            if (type.IsValueType)
+            {
+                return Expression.Lambda<Func<object>>(Expression.Convert (Expression.New(type), typeof(object))).Compile();                
+            }
+
             var ci = type
                 .GetConstructors(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic)
                 .FirstOrDefault (c => c.GetParameters ().Length == 0)
                 ;
+
             if (ci == null)
             {
                 return s_defaultCreator;
             }
 
-            var expr = Expression.Lambda<Func<object>>(Expression.New(ci));
-
-            return expr.Compile();
+            return Expression.Lambda<Func<object>>(Expression.New(ci)).Compile();
         }
 
         static readonly Func<Type, ClassDescriptor> s_createClassDescriptor = t => new ClassDescriptor(t);
@@ -140,6 +166,9 @@ namespace Source.Reflection
         public readonly MemberInfo              MemberInfo          ;
         public readonly Type                    MemberType          ;
 
+        public readonly bool                    HasPublicGetter     ;
+        public readonly bool                    HasPublicSetter     ;
+
         public readonly bool                    HasGetter           ;
         public readonly bool                    HasSetter           ;
         public readonly Func<object, object>    Getter              ;
@@ -155,23 +184,28 @@ namespace Source.Reflection
             MemberInfo = mi;
             Getter = GetGetter(mi);
             Setter = GetSetter(mi);
+
+            HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
+            HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+
             var pi = mi as PropertyInfo;
             var fi = mi as FieldInfo;
             if (pi != null)
             {
-                MemberType = pi.PropertyType;
+                MemberType      =   pi.PropertyType                     ;
+                HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
+                HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
             }
             else if (fi != null)
             {
-                MemberType = fi.FieldType;
+                MemberType      = fi.FieldType;
+                HasPublicGetter    =   HasGetter && fi.IsPublic    ;
+                HasPublicSetter    =   HasSetter && fi.IsPublic    ;
             }
             else
             {
                 MemberType = typeof (object);
             }
-
-            HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-            HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
 
         }
 

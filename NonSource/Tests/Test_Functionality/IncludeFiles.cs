@@ -15,27 +15,27 @@
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/SubString.cs
-// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Extensions/NumericalExtensions.cs
 // @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
 // @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
-// @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -522,7 +522,7 @@ namespace FileInclude
     
                 var classDescriptor = top.ClassDescriptor;
                 var itemName = name.ToString();
-                var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+                var memberDescriptor = classDescriptor.FindMember(itemName);
     
                 if (memberDescriptor == null)
                 {
@@ -676,7 +676,7 @@ namespace FileInclude
                 {
                     var classDescriptor = top.ClassDescriptor;
                     var itemName = name.ToString();
-                    var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+                    var memberDescriptor = classDescriptor.FindMember (itemName);
     
                     if (memberDescriptor == null)
                     {
@@ -704,7 +704,7 @@ namespace FileInclude
                                 return;
                             }
     
-                            type = itemType;
+                            type = itemType.GetClassDescriptor().NonNullableType;
                         }
                         else
                         {
@@ -743,7 +743,7 @@ namespace FileInclude
                             return;
                         }
     
-                        type = itemType;
+                        type = itemType.GetClassDescriptor().NonNullableType;
                     }
                     else
                     {
@@ -765,7 +765,7 @@ namespace FileInclude
                             return;
                         }
     
-                        type = memberDescriptor.MemberType;
+                        type = memberDescriptor.ClassDescriptor.NonNullableType;
                     }
                 }
                 finally
@@ -792,7 +792,7 @@ namespace FileInclude
     
                 var classDescriptor = top.ClassDescriptor;
                 var itemName = name.ToString();
-                var memberDescriptor = classDescriptor.Members.Lookup(itemName);
+                var memberDescriptor = classDescriptor.FindMember (itemName);
     
                 if (memberDescriptor == null)
                 {
@@ -1148,6 +1148,271 @@ namespace FileInclude
     // You must not remove this notice, or any other, from this software.
     // ----------------------------------------------------------------------------------------------
     
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Globalization;
+    
+        static partial class Log
+        {
+            static partial void Partial_LogMessage (Level level, string message);
+            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
+    
+            public static void LogMessage (Level level, string format, params object[] args)
+            {
+                try
+                {
+                    Partial_LogMessage (level, GetMessage (format, args));
+                }
+                catch (Exception exc)
+                {
+                    Partial_ExceptionOnLog (level, format, args, exc);
+                }
+                
+            }
+    
+            static string GetMessage (string format, object[] args)
+            {
+                format = format ?? "";
+                try
+                {
+                    return (args == null || args.Length == 0)
+                               ? format
+                               : string.Format (Config.DefaultCulture, format, args)
+                        ;
+                }
+                catch (FormatException)
+                {
+    
+                    return format;
+                }
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Globalization;
+        using System.IO;
+        using System.Reflection;
+    
+        using Source.Common;
+    
+        static partial class BasicExtensions
+        {
+            public static bool IsNullOrWhiteSpace (this string v)
+            {
+                return string.IsNullOrWhiteSpace (v);
+            }
+    
+            public static bool IsNullOrEmpty (this string v)
+            {
+                return string.IsNullOrEmpty (v);
+            }
+    
+            public static string DefaultTo (this string v, string defaultValue = null)
+            {
+                return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
+            }
+    
+            public static IEnumerable<T> DefaultTo<T>(
+                this IEnumerable<T> values, 
+                IEnumerable<T> defaultValue = null
+                )
+            {
+                return values ?? defaultValue ?? Array<T>.Empty;
+            }
+    
+            public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
+            {
+                return values ?? defaultValue ?? Array<T>.Empty;
+            }
+    
+            public static T DefaultTo<T>(this T v, T defaultValue = default (T))
+                where T : struct, IEquatable<T>
+            {
+                return !v.Equals (default (T)) ? v : defaultValue;
+            }
+    
+            public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
+            {
+                return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
+            }
+    
+            public static string FormatWith (this string format, params object[] args)
+            {
+                return format.FormatWith (Config.DefaultCulture, args);
+            }
+    
+            public static TValue Lookup<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary, 
+                TKey key, 
+                TValue defaultValue = default (TValue))
+            {
+                if (dictionary == null)
+                {
+                    return defaultValue;
+                }
+    
+                TValue value;
+                return dictionary.TryGetValue (key, out value) ? value : defaultValue;
+            }
+    
+            public static TValue GetOrAdd<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary, 
+                TKey key, 
+                TValue defaultValue = default (TValue))
+            {
+                if (dictionary == null)
+                {
+                    return defaultValue;
+                }
+    
+                TValue value;
+                if (!dictionary.TryGetValue (key, out value))
+                {
+                    value = defaultValue;
+                    dictionary[key] = value;
+                }
+    
+                return value;
+            }
+    
+            public static TValue GetOrAdd<TKey, TValue>(
+                this IDictionary<TKey, TValue> dictionary,
+                TKey key,
+                Func<TValue> valueCreator
+                )
+            {
+                if (dictionary == null)
+                {
+                    return valueCreator ();
+                }
+    
+                TValue value;
+                if (!dictionary.TryGetValue (key, out value))
+                {
+                    value = valueCreator ();
+                    dictionary[key] = value;
+                }
+    
+                return value;
+            }
+    
+            public static void DisposeNoThrow (this IDisposable disposable)
+            {
+                try
+                {
+                    if (disposable != null)
+                    {
+                        disposable.Dispose ();
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("DisposeNoThrow: Dispose threw: {0}", exc);
+                }
+            }
+    
+            public static TTo CastTo<TTo> (this object value, TTo defaultValue)
+            {
+                return value is TTo ? (TTo) value : defaultValue;
+            }
+    
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            {
+                values = values ?? Array<string>.Empty;
+                delimiter = delimiter ?? ", ";
+    
+                return string.Join(delimiter, values);
+            }
+    
+            public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
+            {
+                defaultValue = defaultValue ?? "";
+    
+                if (assembly == null)
+                {
+                    return defaultValue;
+                }
+    
+                var stream = assembly.GetManifestResourceStream(name ?? "");
+                if (stream == null)
+                {
+                    return defaultValue;
+                }
+    
+                using (stream)
+                using (var streamReader = new StreamReader (stream))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+    
+            public static IEnumerable<string> ReadLines(this TextReader textReader)
+            {
+                if (textReader == null)
+                {
+                    yield break;
+                }
+    
+                string line;
+    
+                while ((line = textReader.ReadLine()) != null)
+                {
+                    yield return line;
+                }
+            }
+    
+            public static IEnumerable<Type> GetInheritanceChain (this Type type)
+            {
+                while (type != null)
+                {
+                    yield return type;
+                    type = type.BaseType;
+                }
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
     namespace Source.Common
     {
         static class Array<T>
@@ -1455,211 +1720,6 @@ namespace FileInclude
 // ############################################################################
 namespace FileInclude
 {
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    
-    namespace Source.Extensions
-    {
-        using System;
-        using System.Collections.Generic;
-        using System.Globalization;
-        using System.IO;
-        using System.Reflection;
-    
-        using Source.Common;
-    
-        static partial class BasicExtensions
-        {
-            public static bool IsNullOrWhiteSpace (this string v)
-            {
-                return string.IsNullOrWhiteSpace (v);
-            }
-    
-            public static bool IsNullOrEmpty (this string v)
-            {
-                return string.IsNullOrEmpty (v);
-            }
-    
-            public static string DefaultTo (this string v, string defaultValue = null)
-            {
-                return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
-            }
-    
-            public static IEnumerable<T> DefaultTo<T>(
-                this IEnumerable<T> values, 
-                IEnumerable<T> defaultValue = null
-                )
-            {
-                return values ?? defaultValue ?? Array<T>.Empty;
-            }
-    
-            public static T[] DefaultTo<T>(this T[] values, T[] defaultValue = null)
-            {
-                return values ?? defaultValue ?? Array<T>.Empty;
-            }
-    
-            public static T DefaultTo<T>(this T v, T defaultValue = default (T))
-                where T : struct, IEquatable<T>
-            {
-                return !v.Equals (default (T)) ? v : defaultValue;
-            }
-    
-            public static string FormatWith (this string format, CultureInfo cultureInfo, params object[] args)
-            {
-                return string.Format (cultureInfo, format ?? "", args.DefaultTo ());
-            }
-    
-            public static string FormatWith (this string format, params object[] args)
-            {
-                return format.FormatWith (Config.DefaultCulture, args);
-            }
-    
-            public static TValue Lookup<TKey, TValue>(
-                this IDictionary<TKey, TValue> dictionary, 
-                TKey key, 
-                TValue defaultValue = default (TValue))
-            {
-                if (dictionary == null)
-                {
-                    return defaultValue;
-                }
-    
-                TValue value;
-                return dictionary.TryGetValue (key, out value) ? value : defaultValue;
-            }
-    
-            public static TValue GetOrAdd<TKey, TValue>(
-                this IDictionary<TKey, TValue> dictionary, 
-                TKey key, 
-                TValue defaultValue = default (TValue))
-            {
-                if (dictionary == null)
-                {
-                    return defaultValue;
-                }
-    
-                TValue value;
-                if (!dictionary.TryGetValue (key, out value))
-                {
-                    value = defaultValue;
-                    dictionary[key] = value;
-                }
-    
-                return value;
-            }
-    
-            public static TValue GetOrAdd<TKey, TValue>(
-                this IDictionary<TKey, TValue> dictionary,
-                TKey key,
-                Func<TValue> valueCreator
-                )
-            {
-                if (dictionary == null)
-                {
-                    return valueCreator ();
-                }
-    
-                TValue value;
-                if (!dictionary.TryGetValue (key, out value))
-                {
-                    value = valueCreator ();
-                    dictionary[key] = value;
-                }
-    
-                return value;
-            }
-    
-            public static void DisposeNoThrow (this IDisposable disposable)
-            {
-                try
-                {
-                    if (disposable != null)
-                    {
-                        disposable.Dispose ();
-                    }
-                }
-                catch (Exception exc)
-                {
-                    Log.Exception ("DisposeNoThrow: Dispose threw: {0}", exc);
-                }
-            }
-    
-            public static TTo CastTo<TTo> (this object value, TTo defaultValue)
-            {
-                return value is TTo ? (TTo) value : defaultValue;
-            }
-    
-            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
-            {
-                values = values ?? Array<string>.Empty;
-                delimiter = delimiter ?? ", ";
-    
-                return string.Join(delimiter, values);
-            }
-    
-            public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
-            {
-                defaultValue = defaultValue ?? "";
-    
-                if (assembly == null)
-                {
-                    return defaultValue;
-                }
-    
-                var stream = assembly.GetManifestResourceStream(name ?? "");
-                if (stream == null)
-                {
-                    return defaultValue;
-                }
-    
-                using (stream)
-                using (var streamReader = new StreamReader (stream))
-                {
-                    return streamReader.ReadToEnd();
-                }
-            }
-    
-            public static IEnumerable<string> ReadLines(this TextReader textReader)
-            {
-                if (textReader == null)
-                {
-                    yield break;
-                }
-    
-                string line;
-    
-                while ((line = textReader.ReadLine()) != null)
-                {
-                    yield return line;
-                }
-            }
-    
-            public static IEnumerable<Type> GetInheritanceChain (this Type type)
-            {
-                while (type != null)
-                {
-                    yield return type;
-                    type = type.BaseType;
-                }
-            }
-        }
-    }
-}
-
-// ############################################################################
-namespace FileInclude
-{
     
     
     
@@ -1691,31 +1751,40 @@ namespace FileInclude
             static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
                 {
     #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-                    { typeof(Byte), (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-                    { typeof(Int16), (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-                    { typeof(Int32), (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-                    { typeof(Int64), (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-                    { typeof(Single), (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-                    { typeof(Double), (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-                    { typeof(Decimal), (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-                    { typeof(TimeSpan), (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-                    { typeof(DateTime), (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
     #endif
                 };
     
@@ -2599,10 +2668,14 @@ namespace FileInclude
             static readonly ConcurrentDictionary<Type, ClassDescriptor> s_classDescriptors =
                 new ConcurrentDictionary<Type, ClassDescriptor>();
     
+            public readonly Dictionary<string, MemberDescriptor>    m_members           ;
+    
             public readonly Type                                    Type                ;
             public readonly Func<object>                            Creator             ;
-            public readonly Dictionary<string, MemberDescriptor>    Members             ;
             public readonly bool                                    HasCreator          ;
+    
+            public readonly bool                                    IsNullable          ;
+            public readonly Type                                    NonNullableType     ;
     
             public readonly bool                                    IsListLike          ;
             public readonly Type                                    ListItemType        ;
@@ -2614,7 +2687,7 @@ namespace FileInclude
             public ClassDescriptor(Type type)
             {
                 Type = type ?? typeof(object);
-                Members = Type
+                m_members = Type
                     .GetMembers(
                             BindingFlags.Instance
                         |   BindingFlags.Public
@@ -2624,8 +2697,11 @@ namespace FileInclude
                     .Select(mi => new MemberDescriptor(mi))
                     .ToDictionary(mi => mi.MemberInfo.Name)
                     ;
-                Creator = GetCreator(type);
+                Creator = GetCreator(Type);
                 HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
+    
+                IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
+                NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
     
                 IsListLike          = false;
                 IsDictionaryLike    = false;
@@ -2633,7 +2709,7 @@ namespace FileInclude
                 DictionaryKeyType   = typeof (object);
                 DictionaryValueType = typeof (object);
     
-                if (typeof (IDictionary).IsAssignableFrom (type))
+                if (typeof (IDictionary).IsAssignableFrom (Type))
                 {
                     IsDictionaryLike = true;
     
@@ -2649,7 +2725,7 @@ namespace FileInclude
                         DictionaryValueType = genericArguments[1];
                     }
                 }
-                else if (typeof (IList).IsAssignableFrom (type))
+                else if (typeof (IList).IsAssignableFrom (Type))
                 {
                     IsListLike = true;
     
@@ -2665,6 +2741,21 @@ namespace FileInclude
                 }
             }
     
+            public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
+            {
+                MemberDescriptor value;
+                if (!m_members.TryGetValue(name ?? "", out value))
+                {
+                    return null;
+                }
+    
+                return      (!requirePublicGet || value.HasPublicGetter)
+                       &&   (!requirePublicSet || value.HasPublicSetter)
+                            ?   value
+                            :   null
+                            ;
+            }
+    
             Func<object> GetCreator(Type type)
             {
                 if (type.IsAbstract || type.IsInterface)
@@ -2672,18 +2763,22 @@ namespace FileInclude
                     return s_defaultCreator;
                 }
     
+                if (type.IsValueType)
+                {
+                    return Expression.Lambda<Func<object>>(Expression.Convert (Expression.New(type), typeof(object))).Compile();                
+                }
+    
                 var ci = type
                     .GetConstructors(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic)
                     .FirstOrDefault (c => c.GetParameters ().Length == 0)
                     ;
+    
                 if (ci == null)
                 {
                     return s_defaultCreator;
                 }
     
-                var expr = Expression.Lambda<Func<object>>(Expression.New(ci));
-    
-                return expr.Compile();
+                return Expression.Lambda<Func<object>>(Expression.New(ci)).Compile();
             }
     
             static readonly Func<Type, ClassDescriptor> s_createClassDescriptor = t => new ClassDescriptor(t);
@@ -2703,6 +2798,9 @@ namespace FileInclude
             public readonly MemberInfo              MemberInfo          ;
             public readonly Type                    MemberType          ;
     
+            public readonly bool                    HasPublicGetter     ;
+            public readonly bool                    HasPublicSetter     ;
+    
             public readonly bool                    HasGetter           ;
             public readonly bool                    HasSetter           ;
             public readonly Func<object, object>    Getter              ;
@@ -2718,23 +2816,28 @@ namespace FileInclude
                 MemberInfo = mi;
                 Getter = GetGetter(mi);
                 Setter = GetSetter(mi);
+    
+                HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
+                HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+    
                 var pi = mi as PropertyInfo;
                 var fi = mi as FieldInfo;
                 if (pi != null)
                 {
-                    MemberType = pi.PropertyType;
+                    MemberType      =   pi.PropertyType                     ;
+                    HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
+                    HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
                 }
                 else if (fi != null)
                 {
-                    MemberType = fi.FieldType;
+                    MemberType      = fi.FieldType;
+                    HasPublicGetter    =   HasGetter && fi.IsPublic    ;
+                    HasPublicSetter    =   HasSetter && fi.IsPublic    ;
                 }
                 else
                 {
                     MemberType = typeof (object);
                 }
-    
-                HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-                HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
     
             }
     
@@ -2894,66 +2997,6 @@ namespace FileInclude
     // You must not remove this notice, or any other, from this software.
     // ----------------------------------------------------------------------------------------------
     
-    
-    
-    namespace Source.Common
-    {
-        using System;
-        using System.Globalization;
-    
-        static partial class Log
-        {
-            static partial void Partial_LogMessage (Level level, string message);
-            static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
-    
-            public static void LogMessage (Level level, string format, params object[] args)
-            {
-                try
-                {
-                    Partial_LogMessage (level, GetMessage (format, args));
-                }
-                catch (Exception exc)
-                {
-                    Partial_ExceptionOnLog (level, format, args, exc);
-                }
-                
-            }
-    
-            static string GetMessage (string format, object[] args)
-            {
-                format = format ?? "";
-                try
-                {
-                    return (args == null || args.Length == 0)
-                               ? format
-                               : string.Format (Config.DefaultCulture, format, args)
-                        ;
-                }
-                catch (FormatException)
-                {
-    
-                    return format;
-                }
-            }
-        }
-    }
-}
-
-// ############################################################################
-namespace FileInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
     // ############################################################################
     // #                                                                          #
     // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -3061,17 +3104,17 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-10T16:22:28";
+        public const string IncludeDate     = @"2012-11-10T17:12:56";
 
         public const string Include_0       = @"HRON\HRON.cs";
-        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_1       = @"Common\Log.cs";
+        public const string Include_2       = @"Extensions\BasicExtensions.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
         public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }

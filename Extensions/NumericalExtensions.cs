@@ -31,31 +31,40 @@ namespace Source.Extensions
         static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
             {
 #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-                { typeof(Byte), (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-                { typeof(Int16), (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-                { typeof(Int32), (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-                { typeof(Int64), (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-                { typeof(Single), (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-                { typeof(Double), (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-                { typeof(Decimal), (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-                { typeof(TimeSpan), (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-                { typeof(DateTime), (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
 #endif
             };
 

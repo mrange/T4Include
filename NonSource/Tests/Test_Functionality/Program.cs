@@ -25,11 +25,17 @@ namespace Test_Functionality
 {
     class Config
     {
+        public struct UserConfig
+        {
+            public string UserName;
+            public string Password;
+        }
+
         public class DataBaseConnectionConfig
         {
             public string Name;
             public string ConnectionString;
-            public int TimeOut;
+            public int? TimeOut;
         }
 
         public Dictionary<string, string> Common { get; set; }
@@ -39,6 +45,8 @@ namespace Test_Functionality
             get;
             set;
         }
+
+        public UserConfig? User;
     }
 
     class Config2
@@ -79,7 +87,7 @@ namespace Test_Functionality
 
             using (var streamReader = new StreamReader(@".\Test_Functionality.ini"))
             {
-                Config2 config;
+                Config config;
                 HRONParseError[] errors;
                 if (HRON.TryParse(int.MaxValue, streamReader.ReadLines(), out config, out errors))
                 {
