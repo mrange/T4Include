@@ -19,6 +19,8 @@
 // ReSharper disable RedundantCaseLabel
 
 
+using System.Collections.Concurrent;
+
 namespace Source.HRON
 {
     using System.Collections.Generic;

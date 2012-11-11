@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="Common\TestsFor_SubString.cs" />
     <Compile Include="HRON\TestsFor_HRON.cs" />
-    <Compile Include="HRON\Tests_HRON.cs" />
     <Compile Include="IncludeFiles.cs">
       <DependentUpon>IncludeFiles.tt</DependentUpon>
       <AutoGen>True</AutoGen>

@@ -16,7 +16,7 @@
     RootPath    = @"..\..\..";
     Includes = new []
         {
-            Include (@"HRON\HRONSerializer.cs"),
+            Include (@"HRON\HRONObjectSerializer.cs"),
             Include (@"Common\ConsoleLog.cs"),
             Include (@"Extensions\BasicExtensions.cs"),
         };

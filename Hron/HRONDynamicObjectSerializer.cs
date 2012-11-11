@@ -169,7 +169,7 @@ namespace Source.HRON
 
             foreach (var line in Value.ReadLines())
             {
-                visitor.Value_Line(line.ToSubString());
+                visitor.Value_Line(line);
             }
         }
 

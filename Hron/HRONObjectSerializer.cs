@@ -475,7 +475,7 @@ namespace Source.HRON
 
     static partial class HRONSerializer
     {
-        public static bool TryParse<T>(
+        public static bool TryParseObject<T>(
             int maxErrorCount,
             IEnumerable<SubString> lines,
             out T hronObject,
@@ -500,14 +500,14 @@ namespace Source.HRON
             return true;
         }
 
-        public static string ToString<T>(T value)
+        public static string ObjectAsString<T>(T value)
         {
             var visitor = new HRONWriterVisitor();
-            Visit(value, visitor);
+            VisitObject(value, visitor);
             return visitor.Value;
         }
 
-        public static void Visit(
+        public static void VisitObject(
             object value,
             IHRONVisitor visitor
             )
@@ -567,10 +567,12 @@ namespace Source.HRON
                 var innerValue = (string)memberValue;
                 if (!innerValue.IsNullOrEmpty())
                 {
-                    foreach (var line in ((string)memberValue).ReadLines())
+                    visitor.Value_Begin(memberName);
+                    foreach (var line in innerValue.ReadLines())
                     {
-                        visitor.Value_Line(line.ToSubString());
+                        visitor.Value_Line(line);
                     }
+                    visitor.Value_End(memberName);
                 }
             }
             else if (classDescriptor.Type.CanParse())
@@ -587,7 +589,7 @@ namespace Source.HRON
             else
             {
                 visitor.Object_Begin(memberName);
-                Visit(memberValue, visitor);
+                VisitObject(memberValue, visitor);
                 visitor.Object_End(memberName);
             }
         }
