@@ -12,7 +12,6 @@
 
 // ReSharper disable InconsistentNaming
 
-using System;
 using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;

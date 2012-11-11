@@ -13,6 +13,8 @@
 
 // ReSharper disable InconsistentNaming
 
+#pragma warning disable 0649
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,6 +52,7 @@ namespace Test_Functionality.HRON
         }
 
         static readonly string s_test_hron = File.ReadAllText(@"HRON\Test.hron");
+        static readonly string s_test2_hron = File.ReadAllText(@"HRON\Test2.hron");
 
         public void Test_Parse()
         {
@@ -67,20 +70,24 @@ namespace Test_Functionality.HRON
                 "HRON after deserialize/serialize should be identical to test case",
                 suppressValue:true
                 );
-
         }
 
         public void Test_TryParseObject()
         {
-            var lines = s_test_hron.ReadLines().ToArray();
+            var lines = s_test2_hron.ReadLines().ToArray();
             Config config;
             HRONObjectParseError[] errors;
             var result = HRONSerializer.TryParseObject(int.MaxValue, lines, out config, out errors);
             TestFor.Equality(true, result, "HRON should be parsed successfully");
 
-            //var value = HRONSerializer.ObjectAsString(config);
+            var value = HRONSerializer.ObjectAsString(config);
 
-            //Log.Info(value);
+            TestFor.Equality(
+                s_test2_hron,
+                value,
+                "HRON after deserialize/serialize to object should be identical to test case",
+                suppressValue: true
+                );
         }
     }
 

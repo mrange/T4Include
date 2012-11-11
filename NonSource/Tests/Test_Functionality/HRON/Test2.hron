@@ -1,0 +1,25 @@
+﻿@Common
+	=LogPath
+		.\MyLog.txt
+	=WelcomeMessage
+		Hello there!
+		This is a multiline script
+		
+		Third line
+@DataBaseConnection
+	=Name
+		CustomerDB
+	=ConnectionString
+		Data Source=.\SQLEXPRESS;Initial Catalog=Customers
+	=TimeOut
+		10
+@DataBaseConnection
+	=Name
+		PartnerDB
+	=ConnectionString
+		Data Source=.\SQLEXPRESS;Initial Catalog=Partners
+@User
+	=UserName
+		ATestUser
+	=Password
+		123

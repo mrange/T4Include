@@ -579,7 +579,7 @@ namespace Source.HRON
             {
                 var memberAsString = memberValue.ToString();
                 // These types are never multilined, but may be empty
-                if (string.IsNullOrEmpty(memberAsString))
+                if (!memberAsString.IsNullOrEmpty())
                 {
                     visitor.Value_Begin(memberName);
                     visitor.Value_Line(memberAsString.ToSubString());

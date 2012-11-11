@@ -630,7 +630,7 @@ namespace FileInclude
                 {
                     var memberAsString = memberValue.ToString();
                     // These types are never multilined, but may be empty
-                    if (string.IsNullOrEmpty(memberAsString))
+                    if (!memberAsString.IsNullOrEmpty())
                     {
                         visitor.Value_Begin(memberName);
                         visitor.Value_Line(memberAsString.ToSubString());
@@ -3704,7 +3704,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-11T21:39:25";
+        public const string IncludeDate     = @"2012-11-11T22:54:54";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"Common\ConsoleLog.cs";

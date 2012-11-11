@@ -58,6 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="HRON\Test2.hron">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="IncludeFiles.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IncludeFiles.cs</LastGenOutput>
