@@ -14,12 +14,10 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
 
-// ### INCLUDE: HRON.cs
+// ### INCLUDE: HRONSerializer.cs
 // ### INCLUDE: ../Extensions/NumericalExtensions.cs
 // ### INCLUDE: ../Reflection/ClassDescriptor.cs
 // ### INCLUDE: ../Reflection/StaticReflection.cs
-
-using System.IO;
 
 namespace Source.HRON
 {

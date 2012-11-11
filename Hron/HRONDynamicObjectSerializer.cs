@@ -14,13 +14,14 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
 
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Source.Common;
+// ### INCLUDE: HRONSerializer.cs
 
 namespace Source.HRON
 {
+    using System.Collections.Generic;
+    using System.Text;
+    using Source.Common;
+
     partial class HRONDynamicParseError
     {
         public readonly int LineNo;
