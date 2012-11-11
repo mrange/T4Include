@@ -46,7 +46,105 @@ namespace Source.Common
 
         public static SubString ToSubString(this SubString value, int begin = 0, int count = int.MaxValue / 2)
         {
-            return new SubString(value.BaseString, begin + value.Begin, count);
+            return new SubString(value, begin, count);
+        }
+
+        enum ParseLineState
+        {
+            NewLine     ,
+            Inline      ,
+            ConsumedCR  ,
+        }
+
+        public static IEnumerable<SubString> ReadLines(this string value)
+        {
+            return value.ToSubString().ReadLines();
+        }
+
+        public static IEnumerable<SubString> ReadLines (this SubString subString)
+        {
+            var baseString = subString.BaseString;
+            var begin = subString.Begin;
+            var end = subString.End;
+
+            var beginLine   = begin ;
+            var count       = 0     ;
+
+            var state       = ParseLineState.NewLine;
+
+            for (var iter = begin; iter < end; ++iter)
+            {
+                var ch = baseString[iter];
+
+                switch (state)
+                {
+                    case ParseLineState.ConsumedCR:
+                        yield return new SubString(baseString, beginLine, count);
+                        switch (ch)
+                        {
+                            case '\r':
+                                beginLine = iter;
+                                count = 0;
+                                state = ParseLineState.ConsumedCR;
+                                break;
+                            case '\n':
+                                state = ParseLineState.NewLine;
+                                break;
+                            default:
+                                beginLine = iter;
+                                count = 1;
+                                state = ParseLineState.Inline;
+                                break;
+                        }
+
+                        break;
+                    case ParseLineState.NewLine:
+                        beginLine   = iter;
+                        count       = 0;
+                        switch (ch)
+                        {
+                            case '\r':
+                                state = ParseLineState.ConsumedCR;
+                                break;
+                            case '\n':
+                                yield return new SubString(baseString, beginLine, count);
+                                state = ParseLineState.NewLine;
+                                break;
+                            default:
+                                state = ParseLineState.Inline;
+                                ++count;
+                                break;
+                        }
+                        break;
+                    case ParseLineState.Inline:
+                    default:
+                        switch (ch)
+                        {
+                            case '\r':
+                                state = ParseLineState.ConsumedCR;
+                                break;
+                            case '\n':
+                                yield return new SubString(baseString, beginLine, count);
+                                state = ParseLineState.NewLine;
+                                break;
+                            default:
+                                ++count;
+                                break;
+                        }
+                        break;
+                }
+            }
+
+            switch (state)
+            {
+                case ParseLineState.NewLine:
+                    break;
+                case ParseLineState.ConsumedCR:
+                case ParseLineState.Inline:
+                default:
+                    yield return new SubString(baseString, beginLine, count);
+                    break;
+            }
         }
 
     }
@@ -83,26 +181,32 @@ namespace Source.Common
 
         public static readonly SubString Empty = new SubString(null, 0,0);
 
+        public SubString(SubString subString, int begin, int count) : this()
+        {
+            m_baseString = subString.BaseString;
+            var length = subString.Length;
+
+            begin = Clamp(begin, 0, length);
+            count = Clamp(count, 0, length - begin);
+
+            var end = begin + count;
+
+            m_begin = subString.Begin + begin;
+            m_end = subString.Begin + end;
+        }
+
         public SubString(string baseString, int begin, int count) : this()
         {
             m_baseString = baseString;
             var length = BaseString.Length;
 
+            begin = Clamp(begin, 0, length);
+            count = Clamp(count, 0, length - begin);
+
             var end = begin + count;
 
-            begin = Clamp(begin, 0, length);
-            end = Clamp(end, 0, length);
-
-            if (begin < end)
-            {
-                m_begin = begin;
-                m_end = end;
-            }
-            else
-            {
-                m_begin = end;
-                m_end = begin;
-            }
+            m_begin = begin;
+            m_end = end;
         }
 
         public bool Equals(SubString other)
@@ -208,7 +312,7 @@ namespace Source.Common
                     throw new IndexOutOfRangeException("idx");
                 }
 
-                return BaseString[idx - Begin];
+                return BaseString[idx + Begin];
             }
         }
 

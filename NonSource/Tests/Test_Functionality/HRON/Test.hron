@@ -7,9 +7,9 @@
 	=WelcomeMessage
 		Hello there!
 		This is a multiline script
-
+		
 		Third line
-
+		
 @DataBaseConnection
 	=Name
 		CustomerDB

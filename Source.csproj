@@ -54,8 +54,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
-    <Compile Include="HRON\HRON.cs" />
+    <Compile Include="HRON\HRONSerializer.cs" />
     <Compile Include="Common\Log.cs" />
+    <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
+    <Compile Include="HRON\HRONObjectSerializer.cs" />
     <Compile Include="Reflection\ClassDescriptor.cs" />
     <Compile Include="Reflection\StaticReflection.cs" />
     <Compile Include="Common\SubString.cs" />

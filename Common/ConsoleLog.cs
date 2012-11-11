@@ -28,7 +28,7 @@ namespace Source.Common
             var now = DateTime.Now;
             var finalMessage = string.Format (
                 Config.DefaultCulture,
-                "{0:HHmmss} {1}:{2}",
+                "{0:HHmmss} {1} : {2}",
                 now,
                 GetLevelMessage (level),
                 message
