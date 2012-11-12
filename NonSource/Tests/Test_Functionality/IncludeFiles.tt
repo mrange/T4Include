@@ -17,6 +17,7 @@
     Includes = new []
         {
             Include (@"HRON\HRONObjectSerializer.cs"),
+            Include (@"HRON\HRONDynamicObjectSerializer.cs"),
             Include (@"Common\ConsoleLog.cs"),
             Include (@"Extensions\BasicExtensions.cs"),
         };

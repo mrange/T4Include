@@ -89,6 +89,24 @@ namespace Test_Functionality.HRON
                 suppressValue: true
                 );
         }
+
+        public void Test_TryParseDynamic()
+        {
+            var lines = s_test2_hron.ReadLines().ToArray();
+            HRONObject hronObject;
+            HRONDynamicParseError[] errors;
+            var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out hronObject, out errors);
+            TestFor.Equality(true, result, "HRON should be parsed successfully");
+
+            var value = HRONSerializer.DynamicAsString(hronObject);
+
+            TestFor.Equality(
+                s_test2_hron,
+                value,
+                "HRON after deserialize/serialize to object should be identical to test case",
+                suppressValue: true
+                );
+        }
     }
 
 }

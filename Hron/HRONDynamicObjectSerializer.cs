@@ -40,14 +40,14 @@ namespace Source.HRON
     {
         HRONSerializer.Type Type { get; }
 
-        void Apply(IHRONVisitor visitor);
+        void Apply(SubString name, IHRONVisitor visitor);
         void ToString(StringBuilder sb);
     }
 
     abstract partial class BaseHRONEntity : IHRONEntity
     {
         public abstract HRONSerializer.Type Type { get; }
-        public abstract void Apply(IHRONVisitor visitor);
+        public abstract void Apply(SubString name, IHRONVisitor visitor);
         public abstract void ToString(StringBuilder sb);
 
         public override string ToString()
@@ -100,7 +100,7 @@ namespace Source.HRON
             get { return HRONSerializer.Type.Object; }
         }
 
-        public override void Apply(IHRONVisitor visitor)
+        public void Visit (IHRONVisitor visitor)
         {
             if (visitor == null)
             {
@@ -110,24 +110,26 @@ namespace Source.HRON
             for (var index = 0; index < Pairs.Length; index++)
             {
                 var pair = Pairs[index];
-                var type = pair.Value.Type;
-                var name = pair.Name.ToSubString();
-                switch (type)
-                {
-                    case HRONSerializer.Type.Object:
-                        visitor.Object_Begin(name);
-                        pair.Value.Apply(visitor);
-                        visitor.Object_End(name);
-                        break;
-                    case HRONSerializer.Type.Value:
-                        visitor.Value_Begin(name);
-                        pair.Value.Apply(visitor);
-                        visitor.Value_End(name);
-                        break;
-                    default:
-                        break;
-                }
+                var innerName = pair.Name.ToSubString();
+                pair.Value.Apply(innerName, visitor);
             }
+        }
+
+        public override void Apply(SubString name, IHRONVisitor visitor)
+        {
+            if (visitor == null)
+            {
+                return;
+            }
+
+            visitor.Object_Begin(name);
+            for (var index = 0; index < Pairs.Length; index++)
+            {
+                var pair = Pairs[index];
+                var innerName = pair.Name.ToSubString();
+                pair.Value.Apply(innerName, visitor);
+            }
+            visitor.Object_End(name);
         }
 
         public override void ToString(StringBuilder sb)
@@ -160,17 +162,19 @@ namespace Source.HRON
             get { return HRONSerializer.Type.Value; }
         }
 
-        public override void Apply(IHRONVisitor visitor)
+        public override void Apply(SubString name, IHRONVisitor visitor)
         {
             if (visitor == null)
             {
                 return;
             }
 
+            visitor.Value_Begin(name);
             foreach (var line in Value.ReadLines())
             {
                 visitor.Value_Line(line);
             }
+            visitor.Value_End(name);
         }
 
         public override void ToString(StringBuilder sb)
@@ -288,10 +292,10 @@ namespace Source.HRON
                 return;
             }
 
-            hronObject.Apply(visitor);
+            hronObject.Visit(visitor);
         }
 
-        public static string DynamicToString (
+        public static string DynamicAsString (
             HRONObject hronObject
             )
         {
