@@ -107,38 +107,46 @@ namespace Test_Functionality.HRON
                     {
                         var connection = connections[0];
 
+                        string name = connection.Name;
+                        string connectionString = connection.ConnectionString;
+                        string timeOut = connection.TimeOut;
+
                         TestFor.Equality(
                             "CustomerDB", 
-                            (string)connection.Name, 
+                            name, 
                             "Expects CustomerDB name"
                             );
                         TestFor.Equality(
                             @"Data Source=.\SQLEXPRESS;Initial Catalog=Customers",
-                            (string)connection.ConnectionString, 
+                            connectionString, 
                             "Expects CustomerDB connection"
                             );
                         TestFor.Equality(
                             @"10",
-                            (string)connection.TimeOut, 
+                            timeOut, 
                             "Expects CustomerDB timeout"
                             );
                     }
                     {
                         var connection = connections[1];
 
+                        string name = connection.Name;
+                        string connectionString = connection.ConnectionString;
+                        string timeOut = connection.TimeOut;
+
                         TestFor.Equality(
                             "PartnerDB",
-                            (string)connection.Name, 
+                            name, 
                             "Expects PartnerDB name"
                             );
                         TestFor.Equality(
                             @"Data Source=.\SQLEXPRESS;Initial Catalog=Partners",
-                            (string)connection.ConnectionString, 
+                            connectionString, 
                             "Expects PartnerDB connection"
                             );
                         TestFor.Equality(
                             "",
-                            (string)connection.TimeOut, 
+                            timeOut, 
                             "Expects no PartnerDB timeout"
                             );
                     }
