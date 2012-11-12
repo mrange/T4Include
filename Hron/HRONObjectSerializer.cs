@@ -520,12 +520,37 @@ namespace Source.HRON
             var type = value.GetType();
             var classDescriptor = type.GetClassDescriptor();
 
-            for (var index = 0; index < classDescriptor.PublicGetMembers.Length; index++)
+            if (classDescriptor.IsDictionaryLike)
             {
-                var mi = classDescriptor.PublicGetMembers[index];
-                var memberName = mi.Name.ToSubString();
-                var memberValue = mi.Getter(value);
-                VisitMember(memberName, memberValue, visitor);
+                var dictionary = (IDictionary)value;
+                foreach (var key in dictionary.Keys)
+                {
+                    var innerValue = dictionary[key];
+                    var keyAsString = key as string;
+                    if (keyAsString != null)
+                    {
+                        VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                    }
+                }
+            }
+            else if (classDescriptor.IsListLike)
+            {
+                var list = (IList)value;
+                for (var index = 0; index < list.Count; index++)
+                {
+                    var innerValue = list[index];
+                    VisitMember(new SubString(), innerValue, visitor);
+                }
+            }
+            else
+            {
+                for (var index = 0; index < classDescriptor.PublicGetMembers.Length; index++)
+                {
+                    var mi = classDescriptor.PublicGetMembers[index];
+                    var memberName = mi.Name.ToSubString();
+                    var memberValue = mi.Getter(value);
+                    VisitMember(memberName, memberValue, visitor);
+                }
             }
         }
 

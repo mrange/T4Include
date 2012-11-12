@@ -12,6 +12,8 @@
 
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Local
+// ReSharper disable PartialTypeWithSinglePart
 
 #pragma warning disable 0649
 
@@ -127,6 +129,39 @@ namespace Test_Functionality.HRON
                     );
             }
         }
+
+        public void Test_ObjectAsString()
+        {
+
+            var dic = new Dictionary<string, object>
+            {
+                {"A", "AA"},
+                {"B", "BB"},
+                {"C", 
+                    new Dictionary<string, object>
+                        {
+                        {"AAA", "AAAA"},
+                        {"BBB", "BBBB"},
+                    }},                
+            };
+
+            var value = HRONSerializer.ObjectAsString(dic);
+
+            const string testCase = @"=A
+	AA
+=B
+	BB
+@C
+	=AAA
+		AAAA
+	=BBB
+		BBBB
+";
+
+            TestFor.Equality (testCase, value, "Serialized dictionary should have the expected value", suppressValue:true);
+
+        }
+
     }
 
 }
