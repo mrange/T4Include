@@ -78,16 +78,17 @@ namespace Test_Functionality.HRON
             Config config;
             HRONObjectParseError[] errors;
             var result = HRONSerializer.TryParseObject(int.MaxValue, lines, out config, out errors);
-            TestFor.Equality(true, result, "HRON should be parsed successfully");
+            if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
+            {
+                var value = HRONSerializer.ObjectAsString(config);
 
-            var value = HRONSerializer.ObjectAsString(config);
-
-            TestFor.Equality(
-                s_test2_hron,
-                value,
-                "HRON after deserialize/serialize to object should be identical to test case",
-                suppressValue: true
-                );
+                TestFor.Equality(
+                    s_test2_hron,
+                    value,
+                    "HRON after deserialize/serialize to object should be identical to test case",
+                    suppressValue: true
+                    );
+            }
         }
 
         public void Test_TryParseDynamic()
@@ -96,16 +97,35 @@ namespace Test_Functionality.HRON
             HRONObject hronObject;
             HRONDynamicParseError[] errors;
             var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out hronObject, out errors);
-            TestFor.Equality(true, result, "HRON should be parsed successfully");
+            if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
+            {
+                var connections = hronObject["DataBaseConnection"].ToArray();
+                if (TestFor.Equality(2, connections.Length, "Expects two database connections"))
+                {
+                    {
+                        var connection = connections[0];
 
-            var value = HRONSerializer.DynamicAsString(hronObject);
+                        TestFor.Equality("CustomerDB", connection["Name"].First().Value, "Expects CustomerDB name");
+                        TestFor.Equality(@"Data Source=.\SQLEXPRESS;Initial Catalog=Customers", connection["ConnectionString"].First().Value, "Expects CustomerDB connection");
+                        TestFor.Equality(@"10", connection["TimeOut"].First().Value, "Expects CustomerDB connection");
+                    }
+                    {
+                        var connection = connections[1];
 
-            TestFor.Equality(
-                s_test2_hron,
-                value,
-                "HRON after deserialize/serialize to object should be identical to test case",
-                suppressValue: true
-                );
+                        TestFor.Equality("PartnerDB", connection["Name"].First().Value, "Expects PartnerDB name");
+                        TestFor.Equality(@"Data Source=.\SQLEXPRESS;Initial Catalog=Partners", connection["ConnectionString"].First().Value, "Expects CustomerDB connection");
+                        TestFor.Equality(null, connection["TimeOut"].FirstOrDefault(), "Expects CustomerDB connection");
+                    }
+                }
+                var value = HRONSerializer.DynamicAsString(hronObject);
+
+                TestFor.Equality(
+                    s_test2_hron,
+                    value,
+                    "HRON after deserialize/serialize to object should be identical to test case",
+                    suppressValue: true
+                    );
+            }
         }
     }
 

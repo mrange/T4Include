@@ -669,6 +669,9 @@ namespace FileInclude
     
     
     
+    using System.Dynamic;
+    using System.Linq;
+    
     namespace Source.HRON
     {
         using System.Collections.Generic;
@@ -693,27 +696,16 @@ namespace FileInclude
         {
             HRONSerializer.Type Type { get; }
     
+            IEnumerable<IHRONEntity> this[string name] { get; }
+            string Value { get; }
+    
             void Apply(SubString name, IHRONVisitor visitor);
             void ToString(StringBuilder sb);
         }
-    
-        abstract partial class BaseHRONEntity : IHRONEntity
+        
+        sealed partial class HRONObject : IHRONEntity
         {
-            public abstract HRONSerializer.Type Type { get; }
-            public abstract void Apply(SubString name, IHRONVisitor visitor);
-            public abstract void ToString(StringBuilder sb);
-    
-            public override string ToString()
-            {
-                var sb = new StringBuilder(128);
-                ToString(sb);
-                return sb.ToString();
-            }
-        }
-    
-        sealed partial class HRONObject : BaseHRONEntity
-        {
-            public struct Pair
+            public partial struct Pair
             {
                 readonly string m_name;
                 readonly IHRONEntity m_value;
@@ -741,16 +733,42 @@ namespace FileInclude
                 }
             }
     
-            public readonly Pair[] Pairs;
+            ILookup<string, IHRONEntity> m_lookup;
+            readonly Pair[] m_pairs;
     
             public HRONObject(Pair[] pairs)
             {
-                Pairs = pairs ?? Array<Pair>.Empty;
+                m_pairs = pairs ?? Array<Pair>.Empty;
             }
     
-            public override HRONSerializer.Type Type
+            public Pair[] GetPairs ()
+            {
+                return m_pairs;
+            }
+    
+            ILookup<string, IHRONEntity> GetLookup()
+            {
+                if (m_lookup == null)
+                {
+                    m_lookup = m_pairs.ToLookup(p => p.Name, p => p.Value);
+                }
+    
+                return m_lookup;
+            }
+    
+            public HRONSerializer.Type Type
             {
                 get { return HRONSerializer.Type.Object; }
+            }
+    
+            public IEnumerable<IHRONEntity> this[string name]
+            {
+                get { return GetLookup()[name ?? ""]; }
+            }
+    
+            public string Value
+            {
+                get { return ""; }
             }
     
             public void Visit (IHRONVisitor visitor)
@@ -760,15 +778,15 @@ namespace FileInclude
                     return;
                 }
     
-                for (var index = 0; index < Pairs.Length; index++)
+                for (var index = 0; index < m_pairs.Length; index++)
                 {
-                    var pair = Pairs[index];
+                    var pair = m_pairs[index];
                     var innerName = pair.Name.ToSubString();
                     pair.Value.Apply(innerName, visitor);
                 }
             }
     
-            public override void Apply(SubString name, IHRONVisitor visitor)
+            public void Apply(SubString name, IHRONVisitor visitor)
             {
                 if (visitor == null)
                 {
@@ -776,21 +794,21 @@ namespace FileInclude
                 }
     
                 visitor.Object_Begin(name);
-                for (var index = 0; index < Pairs.Length; index++)
+                for (var index = 0; index < m_pairs.Length; index++)
                 {
-                    var pair = Pairs[index];
+                    var pair = m_pairs[index];
                     var innerName = pair.Name.ToSubString();
                     pair.Value.Apply(innerName, visitor);
                 }
                 visitor.Object_End(name);
             }
     
-            public override void ToString(StringBuilder sb)
+            public void ToString(StringBuilder sb)
             {
                 sb.Append("{Object");
-                for (var index = 0; index < Pairs.Length; index++)
+                for (var index = 0; index < m_pairs.Length; index++)
                 {
-                    var pair = Pairs[index];
+                    var pair = m_pairs[index];
                     sb.Append(", '");
                     sb.Append(pair.Name);
                     sb.Append("' : ");
@@ -798,24 +816,41 @@ namespace FileInclude
                 }
                 sb.Append('}');
             }
+    
+            public override string ToString()
+            {
+                var sb = new StringBuilder(128);
+                ToString(sb);
+                return sb.ToString();
+            }
         }
     
-        sealed partial class HRONValue : BaseHRONEntity
+        sealed partial class HRONValue : IHRONEntity
         {
-            public readonly string Value;
-            public static readonly HRONValue Empty = new HRONValue("");
+            readonly string m_value;
+            public static readonly IHRONEntity Empty = new HRONValue("");
     
             public HRONValue(string value)
             {
-                Value = value ?? "";
+                m_value = value ?? "";
             }
     
-            public override HRONSerializer.Type Type
+            public HRONSerializer.Type Type
             {
                 get { return HRONSerializer.Type.Value; }
             }
     
-            public override void Apply(SubString name, IHRONVisitor visitor)
+            public IEnumerable<IHRONEntity> this[string name]
+            {
+                get { return Array<IHRONEntity>.Empty; }
+            }
+    
+            public string Value
+            {
+                get { return m_value; }
+            }
+    
+            public void Apply(SubString name, IHRONVisitor visitor)
             {
                 if (visitor == null)
                 {
@@ -823,18 +858,25 @@ namespace FileInclude
                 }
     
                 visitor.Value_Begin(name);
-                foreach (var line in Value.ReadLines())
+                foreach (var line in m_value.ReadLines())
                 {
                     visitor.Value_Line(line);
                 }
                 visitor.Value_End(name);
             }
     
-            public override void ToString(StringBuilder sb)
+            public void ToString(StringBuilder sb)
             {
                 sb.Append('"');
-                sb.Append(Value);
+                sb.Append(m_value);
                 sb.Append('"');
+            }
+    
+            public override string ToString()
+            {
+                var sb = new StringBuilder(128);
+                ToString(sb);
+                return sb.ToString();
             }
         }
     
@@ -932,7 +974,6 @@ namespace FileInclude
             {
                 Value,
                 Object,
-                Comment,
             }
     
             public static void VisitDynamic (
@@ -4046,7 +4087,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-12T07:52:17";
+        public const string IncludeDate     = @"2012-11-12T15:03:36";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
