@@ -46,6 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\TestsFor_SubString.cs" />
+    <None Include="Generated_TestFor.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_TestFor.cs</LastGenOutput>
+    </None>
+    <Compile Include="Generated_TestFor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_TestFor.tt</DependentUpon>
+    </Compile>
     <Compile Include="HRON\TestsFor_HRON.cs" />
     <Compile Include="IncludeFiles.cs">
       <DependentUpon>IncludeFiles.tt</DependentUpon>

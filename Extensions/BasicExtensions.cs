@@ -40,7 +40,37 @@ namespace Source.Extensions
             return string.IsNullOrEmpty (v);
         }
 
-        public static string DefaultTo (this string v, string defaultValue = null)
+        public static T FirstOrReturn<T>(this T[] values, T defaultValue)
+        {
+            if (values == null)
+            {
+                return defaultValue;
+            }
+
+            if (values.Length == 0)
+            {
+                return defaultValue;
+            }
+
+            return values[0];
+        }
+
+        public static T FirstOrReturn<T>(this IEnumerable<T> values, T defaultValue)
+        {
+            if (values == null)
+            {
+                return defaultValue;
+            }
+
+            foreach (var value in values)
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
+        public static string DefaultTo(this string v, string defaultValue = null)
         {
             return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
         }
@@ -149,7 +179,7 @@ namespace Source.Extensions
             return value is TTo ? (TTo) value : defaultValue;
         }
 
-        public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+        public static string Concatenate(this IEnumerable<string> values, string delimiter = null, int capacity = 16)
         {
             values = values ?? Array<string>.Empty;
             delimiter = delimiter ?? ", ";

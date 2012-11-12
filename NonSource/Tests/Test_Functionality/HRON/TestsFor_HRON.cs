@@ -101,22 +101,47 @@ namespace Test_Functionality.HRON
             var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out hronObject, out errors);
             if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
             {
-                var connections = hronObject["DataBaseConnection"].ToArray();
-                if (TestFor.Equality(2, connections.Length, "Expects two database connections"))
+                dynamic dyn = hronObject;
+                dynamic connections = dyn.DataBaseConnection;
+                if (TestFor.Equality(2, connections.GetCount(), "Expects two database connections"))
                 {
                     {
                         var connection = connections[0];
 
-                        TestFor.Equality("CustomerDB", connection["Name"].First().Value, "Expects CustomerDB name");
-                        TestFor.Equality(@"Data Source=.\SQLEXPRESS;Initial Catalog=Customers", connection["ConnectionString"].First().Value, "Expects CustomerDB connection");
-                        TestFor.Equality(@"10", connection["TimeOut"].First().Value, "Expects CustomerDB connection");
+                        TestFor.Equality(
+                            "CustomerDB", 
+                            (string)connection.Name, 
+                            "Expects CustomerDB name"
+                            );
+                        TestFor.Equality(
+                            @"Data Source=.\SQLEXPRESS;Initial Catalog=Customers",
+                            (string)connection.ConnectionString, 
+                            "Expects CustomerDB connection"
+                            );
+                        TestFor.Equality(
+                            @"10",
+                            (string)connection.TimeOut, 
+                            "Expects CustomerDB timeout"
+                            );
                     }
                     {
                         var connection = connections[1];
 
-                        TestFor.Equality("PartnerDB", connection["Name"].First().Value, "Expects PartnerDB name");
-                        TestFor.Equality(@"Data Source=.\SQLEXPRESS;Initial Catalog=Partners", connection["ConnectionString"].First().Value, "Expects CustomerDB connection");
-                        TestFor.Equality(null, connection["TimeOut"].FirstOrDefault(), "Expects CustomerDB connection");
+                        TestFor.Equality(
+                            "PartnerDB",
+                            (string)connection.Name, 
+                            "Expects PartnerDB name"
+                            );
+                        TestFor.Equality(
+                            @"Data Source=.\SQLEXPRESS;Initial Catalog=Partners",
+                            (string)connection.ConnectionString, 
+                            "Expects PartnerDB connection"
+                            );
+                        TestFor.Equality(
+                            "",
+                            (string)connection.TimeOut, 
+                            "Expects no PartnerDB timeout"
+                            );
                     }
                 }
                 var value = HRONSerializer.DynamicAsString(hronObject);

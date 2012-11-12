@@ -16,14 +16,30 @@
 
 // ### INCLUDE: HRONSerializer.cs
 
-using System.Dynamic;
-using System.Linq;
+
 
 namespace Source.HRON
 {
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Dynamic;
+    using System.Linq;
     using System.Text;
+
     using Source.Common;
+
+    static partial class HronExtensions
+    {
+        public static IHRONEntity FirstOrEmpty (this IEnumerable<IHRONEntity> entities)
+        {
+            if (entities == null)
+            {
+                return HRONValue.Empty;
+            }
+
+            return entities.FirstOrDefault() ?? HRONValue.Empty;
+        }
+    }
 
     partial class HRONDynamicParseError
     {
@@ -41,23 +57,131 @@ namespace Source.HRON
 
     partial interface IHRONEntity
     {
-        HRONSerializer.Type Type { get; }
+        HRONSerializer.DynamicType GetDynamicType();
 
-        IEnumerable<IHRONEntity> this[string name] { get; }
-        string Value { get; }
+        IEnumerable<string>      GetMemberNames();
+        IEnumerable<IHRONEntity> GetMember(string name);
+        string GetValue();
 
         void Apply(SubString name, IHRONVisitor visitor);
         void ToString(StringBuilder sb);
     }
-    
-    sealed partial class HRONObject : IHRONEntity
+
+    sealed partial class HRONDynamicMembers : DynamicObject
     {
-        public partial struct Pair
+        readonly IHRONEntity[] m_entities;
+
+        public HRONDynamicMembers(IEnumerable<IHRONEntity> entities)
+        {
+            m_entities = (entities ?? Array<IHRONEntity>.Empty).ToArray ();
+        }
+
+        public int GetCount ()
+        {
+            return m_entities.Length;
+        }
+
+        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+        {
+            if (indexes.Length == 1 && indexes[0] is int)
+            {
+                var index = (int)indexes[0];
+                if (index < 0)
+                {
+                    result = HRONValue.Empty;
+                    return true;
+                }
+
+                if (index >= m_entities.Length)
+                {
+                    result = HRONValue.Empty;
+                    return true;
+                }
+
+                result = m_entities[index];
+                return true;
+            }
+
+            return base.TryGetIndex(binder, indexes, out result);
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            var entity = m_entities.FirstOrEmpty();
+
+            var dynamicObject = entity as DynamicObject;
+            if (dynamicObject != null)
+            {
+                return dynamicObject.TryGetMember(binder, out result);
+            }
+
+            return base.TryGetMember(binder, out result);
+        }
+
+        public override bool TryConvert(ConvertBinder binder, out object result)
+        {
+            if (binder.ReturnType == typeof(string))
+            {
+                result = m_entities.FirstOrEmpty().GetValue ();
+                return true;
+            }
+            else if (binder.ReturnType == typeof(string[]))
+            {
+                result = m_entities.Select(e => e.GetValue()).ToArray();
+                return true;
+            }
+            else if (binder.ReturnType ==typeof(object[]))
+            {
+                result = m_entities;
+                return true;
+            }
+            return base.TryConvert(binder, out result);
+        }
+    }
+
+    abstract partial class BaseHRONEntity : DynamicObject, IHRONEntity
+    {
+        public abstract HRONSerializer.DynamicType GetDynamicType();
+        public abstract IEnumerable<string> GetMemberNames();
+        public abstract IEnumerable<IHRONEntity> GetMember(string name);
+        public abstract string GetValue();
+
+        public abstract void Apply(SubString name, IHRONVisitor visitor);
+        public abstract void ToString(StringBuilder sb);
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder(128);
+            ToString(sb);
+            return sb.ToString();
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            result = new HRONDynamicMembers(GetMember(binder.Name));
+            return true;
+        }
+
+        public override bool TryConvert(ConvertBinder binder, out object result)
+        {
+            if (binder.ReturnType == typeof(string))
+            {
+                result = GetValue();
+                return true;
+            }
+            return base.TryConvert(binder, out result);
+        }
+
+    }
+
+    sealed partial class HRONObject : BaseHRONEntity
+    {
+        public partial struct Member
         {
             readonly string m_name;
             readonly IHRONEntity m_value;
 
-            public Pair(string name, IHRONEntity value)
+            public Member(string name, IHRONEntity value)
                 : this()
             {
                 m_name = name;
@@ -81,41 +205,45 @@ namespace Source.HRON
         }
 
         ILookup<string, IHRONEntity> m_lookup;
-        readonly Pair[] m_pairs;
+        readonly Member[] m_members;
 
-        public HRONObject(Pair[] pairs)
+        public HRONObject(Member[] members)
         {
-            m_pairs = pairs ?? Array<Pair>.Empty;
-        }
-
-        public Pair[] GetPairs ()
-        {
-            return m_pairs;
+            m_members = members ?? Array<Member>.Empty;
         }
 
         ILookup<string, IHRONEntity> GetLookup()
         {
             if (m_lookup == null)
             {
-                m_lookup = m_pairs.ToLookup(p => p.Name, p => p.Value);
+                m_lookup = m_members.ToLookup(p => p.Name, p => p.Value);
             }
 
             return m_lookup;
         }
 
-        public HRONSerializer.Type Type
+        public override HRONSerializer.DynamicType GetDynamicType()
         {
-            get { return HRONSerializer.Type.Object; }
+            return HRONSerializer.DynamicType.Object;
         }
 
-        public IEnumerable<IHRONEntity> this[string name]
+        public override IEnumerable<string> GetMemberNames()
         {
-            get { return GetLookup()[name ?? ""]; }
+            for (int index = 0; index < m_members.Length; index++)
+            {
+                var pair = m_members[index];
+                yield return pair.Name;
+            }
         }
 
-        public string Value
+        public override IEnumerable<IHRONEntity> GetMember(string name)
         {
-            get { return ""; }
+            return GetLookup()[name ?? ""]; 
+        }
+
+        public override string GetValue()
+        {
+            return "";
         }
 
         public void Visit (IHRONVisitor visitor)
@@ -125,15 +253,15 @@ namespace Source.HRON
                 return;
             }
 
-            for (var index = 0; index < m_pairs.Length; index++)
+            for (var index = 0; index < m_members.Length; index++)
             {
-                var pair = m_pairs[index];
+                var pair = m_members[index];
                 var innerName = pair.Name.ToSubString();
                 pair.Value.Apply(innerName, visitor);
             }
         }
 
-        public void Apply(SubString name, IHRONVisitor visitor)
+        public override void Apply(SubString name, IHRONVisitor visitor)
         {
             if (visitor == null)
             {
@@ -141,21 +269,21 @@ namespace Source.HRON
             }
 
             visitor.Object_Begin(name);
-            for (var index = 0; index < m_pairs.Length; index++)
+            for (var index = 0; index < m_members.Length; index++)
             {
-                var pair = m_pairs[index];
+                var pair = m_members[index];
                 var innerName = pair.Name.ToSubString();
                 pair.Value.Apply(innerName, visitor);
             }
             visitor.Object_End(name);
         }
 
-        public void ToString(StringBuilder sb)
+        public override void ToString(StringBuilder sb)
         {
             sb.Append("{Object");
-            for (var index = 0; index < m_pairs.Length; index++)
+            for (var index = 0; index < m_members.Length; index++)
             {
-                var pair = m_pairs[index];
+                var pair = m_members[index];
                 sb.Append(", '");
                 sb.Append(pair.Name);
                 sb.Append("' : ");
@@ -163,16 +291,9 @@ namespace Source.HRON
             }
             sb.Append('}');
         }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder(128);
-            ToString(sb);
-            return sb.ToString();
-        }
     }
 
-    sealed partial class HRONValue : IHRONEntity
+    sealed partial class HRONValue : BaseHRONEntity
     {
         readonly string m_value;
         public static readonly IHRONEntity Empty = new HRONValue("");
@@ -182,22 +303,27 @@ namespace Source.HRON
             m_value = value ?? "";
         }
 
-        public HRONSerializer.Type Type
+        public override HRONSerializer.DynamicType GetDynamicType()
         {
-            get { return HRONSerializer.Type.Value; }
+            return HRONSerializer.DynamicType.Value;
         }
 
-        public IEnumerable<IHRONEntity> this[string name]
+        public override IEnumerable<string> GetMemberNames()
         {
-            get { return Array<IHRONEntity>.Empty; }
+            return Array<string>.Empty;
         }
 
-        public string Value
+        public override IEnumerable<IHRONEntity> GetMember(string name)
         {
-            get { return m_value; }
+            return Array<IHRONEntity>.Empty;
         }
 
-        public void Apply(SubString name, IHRONVisitor visitor)
+        public override string GetValue()
+        {
+            return m_value;
+        }
+
+        public override void Apply(SubString name, IHRONVisitor visitor)
         {
             if (visitor == null)
             {
@@ -212,18 +338,11 @@ namespace Source.HRON
             visitor.Value_End(name);
         }
 
-        public void ToString(StringBuilder sb)
+        public override void ToString(StringBuilder sb)
         {
             sb.Append('"');
             sb.Append(m_value);
             sb.Append('"');
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder(128);
-            ToString(sb);
-            return sb.ToString();
         }
     }
 
@@ -232,13 +351,13 @@ namespace Source.HRON
         public struct Item
         {
             public readonly SubString Name;
-            public readonly List<HRONObject.Pair> Pairs;
+            public readonly List<HRONObject.Member> Pairs;
 
             public Item(SubString name)
                 : this()
             {
                 Name = name;
-                Pairs = new List<HRONObject.Pair>();
+                Pairs = new List<HRONObject.Member>();
             }
         }
 
@@ -305,7 +424,7 @@ namespace Source.HRON
 
         void AddEntity(string name, IHRONEntity entity)
         {
-            Top.Pairs.Add(new HRONObject.Pair(name, entity));
+            Top.Pairs.Add(new HRONObject.Member(name, entity));
         }
 
         public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
@@ -317,7 +436,7 @@ namespace Source.HRON
 
     static partial class HRONSerializer
     {
-        public enum Type
+        public enum DynamicType
         {
             Value,
             Object,

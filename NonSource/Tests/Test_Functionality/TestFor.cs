@@ -24,12 +24,15 @@ namespace Test_Functionality
         public static int FailureCount;
 
         const string NullValue = "<NULL>";
-        public static bool Equality (object expected, object found, string message, bool suppressValue = false)
-        {            
+
+        static bool SequenceEqualityImpl<T>(IEnumerable<T> expected, IEnumerable<T> found, string message, bool suppressValue)
+        {
+            object oExpected = expected;
+            object oFound = found;
             var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
                 .FormatWith(
-                    suppressValue ? (expected ?? new object()).GetType().Name: expected ?? NullValue,
-                    suppressValue ? (found ?? new object()).GetType().Name : found ?? NullValue,
+                    suppressValue ? (oExpected ?? NullValue).GetType().Name : oExpected ?? NullValue,
+                    suppressValue ? (oFound ?? NullValue).GetType().Name : oFound ?? NullValue,
                     message
                     );
             try
@@ -42,14 +45,14 @@ namespace Test_Functionality
                     return true;
                 }
 
-                if (expected != null && found == null)
+                if (oExpected != null && oFound == null)
                 {
                     Log.Error(finalMessage);
                     ++FailureCount;
                     return false;
                 }
 
-                if (expected == null && found != null)
+                if (oExpected == null && oFound != null)
                 {
                     Log.Error(finalMessage);
                     ++FailureCount;
@@ -62,19 +65,61 @@ namespace Test_Functionality
                     return true;
                 }
 
-                var sExpected = expected as IStructuralEquatable;
-                var sFound = found as IStructuralEquatable;
-
-                if (sExpected != null && sFound != null && sExpected.Equals(sFound, EqualityComparer<object>.Default))
+                if (expected.SequenceEqual(found))
                 {
                     Log.Success(finalMessage);
                     return true;
                 }
 
-                var eExpected = expected as IEnumerable;
-                var eFound = found as IEnumerable;
+                Log.Error(finalMessage);
+                ++FailureCount;
+                return false;
 
-                if (eExpected != null && eFound != null && eExpected.Cast<object>().SequenceEqual(eFound.Cast<object>()))
+            }
+            catch (Exception exc)
+            {
+                Log.Exception(finalMessage);
+                Log.Exception("    Caught exception: {0}", exc);
+                ++FailureCount;
+                throw;
+            }
+        }
+
+        static bool EqualityImpl<T> (T expected, T found, string message, bool suppressValue)
+        {
+            object oExpected = expected;
+            object oFound = found;
+            var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+                .FormatWith(
+                    suppressValue ? (oExpected ?? NullValue).GetType().Name : oExpected ?? NullValue,
+                    suppressValue ? (oFound ?? NullValue).GetType().Name : oFound ?? NullValue,
+                    message
+                    );
+            try
+            {
+
+
+                if (ReferenceEquals(expected, found))
+                {
+                    Log.Success(finalMessage);
+                    return true;
+                }
+
+                if (oExpected != null && oFound == null)
+                {
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+                }
+
+                if (oExpected == null && oFound != null)
+                {
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+                }
+
+                if (expected.Equals(found))
                 {
                     Log.Success(finalMessage);
                     return true;

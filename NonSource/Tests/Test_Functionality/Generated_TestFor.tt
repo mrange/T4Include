@@ -1,0 +1,47 @@
+﻿<#@ include     file        ="$(SolutionDir)\T4\Header.ttinclude"             #>
+
+<#
+    var types = new []
+        {
+            "string"        ,
+            "Boolean"       ,
+            "SByte"         ,
+            "Int16"         ,
+            "Int32"         ,
+            "Int64"         ,
+            "Byte"          ,
+            "UInt16"        ,
+            "UInt32"        ,
+            "UInt64"        ,
+            "Single"        ,
+            "Double"        ,
+            "Decimal"       ,
+            "TimeSpan"      ,
+            "DateTime"      ,
+        };
+#>
+namespace Test_Functionality
+{
+    using System;
+    using System.Collections.Generic;
+
+    partial class TestFor
+    {
+<#
+    foreach (var type in types)
+    { 
+#>
+        public static bool Equality (IEnumerable<<#=type#>> expected, IEnumerable<<#=type#>> found, string message, bool suppressValue = false)
+        {
+            return SequenceEqualityImpl (expected, found, message, suppressValue);
+        }
+
+        public static bool Equality (<#=type#> expected, <#=type#> found, string message, bool suppressValue = false)
+        {
+            return EqualityImpl (expected, found, message, suppressValue);
+        }
+<#
+    }
+#>
+    }
+}
