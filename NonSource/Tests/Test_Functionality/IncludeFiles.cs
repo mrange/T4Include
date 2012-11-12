@@ -1150,6 +1150,25 @@ namespace FileInclude
             public static bool TryParseDynamic(
                 int maxErrorCount,
                 IEnumerable<SubString> lines,
+                out dynamic dyn,
+                out HRONDynamicParseError[] errors
+                )
+            {
+                HRONObject hronObject;
+    
+                if (!TryParseDynamic(maxErrorCount, lines, out hronObject, out errors))
+                {
+                    dyn = null;
+                    return false;
+                }
+    
+                dyn = hronObject;
+                return true;
+            }
+    
+            public static bool TryParseDynamic(
+                int maxErrorCount,
+                IEnumerable<SubString> lines,
                 out HRONObject hronObject,
                 out HRONDynamicParseError[] errors
                 )
@@ -4261,7 +4280,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-12T19:34:48";
+        public const string IncludeDate     = @"2012-11-12T19:39:13";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";

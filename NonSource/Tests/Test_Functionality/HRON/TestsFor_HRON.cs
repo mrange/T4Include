@@ -96,12 +96,11 @@ namespace Test_Functionality.HRON
         public void Test_TryParseDynamic()
         {
             var lines = s_test2_hron.ReadLines().ToArray();
-            HRONObject hronObject;
+            dynamic dyn;
             HRONDynamicParseError[] errors;
-            var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out hronObject, out errors);
+            var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out dyn, out errors);
             if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
             {
-                dynamic dyn = hronObject;
                 dynamic connections = dyn.DataBaseConnection;
                 if (TestFor.Equality(2, connections.GetCount(), "Expects two database connections"))
                 {
@@ -144,7 +143,7 @@ namespace Test_Functionality.HRON
                             );
                     }
                 }
-                var value = HRONSerializer.DynamicAsString(hronObject);
+                var value = HRONSerializer.DynamicAsString(dyn);
 
                 TestFor.Equality(
                     s_test2_hron,

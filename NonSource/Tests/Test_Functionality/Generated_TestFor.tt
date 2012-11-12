@@ -3,7 +3,8 @@
 <#
     var types = new []
         {
-            "string"        ,
+            "String"        ,
+            "Char"          ,
             "Boolean"       ,
             "SByte"         ,
             "Int16"         ,
@@ -31,7 +32,7 @@ namespace Test_Functionality
     foreach (var type in types)
     { 
 #>
-        public static bool Equality (IEnumerable<<#=type#>> expected, IEnumerable<<#=type#>> found, string message, bool suppressValue = false)
+        public static bool SequenceEquality (IEnumerable<<#=type#>> expected, IEnumerable<<#=type#>> found, string message, bool suppressValue = false)
         {
             return SequenceEqualityImpl (expected, found, message, suppressValue);
         }

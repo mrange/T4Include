@@ -30,7 +30,7 @@ namespace Test_Functionality.Common
                 var expected = stringReader.ReadLines().ToArray();
                 var found = testCase.ReadLines().Select(ss => ss.ToString()).ToArray();
 
-                TestFor.Equality(expected, found, "ReadLines should match StringReader behavior");
+                TestFor.SequenceEquality(expected, found, "ReadLines should match StringReader behavior");
             }
         }
     }

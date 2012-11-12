@@ -472,6 +472,25 @@ namespace Source.HRON
         public static bool TryParseDynamic(
             int maxErrorCount,
             IEnumerable<SubString> lines,
+            out dynamic dyn,
+            out HRONDynamicParseError[] errors
+            )
+        {
+            HRONObject hronObject;
+
+            if (!TryParseDynamic(maxErrorCount, lines, out hronObject, out errors))
+            {
+                dyn = null;
+                return false;
+            }
+
+            dyn = hronObject;
+            return true;
+        }
+
+        public static bool TryParseDynamic(
+            int maxErrorCount,
+            IEnumerable<SubString> lines,
             out HRONObject hronObject,
             out HRONDynamicParseError[] errors
             )
