@@ -19,8 +19,6 @@
 // ReSharper disable RedundantCaseLabel
 
 
-using System.Collections.Concurrent;
-
 namespace Source.HRON
 {
     using System.Collections.Generic;
@@ -167,6 +165,8 @@ namespace Source.HRON
                 return;
             }
 
+            var errorCount = 0;
+
             lines = lines ?? Array<SubString>.Empty;
 
             var state = ParseState.ExpectingTag;
@@ -197,6 +197,10 @@ namespace Source.HRON
                 if (currentIndent > expectedIndent)
                 {
                     visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                    if (++errorCount > 0)
+                    {
+                        return;
+                    }
                     continue;
                 }
 
@@ -301,6 +305,10 @@ namespace Source.HRON
                                         break;
                                     default:
                                         visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
+                                        if (++errorCount > 0)
+                                        {
+                                            return;
+                                        }
                                         break;
                                 }
                             }
