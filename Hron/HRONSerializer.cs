@@ -52,7 +52,7 @@ namespace Source.HRON
         public void Empty (SubString line)
         {
             m_sb.Clear();
-            m_sb.Append(line);
+            m_sb.AppendSubString(line);
             WriteLine(m_sb);
         }
 
@@ -61,7 +61,7 @@ namespace Source.HRON
             m_sb.Clear();
             m_sb.Append('\t', indent);
             m_sb.Append('#');
-            m_sb.Append(comment);
+            m_sb.AppendSubString(comment);
             WriteLine(m_sb);
         }
 
@@ -79,7 +79,7 @@ namespace Source.HRON
         {
             m_sb.Clear();
             m_sb.Append('\t', m_indent);
-            m_sb.Append(value);
+            m_sb.AppendSubString(value);
             WriteLine(m_sb);
         }
 
@@ -93,7 +93,7 @@ namespace Source.HRON
             m_sb.Clear();
             m_sb.Append('\t', m_indent);
             m_sb.Append('@');
-            m_sb.Append(name);
+            m_sb.AppendSubString(name);
             WriteLine(m_sb);
             ++m_indent;
         }

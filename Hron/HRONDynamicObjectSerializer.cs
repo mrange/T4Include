@@ -75,6 +75,29 @@ namespace Source.HRON
             m_entities = (entities ?? Array<IHRONEntity>.Empty).ToArray ();
         }
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            var first = true;
+
+            foreach (var entity in m_entities)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append(", ");
+                }
+
+                entity.ToString(sb);
+            }
+
+            return sb.ToString();
+        }
+
         public int GetCount ()
         {
             return m_entities.Length;
@@ -340,7 +363,21 @@ namespace Source.HRON
         public override void ToString(StringBuilder sb)
         {
             sb.Append('"');
-            sb.Append(m_value);
+
+            var first = true;
+
+            foreach (var line in m_value.ReadLines())
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append(", ");
+                }
+                sb.AppendSubString(line);                
+            }
             sb.Append('"');
         }
     }

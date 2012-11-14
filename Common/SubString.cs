@@ -23,16 +23,41 @@ namespace Source.Common
 
     static class SubStringExtensions
     {
-        public static void Append (this StringBuilder sb, SubString ss)
+        public static void AppendSubString (this StringBuilder sb, SubString ss)
         {
             sb.Append(ss.BaseString, ss.Begin, ss.Length);
         }
 
-        public static void AppendLine(this StringBuilder sb, SubString ss)
+        public static string Concatenate (this IEnumerable<SubString> values, string delimiter = null)
         {
-            sb.Append(ss.BaseString, ss.Begin, ss.Length);
-            sb.AppendLine();
+            if (values == null)
+            {
+                return "";
+            }
+
+            delimiter = delimiter ?? ", ";
+
+            var first = true;
+
+            var sb = new StringBuilder();
+            foreach (var value in values)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append(delimiter);
+                }
+
+                sb.AppendSubString(value);
+            }
+
+            return sb.ToString();
         }
+
+
 
         public static SubString ToSubString (this string value, int begin = 0, int count = int.MaxValue / 2)
         {

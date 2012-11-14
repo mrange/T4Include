@@ -698,7 +698,6 @@ namespace FileInclude
     
     namespace Source.HRON
     {
-        using System.Collections;
         using System.Collections.Generic;
         using System.Dynamic;
         using System.Linq;
@@ -752,6 +751,29 @@ namespace FileInclude
             public HRONDynamicMembers(IEnumerable<IHRONEntity> entities)
             {
                 m_entities = (entities ?? Array<IHRONEntity>.Empty).ToArray ();
+            }
+    
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+    
+                var first = true;
+    
+                foreach (var entity in m_entities)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(", ");
+                    }
+    
+                    entity.ToString(sb);
+                }
+    
+                return sb.ToString();
             }
     
             public int GetCount ()
@@ -1019,7 +1041,21 @@ namespace FileInclude
             public override void ToString(StringBuilder sb)
             {
                 sb.Append('"');
-                sb.Append(m_value);
+    
+                var first = true;
+    
+                foreach (var line in m_value.ReadLines())
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(", ");
+                    }
+                    sb.AppendSubString(line);                
+                }
                 sb.Append('"');
             }
         }
@@ -1502,8 +1538,6 @@ namespace FileInclude
     
     
     
-    using System.Collections.Concurrent;
-    
     namespace Source.HRON
     {
         using System.Collections.Generic;
@@ -1537,7 +1571,7 @@ namespace FileInclude
             public void Empty (SubString line)
             {
                 m_sb.Clear();
-                m_sb.Append(line);
+                m_sb.AppendSubString(line);
                 WriteLine(m_sb);
             }
     
@@ -1546,7 +1580,7 @@ namespace FileInclude
                 m_sb.Clear();
                 m_sb.Append('\t', indent);
                 m_sb.Append('#');
-                m_sb.Append(comment);
+                m_sb.AppendSubString(comment);
                 WriteLine(m_sb);
             }
     
@@ -1564,7 +1598,7 @@ namespace FileInclude
             {
                 m_sb.Clear();
                 m_sb.Append('\t', m_indent);
-                m_sb.Append(value);
+                m_sb.AppendSubString(value);
                 WriteLine(m_sb);
             }
     
@@ -1578,7 +1612,7 @@ namespace FileInclude
                 m_sb.Clear();
                 m_sb.Append('\t', m_indent);
                 m_sb.Append('@');
-                m_sb.Append(name);
+                m_sb.AppendSubString(name);
                 WriteLine(m_sb);
                 ++m_indent;
             }
@@ -1650,6 +1684,8 @@ namespace FileInclude
                     return;
                 }
     
+                var errorCount = 0;
+    
                 lines = lines ?? Array<SubString>.Empty;
     
                 var state = ParseState.ExpectingTag;
@@ -1680,6 +1716,10 @@ namespace FileInclude
                     if (currentIndent > expectedIndent)
                     {
                         visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                        if (++errorCount > 0)
+                        {
+                            return;
+                        }
                         continue;
                     }
     
@@ -1784,6 +1824,10 @@ namespace FileInclude
                                             break;
                                         default:
                                             visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
+                                            if (++errorCount > 0)
+                                            {
+                                                return;
+                                            }
                                             break;
                                     }
                                 }
@@ -3830,16 +3874,41 @@ namespace FileInclude
     
         static class SubStringExtensions
         {
-            public static void Append (this StringBuilder sb, SubString ss)
+            public static void AppendSubString (this StringBuilder sb, SubString ss)
             {
                 sb.Append(ss.BaseString, ss.Begin, ss.Length);
             }
     
-            public static void AppendLine(this StringBuilder sb, SubString ss)
+            public static string Concatenate (this IEnumerable<SubString> values, string delimiter = null)
             {
-                sb.Append(ss.BaseString, ss.Begin, ss.Length);
-                sb.AppendLine();
+                if (values == null)
+                {
+                    return "";
+                }
+    
+                delimiter = delimiter ?? ", ";
+    
+                var first = true;
+    
+                var sb = new StringBuilder();
+                foreach (var value in values)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(delimiter);
+                    }
+    
+                    sb.AppendSubString(value);
+                }
+    
+                return sb.ToString();
             }
+    
+    
     
             public static SubString ToSubString (this string value, int begin = 0, int count = int.MaxValue / 2)
             {
@@ -4280,7 +4349,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-12T19:39:13";
+        public const string IncludeDate     = @"2012-11-14T07:34:15";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
