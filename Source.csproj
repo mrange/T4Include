@@ -54,6 +54,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\ParseExtensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ParseExtensions.tt</DependentUpon>
+    </Compile>
     <Compile Include="HRON\HRONSerializer.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
@@ -95,9 +100,14 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NumericalExtensions.cs</LastGenOutput>
     </None>
+    <None Include="Extensions\ParseExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ParseExtensions.cs</LastGenOutput>
+    </None>
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
     <None Include="NonSource\NuGet\T4Include.nuspec" />
     <None Include="README.md" />
+    <None Include="T4\ParseExtensions.ttinclude" />
     <None Include="T4\DependencyProperties.ttinclude" />
     <None Include="T4\Header.ttinclude" />
     <None Include="T4\IncludeHeader.ttinclude" />
