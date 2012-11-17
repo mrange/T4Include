@@ -69,8 +69,7 @@ namespace Test_Functionality.HRON
             TestFor.Equality(
                 s_test_hron, 
                 visitor.Value,
-                "HRON after deserialize/serialize should be identical to test case",
-                suppressValue:true
+                "HRON after deserialize/serialize should be identical to test case"
                 );
         }
 
@@ -87,8 +86,7 @@ namespace Test_Functionality.HRON
                 TestFor.Equality(
                     s_test2_hron,
                     value,
-                    "HRON after deserialize/serialize to object should be identical to test case",
-                    suppressValue: true
+                    "HRON after deserialize/serialize to object should be identical to test case"
                     );
             }
         }
@@ -156,8 +154,7 @@ namespace Test_Functionality.HRON
                 TestFor.Equality(
                     s_test2_hron,
                     value,
-                    "HRON after deserialize/serialize to object should be identical to test case",
-                    suppressValue: true
+                    "HRON after deserialize/serialize to object should be identical to test case"
                     );
             }
         }
@@ -187,10 +184,9 @@ namespace Test_Functionality.HRON
 	=AAA
 		AAAA
 	=BBB
-		BBBB
-";
+		BBBB";
 
-            TestFor.Equality (testCase, value, "Serialized dictionary should have the expected value", suppressValue:true);
+            TestFor.Equality (testCase, value, "Serialized dictionary should have the expected value");
 
         }
 

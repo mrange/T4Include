@@ -26,65 +26,6 @@ namespace Source.Extensions
 
     static partial class NumericalExtensions
     {
-        static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
-            {
-<#
-    foreach (var nd in Model)
-    {
-#>
-#if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
-                { typeof(<#=nd.Name#>)  , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(<#=nd.Name#>?) , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
-#endif
-<#
-    }
-#>
-            };
-
-        public static bool CanParse (this Type type)
-        {
-            if (type == null)
-            {
-                return false;
-            }
-
-            return s_parsers.ContainsKey (type);
-        }
-
-        public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
-        {
-            value = null;
-            if (type == null)
-            {
-                return false;
-            }                
-            
-            Func<string, CultureInfo, object> parser;
-
-            if (s_parsers.TryGetValue (type, out parser))
-            {
-                value = parser (s, cultureInfo);
-            }
-
-            return value != null;
-        }
-
-        public static bool TryParse (this string s, Type type, out object value)
-        {
-            return s.TryParse (Config.DefaultCulture, type, out value);
-        }
-
-        public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
-        {
-            object value;
-            return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
-        }
-
-        public static object Parse (this string s, Type type, object defaultValue)
-        {
-            return s.Parse (Config.DefaultCulture, type, defaultValue);
-        }
-
 <#
     foreach (var nd in Model)
     {
@@ -92,36 +33,6 @@ namespace Source.Extensions
         // <#=nd.Name#> (<#=nd.Type#>)
 
 #if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
-
-        public static bool TryParse (this string s, out <#=nd.Name#> value)
-        {
-            return s.TryParse (Config.DefaultCulture, out value);
-        }
-
-        public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
-        {
-            <#=nd.Name#> value;
-
-            return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-        }
-
-        public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
-        {
-            return s.Parse (Config.DefaultCulture, defaultValue);
-        }
-
-<#
-    if (nd.Type == NumericalType.BoolLike)
-    {
-#>
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {
-            return <#=nd.Name#>.TryParse (s ?? "", out value);
-        }
-<#
-        goto end_of_loop;
-    }
-#>
 
         public static <#=nd.Name#> Min (this <#=nd.Name#> left, <#=nd.Name#> right) 
         {
@@ -174,49 +85,15 @@ namespace Source.Extensions
         }
 
 <#
-    if (nd.Type == NumericalType.CharLike)
+    if (nd.Type == NumericalType.IntLike)
     {
-#>
-<#
         OutputBitTests (nd.Name);
-#>
-         
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {
-            return <#=nd.Name#>.TryParse (s ?? "", out value);
-        }
-<#
-    }
-    else if (nd.Type == NumericalType.IntLike)
-    {
-#>
-<#
-        OutputBitTests (nd.Name);
-#>
-         
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {
-            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-        }
-<#
     }
     else if (nd.Type == NumericalType.DateTimeLike)
     {
-#>
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
-        }
-<#
     }
     else if (nd.Type == NumericalType.TimeSpanLike)
     {
-#>
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", cultureInfo, out value);
-        }
-<#
     }
     else if (nd.Type == NumericalType.FloatLike)
     {
@@ -229,27 +106,12 @@ namespace Source.Extensions
         {
             return t.Clamp (0,1) * (to - from) + from;
         }
-
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {                                                  
-            return <#=nd.Name#>.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
-        }
 <#
     }
     else if (nd.Type == NumericalType.EnumLike)
     {
-#>
-<#
         OutputBitTests (nd.Name);
-#>
-         
-        public static bool TryParse (this string s, CultureInfo cultureInfo, out <#=nd.Name#> value)
-        {                                                  
-            return Enum.TryParse (s ?? "", true, out value);              
-        }
-<#
     }
-end_of_loop:
 #>
 
 #endif // T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_NUMERICAL_EXTENSIONS
@@ -263,8 +125,6 @@ end_of_loop:
 <#+
     enum NumericalType
     {
-        BoolLike    ,
-        CharLike    ,
         IntLike     ,
         FloatLike   ,
         EnumLike    ,
@@ -287,16 +147,6 @@ end_of_loop:
             Type = type             ,
             Name = name ?? S_NoName ,
         };
-    }
-
-    static NumericalDefinition B (string name)
-    {
-        return Create (NumericalType.BoolLike, name);
-    }
-
-    static NumericalDefinition C (string name)
-    {
-        return Create (NumericalType.CharLike, name);
     }
 
     static NumericalDefinition F (string name)

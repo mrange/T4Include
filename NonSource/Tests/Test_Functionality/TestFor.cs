@@ -24,14 +24,41 @@ namespace Test_Functionality
 
         const string NullValue = "<NULL>";
 
-        static bool SequenceEqualityImpl<T>(IEnumerable<T> expected, IEnumerable<T> found, string message, bool suppressValue)
+        static string ToString(this string v, int start, int count)
+        {
+            v = v ?? "";
+
+            start = start - count/2;
+
+            if (start < 0)
+            {
+                count += -start;
+                start = 0;
+            }
+
+            if (start >= v.Length)
+            {
+                return "";
+            }
+
+            count = Math.Min(count, v.Length - start);
+
+            return v
+                .Substring(start, count)
+                .Replace("\r", "\\r")
+                .Replace("\t", "\\t")
+                .Replace("\n", "\\n")
+                ;
+        }
+
+        static bool SequenceEqualityImpl<T>(IEnumerable<T> expected, IEnumerable<T> found, string message)
         {
             object oExpected = expected;
             object oFound = found;
-            var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+            var finalMessage = "TestFor.SequenceEquality: #EXPECTED:{0}, #FOUND:{1} - {2}"
                 .FormatWith(
-                    suppressValue ? (oExpected ?? NullValue).GetType().Name : oExpected ?? NullValue,
-                    suppressValue ? (oFound ?? NullValue).GetType().Name : oFound ?? NullValue,
+                    (oExpected ?? NullValue).GetType().Name,
+                    (oFound ?? NullValue).GetType().Name,
                     message
                     );
             try
@@ -84,14 +111,65 @@ namespace Test_Functionality
             }
         }
 
-        static bool EqualityImpl<T> (T expected, T found, string message, bool suppressValue)
+        static bool EqualityImpl<T> (T expected, T found, string message)
         {
-            object oExpected = expected;
-            object oFound = found;
+            var sExpected = expected as string;
+
+            object oExpected    = expected;
+            object oFound       = found;
+            if (sExpected != null)
+            {
+                var sFound = (oFound ?? NullValue).ToString ();
+
+                var firstDiff = -1;
+                var length = Math.Min(sExpected.Length, sFound.Length);
+                for (var iter = 0; iter < length; ++iter)
+                {
+                    if (sExpected[iter] != sFound[iter])
+                    {
+                        firstDiff = iter;
+                        iter = length;
+                    }                    
+                }
+
+                if (firstDiff > -1)
+                {
+                    ++FailureCount;
+                    Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - First diff @{2} - {3}",
+                        sExpected.ToString(firstDiff, 16),
+                        sFound.ToString(firstDiff, 16),
+                        length,
+                        message
+                        );
+                    return false;
+                }
+                else if (sExpected.Length != sFound.Length)
+                {
+                    ++FailureCount;
+                    Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - Difference in length@{2} - {3}",
+                        sExpected.ToString(length, 16),
+                        sFound.ToString(length, 16),
+                        length,
+                        message
+                        );
+                    return false;
+                }
+                else
+                {
+                    Log.Success("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}",
+                        sExpected.ToString(0, 16),
+                        sFound.ToString(0, 16),
+                        message
+                        );
+                    return true;
+                }
+
+            }
+
             var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
                 .FormatWith(
-                    suppressValue ? (oExpected ?? NullValue).GetType().Name : oExpected ?? NullValue,
-                    suppressValue ? (oFound ?? NullValue).GetType().Name : oFound ?? NullValue,
+                    oExpected ?? NullValue,
+                    oFound ?? NullValue,
                     message
                     );
             try
@@ -138,4 +216,5 @@ namespace Test_Functionality
             }
         }
     }
+
 }

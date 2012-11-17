@@ -163,8 +163,12 @@ namespace Source.Common
             switch (state)
             {
                 case ParseLineState.NewLine:
+                    yield return new SubString(baseString, 0, 0);
                     break;
                 case ParseLineState.ConsumedCR:
+                    yield return new SubString(baseString, beginLine, count);
+                    yield return new SubString(baseString, 0, 0);
+                    break;
                 case ParseLineState.Inline:
                 default:
                     yield return new SubString(baseString, beginLine, count);

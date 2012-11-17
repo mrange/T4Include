@@ -43,11 +43,25 @@ namespace Source.HRON
 
     abstract partial class BaseHRONWriterVisitor : IHRONVisitor
     {
-        readonly StringBuilder m_sb = new StringBuilder();
-        int m_indent;
-        
-        protected abstract void WriteLine (string line);
-        protected abstract void WriteLine (StringBuilder line);
+        readonly    StringBuilder   m_sb    = new StringBuilder();
+        bool                        m_first = true  ;
+        int                         m_indent        ;
+
+        protected abstract void Write       (StringBuilder line);
+        protected abstract void WriteLine   ();
+        void                    WriteLine   (StringBuilder line)
+        {
+            if (m_first)
+            {
+                m_first = false;
+            }
+            else
+            {
+                WriteLine ();
+            }
+
+            Write (line);
+        }
 
         public void Empty (SubString line)
         {
@@ -124,18 +138,13 @@ namespace Source.HRON
             }
         }
 
-        protected override void WriteLine(string line)
+        protected override void Write(StringBuilder line)
         {
-            m_sb.AppendLine(line);
+            m_sb.Append(line.ToString());
         }
 
-        protected override void WriteLine(StringBuilder line)
+        protected override void WriteLine()
         {
-            var count = line.Length;
-            for (var iter = 0; iter < count; ++iter)
-            {
-                m_sb.Append(line[iter]);
-            }
             m_sb.AppendLine();
         }
     }

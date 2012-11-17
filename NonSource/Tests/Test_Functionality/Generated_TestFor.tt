@@ -32,14 +32,14 @@ namespace Test_Functionality
     foreach (var type in types)
     { 
 #>
-        public static bool SequenceEquality (IEnumerable<<#=type#>> expected, IEnumerable<<#=type#>> found, string message, bool suppressValue = false)
+        public static bool SequenceEquality (IEnumerable<<#=type#>> expected, IEnumerable<<#=type#>> found, string message)
         {
-            return SequenceEqualityImpl (expected, found, message, suppressValue);
+            return SequenceEqualityImpl (expected, found, message);
         }
 
-        public static bool Equality (<#=type#> expected, <#=type#> found, string message, bool suppressValue = false)
+        public static bool Equality (<#=type#> expected, <#=type#> found, string message)
         {
-            return EqualityImpl (expected, found, message, suppressValue);
+            return EqualityImpl (expected, found, message);
         }
 <#
     }

@@ -15,7 +15,7 @@
 // ReSharper disable RedundantCaseLabel
 
 // ### INCLUDE: HRONSerializer.cs
-// ### INCLUDE: ../Extensions/NumericalExtensions.cs
+// ### INCLUDE: ../Extensions/ParseExtensions.cs
 // ### INCLUDE: ../Reflection/ClassDescriptor.cs
 // ### INCLUDE: ../Reflection/StaticReflection.cs
 

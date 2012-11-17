@@ -30,7 +30,8 @@ namespace Test_Functionality.Common
                 var expected = stringReader.ReadLines().ToArray();
                 var found = testCase.ReadLines().Select(ss => ss.ToString()).ToArray();
 
-                TestFor.SequenceEquality(expected, found, "ReadLines should match StringReader behavior");
+                TestFor.Equality(expected.Length + 1, found.Length, "ReadLines in the presence of ending linebreak should read one line extra compared to StringReader");
+                TestFor.SequenceEquality(expected, found.Take(expected.Length), "ReadLines should otherwise match StringReader behavior");
             }
         }
     }
