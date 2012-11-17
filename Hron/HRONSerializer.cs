@@ -187,19 +187,23 @@ namespace Source.HRON
             {
                 ++lineNo;
 
-                var currentIndent = 0;
-                var lineLength = line.Length;
+                var lineLength      = line.Length;
+                var begin           = line.Begin;
+                var end             = line.End;
 
-                for (var iter = 0; iter < lineLength; ++iter)
+                var currentIndent   = 0;
+                var baseString      = line.BaseString;
+
+                for (var iter = begin; iter < end; ++iter)
                 {
-                    var ch = line[iter];
+                    var ch = baseString[iter];
                     if (ch == '\t')
                     {
                         ++currentIndent;
                     }
                     else
                     {
-                        iter = lineLength;
+                        break;
                     }
                 }
 
@@ -218,14 +222,14 @@ namespace Source.HRON
                 {
                     case ParseState.ExpectingTag:
                         isComment = currentIndent < lineLength
-                            && line[currentIndent] == '#'
+                            && baseString[currentIndent + begin] == '#'
                             ;
                         break;
                     case ParseState.ExpectingValue:
                     default:
                         isComment = currentIndent < expectedIndent
                             && currentIndent < lineLength
-                            && line[currentIndent] == '#'
+                            && baseString[currentIndent + begin] == '#'
                             ;
                         break;
                 }
@@ -297,7 +301,7 @@ namespace Source.HRON
                         case ParseState.ExpectingTag:
                             if (currentIndent < lineLength)
                             {
-                                var first = line[currentIndent];
+                                var first = baseString[currentIndent + begin];
                                 switch (first)
                                 {
                                     case '@':

@@ -212,30 +212,28 @@ namespace Source.Common
 
         public SubString(SubString subString, int begin, int count) : this()
         {
-            m_baseString = subString.BaseString;
-            var length = subString.Length;
+            m_baseString    = subString.BaseString;
+            var length      = subString.Length;
 
-            begin = Clamp(begin, 0, length);
-            count = Clamp(count, 0, length - begin);
+            begin           = Clamp(begin, 0, length);
+            count           = Clamp(count, 0, length - begin);
+            var end         = begin + count;
 
-            var end = begin + count;
-
-            m_begin = subString.Begin + begin;
-            m_end = subString.Begin + end;
+            m_begin         = subString.Begin + begin;
+            m_end           = subString.Begin + end;
         }
 
         public SubString(string baseString, int begin, int count) : this()
         {
-            m_baseString = baseString;
-            var length = BaseString.Length;
+            m_baseString    = baseString;
+            var length      = BaseString.Length;
 
-            begin = Clamp(begin, 0, length);
-            count = Clamp(count, 0, length - begin);
+            begin           = Clamp(begin, 0, length);
+            count           = Clamp(count, 0, length - begin);
+            var end         = begin + count;
 
-            var end = begin + count;
-
-            m_begin = begin;
-            m_end = end;
+            m_begin         = begin;
+            m_end           = end;
         }
 
         public bool Equals(SubString other)

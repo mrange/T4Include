@@ -1706,19 +1706,23 @@ namespace FileInclude
                 {
                     ++lineNo;
     
-                    var currentIndent = 0;
-                    var lineLength = line.Length;
+                    var lineLength      = line.Length;
+                    var begin           = line.Begin;
+                    var end             = line.End;
     
-                    for (var iter = 0; iter < lineLength; ++iter)
+                    var currentIndent   = 0;
+                    var baseString      = line.BaseString;
+    
+                    for (var iter = begin; iter < end; ++iter)
                     {
-                        var ch = line[iter];
+                        var ch = baseString[iter];
                         if (ch == '\t')
                         {
                             ++currentIndent;
                         }
                         else
                         {
-                            iter = lineLength;
+                            break;
                         }
                     }
     
@@ -1737,14 +1741,14 @@ namespace FileInclude
                     {
                         case ParseState.ExpectingTag:
                             isComment = currentIndent < lineLength
-                                && line[currentIndent] == '#'
+                                && baseString[currentIndent + begin] == '#'
                                 ;
                             break;
                         case ParseState.ExpectingValue:
                         default:
                             isComment = currentIndent < expectedIndent
                                 && currentIndent < lineLength
-                                && line[currentIndent] == '#'
+                                && baseString[currentIndent + begin] == '#'
                                 ;
                             break;
                     }
@@ -1816,7 +1820,7 @@ namespace FileInclude
                             case ParseState.ExpectingTag:
                                 if (currentIndent < lineLength)
                                 {
-                                    var first = line[currentIndent];
+                                    var first = baseString[currentIndent + begin];
                                     switch (first)
                                     {
                                         case '@':
@@ -2018,7 +2022,7 @@ namespace FileInclude
     
             // Boolean (BoolLike)
     
-    #if !T4INCLUDE__SUPPRESS_BOOLEAN_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Boolean value)
             {
@@ -2046,7 +2050,7 @@ namespace FileInclude
     
             // Char (CharLike)
     
-    #if !T4INCLUDE__SUPPRESS_CHAR_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Char value)
             {
@@ -2074,7 +2078,7 @@ namespace FileInclude
     
             // SByte (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_SBYTE_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out SByte value)
             {
@@ -2102,7 +2106,7 @@ namespace FileInclude
     
             // Int16 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_INT16_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Int16 value)
             {
@@ -2130,7 +2134,7 @@ namespace FileInclude
     
             // Int32 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_INT32_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Int32 value)
             {
@@ -2158,7 +2162,7 @@ namespace FileInclude
     
             // Int64 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_INT64_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Int64 value)
             {
@@ -2186,7 +2190,7 @@ namespace FileInclude
     
             // Byte (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_BYTE_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Byte value)
             {
@@ -2214,7 +2218,7 @@ namespace FileInclude
     
             // UInt16 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_UINT16_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out UInt16 value)
             {
@@ -2242,7 +2246,7 @@ namespace FileInclude
     
             // UInt32 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_UINT32_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out UInt32 value)
             {
@@ -2270,7 +2274,7 @@ namespace FileInclude
     
             // UInt64 (IntLike)
     
-    #if !T4INCLUDE__SUPPRESS_UINT64_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out UInt64 value)
             {
@@ -2298,7 +2302,7 @@ namespace FileInclude
     
             // Single (FloatLike)
     
-    #if !T4INCLUDE__SUPPRESS_SINGLE_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Single value)
             {
@@ -2326,7 +2330,7 @@ namespace FileInclude
     
             // Double (FloatLike)
     
-    #if !T4INCLUDE__SUPPRESS_DOUBLE_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Double value)
             {
@@ -2354,7 +2358,7 @@ namespace FileInclude
     
             // Decimal (FloatLike)
     
-    #if !T4INCLUDE__SUPPRESS_DECIMAL_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out Decimal value)
             {
@@ -2382,7 +2386,7 @@ namespace FileInclude
     
             // TimeSpan (TimeSpanLike)
     
-    #if !T4INCLUDE__SUPPRESS_TIMESPAN_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out TimeSpan value)
             {
@@ -2410,7 +2414,7 @@ namespace FileInclude
     
             // DateTime (DateTimeLike)
     
-    #if !T4INCLUDE__SUPPRESS_DATETIME_Parse_EXTENSIONS
+    #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
     
             public static bool TryParse (this string s, out DateTime value)
             {
@@ -3151,30 +3155,28 @@ namespace FileInclude
     
             public SubString(SubString subString, int begin, int count) : this()
             {
-                m_baseString = subString.BaseString;
-                var length = subString.Length;
+                m_baseString    = subString.BaseString;
+                var length      = subString.Length;
     
-                begin = Clamp(begin, 0, length);
-                count = Clamp(count, 0, length - begin);
+                begin           = Clamp(begin, 0, length);
+                count           = Clamp(count, 0, length - begin);
+                var end         = begin + count;
     
-                var end = begin + count;
-    
-                m_begin = subString.Begin + begin;
-                m_end = subString.Begin + end;
+                m_begin         = subString.Begin + begin;
+                m_end           = subString.Begin + end;
             }
     
             public SubString(string baseString, int begin, int count) : this()
             {
-                m_baseString = baseString;
-                var length = BaseString.Length;
+                m_baseString    = baseString;
+                var length      = BaseString.Length;
     
-                begin = Clamp(begin, 0, length);
-                count = Clamp(count, 0, length - begin);
+                begin           = Clamp(begin, 0, length);
+                count           = Clamp(count, 0, length - begin);
+                var end         = begin + count;
     
-                var end = begin + count;
-    
-                m_begin = begin;
-                m_end = end;
+                m_begin         = begin;
+                m_end           = end;
             }
     
             public bool Equals(SubString other)
@@ -3441,7 +3443,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-17T12:28:08";
+        public const string IncludeDate     = @"2012-11-17T12:58:56";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
