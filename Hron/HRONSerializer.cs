@@ -159,6 +159,7 @@ namespace Source.HRON
 
         public enum ParseError
         {
+            ProgrammingError                ,
             IndentIncreasedMoreThanExpected ,
             TagIsNotCorrectlyFormatted      ,
         }
@@ -205,16 +206,6 @@ namespace Source.HRON
                     {
                         break;
                     }
-                }
-
-                if (currentIndent > expectedIndent)
-                {
-                    visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
-                    if (++errorCount > 0)
-                    {
-                        return;
-                    }
-                    continue;
                 }
 
                 bool isComment;
@@ -299,7 +290,15 @@ namespace Source.HRON
                     switch (state)
                     {
                         case ParseState.ExpectingTag:
-                            if (currentIndent < lineLength)
+                            if (currentIndent > expectedIndent)
+                            {
+                                visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                                if (++errorCount > 0)
+                                {
+                                    return;
+                                }
+                            }
+                            else if (currentIndent < lineLength)
                             {
                                 var first = baseString[currentIndent + begin];
                                 switch (first)
@@ -323,6 +322,14 @@ namespace Source.HRON
                                             return;
                                         }
                                         break;
+                                }
+                            }
+                            else
+                            {
+                                visitor.Error(lineNo, line, ParseError.ProgrammingError);
+                                if (++errorCount > 0)
+                                {
+                                    return;
                                 }
                             }
                             break;
