@@ -15,8 +15,10 @@
 // ReSharper disable RedundantCaseLabel
 
 // ### INCLUDE: HRONSerializer.cs
+// ### INCLUDE: ../Extensions/ParseExtensions.cs
 
 
+using System;
 
 namespace Source.HRON
 {
@@ -26,6 +28,7 @@ namespace Source.HRON
     using System.Text;
 
     using Source.Common;
+    using Source.Extensions;
 
     static partial class HronExtensions
     {
@@ -103,6 +106,11 @@ namespace Source.HRON
             return m_entities.Length;
         }
 
+        public bool Exists ()
+        {
+            return m_entities.Length > 0;
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if (indexes.Length == 1 && indexes[0] is int)
@@ -142,20 +150,38 @@ namespace Source.HRON
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (binder.ReturnType == typeof(string))
+            var returnType = binder.ReturnType;
+            if (returnType == typeof(string))
             {
                 result = m_entities.FirstOrEmpty().GetValue ();
                 return true;
             }
-            else if (binder.ReturnType == typeof(string[]))
+            else if (returnType == typeof(string[]))
             {
                 result = m_entities.Select(e => e.GetValue()).ToArray();
                 return true;
             }
-            else if (binder.ReturnType ==typeof(object[]))
+            else if (returnType ==typeof(object[]))
             {
                 result = m_entities;
                 return true;
+            }
+            else if (returnType.CanParse())
+            {
+                result = m_entities.FirstOrEmpty().GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue());
+                return true;                
+            }
+            else if (returnType.IsArray)
+            {
+                var elementType = returnType.GetElementType();
+                if (elementType.CanParse())
+                {
+                    var values = m_entities.Select(entity => entity.GetValue().Parse(Config.DefaultCulture, elementType, elementType.GetDefaultValue())).ToArray();
+                    var array = Array.CreateInstance(elementType, values.Length);
+                    values.CopyTo(array, 0);
+                    result = array;
+                    return true;
+                }
             }
             return base.TryConvert(binder, out result);
         }
@@ -186,9 +212,15 @@ namespace Source.HRON
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (binder.ReturnType == typeof(string))
+            var returnType = binder.ReturnType;
+            if (returnType == typeof(string))
             {
                 result = GetValue();
+                return true;
+            }
+            else if (returnType.CanParse())
+            {
+                result = GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue ());
                 return true;
             }
             return base.TryConvert(binder, out result);

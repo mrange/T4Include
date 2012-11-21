@@ -28,67 +28,130 @@ namespace Source.Extensions
 
     static partial class ParseExtensions
     {
+        static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
+            {
+#if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+                { typeof(Boolean)      , () => default (Boolean)},
+                { typeof(Boolean?)     , () => default (Boolean?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+                { typeof(Char)      , () => default (Char)},
+                { typeof(Char?)     , () => default (Char?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+                { typeof(SByte)      , () => default (SByte)},
+                { typeof(SByte?)     , () => default (SByte?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+                { typeof(Int16)      , () => default (Int16)},
+                { typeof(Int16?)     , () => default (Int16?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+                { typeof(Int32)      , () => default (Int32)},
+                { typeof(Int32?)     , () => default (Int32?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+                { typeof(Int64)      , () => default (Int64)},
+                { typeof(Int64?)     , () => default (Int64?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+                { typeof(Byte)      , () => default (Byte)},
+                { typeof(Byte?)     , () => default (Byte?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+                { typeof(UInt16)      , () => default (UInt16)},
+                { typeof(UInt16?)     , () => default (UInt16?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+                { typeof(UInt32)      , () => default (UInt32)},
+                { typeof(UInt32?)     , () => default (UInt32?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+                { typeof(UInt64)      , () => default (UInt64)},
+                { typeof(UInt64?)     , () => default (UInt64?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+                { typeof(Single)      , () => default (Single)},
+                { typeof(Single?)     , () => default (Single?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+                { typeof(Double)      , () => default (Double)},
+                { typeof(Double?)     , () => default (Double?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+                { typeof(Decimal)      , () => default (Decimal)},
+                { typeof(Decimal?)     , () => default (Decimal?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+                { typeof(TimeSpan)      , () => default (TimeSpan)},
+                { typeof(TimeSpan?)     , () => default (TimeSpan?)},
+#endif
+#if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+                { typeof(DateTime)      , () => default (DateTime)},
+                { typeof(DateTime?)     , () => default (DateTime?)},
+#endif
+            };
         static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
             {
 #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
                 { typeof(Boolean)  , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)(Boolean?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
                 { typeof(Char)  , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)(Char?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
                 { typeof(SByte)  , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)(SByte?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
                 { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)(Int16?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
                 { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)(Int32?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
                 { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)(Int64?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
                 { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)(Byte?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
                 { typeof(UInt16)  , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)(UInt16?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
                 { typeof(UInt32)  , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)(UInt32?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
                 { typeof(UInt64)  , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)(UInt64?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
                 { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)(Single?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
                 { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)(Double?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
                 { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)(Decimal?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
                 { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)(TimeSpan?)value : null;}},
 #endif
 #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
                 { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)(DateTime?)value : null;}},
 #endif
             };
 
@@ -100,6 +163,15 @@ namespace Source.Extensions
             }
 
             return s_parsers.ContainsKey (type);
+        }
+
+        public static object GetDefaultValue (this Type type)
+        {
+            type = type ?? typeof (object);
+
+            Func<object> getValue;
+
+            return s_defaultValues.TryGetValue (type, out getValue) ? getValue () : null;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)

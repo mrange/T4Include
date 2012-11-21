@@ -26,6 +26,20 @@ namespace Source.Extensions
 
     static partial class ParseExtensions
     {
+        static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
+            {
+<#
+    foreach (var nd in Model)
+    {
+#>
+#if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_PARSE_EXTENSIONS
+                { typeof(<#=nd.Name#>)      , () => default (<#=nd.Name#>)},
+                { typeof(<#=nd.Name#>?)     , () => default (<#=nd.Name#>?)},
+#endif
+<#
+    }
+#>
+            };
         static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
             {
 <#
@@ -34,7 +48,7 @@ namespace Source.Extensions
 #>
 #if !T4INCLUDE__SUPPRESS_<#=nd.Name.ToUpperInvariant ()#>_PARSE_EXTENSIONS
                 { typeof(<#=nd.Name#>)  , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                { typeof(<#=nd.Name#>?) , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                { typeof(<#=nd.Name#>?) , (s, ci) => { <#=nd.Name#> value; return s.TryParse(ci, out value) ? (object)(<#=nd.Name#>?)value : null;}},
 #endif
 <#
     }
@@ -49,6 +63,15 @@ namespace Source.Extensions
             }
 
             return s_parsers.ContainsKey (type);
+        }
+
+        public static object GetDefaultValue (this Type type)
+        {
+            type = type ?? typeof (object);
+
+            Func<object> getValue;
+
+            return s_defaultValues.TryGetValue (type, out getValue) ? getValue () : null;
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)

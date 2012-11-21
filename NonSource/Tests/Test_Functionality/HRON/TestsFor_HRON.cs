@@ -105,10 +105,12 @@ namespace Test_Functionality.HRON
                     {
                         var connection = connections[0];
 
-                        string name = connection.Name;
+                        string name             = connection.Name;
                         string connectionString = connection.ConnectionString;
-                        string timeOut = connection.TimeOut;
-
+                        string timeOut          = connection.TimeOut;
+                        int    parsedTimeOut    = connection.TimeOut;
+                        int?   optParsedTimeOut = connection.TimeOut;
+                        int[]  arrParsedTimeOut = connection.TimeOut;
                         TestFor.Equality(
                             "CustomerDB", 
                             name, 
@@ -124,13 +126,45 @@ namespace Test_Functionality.HRON
                             timeOut, 
                             "Expects CustomerDB timeout"
                             );
+                        TestFor.Equality(
+                            10,
+                            parsedTimeOut,
+                            "Expects parsed CustomerDB timeout"
+                            );
+                        if (TestFor.Equality(
+                            true,
+                            optParsedTimeOut.HasValue,
+                            "Expects parsed CustomerDB timeout"
+                            ))
+                        {
+                            TestFor.Equality(
+                                10,
+                                optParsedTimeOut.Value,
+                                "Expects parsed CustomerDB timeout"
+                                );                            
+                        }
+                        if (TestFor.Equality(
+                            1,
+                            arrParsedTimeOut.Length,
+                            "Expects parsed CustomerDB timeout"
+                            ))
+                        {
+                            TestFor.Equality(
+                                10,
+                                arrParsedTimeOut[0],
+                                "Expects parsed CustomerDB timeout"
+                                );                                                        
+                        }
                     }
                     {
                         var connection = connections[1];
 
-                        string name = connection.Name;
+                        string name             = connection.Name;
                         string connectionString = connection.ConnectionString;
-                        string timeOut = connection.TimeOut;
+                        string timeOut          = connection.TimeOut;
+                        int    parsedTimeOut    = connection.TimeOut;
+                        int?   optParsedTimeOut = connection.TimeOut;
+                        int[]  arrParsedTimeOut = connection.TimeOut;
 
                         TestFor.Equality(
                             "PartnerDB",
@@ -146,6 +180,21 @@ namespace Test_Functionality.HRON
                             "",
                             timeOut, 
                             "Expects no PartnerDB timeout"
+                            );
+                        TestFor.Equality(
+                            0,
+                            parsedTimeOut,
+                            "Expects no parsed CustomerDB timeout"
+                            );
+                        TestFor.Equality(
+                            false,
+                            optParsedTimeOut.HasValue,
+                            "Expects no parsed CustomerDB timeout"
+                            );
+                        TestFor.Equality(
+                            0,
+                            arrParsedTimeOut.Length,
+                            "Expects no parsed CustomerDB timeout"
                             );
                     }
                 }

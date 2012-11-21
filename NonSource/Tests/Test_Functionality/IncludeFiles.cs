@@ -18,6 +18,7 @@
 // @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 // @@@ INCLUDE_FOUND: HRONSerializer.cs
+// @@@ INCLUDE_FOUND: ../Extensions/ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
@@ -34,6 +35,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
@@ -695,6 +697,7 @@ namespace FileInclude
     
     
     
+    using System;
     
     namespace Source.HRON
     {
@@ -704,6 +707,7 @@ namespace FileInclude
         using System.Text;
     
         using Source.Common;
+        using Source.Extensions;
     
         static partial class HronExtensions
         {
@@ -781,6 +785,11 @@ namespace FileInclude
                 return m_entities.Length;
             }
     
+            public bool Exists ()
+            {
+                return m_entities.Length > 0;
+            }
+    
             public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
             {
                 if (indexes.Length == 1 && indexes[0] is int)
@@ -820,20 +829,38 @@ namespace FileInclude
     
             public override bool TryConvert(ConvertBinder binder, out object result)
             {
-                if (binder.ReturnType == typeof(string))
+                var returnType = binder.ReturnType;
+                if (returnType == typeof(string))
                 {
                     result = m_entities.FirstOrEmpty().GetValue ();
                     return true;
                 }
-                else if (binder.ReturnType == typeof(string[]))
+                else if (returnType == typeof(string[]))
                 {
                     result = m_entities.Select(e => e.GetValue()).ToArray();
                     return true;
                 }
-                else if (binder.ReturnType ==typeof(object[]))
+                else if (returnType ==typeof(object[]))
                 {
                     result = m_entities;
                     return true;
+                }
+                else if (returnType.CanParse())
+                {
+                    result = m_entities.FirstOrEmpty().GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue());
+                    return true;                
+                }
+                else if (returnType.IsArray)
+                {
+                    var elementType = returnType.GetElementType();
+                    if (elementType.CanParse())
+                    {
+                        var values = m_entities.Select(entity => entity.GetValue().Parse(Config.DefaultCulture, elementType, elementType.GetDefaultValue())).ToArray();
+                        var array = Array.CreateInstance(elementType, values.Length);
+                        values.CopyTo(array, 0);
+                        result = array;
+                        return true;
+                    }
                 }
                 return base.TryConvert(binder, out result);
             }
@@ -864,9 +891,15 @@ namespace FileInclude
     
             public override bool TryConvert(ConvertBinder binder, out object result)
             {
-                if (binder.ReturnType == typeof(string))
+                var returnType = binder.ReturnType;
+                if (returnType == typeof(string))
                 {
                     result = GetValue();
+                    return true;
+                }
+                else if (returnType.CanParse())
+                {
+                    result = GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue ());
                     return true;
                 }
                 return base.TryConvert(binder, out result);
@@ -1678,6 +1711,7 @@ namespace FileInclude
     
             public enum ParseError
             {
+                ProgrammingError                ,
                 IndentIncreasedMoreThanExpected ,
                 TagIsNotCorrectlyFormatted      ,
             }
@@ -1724,16 +1758,6 @@ namespace FileInclude
                         {
                             break;
                         }
-                    }
-    
-                    if (currentIndent > expectedIndent)
-                    {
-                        visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
-                        if (++errorCount > 0)
-                        {
-                            return;
-                        }
-                        continue;
                     }
     
                     bool isComment;
@@ -1818,7 +1842,15 @@ namespace FileInclude
                         switch (state)
                         {
                             case ParseState.ExpectingTag:
-                                if (currentIndent < lineLength)
+                                if (currentIndent > expectedIndent)
+                                {
+                                    visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                                    if (++errorCount > 0)
+                                    {
+                                        return;
+                                    }
+                                }
+                                else if (currentIndent < lineLength)
                                 {
                                     var first = baseString[currentIndent + begin];
                                     switch (first)
@@ -1842,6 +1874,14 @@ namespace FileInclude
                                                 return;
                                             }
                                             break;
+                                    }
+                                }
+                                else
+                                {
+                                    visitor.Error(lineNo, line, ParseError.ProgrammingError);
+                                    if (++errorCount > 0)
+                                    {
+                                        return;
                                     }
                                 }
                                 break;
@@ -1912,67 +1952,130 @@ namespace FileInclude
     
         static partial class ParseExtensions
         {
+            static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
+                {
+    #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+                    { typeof(Boolean)      , () => default (Boolean)},
+                    { typeof(Boolean?)     , () => default (Boolean?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+                    { typeof(Char)      , () => default (Char)},
+                    { typeof(Char?)     , () => default (Char?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+                    { typeof(SByte)      , () => default (SByte)},
+                    { typeof(SByte?)     , () => default (SByte?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+                    { typeof(Int16)      , () => default (Int16)},
+                    { typeof(Int16?)     , () => default (Int16?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+                    { typeof(Int32)      , () => default (Int32)},
+                    { typeof(Int32?)     , () => default (Int32?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+                    { typeof(Int64)      , () => default (Int64)},
+                    { typeof(Int64?)     , () => default (Int64?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+                    { typeof(Byte)      , () => default (Byte)},
+                    { typeof(Byte?)     , () => default (Byte?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+                    { typeof(UInt16)      , () => default (UInt16)},
+                    { typeof(UInt16?)     , () => default (UInt16?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+                    { typeof(UInt32)      , () => default (UInt32)},
+                    { typeof(UInt32?)     , () => default (UInt32?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+                    { typeof(UInt64)      , () => default (UInt64)},
+                    { typeof(UInt64?)     , () => default (UInt64?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+                    { typeof(Single)      , () => default (Single)},
+                    { typeof(Single?)     , () => default (Single?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+                    { typeof(Double)      , () => default (Double)},
+                    { typeof(Double?)     , () => default (Double?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+                    { typeof(Decimal)      , () => default (Decimal)},
+                    { typeof(Decimal?)     , () => default (Decimal?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+                    { typeof(TimeSpan)      , () => default (TimeSpan)},
+                    { typeof(TimeSpan?)     , () => default (TimeSpan?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+                    { typeof(DateTime)      , () => default (DateTime)},
+                    { typeof(DateTime?)     , () => default (DateTime?)},
+    #endif
+                };
             static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
                 {
     #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
                     { typeof(Boolean)  , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)(Boolean?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
                     { typeof(Char)  , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)(Char?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
                     { typeof(SByte)  , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)(SByte?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
                     { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)(Int16?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
                     { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)(Int32?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
                     { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)(Int64?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
                     { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)(Byte?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
                     { typeof(UInt16)  , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)(UInt16?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
                     { typeof(UInt32)  , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)(UInt32?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
                     { typeof(UInt64)  , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)(UInt64?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
                     { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)(Single?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
                     { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)(Double?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
                     { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)(Decimal?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
                     { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)(TimeSpan?)value : null;}},
     #endif
     #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
                     { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)(DateTime?)value : null;}},
     #endif
                 };
     
@@ -1984,6 +2087,15 @@ namespace FileInclude
                 }
     
                 return s_parsers.ContainsKey (type);
+            }
+    
+            public static object GetDefaultValue (this Type type)
+            {
+                type = type ?? typeof (object);
+    
+                Func<object> getValue;
+    
+                return s_defaultValues.TryGetValue (type, out getValue) ? getValue () : null;
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
@@ -3443,7 +3555,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-17T12:58:56";
+        public const string IncludeDate     = @"2012-11-21T08:11:40";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
