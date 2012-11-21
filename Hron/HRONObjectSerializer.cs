@@ -87,6 +87,18 @@ namespace Source.HRON
             get { return (T)Top.Value; }
         }
 
+        public void Document_Begin()
+        {
+        }
+
+        public void Document_End()
+        {
+        }
+
+        public void PreProcessor(SubString line)
+        {
+        }
+
         public void Empty(SubString line)
         {
             

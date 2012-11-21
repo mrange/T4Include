@@ -143,6 +143,18 @@ namespace FileInclude
                 get { return (T)Top.Value; }
             }
     
+            public void Document_Begin()
+            {
+            }
+    
+            public void Document_End()
+            {
+            }
+    
+            public void PreProcessor(SubString line)
+            {
+            }
+    
             public void Empty(SubString line)
             {
                 
@@ -1126,6 +1138,18 @@ namespace FileInclude
                 get { return m_stack.Peek(); }
             }
     
+            public void Document_Begin()
+            {
+            }
+    
+            public void Document_End()
+            {
+            }
+    
+            public void PreProcessor(SubString line)
+            {
+            }
+    
             public void Empty(SubString line)
             {
             }
@@ -1579,6 +1603,9 @@ namespace FileInclude
     
         partial interface IHRONVisitor
         {
+            void Document_Begin ();
+            void Document_End ();
+            void PreProcessor (SubString line);
             void Empty (SubString line);
     
             void Comment(int indent, SubString comment);
@@ -1613,6 +1640,17 @@ namespace FileInclude
                 }
     
                 Write (line);
+            }
+    
+            public abstract void Document_Begin();
+            public abstract void Document_End();
+    
+            public void PreProcessor(SubString line)
+            {
+                m_sb.Clear();
+                m_sb.Append('!');
+                m_sb.AppendSubString(line);
+                WriteLine(m_sb);
             }
     
             public void Empty (SubString line)
@@ -1699,6 +1737,14 @@ namespace FileInclude
             {
                 m_sb.AppendLine();
             }
+    
+            public override void Document_Begin()
+            {
+            }
+    
+            public override void Document_End()
+            {
+            }
         }
     
         static partial class HRONSerializer
@@ -1716,7 +1762,7 @@ namespace FileInclude
                 TagIsNotCorrectlyFormatted      ,
             }
     
-            public static void Parse (
+            public static void Parse(
                 int maxErrorCount,
                 IEnumerable<SubString> lines,
                 IHRONVisitor visitor
@@ -1727,195 +1773,218 @@ namespace FileInclude
                     return;
                 }
     
-                var errorCount = 0;
+                visitor.Document_Begin();
     
-                lines = lines ?? Array<SubString>.Empty;
-    
-                var state = ParseState.ExpectingTag;
-                var expectedIndent = 0;
-                var lineNo = 0;
-                var context = new Stack<SubString>();
-    
-                foreach (var line in lines)
+                try
                 {
-                    ++lineNo;
+                    var errorCount = 0;
     
-                    var lineLength      = line.Length;
-                    var begin           = line.Begin;
-                    var end             = line.End;
+                    lines = lines ?? Array<SubString>.Empty;
     
-                    var currentIndent   = 0;
-                    var baseString      = line.BaseString;
+                    var state = ParseState.ExpectingTag;
+                    var expectedIndent = 0;
+                    var lineNo = 0;
+                    var context = new Stack<SubString>();
     
-                    for (var iter = begin; iter < end; ++iter)
+                    var acceptsPreProcessor = true;
+    
+                    foreach (var line in lines)
                     {
-                        var ch = baseString[iter];
-                        if (ch == '\t')
+                        ++lineNo;
+    
+                        var lineLength = line.Length;
+                        var begin = line.Begin;
+                        var end = line.End;
+    
+                        var currentIndent = 0;
+                        var baseString = line.BaseString;
+    
+                        if (acceptsPreProcessor)
                         {
-                            ++currentIndent;
+                            if (lineLength > 0 && baseString[begin] == '!')
+                            {
+                                visitor.PreProcessor(line.ToSubString(1));
+                                continue;
+                            }
+                            else
+                            {
+                                acceptsPreProcessor = false;
+                            }
                         }
-                        else
+    
+                        for (var iter = begin; iter < end; ++iter)
                         {
-                            break;
+                            var ch = baseString[iter];
+                            if (ch == '\t')
+                            {
+                                ++currentIndent;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                    }
     
-                    bool isComment;
-                    switch (state)
-                    {
-                        case ParseState.ExpectingTag:
-                            isComment = currentIndent < lineLength
-                                && baseString[currentIndent + begin] == '#'
-                                ;
-                            break;
-                        case ParseState.ExpectingValue:
-                        default:
-                            isComment = currentIndent < expectedIndent
-                                && currentIndent < lineLength
-                                && baseString[currentIndent + begin] == '#'
-                                ;
-                            break;
-                    }
-    
-                    var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
-    
-                    if (isComment)
-                    {
-                        visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
-                    }
-                    else if (isWhiteSpace && currentIndent < expectedIndent)
-                    {
+                        bool isComment;
                         switch (state)
                         {
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(SubString.Empty);
-                                break;
                             case ParseState.ExpectingTag:
+                                isComment = currentIndent < lineLength
+                                            && baseString[currentIndent + begin] == '#'
+                                    ;
+                                break;
+                            case ParseState.ExpectingValue:
                             default:
-                                visitor.Empty(line);
+                                isComment = currentIndent < expectedIndent
+                                            && currentIndent < lineLength
+                                            && baseString[currentIndent + begin] == '#'
+                                    ;
                                 break;
                         }
-                    }
-                    else if (isWhiteSpace)
-                    {
-                        switch (state)
+    
+                        var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
+    
+                        if (isComment)
                         {
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(line.ToSubString(expectedIndent));
-                                break;
-                            case ParseState.ExpectingTag:
-                            default:
-                                visitor.Empty(line);
-                                break;
+                            visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
                         }
-                    }
-                    else
-                    {
-                        if (currentIndent < expectedIndent)
+                        else if (isWhiteSpace && currentIndent < expectedIndent)
                         {
                             switch (state)
                             {
+                                case ParseState.ExpectingValue:
+                                    visitor.Value_Line(SubString.Empty);
+                                    break;
                                 case ParseState.ExpectingTag:
-                                    for (var iter = currentIndent; iter < expectedIndent; ++iter)
-                                    {
-                                        visitor.Object_End(context.Peek());
+                                default:
+                                    visitor.Empty(line);
+                                    break;
+                            }
+                        }
+                        else if (isWhiteSpace)
+                        {
+                            switch (state)
+                            {
+                                case ParseState.ExpectingValue:
+                                    visitor.Value_Line(line.ToSubString(expectedIndent));
+                                    break;
+                                case ParseState.ExpectingTag:
+                                default:
+                                    visitor.Empty(line);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            if (currentIndent < expectedIndent)
+                            {
+                                switch (state)
+                                {
+                                    case ParseState.ExpectingTag:
+                                        for (var iter = currentIndent; iter < expectedIndent; ++iter)
+                                        {
+                                            visitor.Object_End(context.Peek());
+                                            context.Pop();
+                                        }
+                                        break;
+                                    case ParseState.ExpectingValue:
+                                    default:
+                                        visitor.Value_End(context.Peek());
+                                        // Popping the value name
                                         context.Pop();
+                                        for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
+                                        {
+                                            visitor.Object_End(context.Peek());
+                                            context.Pop();
+                                        }
+                                        break;
+                                }
+    
+                                expectedIndent = currentIndent;
+                                state = ParseState.ExpectingTag;
+                            }
+    
+                            switch (state)
+                            {
+                                case ParseState.ExpectingTag:
+                                    if (currentIndent > expectedIndent)
+                                    {
+                                        visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                                        if (++errorCount > 0)
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    else if (currentIndent < lineLength)
+                                    {
+                                        var first = baseString[currentIndent + begin];
+                                        switch (first)
+                                        {
+                                            case '@':
+                                                state = ParseState.ExpectingTag;
+                                                ++expectedIndent;
+                                                context.Push(line.ToSubString(currentIndent + 1));
+                                                visitor.Object_Begin(context.Peek());
+                                                break;
+                                            case '=':
+                                                state = ParseState.ExpectingValue;
+                                                ++expectedIndent;
+                                                context.Push(line.ToSubString(currentIndent + 1));
+                                                visitor.Value_Begin(context.Peek());
+                                                break;
+                                            default:
+                                                visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
+                                                if (++errorCount > 0)
+                                                {
+                                                    return;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        visitor.Error(lineNo, line, ParseError.ProgrammingError);
+                                        if (++errorCount > 0)
+                                        {
+                                            return;
+                                        }
                                     }
                                     break;
                                 case ParseState.ExpectingValue:
-                                default:
-                                    visitor.Value_End(context.Peek());
-                                    // Popping the value name
-                                    context.Pop();
-                                    for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
-                                    {
-                                        visitor.Object_End(context.Peek());
-                                        context.Pop();
-                                    }
+                                    visitor.Value_Line(line.ToSubString(expectedIndent));
                                     break;
                             }
-    
-                            expectedIndent = currentIndent;
-                            state = ParseState.ExpectingTag;
-                        }
-    
-                        switch (state)
-                        {
-                            case ParseState.ExpectingTag:
-                                if (currentIndent > expectedIndent)
-                                {
-                                    visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
-                                    if (++errorCount > 0)
-                                    {
-                                        return;
-                                    }
-                                }
-                                else if (currentIndent < lineLength)
-                                {
-                                    var first = baseString[currentIndent + begin];
-                                    switch (first)
-                                    {
-                                        case '@':
-                                            state = ParseState.ExpectingTag;
-                                            ++expectedIndent;
-                                            context.Push(line.ToSubString(currentIndent + 1));
-                                            visitor.Object_Begin(context.Peek());
-                                            break;
-                                        case '=':
-                                            state = ParseState.ExpectingValue;
-                                            ++expectedIndent;
-                                            context.Push(line.ToSubString(currentIndent + 1));
-                                            visitor.Value_Begin(context.Peek());
-                                            break;
-                                        default:
-                                            visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
-                                            if (++errorCount > 0)
-                                            {
-                                                return;
-                                            }
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    visitor.Error(lineNo, line, ParseError.ProgrammingError);
-                                    if (++errorCount > 0)
-                                    {
-                                        return;
-                                    }
-                                }
-                                break;
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(line.ToSubString(expectedIndent));
-                                break;
                         }
                     }
-                }
     
-                switch (state)
+                    switch (state)
+                    {
+                        case ParseState.ExpectingTag:
+                            for (var iter = 0; iter < expectedIndent; ++iter)
+                            {
+                                visitor.Object_End(context.Peek());
+                                context.Pop();
+                            }
+                            break;
+                        case ParseState.ExpectingValue:
+                        default:
+                            visitor.Value_End(context.Peek());
+                            // Popping the value name
+                            context.Pop();
+                            for (var iter = 0 + 1; iter < expectedIndent; ++iter)
+                            {
+                                visitor.Object_End(context.Peek());
+                                context.Pop();
+                            }
+                            break;
+                    }
+    
+                }
+                finally
                 {
-                    case ParseState.ExpectingTag:
-                        for (var iter = 0; iter < expectedIndent; ++iter)
-                        {
-                            visitor.Object_End(context.Peek());
-                            context.Pop();
-                        }
-                        break;
-                    case ParseState.ExpectingValue:
-                    default:
-                        visitor.Value_End(context.Peek());
-                        // Popping the value name
-                        context.Pop();
-                        for (var iter = 0 + 1; iter < expectedIndent; ++iter)
-                        {
-                            visitor.Object_End(context.Peek());
-                            context.Pop();
-                        }
-                        break;
+                    visitor.Document_End();
                 }
-    
             }
-    
         }
     
     }
@@ -3555,7 +3624,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-21T08:11:40";
+        public const string IncludeDate     = @"2012-11-21T21:41:07";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";

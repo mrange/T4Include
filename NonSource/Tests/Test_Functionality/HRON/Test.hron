@@ -1,4 +1,6 @@
-﻿# This is an ini file using HRON
+﻿!VERSION=1.0
+!INDENT=TAB
+# This is an ini file using HRON
 
 @Common
 	# A comment

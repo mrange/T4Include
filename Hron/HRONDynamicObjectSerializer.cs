@@ -447,6 +447,18 @@ namespace Source.HRON
             get { return m_stack.Peek(); }
         }
 
+        public void Document_Begin()
+        {
+        }
+
+        public void Document_End()
+        {
+        }
+
+        public void PreProcessor(SubString line)
+        {
+        }
+
         public void Empty(SubString line)
         {
         }
