@@ -17,11 +17,9 @@
 // ### INCLUDE: HRONSerializer.cs
 // ### INCLUDE: ../Extensions/ParseExtensions.cs
 
-
-using System;
-
 namespace Source.HRON
 {
+    using System;
     using System.Collections.Generic;
     using System.Dynamic;
     using System.Linq;
