@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;
 using FileInclude.Source.Extensions;
+using FileInclude.Source.Testing;
 
 namespace Test_Functionality.Common
 {

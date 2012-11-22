@@ -10,14 +10,16 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FileInclude.Source.Common;
-using FileInclude.Source.Extensions;
+// ### INCLUDE: Generated_TestFor.cs
 
-namespace Test_Functionality
+namespace Source.Testing
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Source.Common;
+    using Source.Extensions;
+
     static partial class TestFor
     {
         public static int FailureCount;

@@ -26,6 +26,10 @@
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDE_FOUND: TestFor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -42,11 +46,16 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestFor.cs
+// @@@ INCLUDE_FOUND: Generated_TestFor.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -708,11 +717,9 @@ namespace FileInclude
     
     
     
-    
-    using System;
-    
     namespace Source.HRON
     {
+        using System;
         using System.Collections.Generic;
         using System.Dynamic;
         using System.Linq;
@@ -1572,6 +1579,140 @@ namespace FileInclude
                     yield return type;
                     type = type.BaseType;
                 }
+            }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Testing
+    {
+        using System;
+        using System.Linq;
+        using System.Reflection;
+        using Source.Common;
+    
+        static partial class TestRunner
+        {
+            public static bool ExecuteTests (Assembly assemblyContainingTests = null)
+            {
+                var assembly = assemblyContainingTests ?? Assembly.GetExecutingAssembly();
+    
+                var preFailureCount = TestFor.FailureCount;
+                var assemblyName = assembly.GetName().Name;
+                try
+                {
+                    Log.Info("Executing tests contained in: {0}", assemblyName);
+    
+                    Log.Info("Locating test classes...");
+                    var testClasses = assembly
+                        .GetTypes()
+                        .Where(t => t.Name.StartsWith("TestsFor_", StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(t => t.Name)
+                        .ToArray()
+                        ;
+                    Log.HighLight("Found {0} test classes", testClasses.Length);
+    
+                    foreach (var testClass in testClasses)
+                    {
+                        var preClassFailureCount = TestFor.FailureCount;
+                        var className = testClass.Name;
+                        try
+                        {
+                            Log.Info("Executing tests contained in class: {0}", className);
+                            var instance = Activator.CreateInstance(testClass, nonPublic: true);
+                            using (var disposable = instance as IDisposable)
+                            {
+                                var testMethods = testClass
+                                    .GetMethods()
+                                    .Where(mi => mi.Name.StartsWith("Test_", StringComparison.OrdinalIgnoreCase))
+                                    .ToArray();
+    
+                                foreach (var testMethod in testMethods)
+                                {
+                                    var preMethodFailureCount = TestFor.FailureCount;
+                                    try
+                                    {
+                                        if (testMethod.GetParameters().Length > 0)
+                                        {
+                                            Log.Warning(
+                                                "Can't execute test method as it has more than 0 parameters: {0}.{1}",
+                                                className,
+                                                testMethod.Name
+                                                );
+    
+                                            continue;
+                                        }
+    
+                                        Log.Info("Executing test: {0}.{1}", className, testMethod.Name);
+    
+                                        testMethod.Invoke(instance, new object[0]);
+                                    }
+                                    catch (Exception exc)
+                                    {
+                                        Log.Exception("Caught method level exception for: {0}", exc);
+                                        ++TestFor.FailureCount;
+                                    }
+                                    finally
+                                    {
+                                        if (TestFor.FailureCount == preMethodFailureCount)
+                                        {
+                                            Log.Success("Executed test: {0}.{1}", className, testMethod.Name);
+                                        }
+                                        else
+                                        {
+                                            Log.Error("Executed test: {0}.{1}", className, testMethod.Name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            Log.Exception("Caught class level exception", exc);
+                            ++TestFor.FailureCount;
+                        }
+                        finally
+                        {
+                            if (preClassFailureCount == TestFor.FailureCount)
+                            {
+                                Log.Success("Executed tests in class: {0}", className);
+                            }
+                            else
+                            {
+                                Log.Error("Executed tests in class: {0}", className);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    if (preFailureCount == TestFor.FailureCount)
+                    {
+                        Log.Success("Executed tests in assembly: {0}", assemblyName);
+                    }
+                    else
+                    {
+                        Log.Error("Executed tests in assembly: {0}", assemblyName);
+                    }
+                }
+    
+                return preFailureCount == TestFor.FailureCount;
             }
         }
     }
@@ -3137,6 +3278,232 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    namespace Source.Testing
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using Source.Common;
+        using Source.Extensions;
+    
+        static partial class TestFor
+        {
+            public static int FailureCount;
+    
+            const string NullValue = "<NULL>";
+    
+            static string ToString(this string v, int start, int count)
+            {
+                v = v ?? "";
+    
+                start = start - count/2;
+    
+                if (start < 0)
+                {
+                    count += -start;
+                    start = 0;
+                }
+    
+                if (start >= v.Length)
+                {
+                    return "";
+                }
+    
+                count = Math.Min(count, v.Length - start);
+    
+                return v
+                    .Substring(start, count)
+                    .Replace("\r", "\\r")
+                    .Replace("\t", "\\t")
+                    .Replace("\n", "\\n")
+                    ;
+            }
+    
+            static bool SequenceEqualityImpl<T>(IEnumerable<T> expected, IEnumerable<T> found, string message)
+            {
+                object oExpected = expected;
+                object oFound = found;
+                var finalMessage = "TestFor.SequenceEquality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+                    .FormatWith(
+                        (oExpected ?? NullValue).GetType().Name,
+                        (oFound ?? NullValue).GetType().Name,
+                        message
+                        );
+                try
+                {
+    
+    
+                    if (ReferenceEquals(expected, found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (oExpected != null && oFound == null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (oExpected == null && oFound != null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (expected.Equals(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (expected.SequenceEqual(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+    
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception(finalMessage);
+                    Log.Exception("    Caught exception: {0}", exc);
+                    ++FailureCount;
+                    throw;
+                }
+            }
+    
+            static bool EqualityImpl<T> (T expected, T found, string message)
+            {
+                var sExpected = expected as string;
+    
+                object oExpected    = expected;
+                object oFound       = found;
+                if (sExpected != null)
+                {
+                    var sFound = (oFound ?? NullValue).ToString ();
+    
+                    var firstDiff = -1;
+                    var length = Math.Min(sExpected.Length, sFound.Length);
+                    for (var iter = 0; iter < length; ++iter)
+                    {
+                        if (sExpected[iter] != sFound[iter])
+                        {
+                            firstDiff = iter;
+                            iter = length;
+                        }                    
+                    }
+    
+                    if (firstDiff > -1)
+                    {
+                        ++FailureCount;
+                        Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - First diff @{2} - {3}",
+                            sExpected.ToString(firstDiff, 16),
+                            sFound.ToString(firstDiff, 16),
+                            length,
+                            message
+                            );
+                        return false;
+                    }
+                    else if (sExpected.Length != sFound.Length)
+                    {
+                        ++FailureCount;
+                        Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - Difference in length@{2} - {3}",
+                            sExpected.ToString(length, 16),
+                            sFound.ToString(length, 16),
+                            length,
+                            message
+                            );
+                        return false;
+                    }
+                    else
+                    {
+                        Log.Success("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}",
+                            sExpected.ToString(0, 16),
+                            sFound.ToString(0, 16),
+                            message
+                            );
+                        return true;
+                    }
+    
+                }
+    
+                var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+                    .FormatWith(
+                        oExpected ?? NullValue,
+                        oFound ?? NullValue,
+                        message
+                        );
+                try
+                {
+    
+    
+                    if (ReferenceEquals(expected, found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (oExpected != null && oFound == null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (oExpected == null && oFound != null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (expected.Equals(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+    
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception(finalMessage);
+                    Log.Exception("    Caught exception: {0}", exc);
+                    ++FailureCount;
+                    throw;
+                }
+            }
+        }
+    
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) M�rten R�nge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
     namespace Source.Common
     {
         using System;
@@ -3616,6 +3983,177 @@ namespace FileInclude
     }
     
 }
+
+// ############################################################################
+namespace FileInclude
+{
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    namespace Source.Testing
+    {
+        using System;
+        using System.Collections.Generic;
+    
+        partial class TestFor
+        {
+            public static bool SequenceEquality (IEnumerable<String> expected, IEnumerable<String> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (String expected, String found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Char> expected, IEnumerable<Char> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Char expected, Char found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Boolean> expected, IEnumerable<Boolean> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Boolean expected, Boolean found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<SByte> expected, IEnumerable<SByte> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (SByte expected, SByte found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int16> expected, IEnumerable<Int16> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int16 expected, Int16 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int32> expected, IEnumerable<Int32> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int32 expected, Int32 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int64> expected, IEnumerable<Int64> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int64 expected, Int64 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Byte> expected, IEnumerable<Byte> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Byte expected, Byte found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt16> expected, IEnumerable<UInt16> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt16 expected, UInt16 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt32> expected, IEnumerable<UInt32> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt32 expected, UInt32 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt64> expected, IEnumerable<UInt64> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt64 expected, UInt64 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Single> expected, IEnumerable<Single> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Single expected, Single found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Double> expected, IEnumerable<Double> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Double expected, Double found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Decimal> expected, IEnumerable<Decimal> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Decimal expected, Decimal found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<TimeSpan> expected, IEnumerable<TimeSpan> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (TimeSpan expected, TimeSpan found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<DateTime> expected, IEnumerable<DateTime> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (DateTime expected, DateTime found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+        }
+    }
+}
 // ############################################################################
 
 // ############################################################################
@@ -3624,21 +4162,24 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-21T21:41:07";
+        public const string IncludeDate     = @"2012-11-22T07:40:12";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
         public const string Include_2       = @"Common\ConsoleLog.cs";
         public const string Include_3       = @"Extensions\BasicExtensions.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_4       = @"Testing\TestRunner.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################

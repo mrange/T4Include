@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;
 using FileInclude.Source.HRON;
+using FileInclude.Source.Testing;
 
 namespace Test_Functionality.HRON
 {

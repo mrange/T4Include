@@ -32,9 +32,9 @@ namespace Source.ConsoleApp
 
     enum ExitCode
     {
-        Ok      = 0     ,
-        Unknown = 999   ,
-        InvalidConfigFile
+        Ok                  = 0         ,
+        InvalidConfigFile   = 101       ,
+        Unknown             = 999       ,
     }
 
     sealed partial class ExitCodeException : Exception
@@ -67,18 +67,21 @@ namespace Source.ConsoleApp
 
                 object config;
                 var configFile = "{0}.ini".FormatWith(s_consoleName);
-                Log.Info ("Loading config file: {0}", configFile);
-                using (var streamReader = new StreamReader(configFile))
+                if (File.Exists(configFile))
                 {
-                    HRONDynamicParseError[] parserErrors;
-                    if (!HRONSerializer.TryParseDynamic(
-                        int.MaxValue,
-                        streamReader.ReadLines().Select(x => x.ToSubString()),
-                        out config,
-                        out parserErrors
-                        ))
+                    Log.Info("Loading config file: {0}", configFile);
+                    using (var streamReader = new StreamReader(configFile))
                     {
-                        throw new ExitCodeException(ExitCode.InvalidConfigFile);        
+                        HRONDynamicParseError[] parserErrors;
+                        if (!HRONSerializer.TryParseDynamic(
+                            int.MaxValue,
+                            streamReader.ReadLines().Select(x => x.ToSubString()),
+                            out config,
+                            out parserErrors
+                                 ))
+                        {
+                            throw new ExitCodeException(ExitCode.InvalidConfigFile);
+                        }
                     }
                 }
 

@@ -20,6 +20,7 @@
             Include (@"HRON\HRONDynamicObjectSerializer.cs"),
             Include (@"Common\ConsoleLog.cs"),
             Include (@"Extensions\BasicExtensions.cs"),
+            Include (@"Testing\TestRunner.cs"),
         };
 #>
 

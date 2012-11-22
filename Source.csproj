@@ -84,6 +84,13 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\WpfExtensions.cs" />
     <Compile Include="NonSource\Source\Program.cs" />
+    <Compile Include="Testing\Generated_TestFor.cs">
+      <DependentUpon>Generated_TestFor.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Testing\TestFor.cs" />
+    <Compile Include="Testing\TestRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -118,6 +125,10 @@
     <None Include="T4\NumericalExtensions.ttinclude" />
     <None Include="T4\RoutedCommands.ttinclude" />
     <None Include="T4\RoutedEvents.ttinclude" />
+    <None Include="Testing\Generated_TestFor.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_TestFor.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
