@@ -1,0 +1,261 @@
+﻿<#@ include     file        ="..\T4\Header.ttinclude"           #>
+
+<#  
+    Namespace = "Source.DataStreams";
+    Model = new []
+        {
+            T<Byte>     ()  ,
+            T<UInt16>   ()  ,
+            T<UInt32>   ()  ,
+            T<UInt64>   ()  ,
+            T<SByte>    ()  ,
+            T<Int16>    ()  ,
+            T<Int32>    ()  ,
+            T<Int64>    ()  ,
+            T<Char>     ()  ,
+            T<Single>   ()  ,
+            T<Double>   ()  ,
+            T<Decimal>  ()  ,
+
+        };
+#>
+
+<#
+    var MaxSize = Model.Select(x => x.SizeOf).Max();
+#>
+
+namespace <#=Namespace#>
+{
+    using System;
+    using System.Runtime.InteropServices;
+    using System.Text;
+
+    using Source.Common;
+
+    [StructLayout(LayoutKind.Explicit)]
+    partial struct UnionOfAll
+    {
+<#
+    for (var iter = 0; iter < MaxSize; ++iter)
+    {
+#>
+        [FieldOffset(<#=iter#>)]
+        public Byte Offset<#=iter#>;  
+<#
+    }
+#>        
+
+<#
+    foreach (var type in Model)
+    {
+#>
+        [FieldOffset(0)]
+        public <#=type.Name#> <#=type.Name#>;  
+<#
+    }
+#>        
+
+        public Byte this[int i]
+        {
+            get
+            {
+                switch (i)
+                {
+<#
+    for (var iter = 0; iter < MaxSize; ++iter)
+    {
+#>
+                case <#=iter#>:
+                    return Offset<#=iter#>;
+<#
+    }
+#>
+                default:
+                    throw new ArgumentOutOfRangeException("i");
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+<#
+    for (var iter = 0; iter < MaxSize; ++iter)
+    {
+#>
+                case <#=iter#>:
+                    Offset<#=iter#> = value;
+                    break;
+<#
+    }
+#>
+                default:
+                    throw new ArgumentOutOfRangeException("i");
+                }
+            }
+        }
+    }
+
+    sealed partial class Unserializer : BaseDisposable
+    {
+        UnionOfAll m_unionOfAll;
+        public readonly IDataStream BaseStream;
+
+        public Unserializer (IDataStream baseStream)
+        {
+            if (baseStream == null)
+            {
+                throw new ArgumentNullException("baseStream");
+            }
+            BaseStream = baseStream;
+        }
+
+        protected override void OnDispose()
+        {
+            BaseStream.Dispose ();
+        }
+
+        public string Unserialize (string defaultValue)
+        {
+            string value;
+            return TryUnserialize (out value) ? value : defaultValue;
+        }
+
+        public bool TryUnserialize (out string v)
+        {
+            v = "";
+
+            Int32 length;
+            if (!TryUnserialize (out length))
+            {
+                return false;
+            }            
+
+            var count = 2*length;
+            if (BaseStream.Remaining < count)
+            {
+                return false;
+            }
+
+            var buffer = new Byte[count];
+            for (var iter = 0; iter < count; ++iter)
+            {
+                buffer[iter] = BaseStream.Read ();
+            }
+
+            v = Encoding.Unicode.GetString(buffer);
+            return true;
+        }
+
+<#
+    foreach (var type in Model)
+    {
+#>
+        public <#=type.Name#> Unserialize (<#=type.Name#> defaultValue)
+        {
+            <#=type.Name#> value;
+            return TryUnserialize (out value) ? value : defaultValue;
+        }
+
+        public bool TryUnserialize (out <#=type.Name#> v)
+        {
+            v = default(<#=type.Name#>);
+
+            if (BaseStream.Remaining < <#=type.SizeOf#>)
+            {
+                return false;
+            }
+
+<#
+    for (var iter = 0; iter < type.SizeOf; ++iter) 
+    {
+#>
+            m_unionOfAll.Offset<#=iter#> = BaseStream.Read ();    
+<#
+    }
+#>
+            v = m_unionOfAll.<#=type.Name#>;
+            return true;
+        }
+
+<#
+    }
+#>
+    }
+
+    sealed partial class Serializer : BaseDisposable
+    {
+        UnionOfAll m_unionOfAll;
+        public readonly IDataStream BaseStream;
+
+        protected override void OnDispose()
+        {
+            BaseStream.Dispose ();
+        }
+
+        public void Serialize (string v)
+        {
+            v = v ?? "";
+
+            var buffer = Encoding.Unicode.GetBytes (v);
+            foreach (var b in buffer)
+            {
+                BaseStream.Write (b);
+            }
+        }
+
+<#
+    foreach (var type in Model)
+    {
+#>
+        public void Serialize (<#=type.Name#> v)
+        {
+            m_unionOfAll.<#=type.Name#> = v;
+
+<#
+    for (var iter = 0; iter < type.SizeOf; ++iter) 
+    {
+#>
+            BaseStream.Write (m_unionOfAll.Offset<#=iter#>);
+<#
+    }
+#>
+        }
+
+<#
+    }
+#>
+    }
+
+}
+
+<#+
+
+    string              Namespace   = "T4Include"               ;
+    TypeDefinition[]    Model       = new TypeDefinition[0]     ;
+
+    class TypeDefinition : BaseEntity<Root>
+    {
+        public readonly string  Name    ;
+        public readonly int     SizeOf  ;
+
+        public TypeDefinition (string name, int sizeOf)
+        {
+            Name        = name          ?? S_NoName ;
+            SizeOf      = sizeOf                    ;
+        }
+    }
+
+    static TypeDefinition T (string name)
+    {
+        return new TypeDefinition (name, 0);
+    }
+
+    static TypeDefinition T<TType> ()
+    {
+        var type = typeof(TType);
+        return new TypeDefinition (
+            type.Name, 
+            System.Runtime.InteropServices.Marshal.SizeOf(type)
+            );
+    }
+#>
