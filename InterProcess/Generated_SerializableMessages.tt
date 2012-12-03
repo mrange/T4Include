@@ -1,0 +1,302 @@
+﻿<#@ include     file        ="..\T4\Header.ttinclude"           #>
+
+<#
+    Namespace = "Source.InterProcess.Test";
+    Model = new []
+        {
+            new MessageDefinition (1001, "Customer")
+            {
+                P ("Int64"      , "Id")         ,
+                P ("String"     , "FirstName")  ,
+                P ("String"     , "LastName")   ,
+                P ("Int32"      , "BirthYear")  ,
+            },
+            new MessageDefinition (1002, "Partner")
+            {
+                P ("Int64"      , "Id")         ,
+                P ("String"     , "FirstName")  ,
+                P ("String"     , "LastName")   ,
+                P ("Int32"      , "BirthYear")  ,
+                P ("Int32"      , "OwnCustomers")  ,
+                P ("Int32"      , "OrgCustomers")  ,
+            },
+        };
+#>
+
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+
+namespace <#=Namespace#>
+{
+    using System;
+    using System.IO;
+
+    using Source.DataStreams;
+
+    enum MessageIds
+    {
+<#
+    foreach (var message in Model)
+    {
+#>
+        <#=message.Name#> = <#=message.Id#>,
+<#
+    }
+#>
+    }
+
+    partial interface IMessageFactory : ISerializableMessageFactory<IMessage>
+    {
+    }
+
+    sealed partial class MessageFactory : IMessageFactory
+    {
+        SerializeVisitor m_serializer = new SerializeVisitor ();
+        UnserializeVisitor m_unserializer = new UnserializeVisitor ();
+
+        public int FactoryId { get {return <#=FactoryId#>;}}
+
+
+
+        public void Serialize(Serializer writer, IMessage message)
+        {
+            if (writer == null)
+            {
+                return;
+            }
+
+            if (message == null)
+            {
+                return;
+            }
+
+            var commit = false;            
+            var pos = writer.BaseStream.Position;
+            try
+            {
+                writer.Serialize(0);   // PlaceHolder for the length    
+                writer.Serialize(message.FactoryId);   
+                writer.Serialize(message.MessageId);   
+
+                m_serializer.Writer = writer;
+                message.Apply (m_serializer);    
+
+                var newPos = writer.BaseStream.Position;
+                writer.BaseStream.Position = pos;
+                writer.Serialize(newPos - pos);
+                writer.BaseStream.Position = newPos;
+                commit = true;
+            }
+            finally
+            {
+                if (!commit)
+                {
+                    writer.BaseStream.Position = pos;
+                }
+            }
+        }
+
+        public bool TryUnserialize(Unserializer reader, out int consumedBytes, out IMessage message)
+        {
+            consumedBytes = 0;
+            message = null;
+
+            if (reader == null)
+            {
+                return false;
+            }
+
+            if (reader.BaseStream.Remaining < sizeof(int)*3)
+            {
+                return false;
+            }
+
+            var pos = reader.BaseStream.Position;
+            var commit = false;
+            try
+            {
+                var length = reader.Unserialize(0);
+                if (reader.BaseStream.Remaining < length - sizeof(Int32))
+                {
+                    return false;
+                }
+
+                var factoryId = reader.Unserialize(0);
+                var messageId = reader.Unserialize(0);
+                if (factoryId != <#=FactoryId#>)
+                {
+                    return false;
+                }
+
+                m_unserializer.Reader = reader;
+
+                switch ((MessageIds)messageId)
+                {
+<#
+    foreach (var message in Model)
+    {
+#>
+                case MessageIds.<#=message.Name#>:
+                    message = new <#=message.Name#>();
+                    break;
+<#
+    }
+#>
+                default: 
+                    return false;
+                }
+
+                message.Apply(m_unserializer);
+                consumedBytes = (int) (reader.BaseStream.Position - pos);
+                commit = true;
+                return true;
+            }
+            finally
+            {
+                if (!commit)
+                {
+                    reader.BaseStream.Position = pos;
+                }
+            }
+        }
+    }
+
+    partial interface IMessage : ISerializableMessage 
+    {
+        void Apply (IVisitor visitor);
+    }
+    
+    partial interface IVisitor
+    {
+<#
+    foreach (var message in Model)
+    {
+#>
+        void Visit (<#=message.Name#> message);
+<#
+    }
+#>
+    }
+
+    sealed partial class SerializeVisitor : IVisitor
+    {
+        public Serializer Writer;
+<#
+    foreach (var message in Model)
+    {
+#>
+        public void Visit (<#=message.Name#> message)
+        {
+<#
+    foreach (var property in message)
+    {
+#>
+            Writer.Serialize(message.<#=property.Name#>);
+<#
+    }
+#>
+        }
+<#
+    }
+#>
+    }
+
+    sealed partial class UnserializeVisitor : IVisitor
+    {
+        public Unserializer Reader;
+        public IMessage Message;
+<#
+    foreach (var message in Model)
+    {
+#>
+        public void Visit (<#=message.Name#> message)
+        {
+<#
+    foreach (var property in message)
+    {
+#>
+            message.<#=property.Name#> = Reader.Unserialize(default (<#=property.Type#>));
+<#
+    }
+#>
+        }
+<#
+    }
+#>
+    }
+
+<#
+    foreach (var message in Model)
+    {
+#>
+    sealed partial class <#=message.Name#> : IMessage
+    {
+        public int FactoryId { get {return <#=FactoryId#>;}}
+
+        public int MessageId { get {return <#=message.Id#>;}}
+
+        public void Apply(IVisitor visitor)
+        {
+            visitor.Visit (this);
+        }
+
+<#
+    foreach (var property in message)
+    {
+#>
+        public <#=property.Type#> <#=property.Name#>; 
+<#
+    }
+#>
+    }
+<#
+    }
+#>
+}
+<#+
+
+    int                 FactoryId   = 19740531                  ;
+    string              Namespace   = "T4Include"               ;
+    MessageDefinition[] Model       = new MessageDefinition[0]  ;
+
+    class MessageDefinition : BaseContainer<Root, PropertyDefinition>
+    {
+        public readonly int    Id   ;
+        public readonly string Name ;
+
+        public MessageDefinition (int messageId, string name)
+        {
+            Id          = messageId                 ;
+            Name        = name          ?? S_NoName ;
+        }
+    }
+
+    class PropertyDefinition : BaseEntity<MessageDefinition>
+    {
+        public readonly string Type;
+        public readonly string Name;
+
+        public PropertyDefinition (string type, string name)
+        {
+            Type        = type          ?? S_NoType;
+            Name        = name          ?? S_NoName;
+        }
+    }
+
+    static PropertyDefinition P (string type, string name)
+    {
+        return new PropertyDefinition (type, name);
+    }
+
+#>
