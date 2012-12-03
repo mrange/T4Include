@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------
-// Copyright (c) Mårten Rånge.
+// Copyright (c) Mï¿½rten Rï¿½nge.
 // ----------------------------------------------------------------------------------------------
 // This source code is subject to terms and conditions of the Microsoft Public License. A 
 // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -60,15 +60,17 @@ namespace Source.Reflection
         {
             Type = type ?? typeof(object);
             Name = Type.Name;
-            Members = Type
-                .GetMembers(
-                        BindingFlags.Instance
-                    |   BindingFlags.Public
-                    |   BindingFlags.NonPublic
-                    )
-                .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
-                .Select(mi => new MemberDescriptor(mi))
-                .ToArray()
+            Members = (Type.IsPrimitive)
+                    ? new MemberDescriptor[0]
+                    : Type
+                        .GetMembers(
+                                BindingFlags.Instance
+                            |   BindingFlags.Public
+                            |   BindingFlags.NonPublic
+                            )
+                        .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                        .Select(mi => new MemberDescriptor(mi))
+                        .ToArray()
                 ;
             PublicGetMembers= Members.Where (mi => mi.HasPublicGetter).ToArray ();
             m_memberLookup  = Members.ToDictionary (mi => mi.Name);
