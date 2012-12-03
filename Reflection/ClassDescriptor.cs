@@ -12,11 +12,10 @@
 
 // ReSharper disable PartialTypeWithSinglePart
 
-using System.Collections;
-
 namespace Source.Reflection
 {
     using System;
+    using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
@@ -60,16 +59,19 @@ namespace Source.Reflection
         {
             Type = type ?? typeof(object);
             Name = Type.Name;
-            Members = Type
-                .GetMembers(
-                        BindingFlags.Instance
-                    |   BindingFlags.Public
-                    |   BindingFlags.NonPublic
-                    )
-                .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
-                .Select(mi => new MemberDescriptor(mi))
-                .ToArray()
-                ;
+            Members = Type.IsPrimitive 
+                ?   new MemberDescriptor[0]
+                :   Type
+                    .GetMembers(
+                            BindingFlags.Instance
+                        |   BindingFlags.Public
+                        |   BindingFlags.NonPublic
+                        )
+                    .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                    .Select(mi => new MemberDescriptor(mi))
+                    .ToArray()
+                    ;
+
             PublicGetMembers= Members.Where (mi => mi.HasPublicGetter).ToArray ();
             m_memberLookup  = Members.ToDictionary (mi => mi.Name);
 
