@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------
-// Copyright (c) Mårten Rånge.
+// Copyright (c) Mï¿½rten Rï¿½nge.
 // ----------------------------------------------------------------------------------------------
 // This source code is subject to terms and conditions of the Microsoft Public License. A 
 // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -19,7 +19,7 @@ namespace Source.Collections
     using System.Linq;
     using System.Linq.Expressions;
 
-    sealed class TrieMap<TValue>
+    sealed partial class TrieMap<TValue>
     {
         sealed class CaseInsensitiveCharComparer : IEqualityComparer<char>
         {
