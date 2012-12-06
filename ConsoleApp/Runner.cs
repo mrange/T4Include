@@ -13,7 +13,7 @@
 // ### INCLUDE: ../Common/Config.cs
 // ### INCLUDE: ../Common/SubString.cs
 // ### INCLUDE: ../Extensions/BasicExtensions.cs
-// ### INCLUDE: ../HRON/HRONDynamicObjectSerializer.cs
+// ### INCLUDE: ../Hron/HRONDynamicObjectSerializer.cs
 
 // ReSharper disable InconsistentNaming
 
@@ -83,6 +83,10 @@ namespace Source.ConsoleApp
                             throw new ExitCodeException(ExitCode.InvalidConfigFile);
                         }
                     }
+                }
+                else
+                {
+                    config = new object();
                 }
 
                 Log.Info("Initial setup is done, executing main program");
