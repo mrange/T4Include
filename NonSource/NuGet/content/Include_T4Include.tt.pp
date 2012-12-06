@@ -13,4 +13,4 @@
         };
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4Include.1.0.5\T4\IncludeWebFile.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4Include.1.0.7\T4\IncludeWebFile.ttinclude" #>
