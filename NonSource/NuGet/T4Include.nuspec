@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>T4Include</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <title>T4Include</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
@@ -15,6 +15,7 @@
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
+        * 1.0.6   - Added IncludeProject.ttinclude
         * 1.0.5   - Refined sample to point to correct release
         * 1.0.4   - Bug fixes when including files that use "using" that isn't inside a namespace
         * 1.0.3   - Refined sample content
@@ -25,6 +26,7 @@
   <files>
     <file src="..\..\T4\IncludeHeader.ttinclude" target="T4" />
     <file src="..\..\T4\IncludeLocalFile.ttinclude" target="T4" />
+    <file src="..\..\T4\IncludeProject.ttinclude" target="T4" />
     <file src="..\..\T4\IncludeWebFile.ttinclude" target="T4" />
     <file src="content\Include_T4Include.tt.pp" target="content" />
   </files>
