@@ -13,6 +13,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 
 // ### INCLUDE: HRONSerializer.cs
 // ### INCLUDE: ../Extensions/ParseExtensions.cs
@@ -228,6 +229,8 @@ namespace Source.HRON
 
     sealed partial class HRONObject : BaseHRONEntity
     {
+        public static HRONObject Empty = new HRONObject (null);
+
         public partial struct Member
         {
             readonly string m_name;

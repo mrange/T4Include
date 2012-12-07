@@ -78,7 +78,7 @@ namespace Source.ConsoleApp
                             streamReader.ReadLines().Select(x => x.ToSubString()),
                             out config,
                             out parserErrors
-                                 ))
+                            ))
                         {
                             throw new ExitCodeException(ExitCode.InvalidConfigFile);
                         }
@@ -86,7 +86,7 @@ namespace Source.ConsoleApp
                 }
                 else
                 {
-                    config = new object();
+                    config = HRONObject.Empty;
                 }
 
                 Log.Info("Initial setup is done, executing main program");
