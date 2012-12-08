@@ -30,16 +30,16 @@ namespace Source.Extensions
             public Func<object>         DefaultEnum ;
         }
 
-        static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo(() => ParseEnum<Dummy>(default(string)));
-        static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition();
+        static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo (() => ParseEnum<Dummy>(default (string)));
+        static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition ();
 
-        static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo(() => DefaultEnum<Dummy>());
-        static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition();
+        static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo (() => DefaultEnum<Dummy>());
+        static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition ();
 
         static readonly ConcurrentDictionary<Type, EnumParser> s_enumParsers = new ConcurrentDictionary<Type, EnumParser>();
-        static readonly Func<Type, EnumParser> s_createParser = type => CreateParser(type);
+        static readonly Func<Type, EnumParser> s_createParser = type => CreateParser (type);
 
-        static EnumParser CreateParser(Type type)
+        static EnumParser CreateParser (Type type)
         {
             if (!type.IsEnum)
             {
@@ -48,13 +48,13 @@ namespace Source.Extensions
 
             return new EnumParser
                        {
-                           ParseEnum    = (Func<string, object>)Delegate.CreateDelegate(
-                                                typeof(Func<string, object>),
-                                                s_genericParseEnum.MakeGenericMethod(type)
+                           ParseEnum    = (Func<string, object>)Delegate.CreateDelegate (
+                                                typeof (Func<string, object>),
+                                                s_genericParseEnum.MakeGenericMethod (type)
                                                 ),
-                           DefaultEnum  = (Func<object>)Delegate.CreateDelegate(
-                                               typeof(Func<object>),
-                                               s_genericDefaultEnum.MakeGenericMethod(type)
+                           DefaultEnum  = (Func<object>)Delegate.CreateDelegate (
+                                               typeof (Func<object>),
+                                               s_genericDefaultEnum.MakeGenericMethod (type)
                                                ), 
                        };
         }
@@ -63,7 +63,7 @@ namespace Source.Extensions
             where TEnum : struct
         {
             TEnum result;
-            return Enum.TryParse(value, true, out result)
+            return Enum.TryParse (value, true, out result)
                 ? (object)result
                 : null
                 ;
@@ -75,15 +75,15 @@ namespace Source.Extensions
             return default (TEnum);
         }
 
-        public static bool TryParseEnumValue(this string s, Type type, out object value)
+        public static bool TryParseEnumValue (this string s, Type type, out object value)
         {
             value = null;
-            if (string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty (s))
             {
                 return false;
             }
 
-            var enumParser = TryGetParser(type);
+            var enumParser = TryGetParser (type);
             if (enumParser == null)
             {
                 return false;
@@ -98,27 +98,27 @@ namespace Source.Extensions
 
         public static bool CanParseEnumValue (this Type type)
         {
-            var enumParser = TryGetParser(type);
+            var enumParser = TryGetParser (type);
 
             return enumParser != null;
         }
 
-        static EnumParser TryGetParser(Type type)
+        static EnumParser TryGetParser (Type type)
         {
             if (type == null)
             {
                 return null;
             }
 
-            var enumParser = s_enumParsers.GetOrAdd(type, s_createParser);
+            var enumParser = s_enumParsers.GetOrAdd (type, s_createParser);
 
             return enumParser;
         }
 
-        public static object ParseEnumValue(this string s, Type type)
+        public static object ParseEnumValue (this string s, Type type)
         {
             object value;
-            return s.TryParseEnumValue(type, out value)
+            return s.TryParseEnumValue (type, out value)
                 ? value
                 : null
                 ;
@@ -126,15 +126,15 @@ namespace Source.Extensions
 
         public static object GetDefaultEnumValue (this Type type)
         {
-            var enumParser = TryGetParser(type);
-            return enumParser != null ? enumParser.DefaultEnum() : null;
+            var enumParser = TryGetParser (type);
+            return enumParser != null ? enumParser.DefaultEnum () : null;
         }
 
         public static TEnum ParseEnumValue<TEnum>(this string s, TEnum defaultValue) 
             where TEnum : struct
         {
             TEnum value;
-            return Enum.TryParse(s, true, out value)
+            return Enum.TryParse (s, true, out value)
                 ? value
                 : defaultValue
                 ;

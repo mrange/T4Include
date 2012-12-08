@@ -70,7 +70,7 @@ namespace Source.Extensions
             return defaultValue;
         }
 
-        public static string DefaultTo(this string v, string defaultValue = null)
+        public static string DefaultTo (this string v, string defaultValue = null)
         {
             return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
         }
@@ -179,12 +179,12 @@ namespace Source.Extensions
             return value is TTo ? (TTo) value : defaultValue;
         }
 
-        public static string Concatenate(this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+        public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
         {
             values = values ?? Array<string>.Empty;
             delimiter = delimiter ?? ", ";
 
-            return string.Join(delimiter, values);
+            return string.Join (delimiter, values);
         }
 
         public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
@@ -196,7 +196,7 @@ namespace Source.Extensions
                 return defaultValue;
             }
 
-            var stream = assembly.GetManifestResourceStream(name ?? "");
+            var stream = assembly.GetManifestResourceStream (name ?? "");
             if (stream == null)
             {
                 return defaultValue;
@@ -205,11 +205,11 @@ namespace Source.Extensions
             using (stream)
             using (var streamReader = new StreamReader (stream))
             {
-                return streamReader.ReadToEnd();
+                return streamReader.ReadToEnd ();
             }
         }
 
-        public static IEnumerable<string> ReadLines(this TextReader textReader)
+        public static IEnumerable<string> ReadLines (this TextReader textReader)
         {
             if (textReader == null)
             {
@@ -218,7 +218,7 @@ namespace Source.Extensions
 
             string line;
 
-            while ((line = textReader.ReadLine()) != null)
+            while ((line = textReader.ReadLine ()) != null)
             {
                 yield return line;
             }
