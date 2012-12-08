@@ -111,6 +111,12 @@ namespace Source.HRON
             return m_entities.Length > 0;
         }
 
+        public override IEnumerable<string> GetDynamicMemberNames ()
+        {
+            var entity = m_entities.FirstOrEmpty ();
+            return entity.GetMemberNames ();
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if (indexes.Length == 1 && indexes[0] is int)
@@ -202,6 +208,11 @@ namespace Source.HRON
             return type.CanParseEnumValue() || type.CanParse();
         }
 
+        public override IEnumerable<string> GetDynamicMemberNames ()
+        {
+            return GetMemberNames ();
+        }
+
         internal static object Parse(Type type, string value)
         {
             value = value ?? "";
@@ -258,7 +269,7 @@ namespace Source.HRON
             public Member(string name, IHRONEntity value)
                 : this()
             {
-                m_name = name;
+                m_name = name.Trim ();
                 m_value = value;
             }
 
