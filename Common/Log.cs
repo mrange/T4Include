@@ -23,6 +23,7 @@ namespace Source.Common
 
     static partial class Log
     {
+        static partial void Partial_LogLevel (Level level);
         static partial void Partial_LogMessage (Level level, string message);
         static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
 
@@ -30,6 +31,7 @@ namespace Source.Common
         {
             try
             {
+                Partial_LogLevel (level);
                 Partial_LogMessage (level, GetMessage (format, args));
             }
             catch (Exception exc)
