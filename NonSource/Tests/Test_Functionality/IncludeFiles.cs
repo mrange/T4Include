@@ -18,6 +18,7 @@
 // @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 // @@@ INCLUDE_FOUND: HRONSerializer.cs
+// @@@ INCLUDE_FOUND: ../Extensions/EnumParseExtensions.cs
 // @@@ INCLUDE_FOUND: ../Extensions/ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Config.cs
@@ -39,6 +40,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
@@ -54,6 +57,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 // ############################################################################
@@ -64,6 +68,7 @@
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 // ReSharper disable RedundantNameQualifier
 // ############################################################################
 
@@ -864,17 +869,17 @@ namespace FileInclude
                     result = m_entities;
                     return true;
                 }
-                else if (returnType.CanParse())
+                else if (BaseHRONEntity.IsParseable (returnType))
                 {
-                    result = m_entities.FirstOrEmpty().GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue());
+                    result = BaseHRONEntity.Parse (returnType, m_entities.FirstOrEmpty().GetValue());
                     return true;                
                 }
                 else if (returnType.IsArray)
                 {
                     var elementType = returnType.GetElementType();
-                    if (elementType.CanParse())
+                    if (BaseHRONEntity.IsParseable (elementType))
                     {
-                        var values = m_entities.Select(entity => entity.GetValue().Parse(Config.DefaultCulture, elementType, elementType.GetDefaultValue())).ToArray();
+                        var values = m_entities.Select (entity => BaseHRONEntity.Parse (elementType, entity.GetValue())).ToArray();
                         var array = Array.CreateInstance(elementType, values.Length);
                         values.CopyTo(array, 0);
                         result = array;
@@ -894,6 +899,24 @@ namespace FileInclude
     
             public abstract void Apply(SubString name, IHRONVisitor visitor);
             public abstract void ToString(StringBuilder sb);
+    
+            internal static bool IsParseable (Type type)
+            {
+                return type.CanParseEnumValue() || type.CanParse();
+            }
+    
+            internal static object Parse(Type type, string value)
+            {
+                value = value ?? "";
+    
+                if (type.CanParseEnumValue())                    
+                {
+                    return value.ParseEnumValue(type) ?? type.GetDefaultEnumValue ();
+                }
+    
+                return value.Parse (Config.DefaultCulture, type, type.GetParsedDefaultValue());
+            }
+    
     
             public override string ToString()
             {
@@ -916,9 +939,9 @@ namespace FileInclude
                     result = GetValue();
                     return true;
                 }
-                else if (returnType.CanParse())
+                else if (IsParseable(returnType))
                 {
-                    result = GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue ());
+                    result = Parse(returnType, GetValue());
                     return true;
                 }
                 return base.TryConvert(binder, out result);
@@ -928,6 +951,8 @@ namespace FileInclude
     
         sealed partial class HRONObject : BaseHRONEntity
         {
+            public static HRONObject Empty = new HRONObject (null);
+    
             public partial struct Member
             {
                 readonly string m_name;
@@ -2299,7 +2324,7 @@ namespace FileInclude
                 return s_parsers.ContainsKey (type);
             }
     
-            public static object GetDefaultValue (this Type type)
+            public static object GetParsedDefaultValue (this Type type)
             {
                 type = type ?? typeof (object);
     
@@ -2784,11 +2809,10 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
-    using System.Collections;
-    
     namespace Source.Reflection
     {
         using System;
+        using System.Collections;
         using System.Collections.Concurrent;
         using System.Collections.Generic;
         using System.Linq;
@@ -2832,16 +2856,19 @@ namespace FileInclude
             {
                 Type = type ?? typeof(object);
                 Name = Type.Name;
-                Members = Type
-                    .GetMembers(
-                            BindingFlags.Instance
-                        |   BindingFlags.Public
-                        |   BindingFlags.NonPublic
-                        )
-                    .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
-                    .Select(mi => new MemberDescriptor(mi))
-                    .ToArray()
-                    ;
+                Members = Type.IsPrimitive 
+                    ?   new MemberDescriptor[0]
+                    :   Type
+                        .GetMembers(
+                                BindingFlags.Instance
+                            |   BindingFlags.Public
+                            |   BindingFlags.NonPublic
+                            )
+                        .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                        .Select(mi => new MemberDescriptor(mi))
+                        .ToArray()
+                        ;
+    
                 PublicGetMembers= Members.Where (mi => mi.HasPublicGetter).ToArray ();
                 m_memberLookup  = Members.ToDictionary (mi => mi.Name);
     
@@ -3103,14 +3130,27 @@ namespace FileInclude
         using System.Linq.Expressions;
         using System.Reflection;
     
-        static partial class StaticReflection<T>
+        static partial class StaticReflection
         {
-            public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
+            public static MethodInfo GetMethodInfo (Expression<Action> expr)
             {
                 return ((MethodCallExpression)expr.Body).Method;
             }
     
-            public static MethodInfo GetMethodInfo(Expression<Action> expr)
+            public static MemberInfo GetMemberInfo<TReturn> (Expression<Func<TReturn>> expr)
+            {
+                return ((MemberExpression)expr.Body).Member;
+            }
+    
+            public static ConstructorInfo GetConstructorInfo<TReturn> (Expression<Func<TReturn>> expr)
+            {
+                return ((NewExpression)expr.Body).Constructor;
+            }
+        }
+    
+        static partial class StaticReflection<T>
+        {
+            public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
             {
                 return ((MethodCallExpression)expr.Body).Method;
             }
@@ -3119,16 +3159,154 @@ namespace FileInclude
             {
                 return ((MemberExpression)expr.Body).Member;
             }
+        }
+    }
+}
+
+// ############################################################################
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
     
-            public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<TReturn>> expr)
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Reflection;
+    
+        using Source.Reflection;
+    
+        static partial class EnumParseExtensions
+        {
+            enum Dummy {}
+    
+            sealed partial class EnumParser
             {
-                return ((MemberExpression)expr.Body).Member;
+                public Func<string, object> ParseEnum   ;
+                public Func<object>         DefaultEnum ;
             }
     
-            public static ConstructorInfo GetConstructorInfo<TReturn>(Expression<Func<TReturn>> expr)
+            static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo(() => ParseEnum<Dummy>(default(string)));
+            static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition();
+    
+            static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo(() => DefaultEnum<Dummy>());
+            static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition();
+    
+            static readonly ConcurrentDictionary<Type, EnumParser> s_enumParsers = new ConcurrentDictionary<Type, EnumParser>();
+            static readonly Func<Type, EnumParser> s_createParser = type => CreateParser(type);
+    
+            static EnumParser CreateParser(Type type)
             {
-                return ((NewExpression)expr.Body).Constructor;
+                if (!type.IsEnum)
+                {
+                    return null;
+                }
+    
+                return new EnumParser
+                           {
+                               ParseEnum    = (Func<string, object>)Delegate.CreateDelegate(
+                                                    typeof(Func<string, object>),
+                                                    s_genericParseEnum.MakeGenericMethod(type)
+                                                    ),
+                               DefaultEnum  = (Func<object>)Delegate.CreateDelegate(
+                                                   typeof(Func<object>),
+                                                   s_genericDefaultEnum.MakeGenericMethod(type)
+                                                   ), 
+                           };
             }
+    
+            static object ParseEnum<TEnum>(string value)
+                where TEnum : struct
+            {
+                TEnum result;
+                return Enum.TryParse(value, true, out result)
+                    ? (object)result
+                    : null
+                    ;
+            }
+    
+            static object DefaultEnum<TEnum>()
+                where TEnum : struct
+            {
+                return default (TEnum);
+            }
+    
+            public static bool TryParseEnumValue(this string s, Type type, out object value)
+            {
+                value = null;
+                if (string.IsNullOrEmpty(s))
+                {
+                    return false;
+                }
+    
+                var enumParser = TryGetParser(type);
+                if (enumParser == null)
+                {
+                    return false;
+    
+                }
+                
+    
+                value = enumParser.ParseEnum (s);
+    
+                return value != null;
+            }
+    
+            public static bool CanParseEnumValue (this Type type)
+            {
+                var enumParser = TryGetParser(type);
+    
+                return enumParser != null;
+            }
+    
+            static EnumParser TryGetParser(Type type)
+            {
+                if (type == null)
+                {
+                    return null;
+                }
+    
+                var enumParser = s_enumParsers.GetOrAdd(type, s_createParser);
+    
+                return enumParser;
+            }
+    
+            public static object ParseEnumValue(this string s, Type type)
+            {
+                object value;
+                return s.TryParseEnumValue(type, out value)
+                    ? value
+                    : null
+                    ;
+            }
+    
+            public static object GetDefaultEnumValue (this Type type)
+            {
+                var enumParser = TryGetParser(type);
+                return enumParser != null ? enumParser.DefaultEnum() : null;
+            }
+    
+            public static TEnum ParseEnumValue<TEnum>(this string s, TEnum defaultValue) 
+                where TEnum : struct
+            {
+                TEnum value;
+                return Enum.TryParse(s, true, out value)
+                    ? value
+                    : defaultValue
+                    ;
+            }
+    
         }
     }
 }
@@ -4162,7 +4340,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-11-22T07:40:12";
+        public const string IncludeDate     = @"2012-12-08T10:30:45";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
@@ -4173,13 +4351,14 @@ namespace FileInclude.Include
         public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
         public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
         public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################

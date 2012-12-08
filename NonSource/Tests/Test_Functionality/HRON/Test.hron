@@ -12,6 +12,8 @@
 		
 		Third line
 		
+	=MyFlag
+		MyFlagValue
 @DataBaseConnection
 	=Name
 		CustomerDB

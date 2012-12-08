@@ -55,6 +55,7 @@
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
     <Compile Include="ConsoleApp\Runner.cs" />
+    <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

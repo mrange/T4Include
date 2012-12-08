@@ -92,6 +92,12 @@ namespace Test_Functionality.HRON
             }
         }
 
+        enum MyFlag
+        {
+            MyDefaultValue  ,
+            MyFlagValue     ,
+        }
+
         public void Test_TryParseDynamic()
         {
             var lines = s_test2_hron.ReadLines().ToArray();
@@ -100,6 +106,11 @@ namespace Test_Functionality.HRON
             var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out dyn, out errors);
             if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
             {
+                MyFlag myFlag = dyn.Common.MyFlag;
+                MyFlag myMissingFlag = dyn.Common.MyMissingFlag;
+                TestFor.Equality((int)MyFlag.MyFlagValue, (int)myFlag, "Expects MyFlagValue");
+                TestFor.Equality((int)MyFlag.MyDefaultValue, (int)myMissingFlag, "Expects the default MyFlag");
+
                 dynamic connections = dyn.DataBaseConnection;
                 if (TestFor.Equality(2, connections.GetCount(), "Expects two database connections"))
                 {

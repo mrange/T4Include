@@ -165,7 +165,7 @@ namespace Source.Extensions
             return s_parsers.ContainsKey (type);
         }
 
-        public static object GetDefaultValue (this Type type)
+        public static object GetParsedDefaultValue (this Type type)
         {
             type = type ?? typeof (object);
 

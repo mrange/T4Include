@@ -16,6 +16,7 @@
 // ReSharper disable RedundantIfElseBlock
 
 // ### INCLUDE: HRONSerializer.cs
+// ### INCLUDE: ../Extensions/EnumParseExtensions.cs
 // ### INCLUDE: ../Extensions/ParseExtensions.cs
 
 namespace Source.HRON
@@ -165,17 +166,17 @@ namespace Source.HRON
                 result = m_entities;
                 return true;
             }
-            else if (returnType.CanParse())
+            else if (BaseHRONEntity.IsParseable (returnType))
             {
-                result = m_entities.FirstOrEmpty().GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue());
+                result = BaseHRONEntity.Parse (returnType, m_entities.FirstOrEmpty().GetValue());
                 return true;                
             }
             else if (returnType.IsArray)
             {
                 var elementType = returnType.GetElementType();
-                if (elementType.CanParse())
+                if (BaseHRONEntity.IsParseable (elementType))
                 {
-                    var values = m_entities.Select(entity => entity.GetValue().Parse(Config.DefaultCulture, elementType, elementType.GetDefaultValue())).ToArray();
+                    var values = m_entities.Select (entity => BaseHRONEntity.Parse (elementType, entity.GetValue())).ToArray();
                     var array = Array.CreateInstance(elementType, values.Length);
                     values.CopyTo(array, 0);
                     result = array;
@@ -195,6 +196,24 @@ namespace Source.HRON
 
         public abstract void Apply(SubString name, IHRONVisitor visitor);
         public abstract void ToString(StringBuilder sb);
+
+        internal static bool IsParseable (Type type)
+        {
+            return type.CanParseEnumValue() || type.CanParse();
+        }
+
+        internal static object Parse(Type type, string value)
+        {
+            value = value ?? "";
+
+            if (type.CanParseEnumValue())                    
+            {
+                return value.ParseEnumValue(type) ?? type.GetDefaultEnumValue ();
+            }
+
+            return value.Parse (Config.DefaultCulture, type, type.GetParsedDefaultValue());
+        }
+
 
         public override string ToString()
         {
@@ -217,9 +236,9 @@ namespace Source.HRON
                 result = GetValue();
                 return true;
             }
-            else if (returnType.CanParse())
+            else if (IsParseable(returnType))
             {
-                result = GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue ());
+                result = Parse(returnType, GetValue());
                 return true;
             }
             return base.TryConvert(binder, out result);
