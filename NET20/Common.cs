@@ -10,26 +10,15 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: ../Common/Config.cs
+// ### INCLUDE: Generated_Common.cs
 
-<#
-    Model = new []
+namespace System.Runtime.CompilerServices
+{
+    using System;
+
+    sealed class ExtensionAttribute : Attribute
     {
-        I ("Char")      ,
-        I ("SByte")     ,
-        I ("Int16")     ,
-        I ("Int32")     ,
-        I ("Int64")     ,
-        I ("Byte")      ,
-        I ("UInt16")    ,
-        I ("UInt32")    ,
-        I ("UInt64")    ,
-        F ("Single")    ,
-        F ("Double")    , 
-        F ("Decimal")   ,
-        TS("TimeSpan")  ,
-        DT("DateTime")  ,
-    };
-#>
 
-<#@ include     file        ="..\T4\NumericalExtensions.ttinclude"          #>
+    }
+}
+

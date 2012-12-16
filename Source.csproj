@@ -65,6 +65,17 @@
     <Compile Include="Common\Log.cs" />
     <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
     <Compile Include="HRON\HRONObjectSerializer.cs" />
+    <None Include="NET20\Generated_Common.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_Common.cs</LastGenOutput>
+    </None>
+    <None Include="NET20\LINQ.cs" />
+    <None Include="NET20\Common.cs" />
+    <None Include="NET20\Generated_Common.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_Common.tt</DependentUpon>
+    </None>
     <Compile Include="Reflection\ClassDescriptor.cs" />
     <Compile Include="Reflection\StaticReflection.cs" />
     <Compile Include="Common\SubString.cs" />

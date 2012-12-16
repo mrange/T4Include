@@ -37,9 +37,6 @@
 
     const string NewFileToken   = "<<New File>>";
 
-    var topLines        = new List<string>();
-    var bottomLines = new List<string>();
-
     while (toBeProcessed.Count > 0)
     {
         var include         = toBeProcessed.Dequeue ();
@@ -72,7 +69,6 @@
             var lines = Extension_ReadAllLines (include);
 
 
-            bottomLines.Add (NewFileToken);
             foreach (var line in lines)
             {
                 var includeMatch = s_matchInclude.Match (line);
@@ -83,15 +79,15 @@
 #>
 // @@@ INCLUDE_FOUND: <#=fileName#>
 <#
-                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName)));
+                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName), include.NoOuterNamespace));
                 }
                 else if (topMatch.Success)
                 {
-                    topLines.Add (line);
+                    include.TopLines.Add (line);
                 }
                 else
                 {
-                    bottomLines.Add (line);
+                    include.BottomLines.Add (line);
                 }
             }
         }
@@ -109,7 +105,7 @@
 // moved to top in order to work properly    
 // ############################################################################
 <#
-    foreach (var topLine in topLines.Distinct ().OrderBy (p => p))
+    foreach (var topLine in processed.SelectMany(i => i.TopLines).Distinct ().OrderBy (p => p))
     {
         WriteLine (topLine);
     }
@@ -128,45 +124,61 @@ using <#=u.Namespace#>;
     }
 
     var first = true;
-    foreach (var bottomLine in bottomLines)
+    foreach (var include in processed)
     {
-        if (ReferenceEquals (NewFileToken, bottomLine))
-        {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-#>
-}
-<#
-            }
+        var hasNamespace = 
+                !string.IsNullOrEmpty (Namespace) 
+            &&  !include.NoOuterNamespace
+            ;
 #>
 
 // ############################################################################
+<#
+        if (hasNamespace)
+        {
+#>
 namespace <#=Namespace#>
 {
 <#
         }
-        else
+
+        foreach (var bottomLine in include.BottomLines)
         {
-            Write ("    ");
+            if (hasNamespace)
+            {
+                Write ("    ");
+            }
+
             WriteLine (bottomLine);
         }
-    }
-
-    if (!first)
-    {
+        if (hasNamespace)
+        {
 #>
 }
+<#
+        }
+#>
+
 // ############################################################################
 <#
     }
 #>
 
 // ############################################################################
+<#
+    if (string.IsNullOrEmpty (Namespace))
+    {
+#>
+namespace Include
+<#
+    }
+    else
+    {
+#>
 namespace <#=Namespace#>.Include
+<#
+    }
+#>
 {
     static partial class MetaData
     {
@@ -207,12 +219,20 @@ namespace <#=Namespace#>.Include
 
     sealed class IncludeFile 
     {
-        public string LocalPath;
+        public string LocalPath             ;
+        public bool   NoOuterNamespace      ;
+
+        public List<string> TopLines        = new List<string> ();
+        public List<string> BottomLines     = new List<string> ();
     }
 
-    static IncludeFile Include (string file)
+    static IncludeFile Include (string file, bool noOuterNamespace = false)
     {
-        return new IncludeFile { LocalPath = file ?? "", };
+        return new IncludeFile 
+            { 
+                LocalPath       = file ?? ""        , 
+                NoOuterNamespace= noOuterNamespace  ,
+            };
     }
 
     sealed class UsingNamespace 

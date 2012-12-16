@@ -10,26 +10,33 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: ../Common/Config.cs
+using System;
+using System.IO;
+using FileInclude.Source.Common;
+using FileInclude.Source.HRON;
 
-<#
-    Model = new []
+namespace Test_FunctionalityNet20
+{
+
+    partial class Program
     {
-        I ("Char")      ,
-        I ("SByte")     ,
-        I ("Int16")     ,
-        I ("Int32")     ,
-        I ("Int64")     ,
-        I ("Byte")      ,
-        I ("UInt16")    ,
-        I ("UInt32")    ,
-        I ("UInt64")    ,
-        F ("Single")    ,
-        F ("Double")    , 
-        F ("Decimal")   ,
-        TS("TimeSpan")  ,
-        DT("DateTime")  ,
-    };
-#>
+        static void Main(string[] args)
+        {
+            // Basic sanity check to see if functionality that are supposed to work
+            // on .NET2 compiles
 
-<#@ include     file        ="..\T4\NumericalExtensions.ttinclude"          #>
+            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            var hron = File.ReadAllText("Test.hron");
+
+            var visitor = new HRONWriterVisitor();
+
+            HRONSerializer.Parse(
+                int.MaxValue,
+                hron.ReadLines(),
+                visitor);
+
+            Console.WriteLine (visitor.Value);
+        }
+    }
+}

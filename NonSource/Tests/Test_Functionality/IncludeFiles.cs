@@ -30,6 +30,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: TestFor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
@@ -51,6 +52,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // @@@ INCLUDE_FOUND: Generated_TestFor.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
@@ -706,6 +708,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -814,6 +818,12 @@ namespace FileInclude
                 return m_entities.Length > 0;
             }
     
+            public override IEnumerable<string> GetDynamicMemberNames ()
+            {
+                var entity = m_entities.FirstOrEmpty ();
+                return entity.GetMemberNames ();
+            }
+    
             public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
             {
                 if (indexes.Length == 1 && indexes[0] is int)
@@ -905,6 +915,11 @@ namespace FileInclude
                 return type.CanParseEnumValue() || type.CanParse();
             }
     
+            public override IEnumerable<string> GetDynamicMemberNames ()
+            {
+                return GetMemberNames ();
+            }
+    
             internal static object Parse(Type type, string value)
             {
                 value = value ?? "";
@@ -961,7 +976,7 @@ namespace FileInclude
                 public Member(string name, IHRONEntity value)
                     : this()
                 {
-                    m_name = name;
+                    m_name = name.Trim ();
                     m_value = value;
                 }
     
@@ -1321,6 +1336,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1373,6 +1390,8 @@ namespace FileInclude
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -1443,7 +1462,7 @@ namespace FileInclude
                 return defaultValue;
             }
     
-            public static string DefaultTo(this string v, string defaultValue = null)
+            public static string DefaultTo (this string v, string defaultValue = null)
             {
                 return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
             }
@@ -1552,12 +1571,12 @@ namespace FileInclude
                 return value is TTo ? (TTo) value : defaultValue;
             }
     
-            public static string Concatenate(this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
             {
                 values = values ?? Array<string>.Empty;
                 delimiter = delimiter ?? ", ";
     
-                return string.Join(delimiter, values);
+                return string.Join (delimiter, values);
             }
     
             public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
@@ -1569,7 +1588,7 @@ namespace FileInclude
                     return defaultValue;
                 }
     
-                var stream = assembly.GetManifestResourceStream(name ?? "");
+                var stream = assembly.GetManifestResourceStream (name ?? "");
                 if (stream == null)
                 {
                     return defaultValue;
@@ -1578,11 +1597,11 @@ namespace FileInclude
                 using (stream)
                 using (var streamReader = new StreamReader (stream))
                 {
-                    return streamReader.ReadToEnd();
+                    return streamReader.ReadToEnd ();
                 }
             }
     
-            public static IEnumerable<string> ReadLines(this TextReader textReader)
+            public static IEnumerable<string> ReadLines (this TextReader textReader)
             {
                 if (textReader == null)
                 {
@@ -1591,7 +1610,7 @@ namespace FileInclude
     
                 string line;
     
-                while ((line = textReader.ReadLine()) != null)
+                while ((line = textReader.ReadLine ()) != null)
                 {
                     yield return line;
                 }
@@ -1608,6 +1627,8 @@ namespace FileInclude
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -1744,6 +1765,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1813,7 +1836,7 @@ namespace FileInclude
     
             public void PreProcessor(SubString line)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('!');
                 m_sb.AppendSubString(line);
                 WriteLine(m_sb);
@@ -1821,14 +1844,14 @@ namespace FileInclude
     
             public void Empty (SubString line)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.AppendSubString(line);
                 WriteLine(m_sb);
             }
     
             public void Comment(int indent, SubString comment)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', indent);
                 m_sb.Append('#');
                 m_sb.AppendSubString(comment);
@@ -1837,7 +1860,7 @@ namespace FileInclude
     
             public void Value_Begin(SubString name)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
                 m_sb.Append('=');
                 m_sb.Append(name);
@@ -1847,7 +1870,7 @@ namespace FileInclude
     
             public void Value_Line(SubString value)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
                 m_sb.AppendSubString(value);
                 WriteLine(m_sb);
@@ -1860,7 +1883,7 @@ namespace FileInclude
     
             public void Object_Begin(SubString name)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
                 m_sb.Append('@');
                 m_sb.AppendSubString(name);
@@ -1875,7 +1898,7 @@ namespace FileInclude
     
             public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
                 WriteLine(m_sb);
             }
@@ -2155,6 +2178,8 @@ namespace FileInclude
     
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -2794,6 +2819,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3110,6 +3137,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3164,6 +3193,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3197,16 +3228,16 @@ namespace FileInclude
                 public Func<object>         DefaultEnum ;
             }
     
-            static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo(() => ParseEnum<Dummy>(default(string)));
-            static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition();
+            static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo (() => ParseEnum<Dummy>(default (string)));
+            static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition ();
     
-            static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo(() => DefaultEnum<Dummy>());
-            static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition();
+            static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo (() => DefaultEnum<Dummy>());
+            static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition ();
     
             static readonly ConcurrentDictionary<Type, EnumParser> s_enumParsers = new ConcurrentDictionary<Type, EnumParser>();
-            static readonly Func<Type, EnumParser> s_createParser = type => CreateParser(type);
+            static readonly Func<Type, EnumParser> s_createParser = type => CreateParser (type);
     
-            static EnumParser CreateParser(Type type)
+            static EnumParser CreateParser (Type type)
             {
                 if (!type.IsEnum)
                 {
@@ -3215,13 +3246,13 @@ namespace FileInclude
     
                 return new EnumParser
                            {
-                               ParseEnum    = (Func<string, object>)Delegate.CreateDelegate(
-                                                    typeof(Func<string, object>),
-                                                    s_genericParseEnum.MakeGenericMethod(type)
+                               ParseEnum    = (Func<string, object>)Delegate.CreateDelegate (
+                                                    typeof (Func<string, object>),
+                                                    s_genericParseEnum.MakeGenericMethod (type)
                                                     ),
-                               DefaultEnum  = (Func<object>)Delegate.CreateDelegate(
-                                                   typeof(Func<object>),
-                                                   s_genericDefaultEnum.MakeGenericMethod(type)
+                               DefaultEnum  = (Func<object>)Delegate.CreateDelegate (
+                                                   typeof (Func<object>),
+                                                   s_genericDefaultEnum.MakeGenericMethod (type)
                                                    ), 
                            };
             }
@@ -3230,7 +3261,7 @@ namespace FileInclude
                 where TEnum : struct
             {
                 TEnum result;
-                return Enum.TryParse(value, true, out result)
+                return Enum.TryParse (value, true, out result)
                     ? (object)result
                     : null
                     ;
@@ -3242,15 +3273,15 @@ namespace FileInclude
                 return default (TEnum);
             }
     
-            public static bool TryParseEnumValue(this string s, Type type, out object value)
+            public static bool TryParseEnumValue (this string s, Type type, out object value)
             {
                 value = null;
-                if (string.IsNullOrEmpty(s))
+                if (string.IsNullOrEmpty (s))
                 {
                     return false;
                 }
     
-                var enumParser = TryGetParser(type);
+                var enumParser = TryGetParser (type);
                 if (enumParser == null)
                 {
                     return false;
@@ -3265,27 +3296,27 @@ namespace FileInclude
     
             public static bool CanParseEnumValue (this Type type)
             {
-                var enumParser = TryGetParser(type);
+                var enumParser = TryGetParser (type);
     
                 return enumParser != null;
             }
     
-            static EnumParser TryGetParser(Type type)
+            static EnumParser TryGetParser (Type type)
             {
                 if (type == null)
                 {
                     return null;
                 }
     
-                var enumParser = s_enumParsers.GetOrAdd(type, s_createParser);
+                var enumParser = s_enumParsers.GetOrAdd (type, s_createParser);
     
                 return enumParser;
             }
     
-            public static object ParseEnumValue(this string s, Type type)
+            public static object ParseEnumValue (this string s, Type type)
             {
                 object value;
-                return s.TryParseEnumValue(type, out value)
+                return s.TryParseEnumValue (type, out value)
                     ? value
                     : null
                     ;
@@ -3293,15 +3324,15 @@ namespace FileInclude
     
             public static object GetDefaultEnumValue (this Type type)
             {
-                var enumParser = TryGetParser(type);
-                return enumParser != null ? enumParser.DefaultEnum() : null;
+                var enumParser = TryGetParser (type);
+                return enumParser != null ? enumParser.DefaultEnum () : null;
             }
     
             public static TEnum ParseEnumValue<TEnum>(this string s, TEnum defaultValue) 
                 where TEnum : struct
             {
                 TEnum value;
-                return Enum.TryParse(s, true, out value)
+                return Enum.TryParse (s, true, out value)
                     ? value
                     : defaultValue
                     ;
@@ -3310,6 +3341,8 @@ namespace FileInclude
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -3357,6 +3390,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3380,6 +3415,7 @@ namespace FileInclude
     
         static partial class Log
         {
+            static partial void Partial_LogLevel (Level level);
             static partial void Partial_LogMessage (Level level, string message);
             static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
     
@@ -3387,6 +3423,7 @@ namespace FileInclude
             {
                 try
                 {
+                    Partial_LogLevel (level);
                     Partial_LogMessage (level, GetMessage (format, args));
                 }
                 catch (Exception exc)
@@ -3417,6 +3454,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3439,6 +3478,8 @@ namespace FileInclude
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -3665,6 +3706,8 @@ namespace FileInclude
     
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -4048,6 +4091,8 @@ namespace FileInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4161,6 +4206,8 @@ namespace FileInclude
     }
     
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace FileInclude
@@ -4332,6 +4379,7 @@ namespace FileInclude
         }
     }
 }
+
 // ############################################################################
 
 // ############################################################################
@@ -4340,7 +4388,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-12-08T10:30:45";
+        public const string IncludeDate     = @"2012-12-16T15:05:20";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
