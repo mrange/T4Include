@@ -154,6 +154,19 @@ namespace Source.HRON
             return base.TryGetMember(binder, out result);
         }
 
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            var entity = m_entities.FirstOrEmpty();
+
+            var dynamicObject = entity as DynamicObject;
+            if (dynamicObject != null)
+            {
+                return dynamicObject.TryInvokeMember(binder, args, out result);
+            }
+
+            return base.TryInvokeMember(binder, args, out result);
+        }
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var returnType = binder.ReturnType;
@@ -234,6 +247,12 @@ namespace Source.HRON
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            result = new HRONDynamicMembers(GetMember(binder.Name));
+            return true;
+        }
+
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             result = new HRONDynamicMembers(GetMember(binder.Name));
             return true;

@@ -861,6 +861,19 @@ namespace FileInclude
                 return base.TryGetMember(binder, out result);
             }
     
+            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+            {
+                var entity = m_entities.FirstOrEmpty();
+    
+                var dynamicObject = entity as DynamicObject;
+                if (dynamicObject != null)
+                {
+                    return dynamicObject.TryInvokeMember(binder, args, out result);
+                }
+    
+                return base.TryInvokeMember(binder, args, out result);
+            }
+    
             public override bool TryConvert(ConvertBinder binder, out object result)
             {
                 var returnType = binder.ReturnType;
@@ -941,6 +954,12 @@ namespace FileInclude
             }
     
             public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                result = new HRONDynamicMembers(GetMember(binder.Name));
+                return true;
+            }
+    
+            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
             {
                 result = new HRONDynamicMembers(GetMember(binder.Name));
                 return true;
@@ -4388,7 +4407,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-12-16T15:05:20";
+        public const string IncludeDate     = @"2012-12-20T22:39:49";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";

@@ -125,7 +125,9 @@
       <LastGenOutput>ParseExtensions.cs</LastGenOutput>
     </None>
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
-    <None Include="NonSource\NuGet\T4Include.nuspec" />
+    <None Include="NonSource\NuGet\T4Include.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="README.md" />
     <None Include="T4\ParseExtensions.ttinclude" />
     <None Include="T4\DependencyProperties.ttinclude" />
