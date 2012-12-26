@@ -3229,6 +3229,7 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    
     namespace Source.Extensions
     {
         using System;
@@ -3253,27 +3254,56 @@ namespace FileInclude
             static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo (() => DefaultEnum<Dummy>());
             static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition ();
     
+            static readonly MethodInfo s_parseNullableEnum = StaticReflection.GetMethodInfo(() => ParseNullableEnum<Dummy>(default(string)));
+            static readonly MethodInfo s_genericParseNullableEnum = s_parseNullableEnum.GetGenericMethodDefinition();
+    
+            static readonly MethodInfo s_defaultNullableEnum = StaticReflection.GetMethodInfo(() => DefaultNullableEnum<Dummy>());
+            static readonly MethodInfo s_genericDefaultNullableEnum = s_defaultNullableEnum.GetGenericMethodDefinition();
+    
             static readonly ConcurrentDictionary<Type, EnumParser> s_enumParsers = new ConcurrentDictionary<Type, EnumParser>();
             static readonly Func<Type, EnumParser> s_createParser = type => CreateParser (type);
     
-            static EnumParser CreateParser (Type type)
+            static EnumParser CreateParser(Type type)
             {
-                if (!type.IsEnum)
+                if (type.IsEnum)
+                {
+                    return new EnumParser
+                               {
+                                   ParseEnum = (Func<string, object>)Delegate.CreateDelegate(
+                                                        typeof(Func<string, object>),
+                                                        s_genericParseEnum.MakeGenericMethod(type)
+                                                        ),
+                                   DefaultEnum = (Func<object>)Delegate.CreateDelegate(
+                                                       typeof(Func<object>),
+                                                       s_genericDefaultEnum.MakeGenericMethod(type)
+                                                       ),
+                               };
+    
+                }
+                else if (
+                        type.IsGenericType
+                    && type.GetGenericTypeDefinition() == typeof(Nullable<>)
+                    && type.GetGenericArguments()[0].IsEnum
+                    )
+                {
+                    var enumType = type.GetGenericArguments()[0];
+                    return new EnumParser
+                               {
+                                   ParseEnum = (Func<string, object>)Delegate.CreateDelegate(
+                                                        typeof(Func<string, object>),
+                                                        s_genericParseNullableEnum.MakeGenericMethod(enumType)
+                                                        ),
+                                   DefaultEnum = (Func<object>)Delegate.CreateDelegate(
+                                                       typeof(Func<object>),
+                                                       s_genericDefaultNullableEnum.MakeGenericMethod(enumType)
+                                                       ),
+                               };
+    
+                }
+                else
                 {
                     return null;
                 }
-    
-                return new EnumParser
-                           {
-                               ParseEnum    = (Func<string, object>)Delegate.CreateDelegate (
-                                                    typeof (Func<string, object>),
-                                                    s_genericParseEnum.MakeGenericMethod (type)
-                                                    ),
-                               DefaultEnum  = (Func<object>)Delegate.CreateDelegate (
-                                                   typeof (Func<object>),
-                                                   s_genericDefaultEnum.MakeGenericMethod (type)
-                                                   ), 
-                           };
             }
     
             static object ParseEnum<TEnum>(string value)
@@ -3292,7 +3322,23 @@ namespace FileInclude
                 return default (TEnum);
             }
     
-            public static bool TryParseEnumValue (this string s, Type type, out object value)
+            static object ParseNullableEnum<TEnum>(string value)
+                where TEnum : struct
+            {
+                TEnum result;
+                return Enum.TryParse(value, true, out result)
+                    ? (object)(TEnum?)result
+                    : null
+                    ;
+            }
+    
+            static object DefaultNullableEnum<TEnum>()
+                where TEnum : struct
+            {
+                return default(TEnum?);
+            }
+    
+            public static bool TryParseEnumValue(this string s, Type type, out object value)
             {
                 value = null;
                 if (string.IsNullOrEmpty (s))
@@ -3354,6 +3400,16 @@ namespace FileInclude
                 return Enum.TryParse (s, true, out value)
                     ? value
                     : defaultValue
+                    ;
+            }
+    
+            public static TEnum? ParseEnumValue<TEnum>(this string s)
+                where TEnum : struct
+            {
+                TEnum value;
+                return Enum.TryParse(s, true, out value)
+                    ? (TEnum?)value
+                    : null
                     ;
             }
     
@@ -4407,7 +4463,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-12-20T22:39:49";
+        public const string IncludeDate     = @"2012-12-26T22:03:51";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
