@@ -224,6 +224,7 @@ namespace Source.Extensions
             }
         }
 
+#if !NETFX_CORE
         public static IEnumerable<Type> GetInheritanceChain (this Type type)
         {
             while (type != null)
@@ -232,5 +233,6 @@ namespace Source.Extensions
                 type = type.BaseType;
             }
         }
+#endif
     }
 }
