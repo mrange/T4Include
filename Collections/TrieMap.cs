@@ -21,7 +21,7 @@ namespace Source.Collections
 
     sealed partial class TrieMap<TValue>
     {
-        sealed class CaseInsensitiveCharComparer : IEqualityComparer<char>
+        sealed partial class CaseInsensitiveCharComparer : IEqualityComparer<char>
         {
             public bool Equals(char x, char y)
             {
@@ -33,7 +33,8 @@ namespace Source.Collections
                 return char.ToUpperInvariant(obj).GetHashCode();
             }
         }
-        sealed class Node
+
+        sealed partial class Node
         {
             readonly Dictionary<char, Node> m_edges = new Dictionary<char, Node>(new CaseInsensitiveCharComparer());
             readonly Func<char, Node> m_defaultFindEdge;
