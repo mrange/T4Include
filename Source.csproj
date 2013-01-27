@@ -124,6 +124,15 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ParseExtensions.cs</LastGenOutput>
     </None>
+    <None Include="NonSource\NuGet\content\Generated_Commands.tt.pp">
+      <LastGenOutput>Generated_Commands.tt.cs</LastGenOutput>
+    </None>
+    <None Include="NonSource\NuGet\content\Generated_DependencyProperties.tt.pp">
+      <LastGenOutput>Generated_DependencyProperties.tt.cs</LastGenOutput>
+    </None>
+    <None Include="NonSource\NuGet\content\Generated_Events.tt.pp">
+      <LastGenOutput>Generated_Events.tt.cs</LastGenOutput>
+    </None>
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
     <None Include="NonSource\NuGet\T4Include.nuspec">
       <SubType>Designer</SubType>
@@ -146,6 +155,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NonSource\NuGet\T4Include_WPF.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
