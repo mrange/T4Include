@@ -7,7 +7,7 @@
     Model = new []
     {
         // The new of the class that is inheriting DependencyObject
-        new ClassDefinition ("TestControl")
+        new ClassDefinition ("T4IncludeControl")
         {
             // A normal property
             P ("bool"   ,   "IsValid"           ),
@@ -18,6 +18,6 @@
 
 #>
 
-<#@ include file="$(SolutionDir)\T4\DependencyProperties.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4Include_WPF.1.0.6\T4\DependencyProperties.ttinclude" #>
 
 

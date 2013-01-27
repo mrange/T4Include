@@ -5,19 +5,13 @@
     Model = new []
     {
         // The name of a class
-        new ClassDefinition ("TestControl")
+        new ClassDefinition ("T4IncludeControl")
         {
             // The name of the event
             E ("Activate")      , 
             E ("Deactivate")    , 
         },
-        // The name of a static class
-        new ClassDefinition ("OtherTest", isStatic:true)
-        {
-            // The name of the event
-            E ("OtherEvent")  , 
-        },
     };
 
 #>
-<#@ include file="$(SolutionDir)\T4\RoutedEvents.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4Include_WPF.1.0.6\T4\RoutedEvents.ttinclude" #>
