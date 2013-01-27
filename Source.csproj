@@ -157,7 +157,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NonSource\NuGet\T4Include_WPF.nuspec" />
+    <None Include="NonSource\NuGet\T4IncludeWPF.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="NonSource\NuGet\content\T4IncludeControl.cs.pp" />
