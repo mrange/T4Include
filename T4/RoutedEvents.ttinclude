@@ -19,153 +19,159 @@
 
 namespace <#=Namespace#>
 {
-   using System.Windows;
+    using System.Windows;
 
 <#
-   foreach (var eventDefinition in Model)
-   {
-#>
-   // -------------------------------------------------------------------------
-
-   partial class <#=eventDefinition.EventType#> : <#=eventDefinition.BaseEventType#>
-   {
-       public delegate void Handler (object sender, <#=eventDefinition.EventType#> eventArgs);
-   }
-   // -------------------------------------------------------------------------
-
-<#
-   }
-#>
-
-<#
-   var groupedDefinitions = Model
-    .Where (k => k.OwnerClass != null)
-    .GroupBy (k => k.OwnerClass)
-    ;
-   foreach (var groupedDefinition in groupedDefinitions)
-   {
-#>
-   partial class <#=groupedDefinition.Key#>
-   {
-<#
-      foreach (var eventDefinition in groupedDefinition)
-      {
-#>
-      // ----------------------------------------------------------------------
-      public readonly static RoutedEvent <#=eventDefinition.Name#>Event = EventManager.RegisterRoutedEvent (
-         "<#=eventDefinition.Name#>",
-         RoutingStrategy.Bubble,
-         typeof (<#=eventDefinition.DelegateType#>),
-         typeof (<#=eventDefinition.OwnerClass#>)
-         );
-
-      public event <#=eventDefinition.DelegateType#> <#=eventDefinition.Name#>
-      {
-          add { this.AddHandler_<#=eventDefinition.Name#> (value); }
-          remove { this.RemoveHandler_<#=eventDefinition.Name#> (value); }
-      }
-      // ----------------------------------------------------------------------
-<#
-      }
-#>
-   }
-<#
-   }
-#>
-
-   static partial class RoutedEvents
-   {
-<#
-   foreach (var eventDefinition in Model)
-   {
-#>
-
-      // ----------------------------------------------------------------------
-<#
-    if (eventDefinition.OwnerClass == null)
+    foreach (var classDef in Model)
     {
 #>
-      public readonly static RoutedEvent <#=eventDefinition.Name#>Event = EventManager.RegisterRoutedEvent (
-         "<#=eventDefinition.Name#>",
-         RoutingStrategy.Bubble,
-         typeof (<#=eventDefinition.DelegateType#>),
-         typeof (RoutedEvents)
-         );
+
+<#
+    foreach (var eventDef in classDef)
+    {
+#>
+    // -------------------------------------------------------------------------
+
+    partial class <#=eventDef.EventType#> : <#=eventDef.BaseEventType#>
+    {
+        public delegate void Handler (object sender, <#=eventDef.EventType#> eventArgs);
+    }
+    // -------------------------------------------------------------------------
+
 <#
     }
 #>
 
-      public static void Raise_<#=eventDefinition.Name#> (
-         this UIElement uiElement, 
-         <#=eventDefinition.EventType#> routedEventArgs = null
-         )
-      {
-         if (uiElement != null)
-         {
-            routedEventArgs = routedEventArgs ?? new <#=eventDefinition.EventType#> ();
-            routedEventArgs.RoutedEvent = <#=eventDefinition.FullName#>Event;
-            uiElement.RaiseEvent (routedEventArgs);
-         }
-      }
-
-      public static void AddHandler_<#=eventDefinition.Name#> (
-         this UIElement uiElement,
-         <#=eventDefinition.DelegateType#> eventHandler,
-         bool handledEventsToo = false
-         )
-      {
-         if (uiElement != null)
-         {
-            uiElement.AddHandler (<#=eventDefinition.FullName#>Event, eventHandler, handledEventsToo);
-         }
-      }
-
-      public static void RemoveHandler_<#=eventDefinition.Name#> (
-         this UIElement uiElement,
-         <#=eventDefinition.DelegateType#> eventHandler
-         )
-      {
-         if (uiElement != null)
-         {
-            uiElement.RemoveHandler (<#=eventDefinition.FullName#>Event, eventHandler);
-         }
-      }
-
-      // ----------------------------------------------------------------------
+    partial class <#=classDef.Name#>
+    {
 <#
-   }
+      foreach (var eventDef in classDef)
+      {
 #>
-   }
+        // ----------------------------------------------------------------------
+        public readonly static RoutedEvent <#=eventDef.Name#>Event = EventManager.RegisterRoutedEvent (
+            "<#=eventDef.Name#>",
+            RoutingStrategy.<#=eventDef.Strategy#>,
+            typeof (<#=eventDef.DelegateType#>),
+            typeof (<#=classDef.Name#>)
+            );
+<#
+    if (!classDef.IsStatic)
+    {
+#>
+        public event <#=eventDef.DelegateType#> <#=eventDef.Name#>
+        {
+            add { this.AddHandler_<#=eventDef.Name#> (value); }
+            remove { this.RemoveHandler_<#=eventDef.Name#> (value); }
+        }
+<#
+    }
+#>
+        // ----------------------------------------------------------------------
+
+
+<#
+    }
+#>
+    }
+
+    static partial class RoutedEventExtensions
+    {
+<#
+    foreach (var eventDef in classDef)
+    {
+#>
+        public static void Raise_<#=eventDef.Name#> (
+            this UIElement uiElement, 
+            <#=eventDef.EventType#> routedEventArgs = null
+            )
+        {
+            if (uiElement != null)
+            {
+                routedEventArgs = routedEventArgs ?? new <#=eventDef.EventType#> ();
+                routedEventArgs.RoutedEvent = <#=eventDef.FullName#>Event;
+                uiElement.RaiseEvent (routedEventArgs);
+            }
+        }
+
+        public static void AddHandler_<#=eventDef.Name#> (
+            this UIElement uiElement,
+            <#=eventDef.DelegateType#> eventHandler,
+            bool handledEventsToo = false
+            )
+        {
+            if (uiElement != null)
+            {
+                uiElement.AddHandler (<#=eventDef.FullName#>Event, eventHandler, handledEventsToo);
+            }
+        }
+
+        public static void RemoveHandler_<#=eventDef.Name#> (
+            this UIElement uiElement,
+            <#=eventDef.DelegateType#> eventHandler
+            )
+        {
+            if (uiElement != null)
+            {
+                uiElement.RemoveHandler (<#=eventDef.FullName#>Event, eventHandler);
+            }
+        }
+<#
+    }
+#>
+    }
+
+<#
+    }
+#>
 }
 <#+
     string              Namespace   = "T4Include"               ;
-    EventDefinition[]   Model       = new EventDefinition[0]    ;
 
-   class EventDefinition
-   {
-      public string Name;
-      public string DelegateType;
-      public string EventType;
-      public string BaseEventType;
-      public string OwnerClass;
+    ClassDefinition[]   Model       = new ClassDefinition[0]    ;
 
-      public string FullName 
-      {
-         get { return (OwnerClass ?? "RoutedEvents") + "." + Name; }
-      }
+    sealed class ClassDefinition : BaseContainer<Root, EventDefinition>
+    {
+        public readonly string  Name             ;
+        public readonly bool    IsStatic         ;
+        public ClassDefinition (string name, bool isStatic = false)
+        {
+            Name        = name ?? S_NoName  ;
+            IsStatic    = isStatic          ; 
+        }
+    }
+
+    sealed class EventDefinition : BaseEntity<ClassDefinition>
+    {
+        public readonly string Name             ;
+        public readonly string DelegateType     ;
+        public readonly string EventType        ;
+        public readonly string BaseEventType    ;
+        public readonly string Strategy         ;
+
+        public EventDefinition (
+            string name             ,
+            string baseEventType    ,
+            string strategy
+            )
+        {
+            Name            = name              ?? S_NoName ;
+            DelegateType    = Name  + "EventArgs.Handler"   ;
+            EventType       = Name + "EventArgs"            ;
+            BaseEventType   = (baseEventType ?? "Routed") + "EventArgs";
+            Strategy        = strategy          ?? "Bubble" ;
+        }
+
+        public string FullName 
+        {
+            get { return Parent.Name + "." + Name; }
+        }
         
-   }
+    }
 
-   static EventDefinition E (string name, string ownerClass = null, string baseEventType = null)
-   {
-      return new EventDefinition
-      {
-         Name           = name,
-         DelegateType   = name + "EventArgs.Handler",
-         EventType      = name + "EventArgs",
-         BaseEventType  = (baseEventType ?? "Routed") + "EventArgs",
-         OwnerClass     = ownerClass,
-      };
-   }
+    static EventDefinition E (string name, string baseEventType = null, string strategy = null)
+    {
+        return new EventDefinition (name, baseEventType, strategy);
+    }
 
 #>

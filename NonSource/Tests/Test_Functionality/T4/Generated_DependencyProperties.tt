@@ -1,0 +1,19 @@
+﻿
+<#
+
+    Namespace = "Test_Functionality.T4";
+
+    Model = new []
+    {
+        new ClassDefinition ("TestControl")
+        {
+            P ("bool"   ,   "IsValid"       ),
+            P ("string" ,   "Additional"    , flags:PropertyFlags.IsAttached    )
+        },
+    };
+
+#>
+
+<#@ include file="$(SolutionDir)\T4\DependencyProperties.ttinclude" #>
+
+

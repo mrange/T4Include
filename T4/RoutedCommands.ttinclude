@@ -17,20 +17,24 @@ namespace <#=Namespace#>
 {
     using System.Windows.Input;
 
-    static partial class Commands
+<#
+    foreach (var classDef in Model)
+    {
+#>
+    partial class <#=classDef.Name#>
     {
 <#
-    foreach (var command in Model)
+    foreach (var command in classDef)
     {
 #>
         public static RoutedUICommand <#=command.Name#> = new RoutedUICommand (
             "<#=command.Name#>",
             "<#=command.Name#>",
-            typeof (Commands),
+            typeof (<#=classDef.Name#>),
             new InputGestureCollection
                 {
 <#
-    if (command.Key != null)
+    if ((command.Key ?? S_NoName) != S_NoName)
     {
 #>
                     new KeyGesture (Key.<#=command.Key#>, ModifierKeys.<#=command.Modifier#>),
@@ -43,26 +47,49 @@ namespace <#=Namespace#>
     }
 #>
     }
+
+<#
+    }
+#>
 }
 <#+
     string              Namespace   = "T4Include"               ;
-    CommandDefinition[] Model       = new CommandDefinition[0]  ;
+    ClassDefinition[]   Model       = new ClassDefinition[0]    ;
 
-    sealed class CommandDefinition 
+    sealed class ClassDefinition : BaseContainer<Root, CommandDefinition>
     {
-        public string Name      ;
-        public string Key       ;
-        public string Modifier  ;
+        public readonly string Name     ;
+        public ClassDefinition (string name)
+        {
+            Name = name ?? S_NoName;
+        }
     }
 
-    static CommandDefinition C (string name, string modifier = null, string key = null)
+    sealed class CommandDefinition : BaseEntity<ClassDefinition> 
     {
-        return new CommandDefinition 
-            {
-                Name    = name      ?? S_NoName ,
-                Key     = key                   ,
-                Modifier= modifier  ?? "None"   ,
-            };
+        public readonly string Name      ;
+        public readonly string Key       ;
+        public readonly string Modifier  ;
+        public readonly string Text      ;
+
+        public CommandDefinition (
+            string name     ,
+            string key      ,
+            string modifier ,
+            string text
+            )
+        {
+            Name        = name      ?? S_NoName ;
+            Key         = key       ?? S_NoName ;
+            Modifier    = modifier  ?? "None"   ;
+            Text        = text      ?? Name     ;
+        }
+
+    }
+
+    static CommandDefinition C (string name, string key = null, string modifier = null, string text = null)
+    {
+        return new CommandDefinition (name, key, modifier, text);
     }
 
 #>

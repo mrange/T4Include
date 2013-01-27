@@ -1,0 +1,17 @@
+﻿<#
+    Namespace = "Test_Functionality.T4";
+
+    Model = new []
+    {
+        new ClassDefinition ("TestControl")
+        {
+            E ("DoActivate")  , 
+        },
+        new ClassDefinition ("OtherTest", isStatic:true)
+        {
+            E ("OtherEvent")  , 
+        },
+    };
+
+#>
+<#@ include file="$(SolutionDir)\T4\RoutedEvents.ttinclude" #>
