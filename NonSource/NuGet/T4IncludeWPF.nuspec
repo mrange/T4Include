@@ -1,25 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
-    <id>T4Include_WPF</id>
-    <version>1.0.6</version>
-    <title>T4Include (WPF)</title>
+    <id>T4IncludeWPF</id>
+    <version>1.0.1</version>
+    <title>T4IncludeWPF</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
     <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
     <projectUrl>https://github.com/mrange/T4Include</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>T4Include (WPF) provides a set of reusable T4 templates for generating dependency properties, events and commands</description>
-    <summary>T4Include (WPF), reusable T4 templates for WPF</summary>
+    <description>T4IncludeWPF provides a set of reusable T4 templates for generating dependency properties, events and commands</description>
+    <summary>T4IncludeWPF, reusable T4 templates for WPF</summary>
     <tags>include T4 WPF SL WindowsStore DependencyProperties Events Commands</tags>
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
-        * 1.0.6   - Bugfixes in sample code
-        * 1.0.5   - Refined sample code
-        * 1.0.4   - Bugfixes in content paths
-        * 1.0.3   - Bugfixes in content paths
-        * 1.0.2   - Bugfixes in content paths
         * 1.0.1   - Initial release
     </releaseNotes>
   </metadata>

@@ -14,6 +14,6 @@
 
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4Include_WPF.1.0.6\T4\RoutedCommands.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeWPF.1.0.1\T4\RoutedCommands.ttinclude" #>
 
 
