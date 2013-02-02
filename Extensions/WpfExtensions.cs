@@ -127,7 +127,8 @@ namespace Source.Extensions
             }
         }
 
-        public static Freezable FreezeObject (this Freezable freezable)
+        public static TFreezable FreezeObject<TFreezable> (this TFreezable freezable)
+            where TFreezable : Freezable
         {
             if (freezable == null)
             {
