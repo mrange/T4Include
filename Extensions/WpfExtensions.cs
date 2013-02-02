@@ -126,5 +126,21 @@ namespace Source.Extensions
                 BindingOperations.SetBinding (dependencyObject, dependencyProperty, binding);
             }
         }
+
+        public static Freezable FreezeObject (this Freezable freezable)
+        {
+            if (freezable == null)
+            {
+                return null;
+            }
+
+            if (!freezable.IsFrozen && freezable.CanFreeze)
+            {
+                freezable.Freeze ();
+            }
+
+            return freezable;
+        }
+
     }
 }
