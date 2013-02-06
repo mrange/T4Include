@@ -35,8 +35,6 @@
     var processed = new List<IncludeFile> ();
     var toBeProcessed = new Queue<IncludeFile> (Includes ?? new IncludeFile[0]);
 
-    const string NewFileToken   = "<<New File>>";
-
     while (toBeProcessed.Count > 0)
     {
         var include         = toBeProcessed.Dequeue ();
@@ -123,7 +121,6 @@ using <#=u.Namespace#>;
 <#
     }
 
-    var first = true;
     foreach (var include in processed)
     {
         var hasNamespace = 
