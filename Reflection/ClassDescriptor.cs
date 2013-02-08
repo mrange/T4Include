@@ -68,6 +68,7 @@ namespace Source.Reflection
                         |   BindingFlags.NonPublic
                         )
                     .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                    .Where(mi => !HasIndexParameters(mi))
                     .Select(mi => new MemberDescriptor(mi))
                     .ToArray()
                     ;
@@ -78,8 +79,9 @@ namespace Source.Reflection
             Creator = GetCreator(Type);
             HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
 
-            IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
-            NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
+            var isNullableType  = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);;
+            IsNullable          = isNullableType || !Type.IsValueType;
+            NonNullableType     = isNullableType ? Type.GetGenericArguments()[0] : Type;
 
             IsListLike          = false;
             IsDictionaryLike    = false;
@@ -87,36 +89,41 @@ namespace Source.Reflection
             DictionaryKeyType   = typeof (object);
             DictionaryValueType = typeof (object);
 
-            if (typeof (IDictionary).IsAssignableFrom (Type))
+            var possibleDictionaryType = AsGenericType(Type, typeof(IDictionary<,>));
+            var possibleListType = AsGenericType(Type, typeof(IList<>));
+
+            IsDictionaryLike = possibleDictionaryType  != null || typeof (IDictionary).IsAssignableFrom (Type);
+            if (possibleDictionaryType != null)
             {
-                IsDictionaryLike = true;
-
-                var possibleDictionaryType = Type
-                    .GetInterfaces()
-                    .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-                    ;
-
-                if (possibleDictionaryType != null)
-                {
-                    var genericArguments = possibleDictionaryType.GetGenericArguments();
-                    DictionaryKeyType   = genericArguments[0];
-                    DictionaryValueType = genericArguments[1];
-                }
+                var genericArguments = possibleDictionaryType.GetGenericArguments();
+                DictionaryKeyType   = genericArguments[0];
+                DictionaryValueType = genericArguments[1];
             }
-            else if (typeof (IList).IsAssignableFrom (Type))
+
+            IsListLike = possibleListType  != null || typeof (IList).IsAssignableFrom (Type);
+            if (possibleListType != null)
             {
-                IsListLike = true;
-
-                var possibleListType = Type
-                    .GetInterfaces()
-                    .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                    ;
-
-                if (possibleListType != null)
-                {
-                    ListItemType = possibleListType.GetGenericArguments()[0];
-                }
+                ListItemType = possibleListType.GetGenericArguments()[0];
             }
+        }
+
+        static bool HasIndexParameters (MemberInfo mi)
+        {
+            var pi = mi as PropertyInfo;
+            return pi != null && pi.GetIndexParameters().Length > 0;
+        }
+
+        static Type AsGenericType (Type type, Type asType)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition () == asType)
+            {
+                return type;
+            }
+            
+            return type
+                .GetInterfaces()
+                .FirstOrDefault(t =>  t.IsGenericType && t.GetGenericTypeDefinition() == asType)
+                ;
         }
 
         public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)

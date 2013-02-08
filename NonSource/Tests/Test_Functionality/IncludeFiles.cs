@@ -1635,6 +1635,7 @@ namespace FileInclude
                 }
             }
     
+    #if !NETFX_CORE
             public static IEnumerable<Type> GetInheritanceChain (this Type type)
             {
                 while (type != null)
@@ -1643,6 +1644,7 @@ namespace FileInclude
                     type = type.BaseType;
                 }
             }
+    #endif
         }
     }
 }
@@ -2911,6 +2913,7 @@ namespace FileInclude
                             |   BindingFlags.NonPublic
                             )
                         .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                        .Where(mi => !HasIndexParameters(mi))
                         .Select(mi => new MemberDescriptor(mi))
                         .ToArray()
                         ;
@@ -2921,8 +2924,9 @@ namespace FileInclude
                 Creator = GetCreator(Type);
                 HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
     
-                IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
-                NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
+                var isNullableType  = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);;
+                IsNullable          = isNullableType || !Type.IsValueType;
+                NonNullableType     = isNullableType ? Type.GetGenericArguments()[0] : Type;
     
                 IsListLike          = false;
                 IsDictionaryLike    = false;
@@ -2930,36 +2934,41 @@ namespace FileInclude
                 DictionaryKeyType   = typeof (object);
                 DictionaryValueType = typeof (object);
     
-                if (typeof (IDictionary).IsAssignableFrom (Type))
+                var possibleDictionaryType = AsGenericType(Type, typeof(IDictionary<,>));
+                var possibleListType = AsGenericType(Type, typeof(IList<>));
+    
+                IsDictionaryLike = possibleDictionaryType  != null || typeof (IDictionary).IsAssignableFrom (Type);
+                if (possibleDictionaryType != null)
                 {
-                    IsDictionaryLike = true;
-    
-                    var possibleDictionaryType = Type
-                        .GetInterfaces()
-                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-                        ;
-    
-                    if (possibleDictionaryType != null)
-                    {
-                        var genericArguments = possibleDictionaryType.GetGenericArguments();
-                        DictionaryKeyType   = genericArguments[0];
-                        DictionaryValueType = genericArguments[1];
-                    }
+                    var genericArguments = possibleDictionaryType.GetGenericArguments();
+                    DictionaryKeyType   = genericArguments[0];
+                    DictionaryValueType = genericArguments[1];
                 }
-                else if (typeof (IList).IsAssignableFrom (Type))
+    
+                IsListLike = possibleListType  != null || typeof (IList).IsAssignableFrom (Type);
+                if (possibleListType != null)
                 {
-                    IsListLike = true;
-    
-                    var possibleListType = Type
-                        .GetInterfaces()
-                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                        ;
-    
-                    if (possibleListType != null)
-                    {
-                        ListItemType = possibleListType.GetGenericArguments()[0];
-                    }
+                    ListItemType = possibleListType.GetGenericArguments()[0];
                 }
+            }
+    
+            static bool HasIndexParameters (MemberInfo mi)
+            {
+                var pi = mi as PropertyInfo;
+                return pi != null && pi.GetIndexParameters().Length > 0;
+            }
+    
+            static Type AsGenericType (Type type, Type asType)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition () == asType)
+                {
+                    return type;
+                }
+                
+                return type
+                    .GetInterfaces()
+                    .FirstOrDefault(t =>  t.IsGenericType && t.GetGenericTypeDefinition() == asType)
+                    ;
             }
     
             public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
@@ -4170,18 +4179,6 @@ namespace FileInclude
 // ############################################################################
 namespace FileInclude
 {
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
     // ############################################################################
     // #                                                                          #
     // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -4190,6 +4187,7 @@ namespace FileInclude
     // # regenerated. Changes should instead be applied to the corresponding      #
     // # template file (.tt)                                                      #
     // ############################################################################
+    
     
     
     
@@ -4235,6 +4233,7 @@ namespace FileInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
+    #if !NETFX_CORE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -4255,7 +4254,7 @@ namespace FileInclude
                         return ConsoleColor.Magenta;
                 }
             }
-    
+    #endif
             static string GetLevelMessage (Level level)
             {
                 switch (level)
@@ -4463,7 +4462,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-12-26T22:03:51";
+        public const string IncludeDate     = @"2013-02-08T09:39:40";
 
         public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
