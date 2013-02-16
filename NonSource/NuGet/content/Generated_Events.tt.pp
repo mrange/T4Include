@@ -14,4 +14,4 @@
     };
 
 #>
-<#@ include file="$(SolutionDir)\packages\T4IncludeWPF.1.0.1\T4\RoutedEvents.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeWPF.1.0.2\T4\RoutedEvents.ttinclude" #>
