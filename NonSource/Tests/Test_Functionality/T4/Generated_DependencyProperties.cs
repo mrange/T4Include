@@ -11,14 +11,18 @@
 
 
 
+                                   
 
-
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable InconsistentNaming
 // ReSharper disable InvocationIsSkipped
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable PossibleUnintendedReferenceComparison
 // ReSharper disable RedundantAssignment
+// ReSharper disable RedundantCast
 // ReSharper disable RedundantUsingDirective
+// ReSharper disable UnusedMember.Local
 
 namespace Test_Functionality.T4
 {
@@ -43,7 +47,7 @@ namespace Test_Functionality.T4
                 default (bool),
                 FrameworkPropertyMetadataOptions.None,
                 Changed_IsValid,
-                Coerce_IsValid          
+                null          
             ));
 
         static void Changed_IsValid (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
@@ -59,22 +63,6 @@ namespace Test_Functionality.T4
         }
 
 
-        static object Coerce_IsValid (DependencyObject dependencyObject, object basevalue)
-        {
-            var instance = dependencyObject as TestControl;
-            if (instance == null)
-            {
-                return basevalue;
-            }
-            var oldValue = (bool)basevalue;
-            var newValue = oldValue;
-
-            instance.Coerce_IsValid (oldValue, ref newValue);
-
-
-            return newValue;
-        }
-
         public static readonly DependencyProperty AdditionalProperty = DependencyProperty.RegisterAttached (
             "Additional",
             typeof (string),
@@ -82,34 +70,10 @@ namespace Test_Functionality.T4
             new FrameworkPropertyMetadata (
                 default (string),
                 FrameworkPropertyMetadataOptions.None,
-                Changed_Additional,
-                Coerce_Additional          
+                null,
+                null          
             ));
 
-        static void Changed_Additional (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
-        {
-            if (dependencyObject != null)
-            {
-                var oldValue = (string)eventArgs.OldValue;
-                var newValue = (string)eventArgs.NewValue;
-
-                Changed_Additional (dependencyObject, oldValue, newValue);
-            }
-        }
-
-        static object Coerce_Additional (DependencyObject dependencyObject, object basevalue)
-        {
-            if (dependencyObject == null)
-            {
-                return basevalue;
-            }
-            var oldValue = (string)basevalue;
-            var newValue = oldValue;
-
-            Coerce_Additional (dependencyObject, oldValue, ref newValue);
-
-            return newValue;
-        }
         #endregion
 
         // --------------------------------------------------------------------
@@ -151,7 +115,6 @@ namespace Test_Functionality.T4
             }
         }
         // --------------------------------------------------------------------
-        partial void Coerce_IsValid (bool value, ref bool coercedValue);
         partial void Changed_IsValid (bool oldValue, bool newValue);
         // --------------------------------------------------------------------
 
@@ -187,8 +150,6 @@ namespace Test_Functionality.T4
             }
         }
         // --------------------------------------------------------------------
-        static partial void Coerce_Additional (DependencyObject dependencyObject, string value, ref string coercedValue);
-        static partial void Changed_Additional (DependencyObject dependencyObject, string oldValue, string newValue);
         // --------------------------------------------------------------------
 
 

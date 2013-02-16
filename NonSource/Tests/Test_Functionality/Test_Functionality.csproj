@@ -71,6 +71,7 @@
       <DependentUpon>Generated_Events.tt</DependentUpon>
     </Compile>
     <Compile Include="T4\TestControl.cs" />
+    <Compile Include="T4\TestsFor_WPFT4.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

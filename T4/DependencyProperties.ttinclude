@@ -1,4 +1,4 @@
-﻿<#@ include     file        ="Header.ttinclude"             #>
+﻿<#@ include     file        ="Header.ttinclude"             #>                                   
 <#
     // ----------------------------------------------------------------------------------------------
     // Copyright (c) Mårten Rånge.
@@ -13,12 +13,16 @@
     // ----------------------------------------------------------------------------------------------
 #>
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable InconsistentNaming
 // ReSharper disable InvocationIsSkipped
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable PossibleUnintendedReferenceComparison
 // ReSharper disable RedundantAssignment
+// ReSharper disable RedundantCast
 // ReSharper disable RedundantUsingDirective
+// ReSharper disable UnusedMember.Local
 
 namespace <#=Namespace#>
 {
@@ -56,11 +60,24 @@ namespace <#=Namespace#>
             new FrameworkPropertyMetadata (
                 <#=propertyDef.DefaultValue#>,
                 <#=propertyDef.MetaDataOptions#>,
-                <#=propertyDef.PropertyChangedEventName#>,
-                <#=propertyDef.PropertyCoerceEventName#>          
+                <#=propertyDef.IsGeneratingChangedEvent ? propertyDef.PropertyChangedEventName  : "null"    #>,
+                <#=propertyDef.IsGeneratingCoerceEvent  ? propertyDef.PropertyCoerceEventName   : "null"    #>          
             ));
 
         public static readonly DependencyProperty <#=propertyDef.DependencyPropertyName#> = <#=propertyDef.DependencyPropertyKeyName#>.DependencyProperty;
+<#
+            }
+            else if (propertyDef.OwnerType != null)
+            {
+#>
+        public static readonly DependencyProperty <#=propertyDef.DependencyPropertyName#> = <#=propertyDef.OwnerType#>.<#=propertyDef.DependencyPropertyName#>.AddOwner (
+            typeof (<#=classDef.Name#>),
+            new FrameworkPropertyMetadata (
+                <#=propertyDef.DefaultValue#>,
+                <#=propertyDef.MetaDataOptions#>,
+                <#=propertyDef.IsGeneratingChangedEvent ? propertyDef.PropertyChangedEventName  : "null"    #>,
+                <#=propertyDef.IsGeneratingCoerceEvent  ? propertyDef.PropertyCoerceEventName   : "null"    #>          
+            ));
 <#
             }
             else
@@ -73,8 +90,8 @@ namespace <#=Namespace#>
             new FrameworkPropertyMetadata (
                 <#=propertyDef.DefaultValue#>,
                 <#=propertyDef.MetaDataOptions#>,
-                <#=propertyDef.PropertyChangedEventName#>,
-                <#=propertyDef.PropertyCoerceEventName#>          
+                <#=propertyDef.IsGeneratingChangedEvent ? propertyDef.PropertyChangedEventName  : "null"    #>,
+                <#=propertyDef.IsGeneratingCoerceEvent  ? propertyDef.PropertyCoerceEventName   : "null"    #>          
             ));
 <#
             }
@@ -84,6 +101,10 @@ namespace <#=Namespace#>
             if (propertyDef.IsAttached)
             {
 #>
+<#
+                if (propertyDef.IsGeneratingChangedEvent)
+                {
+#>
         static void <#=propertyDef.PropertyChangedEventName#> (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             if (dependencyObject != null)
@@ -92,7 +113,7 @@ namespace <#=Namespace#>
                 var newValue = (<#=propertyDef.Type#>)eventArgs.NewValue;
 
 <#
-    if (propertyDef.IsCollection)
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
                 if (oldValue != null)
@@ -113,7 +134,7 @@ namespace <#=Namespace#>
         }
 
 <#
-    if (propertyDef.IsCollection)
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
         static void <#=propertyDef.CollectionChangedEventName#>(object sender, NotifyCollectionChangedEventArgs e)
@@ -129,6 +150,13 @@ namespace <#=Namespace#>
         }
 <#
     }
+#>
+<#
+                }
+#>
+<#
+                if (propertyDef.IsGeneratingCoerceEvent)
+                {
 #>
         static object <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, object basevalue)
         {
@@ -156,9 +184,16 @@ namespace <#=Namespace#>
             return newValue;
         }
 <#
+                }
+#>
+<#
             }
             else
             {
+#>
+<#
+                if (propertyDef.IsGeneratingChangedEvent)
+                {
 #>
         static void <#=propertyDef.PropertyChangedEventName#> (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
@@ -169,7 +204,7 @@ namespace <#=Namespace#>
                 var newValue = (<#=propertyDef.Type#>)eventArgs.NewValue;
 
 <#
-    if (propertyDef.IsCollection)
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
                 if (oldValue != null)
@@ -190,7 +225,7 @@ namespace <#=Namespace#>
         }
 
 <#
-    if (propertyDef.IsCollection)
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
         void <#=propertyDef.CollectionChangedEventName#>(object sender, NotifyCollectionChangedEventArgs e)
@@ -207,7 +242,14 @@ namespace <#=Namespace#>
 <#
     }
 #>
+<#
+                }
+#>
 
+<#
+                if (propertyDef.IsGeneratingCoerceEvent)
+                {
+#>
         static object <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, object basevalue)
         {
             var instance = dependencyObject as <#=classDef.Name#>;
@@ -235,6 +277,9 @@ namespace <#=Namespace#>
             return newValue;
         }
 
+<#
+                }
+#>
 <#
             }
         }
@@ -352,10 +397,24 @@ namespace <#=Namespace#>
             }
 #>
         // --------------------------------------------------------------------
-        static partial void <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, <#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+<#
+                if (propertyDef.IsGeneratingChangedEvent)
+                {
+#>
         static partial void <#=propertyDef.PropertyChangedEventName#> (DependencyObject dependencyObject, <#=propertyDef.Type#> oldValue, <#=propertyDef.Type#> newValue);
 <#
-    if (propertyDef.IsCollection)
+                }
+#>
+<#
+                if (propertyDef.IsGeneratingCoerceEvent)
+                {
+#>
+        static partial void <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, <#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+<#
+                }
+#>
+<#
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
         static partial void <#=propertyDef.CollectionChangedEventName#> (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
@@ -405,10 +464,24 @@ namespace <#=Namespace#>
 #>
         }
         // --------------------------------------------------------------------
-        partial void <#=propertyDef.PropertyCoerceEventName#> (<#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+<#
+                if (propertyDef.IsGeneratingChangedEvent)
+                {
+#>
         partial void <#=propertyDef.PropertyChangedEventName#> (<#=propertyDef.Type#> oldValue, <#=propertyDef.Type#> newValue);
 <#
-    if (propertyDef.IsCollection)
+                }
+#>
+<#
+                if (propertyDef.IsGeneratingCoerceEvent)
+                {
+#>
+        partial void <#=propertyDef.PropertyCoerceEventName#> (<#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+<#
+                }
+#>
+<#
+    if (propertyDef.IsCollection && propertyDef.IsGeneratingCollectionChangedEvent)
     {
 #>
         partial void <#=propertyDef.CollectionChangedEventName#> (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
@@ -433,65 +506,97 @@ namespace <#=Namespace#>
 #>
 }
 <#+
+
+    static bool         Default_GenerateChangedEvent            = true;              
+    static bool         Default_GenerateCoerceEvent             = true;
+    static bool         Default_GenerateCollectionChangedEvent  = true;              
+
     string              Namespace   = "T4Include"               ;
     ClassDefinition[]   Model       = new ClassDefinition[0]    ;
 
     class ClassDefinition : BaseContainer<Root, PropertyDefinition>
     {
-        public readonly string Name;
-        public readonly bool IsStatic;
-        public readonly bool IsSuppressingDefaultConstructor;
+        public readonly string  Name                            ;
+        public readonly bool    IsStatic                        ;
+        public readonly bool    IsSuppressingDefaultConstructor ;
 
-        public ClassDefinition (string name, bool isStatic = false, bool isSuppressingDefaultConstructor = false)
+        public readonly bool    GenerateChangedEvent            ;
+        public readonly bool    GenerateCoerceEvent             ;
+        public readonly bool    GenerateCollectionChangedEvent  ;
+        public ClassDefinition (
+            string  name                                                , 
+            bool    isStatic                            = false         , 
+            bool    isSuppressingDefaultConstructor     = false         ,
+            bool?   generateChangedEvent                = null          ,
+            bool?   generateCoerceEvent                 = null          ,
+            bool?   generateCollectionChangedEvent      = null                      
+            )
         {
-            Name = name ?? "NoName";
-            IsStatic = isStatic;
-            IsSuppressingDefaultConstructor = isSuppressingDefaultConstructor;
+            Name                            = name ?? "NoName"                  ;
+            IsStatic                        = isStatic                          ;
+            IsSuppressingDefaultConstructor = isSuppressingDefaultConstructor   ;
+            GenerateChangedEvent            = generateChangedEvent              ?? Default_GenerateChangedEvent             ;
+            GenerateCoerceEvent             = generateCoerceEvent               ?? Default_GenerateCoerceEvent              ;
+            GenerateCollectionChangedEvent  = generateCollectionChangedEvent    ?? Default_GenerateCollectionChangedEvent   ;
         }
     }
 
     enum PropertyFlags
     {
-        None            = 0x0,
-        IsCollection    = 0x1,
-        IsReadOnly      = 0x2,
-        IsAttached      = 0x4,
+        None                                = 0x0000    ,
+        IsCollection                        = 0x0001    ,
+        IsReadOnly                          = 0x0002    ,
+        IsAttached                          = 0x0004    ,
     }
 
     PropertyDefinition P (
-        string type             , 
-        string name             , 
-        string defaultValue     = null              ,
-        string metaDataOptions  = null              , 
-        PropertyFlags flags     = PropertyFlags.None
+        string type                                                 , 
+        string name                                                 , 
+        string defaultValue                     = null              ,
+        string metaDataOptions                  = null              ,
+        string ownerType                        = null              , 
+        bool?  generateChangedEvent             = null              ,
+        bool?  generateCoerceEvent              = null              ,
+        PropertyFlags flags                     = PropertyFlags.None
         )
     {
         return new PropertyDefinition
         {
-            ItemType        = "<NoType>"                                                        ,
-            Type            = type                  ?? "<NoType>"                               ,
-            Name            = name                  ?? "<NoName>"                               ,
-            DefaultValue    = defaultValue          ?? "default (" + (type ?? "<NoType>") + ")" ,
-            MetaDataOptions = metaDataOptions       ?? "FrameworkPropertyMetadataOptions.None"  ,
-            Flags           = flags                                                             ,
+            ItemType                = S_NoType                                                          ,
+            Type                    = type                  ?? S_NoType                                 ,
+            Name                    = name                  ?? S_NoName                                 ,
+            DefaultValue            = defaultValue          ?? "default (" + (type ?? S_NoType) + ")"   ,
+            OwnerType               = ownerType                                                         ,
+            MetaDataOptions         = metaDataOptions       ?? "FrameworkPropertyMetadataOptions.None"  ,
+            Flags                   = flags                                                             ,
+            GenerateChangedEvent    = generateChangedEvent                                              ,
+            GenerateCoerceEvent     = generateCoerceEvent                                               ,
         };
     }
 
     PropertyDefinition C (
-        string itemType         , 
-        string name             , 
-        string metaDataOptions  = null              , 
-        PropertyFlags flags     = PropertyFlags.None
+        string itemType                                             , 
+        string name                                                 , 
+        string metaDataOptions                  = null              , 
+        bool?  generateChangedEvent             = null              ,
+        bool?  generateCoerceEvent              = null              ,
+        bool?  generateCollectionChangedEvent   = null              ,
+        string ownerType                        = null              ,
+        PropertyFlags flags                     = PropertyFlags.None
         )
     {
         return new PropertyDefinition
         {
-            ItemType        = itemType              ?? "<NoType>"                               ,
-            Type            = "ObservableCollection<" + (itemType ?? "<NoType>") + ">"          , 
-            Name            = name ?? "<NoName>"                                                ,
-            DefaultValue    = "null"                                                            ,
-            MetaDataOptions = metaDataOptions       ?? "FrameworkPropertyMetadataOptions.None"  ,
-            Flags           = flags | PropertyFlags.IsCollection                                ,
+            ItemType                        = itemType                      ?? S_NoType                                 ,
+            Type                            = "ObservableCollection<" + (itemType ?? S_NoType) + ">"                    , 
+            Name                            = name                          ?? S_NoName                                 ,
+            DefaultValue                    = "null"                                                                    ,
+            OwnerType                       = ownerType                                                                 ,
+            MetaDataOptions                 = metaDataOptions               ?? "FrameworkPropertyMetadataOptions.None"  ,
+            Flags                           = flags | PropertyFlags.IsCollection                                        ,
+            GenerateChangedEvent            = generateChangedEvent                                                      ,
+            GenerateCoerceEvent             = generateCoerceEvent                                                       ,
+            GenerateCollectionChangedEvent  = generateCollectionChangedEvent                                            ,
         };
     }
 
@@ -502,12 +607,16 @@ namespace <#=Namespace#>
 
     class PropertyDefinition : BaseEntity<ClassDefinition>
     {
-        public string               ItemType        ;
-        public string               Type            ;
-        public string               Name            ;
-        public string               DefaultValue    ;
-        public string               MetaDataOptions ;
-        public PropertyFlags        Flags           ; 
+        public string               ItemType                        ;
+        public string               Type                            ;
+        public string               Name                            ;
+        public string               DefaultValue                    ;
+        public string               MetaDataOptions                 ;
+        public string               OwnerType                       ;
+        public bool?                GenerateChangedEvent            ;
+        public bool?                GenerateCoerceEvent             ;
+        public bool?                GenerateCollectionChangedEvent  ;
+        public PropertyFlags        Flags                           = PropertyFlags.None                        ; 
 
         public string DependencyPropertyName
         {
@@ -569,8 +678,24 @@ namespace <#=Namespace#>
         {
             get
             {
-               return IsOn (Flags, PropertyFlags.IsReadOnly);
+               return IsOn (Flags, PropertyFlags.IsReadOnly) && OwnerType == null;
             }
+
+        }
+
+        public bool IsGeneratingChangedEvent            
+        {
+            get {return GenerateChangedEvent ?? Parent.GenerateChangedEvent;}
+        }
+
+        public bool IsGeneratingCoerceEvent
+        {
+            get {return GenerateCoerceEvent ?? Parent.GenerateCoerceEvent;}
+        }
+
+        public bool IsGeneratingCollectionChangedEvent
+        {
+            get {return (GenerateCollectionChangedEvent ?? Parent.GenerateCollectionChangedEvent) && IsGeneratingChangedEvent;}
         }
     }
 

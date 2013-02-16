@@ -10,16 +10,24 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-using System.Windows.Controls;
+// ReSharper disable InconsistentNaming
+
+using FileInclude.Source.Extensions;
+using FileInclude.Source.Testing;
 
 namespace Test_Functionality.T4
 {
-    sealed partial class TestControl : Control
+    sealed partial class TestsFor_WPFT4
     {
-        public int IsValidCalledCount ;
-        partial void Changed_IsValid(bool oldValue, bool newValue)
+        public void Test_TestControl()
         {
-            ++IsValidCalledCount;
+            var testControl = new TestControl {IsValid = true};
+
+            const string testPropertyValue = "TEST";
+            TestControl.SetAdditional(testControl, testPropertyValue);
+
+            TestFor.Equality(1, testControl.IsValidCalledCount, "IsValidCalledCount must be 1");
+            TestFor.Equality(testPropertyValue, TestControl.GetAdditional(testControl), "Additional property must be {0}".FormatWith(testPropertyValue));
         }
     }
 }
