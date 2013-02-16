@@ -18,6 +18,7 @@
 #pragma warning disable 0649
 
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;
@@ -218,6 +219,20 @@ namespace Test_Functionality.HRON
                     "HRON after deserialize/serialize to object should be identical to test case"
                     );
             }
+        }
+
+        public void Test_NameValueCollection()
+        {
+            var nvc = new NameValueCollection
+                          {
+                              {"Key1", "Value1"}, 
+                              {"Key1", "Value2"}, 
+                              {"Key1", "Value3"}
+                          };
+
+            var value = HRONSerializer.ObjectAsString(nvc);
+
+            // This test case is just to test that NameValueCollection doesn't crash the serializer
         }
 
         public void Test_ObjectAsString()
