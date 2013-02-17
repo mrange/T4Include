@@ -18,6 +18,6 @@
 
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4IncludeWPF.1.0.2\T4\DependencyProperties.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeWPF.1.0.3\T4\DependencyProperties.ttinclude" #>
 
 
