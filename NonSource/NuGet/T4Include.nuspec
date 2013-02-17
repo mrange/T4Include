@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>T4Include</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <title>T4Include</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
@@ -15,6 +15,10 @@
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
+        * 1.1.1   - T4Include bug fixes
+                        - Case insensitive comparison of paths
+                        - Removed dead-code in T4Include (caused warnings)
+                        - Uses FullPath when writing meta data
         * 1.1.0   - T4Include now supports suppressing of the outer namespace
         * 1.0.7   - Refined sample to point to correct release
         * 1.0.6   - Added IncludeProject.ttinclude

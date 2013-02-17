@@ -6,7 +6,7 @@
 
     Model = new []
     {
-        // The new of the class that is inheriting DependencyObject
+        // The name of the class that is inheriting DependencyObject
         new ClassDefinition ("T4IncludeControl")
         {
             // A normal property
