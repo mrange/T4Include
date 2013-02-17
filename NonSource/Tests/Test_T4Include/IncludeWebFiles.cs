@@ -13,12 +13,16 @@
 // ############################################################################
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs
+// @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Array.cs
+// @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Log.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ SKIPPING (Already seen): https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // @@@ SKIPPING (Already seen): https://raw.github.com/mrange/T4Include/master/Common/Log.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs
 // ############################################################################
@@ -53,7 +57,8 @@ namespace WebInclude
         using System;
         using System.Collections.Generic;
         using System.Globalization;
-        using System.Text;
+        using System.IO;
+        using System.Reflection;
     
         using Source.Common;
     
@@ -67,6 +72,36 @@ namespace WebInclude
             public static bool IsNullOrEmpty (this string v)
             {
                 return string.IsNullOrEmpty (v);
+            }
+    
+            public static T FirstOrReturn<T>(this T[] values, T defaultValue)
+            {
+                if (values == null)
+                {
+                    return defaultValue;
+                }
+    
+                if (values.Length == 0)
+                {
+                    return defaultValue;
+                }
+    
+                return values[0];
+            }
+    
+            public static T FirstOrReturn<T>(this IEnumerable<T> values, T defaultValue)
+            {
+                if (values == null)
+                {
+                    return defaultValue;
+                }
+    
+                foreach (var value in values)
+                {
+                    return value;
+                }
+    
+                return defaultValue;
             }
     
             public static string DefaultTo (this string v, string defaultValue = null)
@@ -100,7 +135,7 @@ namespace WebInclude
     
             public static string FormatWith (this string format, params object[] args)
             {
-                return format.FormatWith (CultureInfo.InvariantCulture, args);
+                return format.FormatWith (Config.DefaultCulture, args);
             }
     
             public static TValue Lookup<TKey, TValue>(
@@ -173,7 +208,7 @@ namespace WebInclude
                 }
             }
     
-            public static TTo CastTo<TTo> (object value, TTo defaultValue)
+            public static TTo CastTo<TTo> (this object value, TTo defaultValue)
             {
                 return value is TTo ? (TTo) value : defaultValue;
             }
@@ -182,29 +217,62 @@ namespace WebInclude
             {
                 values = values ?? Array<string>.Empty;
                 delimiter = delimiter ?? ", ";
-                var first = true;
     
-                var sb = new StringBuilder (capacity);     
+                return string.Join (delimiter, values);
+            }
     
-                foreach (var v in values)
+            public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
+            {
+                defaultValue = defaultValue ?? "";
+    
+                if (assembly == null)
                 {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        sb.Append (delimiter);
-                    }
-    
-                    sb.Append (v);
+                    return defaultValue;
                 }
     
-                return sb.ToString ();
+                var stream = assembly.GetManifestResourceStream (name ?? "");
+                if (stream == null)
+                {
+                    return defaultValue;
+                }
+    
+                using (stream)
+                using (var streamReader = new StreamReader (stream))
+                {
+                    return streamReader.ReadToEnd ();
+                }
             }
+    
+            public static IEnumerable<string> ReadLines (this TextReader textReader)
+            {
+                if (textReader == null)
+                {
+                    yield break;
+                }
+    
+                string line;
+    
+                while ((line = textReader.ReadLine ()) != null)
+                {
+                    yield return line;
+                }
+            }
+    
+    #if !NETFX_CORE
+            public static IEnumerable<Type> GetInheritanceChain (this Type type)
+            {
+                while (type != null)
+                {
+                    yield return type;
+                    type = type.BaseType;
+                }
+            }
+    #endif
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace WebInclude
@@ -235,8 +303,8 @@ namespace WebInclude
             {
                 var now = DateTime.Now;
                 var finalMessage = string.Format (
-                    CultureInfo.InvariantCulture,
-                    "{0:HHmmss} {1}:{2}",
+                    Config.DefaultCulture,
+                    "{0:HHmmss} {1} : {2}",
                     now,
                     GetLevelMessage (level),
                     message
@@ -259,6 +327,8 @@ namespace WebInclude
         }
     }
 }
+
+// ############################################################################
 
 // ############################################################################
 namespace WebInclude
@@ -285,6 +355,55 @@ namespace WebInclude
 }
 
 // ############################################################################
+
+// ############################################################################
+namespace WebInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Common
+    {
+        using System.Globalization;
+    
+        sealed partial class InitConfig
+        {
+            public CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
+        }
+    
+        static partial class Config
+        {
+            static partial void Partial_Constructed(ref InitConfig initConfig);
+    
+            public readonly static CultureInfo DefaultCulture;
+    
+            static Config ()
+            {
+                var initConfig = new InitConfig();
+    
+                Partial_Constructed (ref initConfig);
+    
+                initConfig = initConfig ?? new InitConfig();
+    
+                DefaultCulture = initConfig.DefaultCulture;
+            }
+        }
+    }
+}
+
+// ############################################################################
+
+// ############################################################################
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -308,6 +427,7 @@ namespace WebInclude
     
         static partial class Log
         {
+            static partial void Partial_LogLevel (Level level);
             static partial void Partial_LogMessage (Level level, string message);
             static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
     
@@ -315,6 +435,7 @@ namespace WebInclude
             {
                 try
                 {
+                    Partial_LogLevel (level);
                     Partial_LogMessage (level, GetMessage (format, args));
                 }
                 catch (Exception exc)
@@ -331,7 +452,7 @@ namespace WebInclude
                 {
                     return (args == null || args.Length == 0)
                                ? format
-                               : string.Format (CultureInfo.InvariantCulture, format, args)
+                               : string.Format (Config.DefaultCulture, format, args)
                         ;
                 }
                 catch (FormatException)
@@ -345,20 +466,10 @@ namespace WebInclude
 }
 
 // ############################################################################
+
+// ############################################################################
 namespace WebInclude
 {
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
     // ############################################################################
     // #                                                                          #
     // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -367,6 +478,7 @@ namespace WebInclude
     // # regenerated. Changes should instead be applied to the corresponding      #
     // # template file (.tt)                                                      #
     // ############################################################################
+    
     
     
     
@@ -412,6 +524,7 @@ namespace WebInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
+    #if !NETFX_CORE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -432,7 +545,7 @@ namespace WebInclude
                         return ConsoleColor.Magenta;
                 }
             }
-    
+    #endif
             static string GetLevelMessage (Level level)
             {
                 switch (level)
@@ -458,6 +571,7 @@ namespace WebInclude
     }
     
 }
+
 // ############################################################################
 
 // ############################################################################
@@ -466,13 +580,14 @@ namespace WebInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"https://raw.github.com/";
-        public const string IncludeDate     = @"2012-11-01T07:38:22";
+        public const string IncludeDate     = @"2013-02-17T09:26:23";
 
         public const string Include_0       = @"mrange/T4Include/master/Extensions/BasicExtensions.cs";
         public const string Include_1       = @"mrange/T4Include/master/Common/ConsoleLog.cs";
         public const string Include_2       = @"https://raw.github.com/mrange/T4Include/master/Common/Array.cs";
-        public const string Include_3       = @"https://raw.github.com/mrange/T4Include/master/Common/Log.cs";
-        public const string Include_4       = @"https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs";
+        public const string Include_3       = @"https://raw.github.com/mrange/T4Include/master/Common/Config.cs";
+        public const string Include_4       = @"https://raw.github.com/mrange/T4Include/master/Common/Log.cs";
+        public const string Include_5       = @"https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs";
     }
 }
 // ############################################################################
