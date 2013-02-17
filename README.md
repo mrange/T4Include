@@ -5,15 +5,17 @@ T4Include is a library of small and useful functions intended to be
 included as source code in .NET (as opposed to referencing them as an assembly which is 
 the standard way of sharing code in .NET).
 
-To make it easier to get started T4Include can be installed using nuget package: T4Include
+To make it easier to get started T4Include can be installed using nuget: <http://nuget.org/packages/T4Include/>
 
 The nuget package contains:
 
+```
   * IncludeHeader.ttinclude    - Shared functionality
   * IncludeLocalFile.ttinclude - Includes source files located on the local harddrive
   * IncludeWebFile.ttinclude   - Includes source files located on the web
   * IncludeProject.ttinclude   - Includes source files located in another C# project
   * Include_T4Include.tt       - Example on how to reference the source
+```
 
 Example on how to reference dapper:
 ```code
