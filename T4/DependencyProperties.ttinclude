@@ -73,8 +73,6 @@ namespace <#=Namespace#>
         public static readonly DependencyProperty <#=propertyDef.DependencyPropertyName#> = <#=propertyDef.OwnerType#>.<#=propertyDef.DependencyPropertyName#>.AddOwner (
             typeof (<#=classDef.Name#>),
             new FrameworkPropertyMetadata (
-                <#=propertyDef.DefaultValue#>,
-                <#=propertyDef.MetaDataOptions#>,
                 <#=propertyDef.IsGeneratingChangedEvent ? propertyDef.PropertyChangedEventName  : "null"    #>,
                 <#=propertyDef.IsGeneratingCoerceEvent  ? propertyDef.PropertyCoerceEventName   : "null"    #>          
             ));
