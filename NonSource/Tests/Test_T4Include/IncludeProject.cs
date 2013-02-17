@@ -80,10 +80,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Hron\HRONDynamicObjectSerializer.cs
-// @@@ INCLUDE_FOUND: HRONSerializer.cs
-// @@@ INCLUDE_FOUND: ../Extensions/EnumParseExtensions.cs
-// @@@ INCLUDE_FOUND: ../Extensions/ParseExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Hron\HRONDynamicObjectSerializer.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
@@ -110,15 +107,6 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Testing\TestFor.cs
-// @@@ INCLUDING: C:\temp\GitHub\T4Include\Hron\HRONSerializer.cs
-// @@@ INCLUDE_FOUND: ../Common/Array.cs
-// @@@ INCLUDE_FOUND: ../Common/Config.cs
-// @@@ INCLUDE_FOUND: ../Common/SubString.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\SubString.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -133,6 +121,7 @@
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -155,10 +144,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -212,10 +202,11 @@ namespace ProjectInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -259,10 +250,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -315,10 +307,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 namespace ProjectInclude
 {
     // ############################################################################
@@ -422,10 +415,11 @@ namespace ProjectInclude
     }
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -545,10 +539,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -751,10 +746,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 namespace ProjectInclude
 {
     
@@ -1390,10 +1386,11 @@ namespace ProjectInclude
     
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1805,10 +1802,11 @@ namespace ProjectInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1869,10 +1867,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2516,10 +2515,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3151,10 +3151,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3476,10 +3477,11 @@ namespace ProjectInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3532,10 +3534,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3915,10 +3918,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Collections\TrieMap.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4259,10 +4263,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Collections\TrieMap.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
 namespace ProjectInclude
 {
     // ############################################################################
@@ -4392,10 +4397,11 @@ namespace ProjectInclude
     }
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4420,10 +4426,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4603,10 +4610,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -5646,10 +5654,11 @@ namespace ProjectInclude
     
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -5885,10 +5894,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -6098,10 +6108,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -6250,10 +6261,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 namespace ProjectInclude
 {
     // ############################################################################
@@ -6423,10 +6435,11 @@ namespace ProjectInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -6651,10 +6664,11 @@ namespace ProjectInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -6787,1069 +6801,7 @@ namespace ProjectInclude
         }
     }
 }
-
-// ############################################################################
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    
-    namespace Source.HRON
-    {
-        using System;
-        using System.Collections.Generic;
-        using System.Dynamic;
-        using System.Linq;
-        using System.Text;
-    
-        using Source.Common;
-        using Source.Extensions;
-    
-        static partial class HronExtensions
-        {
-            public static IHRONEntity FirstOrEmpty (this IEnumerable<IHRONEntity> entities)
-            {
-                if (entities == null)
-                {
-                    return HRONValue.Empty;
-                }
-    
-                return entities.FirstOrDefault() ?? HRONValue.Empty;
-            }
-        }
-    
-        partial class HRONDynamicParseError
-        {
-            public readonly int LineNo;
-            public readonly string Line;
-            public readonly HRONSerializer.ParseError ParseError;
-    
-            public HRONDynamicParseError(int lineNo, string line, HRONSerializer.ParseError parseError)
-            {
-                LineNo = lineNo;
-                Line = line;
-                ParseError = parseError;
-            }
-        }
-    
-        partial interface IHRONEntity
-        {
-            HRONSerializer.DynamicType GetDynamicType();
-    
-            IEnumerable<string>      GetMemberNames();
-            IEnumerable<IHRONEntity> GetMember(string name);
-            string GetValue();
-    
-            void Apply(SubString name, IHRONVisitor visitor);
-            void ToString(StringBuilder sb);
-        }
-    
-        sealed partial class HRONDynamicMembers : DynamicObject
-        {
-            readonly IHRONEntity[] m_entities;
-    
-            public HRONDynamicMembers(IEnumerable<IHRONEntity> entities)
-            {
-                m_entities = (entities ?? Array<IHRONEntity>.Empty).ToArray ();
-            }
-    
-            public override string ToString()
-            {
-                var sb = new StringBuilder();
-    
-                var first = true;
-    
-                foreach (var entity in m_entities)
-                {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        sb.Append(", ");
-                    }
-    
-                    entity.ToString(sb);
-                }
-    
-                return sb.ToString();
-            }
-    
-            public int GetCount ()
-            {
-                return m_entities.Length;
-            }
-    
-            public bool Exists ()
-            {
-                return m_entities.Length > 0;
-            }
-    
-            public override IEnumerable<string> GetDynamicMemberNames ()
-            {
-                var entity = m_entities.FirstOrEmpty ();
-                return entity.GetMemberNames ();
-            }
-    
-            public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
-            {
-                if (indexes.Length == 1 && indexes[0] is int)
-                {
-                    var index = (int)indexes[0];
-                    if (index < 0)
-                    {
-                        result = HRONValue.Empty;
-                        return true;
-                    }
-    
-                    if (index >= m_entities.Length)
-                    {
-                        result = HRONValue.Empty;
-                        return true;
-                    }
-    
-                    result = m_entities[index];
-                    return true;
-                }
-    
-                return base.TryGetIndex(binder, indexes, out result);
-            }
-    
-            public override bool TryGetMember(GetMemberBinder binder, out object result)
-            {
-                var entity = m_entities.FirstOrEmpty();
-    
-                var dynamicObject = entity as DynamicObject;
-                if (dynamicObject != null)
-                {
-                    return dynamicObject.TryGetMember(binder, out result);
-                }
-    
-                return base.TryGetMember(binder, out result);
-            }
-    
-            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-            {
-                var entity = m_entities.FirstOrEmpty();
-    
-                var dynamicObject = entity as DynamicObject;
-                if (dynamicObject != null)
-                {
-                    return dynamicObject.TryInvokeMember(binder, args, out result);
-                }
-    
-                return base.TryInvokeMember(binder, args, out result);
-            }
-    
-            public override bool TryConvert(ConvertBinder binder, out object result)
-            {
-                var returnType = binder.ReturnType;
-                if (returnType == typeof(string))
-                {
-                    result = m_entities.FirstOrEmpty().GetValue ();
-                    return true;
-                }
-                else if (returnType == typeof(string[]))
-                {
-                    result = m_entities.Select(e => e.GetValue()).ToArray();
-                    return true;
-                }
-                else if (returnType ==typeof(object[]))
-                {
-                    result = m_entities;
-                    return true;
-                }
-                else if (BaseHRONEntity.IsParseable (returnType))
-                {
-                    result = BaseHRONEntity.Parse (returnType, m_entities.FirstOrEmpty().GetValue());
-                    return true;                
-                }
-                else if (returnType.IsArray)
-                {
-                    var elementType = returnType.GetElementType();
-                    if (BaseHRONEntity.IsParseable (elementType))
-                    {
-                        var values = m_entities.Select (entity => BaseHRONEntity.Parse (elementType, entity.GetValue())).ToArray();
-                        var array = Array.CreateInstance(elementType, values.Length);
-                        values.CopyTo(array, 0);
-                        result = array;
-                        return true;
-                    }
-                }
-                return base.TryConvert(binder, out result);
-            }
-        }
-    
-        abstract partial class BaseHRONEntity : DynamicObject, IHRONEntity
-        {
-            public abstract HRONSerializer.DynamicType GetDynamicType();
-            public abstract IEnumerable<string> GetMemberNames();
-            public abstract IEnumerable<IHRONEntity> GetMember(string name);
-            public abstract string GetValue();
-    
-            public abstract void Apply(SubString name, IHRONVisitor visitor);
-            public abstract void ToString(StringBuilder sb);
-    
-            internal static bool IsParseable (Type type)
-            {
-                return type.CanParseEnumValue() || type.CanParse();
-            }
-    
-            public override IEnumerable<string> GetDynamicMemberNames ()
-            {
-                return GetMemberNames ();
-            }
-    
-            internal static object Parse(Type type, string value)
-            {
-                value = value ?? "";
-    
-                if (type.CanParseEnumValue())                    
-                {
-                    return value.ParseEnumValue(type) ?? type.GetDefaultEnumValue ();
-                }
-    
-                return value.Parse (Config.DefaultCulture, type, type.GetParsedDefaultValue());
-            }
-    
-    
-            public override string ToString()
-            {
-                var sb = new StringBuilder(128);
-                ToString(sb);
-                return sb.ToString();
-            }
-    
-            public override bool TryGetMember(GetMemberBinder binder, out object result)
-            {
-                result = new HRONDynamicMembers(GetMember(binder.Name));
-                return true;
-            }
-    
-            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-            {
-                result = new HRONDynamicMembers(GetMember(binder.Name));
-                return true;
-            }
-    
-            public override bool TryConvert(ConvertBinder binder, out object result)
-            {
-                var returnType = binder.ReturnType;
-                if (returnType == typeof(string))
-                {
-                    result = GetValue();
-                    return true;
-                }
-                else if (IsParseable(returnType))
-                {
-                    result = Parse(returnType, GetValue());
-                    return true;
-                }
-                return base.TryConvert(binder, out result);
-            }
-    
-        }
-    
-        sealed partial class HRONObject : BaseHRONEntity
-        {
-            public static HRONObject Empty = new HRONObject (null);
-    
-            public partial struct Member
-            {
-                readonly string m_name;
-                readonly IHRONEntity m_value;
-    
-                public Member(string name, IHRONEntity value)
-                    : this()
-                {
-                    m_name = name.Trim ();
-                    m_value = value;
-                }
-    
-                public string Name
-                {
-                    get { return m_name ?? ""; }
-                }
-    
-                public IHRONEntity Value
-                {
-                    get { return m_value ?? HRONValue.Empty; }
-                }
-    
-                public override string ToString()
-                {
-                    return Name + " : " + Value;
-                }
-            }
-    
-            ILookup<string, IHRONEntity> m_lookup;
-            readonly Member[] m_members;
-    
-            public HRONObject(Member[] members)
-            {
-                m_members = members ?? Array<Member>.Empty;
-            }
-    
-            ILookup<string, IHRONEntity> GetLookup()
-            {
-                if (m_lookup == null)
-                {
-                    m_lookup = m_members.ToLookup(p => p.Name, p => p.Value);
-                }
-    
-                return m_lookup;
-            }
-    
-            public override HRONSerializer.DynamicType GetDynamicType()
-            {
-                return HRONSerializer.DynamicType.Object;
-            }
-    
-            public override IEnumerable<string> GetMemberNames()
-            {
-                for (int index = 0; index < m_members.Length; index++)
-                {
-                    var pair = m_members[index];
-                    yield return pair.Name;
-                }
-            }
-    
-            public override IEnumerable<IHRONEntity> GetMember(string name)
-            {
-                return GetLookup()[name ?? ""]; 
-            }
-    
-            public override string GetValue()
-            {
-                return "";
-            }
-    
-            public void Visit (IHRONVisitor visitor)
-            {
-                if (visitor == null)
-                {
-                    return;
-                }
-    
-                for (var index = 0; index < m_members.Length; index++)
-                {
-                    var pair = m_members[index];
-                    var innerName = pair.Name.ToSubString();
-                    pair.Value.Apply(innerName, visitor);
-                }
-            }
-    
-            public override void Apply(SubString name, IHRONVisitor visitor)
-            {
-                if (visitor == null)
-                {
-                    return;
-                }
-    
-                visitor.Object_Begin(name);
-                for (var index = 0; index < m_members.Length; index++)
-                {
-                    var pair = m_members[index];
-                    var innerName = pair.Name.ToSubString();
-                    pair.Value.Apply(innerName, visitor);
-                }
-                visitor.Object_End(name);
-            }
-    
-            public override void ToString(StringBuilder sb)
-            {
-                sb.Append("{Object");
-                for (var index = 0; index < m_members.Length; index++)
-                {
-                    var pair = m_members[index];
-                    sb.Append(", '");
-                    sb.Append(pair.Name);
-                    sb.Append("' : ");
-                    pair.Value.ToString(sb);
-                }
-                sb.Append('}');
-            }
-        }
-    
-        sealed partial class HRONValue : BaseHRONEntity
-        {
-            readonly string m_value;
-            public static readonly IHRONEntity Empty = new HRONValue("");
-    
-            public HRONValue(string value)
-            {
-                m_value = value ?? "";
-            }
-    
-            public override HRONSerializer.DynamicType GetDynamicType()
-            {
-                return HRONSerializer.DynamicType.Value;
-            }
-    
-            public override IEnumerable<string> GetMemberNames()
-            {
-                return Array<string>.Empty;
-            }
-    
-            public override IEnumerable<IHRONEntity> GetMember(string name)
-            {
-                return Array<IHRONEntity>.Empty;
-            }
-    
-            public override string GetValue()
-            {
-                return m_value;
-            }
-    
-            public override void Apply(SubString name, IHRONVisitor visitor)
-            {
-                if (visitor == null)
-                {
-                    return;
-                }
-    
-                visitor.Value_Begin(name);
-                foreach (var line in m_value.ReadLines())
-                {
-                    visitor.Value_Line(line);
-                }
-                visitor.Value_End(name);
-            }
-    
-            public override void ToString(StringBuilder sb)
-            {
-                sb.Append('"');
-    
-                var first = true;
-    
-                foreach (var line in m_value.ReadLines())
-                {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        sb.Append(", ");
-                    }
-                    sb.AppendSubString(line);                
-                }
-                sb.Append('"');
-            }
-        }
-    
-        sealed partial class HRONDynamicBuilderVisitor : IHRONVisitor
-        {
-            public struct Item
-            {
-                public readonly SubString Name;
-                public readonly List<HRONObject.Member> Pairs;
-    
-                public Item(SubString name)
-                    : this()
-                {
-                    Name = name;
-                    Pairs = new List<HRONObject.Member>();
-                }
-            }
-    
-            readonly Stack<Item> m_stack = new Stack<Item>();
-            readonly StringBuilder m_value = new StringBuilder(128);
-            bool m_firstLine = true;
-    
-            public readonly List<HRONDynamicParseError> Errors = new List<HRONDynamicParseError>();
-            public readonly int MaxErrors;
-    
-            public HRONDynamicBuilderVisitor(int maxErrors)
-            {
-                MaxErrors = maxErrors;
-                m_stack.Push(new Item("Root".ToSubString()));
-            }
-    
-            public Item Top
-            {
-                get { return m_stack.Peek(); }
-            }
-    
-            public void Document_Begin()
-            {
-            }
-    
-            public void Document_End()
-            {
-            }
-    
-            public void PreProcessor(SubString line)
-            {
-            }
-    
-            public void Empty(SubString line)
-            {
-            }
-    
-            public void Comment(int indent, SubString comment)
-            {
-            }
-    
-            public void Value_Begin(SubString name)
-            {
-                m_value.Clear();
-                m_firstLine = true;
-            }
-    
-            public void Value_Line(SubString value)
-            {
-                if (m_firstLine)
-                {
-                    m_firstLine = false;
-                }
-                else
-                {
-                    m_value.AppendLine();
-                }
-                m_value.Append(value);
-            }
-    
-            public void Value_End(SubString name)
-            {
-                AddEntity(name.Value, new HRONValue(m_value.ToString()));
-            }
-    
-            public void Object_Begin(SubString name)
-            {
-                m_stack.Push(new Item(name));
-            }
-    
-            public void Object_End(SubString name)
-            {
-                var pop = m_stack.Pop();
-                AddEntity(pop.Name.Value, new HRONObject(pop.Pairs.ToArray()));
-            }
-    
-            void AddEntity(string name, IHRONEntity entity)
-            {
-                Top.Pairs.Add(new HRONObject.Member(name, entity));
-            }
-    
-            public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
-            {
-                Errors.Add(new HRONDynamicParseError(lineNo, line.Value, parseError));
-            }
-        }
-    
-    
-        static partial class HRONSerializer
-        {
-            public enum DynamicType
-            {
-                Value,
-                Object,
-            }
-    
-            public static void VisitDynamic (
-                HRONObject hronObject,
-                IHRONVisitor visitor
-                )
-            {
-                if (hronObject == null)
-                {
-                    return;
-                }
-    
-                hronObject.Visit(visitor);
-            }
-    
-            public static string DynamicAsString (
-                HRONObject hronObject
-                )
-            {
-                if (hronObject == null)
-                {
-                    return "";
-                }
-    
-                var v = new HRONWriterVisitor();
-                VisitDynamic(hronObject, v);
-                return v.Value;
-            }
-    
-            public static bool TryParseDynamic(
-                int maxErrorCount,
-                IEnumerable<SubString> lines,
-                out dynamic dyn,
-                out HRONDynamicParseError[] errors
-                )
-            {
-                HRONObject hronObject;
-    
-                if (!TryParseDynamic(maxErrorCount, lines, out hronObject, out errors))
-                {
-                    dyn = null;
-                    return false;
-                }
-    
-                dyn = hronObject;
-                return true;
-            }
-    
-            public static bool TryParseDynamic(
-                int maxErrorCount,
-                IEnumerable<SubString> lines,
-                out HRONObject hronObject,
-                out HRONDynamicParseError[] errors
-                )
-            {
-                hronObject = null;
-                errors = Array<HRONDynamicParseError>.Empty;
-    
-                var visitor = new HRONDynamicBuilderVisitor(maxErrorCount);
-    
-                Parse(maxErrorCount, lines, visitor);
-    
-                if (visitor.Errors.Count > 0)
-                {
-                    errors = visitor.Errors.ToArray();
-                    return false;
-                }
-    
-                hronObject = new HRONObject(visitor.Top.Pairs.ToArray());
-    
-                return true;
-            }
-    
-        }
-    }
-}
-
-// ############################################################################
-
-// ############################################################################
-namespace ProjectInclude
-{
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
-    
-    
-    
-    namespace Source.HRON
-    {
-        using System.Collections.Generic;
-        using System.Text;
-        using Source.Common;
-    
-        partial interface IHRONVisitor
-        {
-            void Document_Begin ();
-            void Document_End ();
-            void PreProcessor (SubString line);
-            void Empty (SubString line);
-    
-            void Comment(int indent, SubString comment);
-    
-            void Value_Begin(SubString name);
-            void Value_Line(SubString value);
-            void Value_End(SubString name);
-    
-            void Object_Begin(SubString name);
-            void Object_End(SubString name);
-    
-            void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError);
-        }
-    
-        abstract partial class BaseHRONWriterVisitor : IHRONVisitor
-        {
-            readonly    StringBuilder   m_sb    = new StringBuilder();
-            bool                        m_first = true  ;
-            int                         m_indent        ;
-    
-            protected abstract void Write       (StringBuilder line);
-            protected abstract void WriteLine   ();
-            void                    WriteLine   (StringBuilder line)
-            {
-                if (m_first)
-                {
-                    m_first = false;
-                }
-                else
-                {
-                    WriteLine ();
-                }
-    
-                Write (line);
-            }
-    
-            public abstract void Document_Begin();
-            public abstract void Document_End();
-    
-            public void PreProcessor(SubString line)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.Append('!');
-                m_sb.AppendSubString(line);
-                WriteLine(m_sb);
-            }
-    
-            public void Empty (SubString line)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.AppendSubString(line);
-                WriteLine(m_sb);
-            }
-    
-            public void Comment(int indent, SubString comment)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.Append('\t', indent);
-                m_sb.Append('#');
-                m_sb.AppendSubString(comment);
-                WriteLine(m_sb);
-            }
-    
-            public void Value_Begin(SubString name)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.Append('\t', m_indent);
-                m_sb.Append('=');
-                m_sb.Append(name);
-                ++m_indent;
-                WriteLine(m_sb);
-            }
-    
-            public void Value_Line(SubString value)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.Append('\t', m_indent);
-                m_sb.AppendSubString(value);
-                WriteLine(m_sb);
-            }
-    
-            public void Value_End(SubString name)
-            {
-                --m_indent;
-            }
-    
-            public void Object_Begin(SubString name)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.Append('\t', m_indent);
-                m_sb.Append('@');
-                m_sb.AppendSubString(name);
-                WriteLine(m_sb);
-                ++m_indent;
-            }
-    
-            public void Object_End(SubString name)
-            {
-                --m_indent;
-            }
-    
-            public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
-            {
-                m_sb.Remove(0, m_sb.Length);
-                m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
-                WriteLine(m_sb);
-            }
-    
-        }
-    
-        sealed partial class HRONWriterVisitor : BaseHRONWriterVisitor
-        {
-            readonly StringBuilder m_sb = new StringBuilder(128);
-    
-            public string Value
-            {
-                get
-                {
-                    return m_sb.ToString();                
-                }
-            }
-    
-            protected override void Write(StringBuilder line)
-            {
-                m_sb.Append(line.ToString());
-            }
-    
-            protected override void WriteLine()
-            {
-                m_sb.AppendLine();
-            }
-    
-            public override void Document_Begin()
-            {
-            }
-    
-            public override void Document_End()
-            {
-            }
-        }
-    
-        static partial class HRONSerializer
-        {
-            enum ParseState
-            {
-                ExpectingTag    ,
-                ExpectingValue  ,
-            }
-    
-            public enum ParseError
-            {
-                ProgrammingError                ,
-                IndentIncreasedMoreThanExpected ,
-                TagIsNotCorrectlyFormatted      ,
-            }
-    
-            public static void Parse(
-                int maxErrorCount,
-                IEnumerable<SubString> lines,
-                IHRONVisitor visitor
-                )
-            {
-                if (visitor == null)
-                {
-                    return;
-                }
-    
-                visitor.Document_Begin();
-    
-                try
-                {
-                    var errorCount = 0;
-    
-                    lines = lines ?? Array<SubString>.Empty;
-    
-                    var state = ParseState.ExpectingTag;
-                    var expectedIndent = 0;
-                    var lineNo = 0;
-                    var context = new Stack<SubString>();
-    
-                    var acceptsPreProcessor = true;
-    
-                    foreach (var line in lines)
-                    {
-                        ++lineNo;
-    
-                        var lineLength = line.Length;
-                        var begin = line.Begin;
-                        var end = line.End;
-    
-                        var currentIndent = 0;
-                        var baseString = line.BaseString;
-    
-                        if (acceptsPreProcessor)
-                        {
-                            if (lineLength > 0 && baseString[begin] == '!')
-                            {
-                                visitor.PreProcessor(line.ToSubString(1));
-                                continue;
-                            }
-                            else
-                            {
-                                acceptsPreProcessor = false;
-                            }
-                        }
-    
-                        for (var iter = begin; iter < end; ++iter)
-                        {
-                            var ch = baseString[iter];
-                            if (ch == '\t')
-                            {
-                                ++currentIndent;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-    
-                        bool isComment;
-                        switch (state)
-                        {
-                            case ParseState.ExpectingTag:
-                                isComment = currentIndent < lineLength
-                                            && baseString[currentIndent + begin] == '#'
-                                    ;
-                                break;
-                            case ParseState.ExpectingValue:
-                            default:
-                                isComment = currentIndent < expectedIndent
-                                            && currentIndent < lineLength
-                                            && baseString[currentIndent + begin] == '#'
-                                    ;
-                                break;
-                        }
-    
-                        var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
-    
-                        if (isComment)
-                        {
-                            visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
-                        }
-                        else if (isWhiteSpace && currentIndent < expectedIndent)
-                        {
-                            switch (state)
-                            {
-                                case ParseState.ExpectingValue:
-                                    visitor.Value_Line(SubString.Empty);
-                                    break;
-                                case ParseState.ExpectingTag:
-                                default:
-                                    visitor.Empty(line);
-                                    break;
-                            }
-                        }
-                        else if (isWhiteSpace)
-                        {
-                            switch (state)
-                            {
-                                case ParseState.ExpectingValue:
-                                    visitor.Value_Line(line.ToSubString(expectedIndent));
-                                    break;
-                                case ParseState.ExpectingTag:
-                                default:
-                                    visitor.Empty(line);
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            if (currentIndent < expectedIndent)
-                            {
-                                switch (state)
-                                {
-                                    case ParseState.ExpectingTag:
-                                        for (var iter = currentIndent; iter < expectedIndent; ++iter)
-                                        {
-                                            visitor.Object_End(context.Peek());
-                                            context.Pop();
-                                        }
-                                        break;
-                                    case ParseState.ExpectingValue:
-                                    default:
-                                        visitor.Value_End(context.Peek());
-                                        // Popping the value name
-                                        context.Pop();
-                                        for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
-                                        {
-                                            visitor.Object_End(context.Peek());
-                                            context.Pop();
-                                        }
-                                        break;
-                                }
-    
-                                expectedIndent = currentIndent;
-                                state = ParseState.ExpectingTag;
-                            }
-    
-                            switch (state)
-                            {
-                                case ParseState.ExpectingTag:
-                                    if (currentIndent > expectedIndent)
-                                    {
-                                        visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
-                                        if (++errorCount > 0)
-                                        {
-                                            return;
-                                        }
-                                    }
-                                    else if (currentIndent < lineLength)
-                                    {
-                                        var first = baseString[currentIndent + begin];
-                                        switch (first)
-                                        {
-                                            case '@':
-                                                state = ParseState.ExpectingTag;
-                                                ++expectedIndent;
-                                                context.Push(line.ToSubString(currentIndent + 1));
-                                                visitor.Object_Begin(context.Peek());
-                                                break;
-                                            case '=':
-                                                state = ParseState.ExpectingValue;
-                                                ++expectedIndent;
-                                                context.Push(line.ToSubString(currentIndent + 1));
-                                                visitor.Value_Begin(context.Peek());
-                                                break;
-                                            default:
-                                                visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
-                                                if (++errorCount > 0)
-                                                {
-                                                    return;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        visitor.Error(lineNo, line, ParseError.ProgrammingError);
-                                        if (++errorCount > 0)
-                                        {
-                                            return;
-                                        }
-                                    }
-                                    break;
-                                case ParseState.ExpectingValue:
-                                    visitor.Value_Line(line.ToSubString(expectedIndent));
-                                    break;
-                            }
-                        }
-                    }
-    
-                    switch (state)
-                    {
-                        case ParseState.ExpectingTag:
-                            for (var iter = 0; iter < expectedIndent; ++iter)
-                            {
-                                visitor.Object_End(context.Peek());
-                                context.Pop();
-                            }
-                            break;
-                        case ParseState.ExpectingValue:
-                        default:
-                            visitor.Value_End(context.Peek());
-                            // Popping the value name
-                            context.Pop();
-                            for (var iter = 0 + 1; iter < expectedIndent; ++iter)
-                            {
-                                visitor.Object_End(context.Peek());
-                                context.Pop();
-                            }
-                            break;
-                    }
-    
-                }
-                finally
-                {
-                    visitor.Document_End();
-                }
-            }
-        }
-    
-    }
-}
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // ############################################################################
 
 // ############################################################################
@@ -7858,7 +6810,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2013-02-17T09:26:20";
+        public const string IncludeDate     = @"2013-02-17T09:47:14";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
@@ -7886,8 +6838,6 @@ namespace ProjectInclude.Include
         public const string Include_23       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
         public const string Include_24       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
         public const string Include_25       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
-        public const string Include_26       = @"C:\temp\GitHub\T4Include\Hron\HRONDynamicObjectSerializer.cs";
-        public const string Include_27       = @"C:\temp\GitHub\T4Include\Hron\HRONSerializer.cs";
     }
 }
 // ############################################################################

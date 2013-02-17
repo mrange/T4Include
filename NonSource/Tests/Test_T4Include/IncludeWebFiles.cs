@@ -36,6 +36,7 @@
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -271,10 +272,11 @@ namespace WebInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -327,10 +329,11 @@ namespace WebInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Array.cs
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -353,10 +356,11 @@ namespace WebInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Array.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -400,10 +404,11 @@ namespace WebInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Log.cs
 namespace WebInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -464,10 +469,11 @@ namespace WebInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs
 namespace WebInclude
 {
     // ############################################################################
@@ -571,7 +577,7 @@ namespace WebInclude
     }
     
 }
-
+// @@@ END_INCLUDE: https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs
 // ############################################################################
 
 // ############################################################################
@@ -580,10 +586,10 @@ namespace WebInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"https://raw.github.com/";
-        public const string IncludeDate     = @"2013-02-17T09:26:23";
+        public const string IncludeDate     = @"2013-02-17T09:47:08";
 
-        public const string Include_0       = @"mrange/T4Include/master/Extensions/BasicExtensions.cs";
-        public const string Include_1       = @"mrange/T4Include/master/Common/ConsoleLog.cs";
+        public const string Include_0       = @"https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs";
+        public const string Include_1       = @"https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs";
         public const string Include_2       = @"https://raw.github.com/mrange/T4Include/master/Common/Array.cs";
         public const string Include_3       = @"https://raw.github.com/mrange/T4Include/master/Common/Config.cs";
         public const string Include_4       = @"https://raw.github.com/mrange/T4Include/master/Common/Log.cs";

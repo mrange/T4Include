@@ -27,7 +27,7 @@
     // ----------------------------------------------------------------------------------------------
 #>
 <#
-    var seenIncludes = new HashSet<string> ();
+    var seenIncludes = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 #>
 
 // ############################################################################
@@ -38,30 +38,30 @@
     while (toBeProcessed.Count > 0)
     {
         var include         = toBeProcessed.Dequeue ();
-        var fullPath        = Extension_GetFullPath (include); 
+        include.FullPath    = Extension_GetFullPath (include); 
         try
         {
             var fullContainer   = Extension_GetFullContainer (include);
 
-            if (seenIncludes.Contains (fullPath))
+            if (seenIncludes.Contains (include.FullPath))
             {
 #>
-// @@@ SKIPPING (Already seen): <#=fullPath#>
+// @@@ SKIPPING (Already seen): <#=include.FullPath#>
 <#
                 continue;
             }
 
-            seenIncludes.Add (fullPath);
+            seenIncludes.Add (include.FullPath);
 
             if (!Extension_Exists (include))
             {
 #>
-// @@@ SKIPPING (Not found): <#=fullPath#>
+// @@@ SKIPPING (Not found): <#=include.FullPath#>
 <#
                 continue;
             }
 #>
-// @@@ INCLUDING: <#=fullPath#>
+// @@@ INCLUDING: <#=include.FullPath#>
 <#
             processed.Add (include);
             var lines = Extension_ReadAllLines (include);
@@ -92,7 +92,7 @@
         catch (Exception exc)
         {
 #>
-// @@@ SKIPPING (Exception: "<#=exc.Message#>"): <#=fullPath#>
+// @@@ SKIPPING (Exception: "<#=exc.Message#>"): <#=include.FullPath#>
 <#
             continue;
         }
@@ -130,6 +130,7 @@ using <#=u.Namespace#>;
 #>
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: <#=include.FullPath#>
 <#
         if (hasNamespace)
         {
@@ -155,7 +156,7 @@ namespace <#=Namespace#>
 <#
         }
 #>
-
+// @@@ END_INCLUDE: <#=include.FullPath#>
 // ############################################################################
 <#
     }
@@ -188,7 +189,7 @@ namespace <#=Namespace#>.Include
     {
         ++iter;
 #>
-        public const string Include_<#=iter#>       = @"<#=include.LocalPath#>";
+        public const string Include_<#=iter#>       = @"<#=include.FullPath#>";
 <#
     }
 #>
@@ -219,6 +220,7 @@ namespace <#=Namespace#>.Include
         public string LocalPath             ;
         public bool   NoOuterNamespace      ;
 
+        public string FullPath              ;
         public List<string> TopLines        = new List<string> ();
         public List<string> BottomLines     = new List<string> ();
     }

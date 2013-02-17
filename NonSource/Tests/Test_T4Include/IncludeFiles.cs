@@ -36,6 +36,7 @@
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -271,10 +272,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -327,10 +329,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -353,10 +356,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -400,10 +404,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -464,10 +469,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 namespace FileInclude
 {
     // ############################################################################
@@ -571,7 +577,7 @@ namespace FileInclude
     }
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 
 // ############################################################################
@@ -580,10 +586,10 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-17T09:26:48";
+        public const string IncludeDate     = @"2013-02-17T09:47:12";
 
-        public const string Include_0       = @"Extensions\BasicExtensions.cs";
-        public const string Include_1       = @"Common\ConsoleLog.cs";
+        public const string Include_0       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
