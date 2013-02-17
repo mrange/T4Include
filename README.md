@@ -48,3 +48,31 @@ occassionaly makes assemblies feel clunky.
 
 Including source doesn't replace referencing an assembly but for sharing code that should be easy to share (ie utility functions, collections, extension methods and so on) including source code is a great alternative to reference an assembly.
 
+History of T4Include
+====================
+
+After working in a couple of large organisations with vision of creating product lines I have been subjected to some of the pains of trying to incorporate product line assets into a single hosting process. Often it's painful, sometimes impossible.
+
+It is a difficult problem and in order to succeed the whole product line has to consider to think from the start on how their assets will integration with other assets in a single hosting process. This often forgotten and first realized when the first application team tries to integrate disparate assets.
+
+Then I started thinking about C++ and boost. Boost have two classes of functionality
+ * One part which requires a precompiled library, difficult to integrate
+  * Needs correct compiler
+  * Needs correct architecture
+  * Needs correct build
+  * Creates a visible dependencies (with all its woes)
+  * Has to be integrated in the existing build process, which slows the often already slow process
+ * The other part which only requires the referencing code to #include the file
+  * Often template classes because in C++ they can't be put in a precompiled library
+  * Just works
+
+I wanted something like C++'s #include in C#, hence T4Include. But T4Include can more
+ * Can include from web resources
+ * Can include whole projects
+ * Including is done when the T4 file output is rebuilt not necessarily during build 
+  * Saves compile time
+ * Included code is version controlled in the target project
+  * Simplifies branching
+  * Simplifies change management
+  * Robust
+
