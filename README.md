@@ -37,7 +37,7 @@ In my humble opinion sharing code by assemblies has some drawbacks that
 occasionally makes assemblies feel clunky.
 
   * An assembly is a visible dependency:
-    * Visible dependencies causes headaches because we can get version conflicts in large applications with many dependencies. GAC is intended to solve this but requires administrator credentials.
+    * Visible dependencies cause headaches because we can get version conflicts in large applications with many dependencies. GAC is intended to solve this but requires administrator credentials.
     * Included source code is an invisible dependency creating no versions conflicts.
   * We can't cherry-pick functionality from an assembly:
     * If an assembly contains 1% of functionality I find useful then I still have to ship the 99% non-useful functionality and the hosting executable has to spend time loading it.
