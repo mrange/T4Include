@@ -65,6 +65,8 @@
     <Compile Include="Common\Log.cs" />
     <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
     <Compile Include="HRON\HRONObjectSerializer.cs" />
+    <Compile Include="WPF\BindingCache.cs" />
+    <Compile Include="WPF\Bindings\BasicBindings.cs" />
     <None Include="NET20\Generated_Common.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_Common.cs</LastGenOutput>
