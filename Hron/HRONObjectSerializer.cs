@@ -512,26 +512,27 @@ namespace Source.HRON
             return true;
         }
 
-        public static string ObjectAsString<T>(T value)
+        public static string ObjectAsString<T>(T value, bool omitIfNullOrEmpty = true)
         {
             var visitor = new HRONWriterVisitor();
-            VisitObject(value, visitor);
+            VisitObject(value, visitor, omitIfNullOrEmpty);
             return visitor.Value;
         }
-
+    
         public static void VisitObject(
             object value,
-            IHRONVisitor visitor
+            IHRONVisitor visitor,
+            bool omitIfNullOrEmpty = true
             )
         {
             if (value == null)
             {
                 return;
             }
-
+    
             var type = value.GetType();
             var classDescriptor = type.GetClassDescriptor();
-
+    
             if (classDescriptor.IsDictionaryLike)
             {
                 var dictionary = (IDictionary)value;
@@ -541,7 +542,7 @@ namespace Source.HRON
                     var keyAsString = key as string;
                     if (keyAsString != null)
                     {
-                        VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                        VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
             }
@@ -551,7 +552,7 @@ namespace Source.HRON
                 for (var index = 0; index < list.Count; index++)
                 {
                     var innerValue = list[index];
-                    VisitMember(new SubString(), innerValue, visitor);
+                    VisitMember(new SubString(), innerValue, visitor, omitIfNullOrEmpty);
                 }
             }
             else
@@ -561,20 +562,25 @@ namespace Source.HRON
                     var mi = classDescriptor.PublicGetMembers[index];
                     var memberName = mi.Name.ToSubString();
                     var memberValue = mi.Getter(value);
-                    VisitMember(memberName, memberValue, visitor);
+                    VisitMember(memberName, memberValue, visitor, omitIfNullOrEmpty);
                 }
             }
         }
 
-        static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor)
+        static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor, bool omitIfNullOrEmpty)
         {
             if (memberValue == null)
             {
+                if (!omitIfNullOrEmpty)
+                {
+                    visitor.Value_Begin(memberName);
+                    visitor.Value_End(memberName);
+                }
                 return;
             }
-
+    
             var classDescriptor = memberValue.GetType().GetClassDescriptor();
-
+    
             if (classDescriptor.IsDictionaryLike)
             {
                 visitor.Object_Begin(memberName);
@@ -585,7 +591,7 @@ namespace Source.HRON
                     var keyAsString = key as string;
                     if (keyAsString != null)
                     {
-                        VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                        VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
                 visitor.Object_End(memberName);
@@ -596,7 +602,7 @@ namespace Source.HRON
                 for (var index = 0; index < list.Count; index++)
                 {
                     var innerValue = list[index];
-                    VisitMember(memberName, innerValue, visitor);
+                    VisitMember(memberName, innerValue, visitor, omitIfNullOrEmpty);
                 }
             }
             else if (memberValue is string)
@@ -611,6 +617,11 @@ namespace Source.HRON
                     }
                     visitor.Value_End(memberName);
                 }
+                else if (!omitIfNullOrEmpty)
+                {
+                    visitor.Value_Begin(memberName);
+                    visitor.Value_End(memberName);
+                }
             }
             else if (classDescriptor.Type.CanParse())
             {
@@ -620,6 +631,11 @@ namespace Source.HRON
                 {
                     visitor.Value_Begin(memberName);
                     visitor.Value_Line(memberAsString.ToSubString());
+                    visitor.Value_End(memberName);
+                }
+                else if (!omitIfNullOrEmpty)
+                {
+                    visitor.Value_Begin(memberName);
                     visitor.Value_End(memberName);
                 }
             }
