@@ -21,6 +21,7 @@
             Include (@"Common\ConsoleLog.cs"),
             Include (@"Extensions\BasicExtensions.cs"),
             Include (@"Testing\TestRunner.cs"),
+            Include (@"Text\LineToObjectExtensions.cs"),
         };
 #>
 

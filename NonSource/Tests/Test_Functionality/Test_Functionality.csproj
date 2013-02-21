@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="T4\TestControl.cs" />
     <Compile Include="T4\TestsFor_WPFT4.cs" />
+    <Compile Include="Text\TestsFor_LineToObjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

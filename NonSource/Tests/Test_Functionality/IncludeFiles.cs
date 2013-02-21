@@ -32,6 +32,10 @@
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: TestFor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+// @@@ INCLUDE_FOUND: LineReaderExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptors.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -55,6 +59,9 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // @@@ INCLUDE_FOUND: Generated_TestFor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Common\BasicExtensions.cs
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Reflection\ClassDescriptors.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
@@ -66,6 +73,7 @@
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
@@ -75,6 +83,7 @@
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -584,26 +593,27 @@ namespace FileInclude
                 return true;
             }
     
-            public static string ObjectAsString<T>(T value)
+            public static string ObjectAsString<T>(T value, bool omitIfNullOrEmpty = true)
             {
                 var visitor = new HRONWriterVisitor();
-                VisitObject(value, visitor);
+                VisitObject(value, visitor, omitIfNullOrEmpty);
                 return visitor.Value;
             }
-    
+        
             public static void VisitObject(
                 object value,
-                IHRONVisitor visitor
+                IHRONVisitor visitor,
+                bool omitIfNullOrEmpty = true
                 )
             {
                 if (value == null)
                 {
                     return;
                 }
-    
+        
                 var type = value.GetType();
                 var classDescriptor = type.GetClassDescriptor();
-    
+        
                 if (classDescriptor.IsDictionaryLike)
                 {
                     var dictionary = (IDictionary)value;
@@ -613,7 +623,7 @@ namespace FileInclude
                         var keyAsString = key as string;
                         if (keyAsString != null)
                         {
-                            VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                            VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                         }
                     }
                 }
@@ -623,7 +633,7 @@ namespace FileInclude
                     for (var index = 0; index < list.Count; index++)
                     {
                         var innerValue = list[index];
-                        VisitMember(new SubString(), innerValue, visitor);
+                        VisitMember(new SubString(), innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
                 else
@@ -633,20 +643,25 @@ namespace FileInclude
                         var mi = classDescriptor.PublicGetMembers[index];
                         var memberName = mi.Name.ToSubString();
                         var memberValue = mi.Getter(value);
-                        VisitMember(memberName, memberValue, visitor);
+                        VisitMember(memberName, memberValue, visitor, omitIfNullOrEmpty);
                     }
                 }
             }
     
-            static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor)
+            static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor, bool omitIfNullOrEmpty)
             {
                 if (memberValue == null)
                 {
+                    if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
+                        visitor.Value_End(memberName);
+                    }
                     return;
                 }
-    
+        
                 var classDescriptor = memberValue.GetType().GetClassDescriptor();
-    
+        
                 if (classDescriptor.IsDictionaryLike)
                 {
                     visitor.Object_Begin(memberName);
@@ -657,7 +672,7 @@ namespace FileInclude
                         var keyAsString = key as string;
                         if (keyAsString != null)
                         {
-                            VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                            VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                         }
                     }
                     visitor.Object_End(memberName);
@@ -668,7 +683,7 @@ namespace FileInclude
                     for (var index = 0; index < list.Count; index++)
                     {
                         var innerValue = list[index];
-                        VisitMember(memberName, innerValue, visitor);
+                        VisitMember(memberName, innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
                 else if (memberValue is string)
@@ -683,6 +698,11 @@ namespace FileInclude
                         }
                         visitor.Value_End(memberName);
                     }
+                    else if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
+                        visitor.Value_End(memberName);
+                    }
                 }
                 else if (classDescriptor.Type.CanParse())
                 {
@@ -692,6 +712,11 @@ namespace FileInclude
                     {
                         visitor.Value_Begin(memberName);
                         visitor.Value_Line(memberAsString.ToSubString());
+                        visitor.Value_End(memberName);
+                    }
+                    else if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
                         visitor.Value_End(memberName);
                     }
                 }
@@ -706,10 +731,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1353,10 +1379,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1409,10 +1436,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1648,10 +1676,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1784,10 +1813,199 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Text
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using Source.Extensions;
+        using Source.Reflection;
+    
+        static partial class LineToObjectExtensions
+        {
+            static partial void ParserWarning(string format, params object[] args);
+    
+            public static IEnumerable<T> LineToObject<T>(this IEnumerable<Line> lines)
+                where T : class, new()
+            {
+                if (lines == null)
+                {
+                    yield break;
+                }
+    
+                var classDescriptor = ClassDescriptor.GetClassDescriptor(typeof(T));
+    
+                using (var e = lines.GetEnumerator())
+                {
+                    Line header = null;
+                    string[] allFields = null;
+                    HashSet<string> allValidFields = null;
+                    if (e.MoveNext())
+                    {
+                        header = e.Current;
+    
+                        allFields = header.Fields.Select(f => f.Trim()).ToArray();
+    
+                        var allMembers = classDescriptor
+                            .Members
+                            .Where(m => m.MemberInfo.GetCustomAttributes(typeof(IgnoreMemberAttribute), true).Length == 0)
+                            .ToArray()
+                            ;
+    
+                        var allWriteableMembers = allMembers
+                            .Where(m => m.HasSetter)
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+                        var allStringMembers = allMembers
+                            .Where(m => m.MemberType == typeof(string))
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+    
+                        var allNonWriteableMembers = allMembers
+                            .Where(m => !m.HasSetter)
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+                        var allNonStringMembers = allMembers
+                            .Where(m => m.MemberType != typeof(string))
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+    
+                        var emptyFieldCount = allFields.Count(s => s.IsNullOrWhiteSpace());
+                        if (emptyFieldCount > 0)
+                        {
+                            ParserWarning("Empty field names in header line: {0}", emptyFieldCount);
+                        }
+    
+                        var missingFields = allWriteableMembers.Except(allFields).ToArray();
+                        if (missingFields.Length > 0)
+                        {
+                            ParserWarning("Missing field names in header line: {0}", missingFields.Concatenate());
+                        }
+    
+                        var additionalFields = allFields.Except(allWriteableMembers).ToArray();
+                        if (additionalFields.Length > 0)
+                        {
+                            ParserWarning("Additionals field names in header line (ignored): {0}", additionalFields.Concatenate());
+                        }
+    
+                        var allNonWriteableFields = allFields.Intersect(allNonWriteableMembers).ToArray();
+                        if (allNonWriteableFields.Length > 0)
+                        {
+                            ParserWarning("Non writeable fields referenced: {0}", allNonWriteableFields.Concatenate());
+                        }
+    
+                        var allNonStringFields = allFields.Intersect(allNonStringMembers).ToArray();
+                        if (allNonWriteableFields.Length > 0)
+                        {
+                            ParserWarning("Non string fields referenced: {0}", allNonStringFields.Concatenate());
+                        }
+    
+                        allValidFields = new HashSet<string>(allFields
+                                                                 .Intersect(allWriteableMembers)
+                                                                 .Intersect(allStringMembers)
+                            );
+    
+                    }
+    
+                    if (header == null)
+                    {
+                        yield break;
+                    }
+    
+                    while (e.MoveNext())
+                    {
+                        var line = e.Current;
+                        if (line.IsEmpty)
+                        {
+                            continue;
+                        }
+    
+                        var lineFields = line.Fields;
+    
+                        if (allFields.Length < lineFields.Length)
+                        {
+                            ParserWarning(
+                                "Line @{0} - {1} additinal fields detected",
+                                line.LineNo,
+                                lineFields.Length - allFields.Length
+                                );
+                        }
+    
+                        if (lineFields.Length < allFields.Length)
+                        {
+                            ParserWarning(
+                                "Line @{0} - {1} missing fields detected",
+                                line.LineNo,
+                                allFields.Length - lineFields.Length
+                                );
+                        }
+    
+                        var instance = new T();
+                        var lineSource = instance as IOriginatedFromLine;
+                        if (lineSource != null)
+                        {
+                            lineSource.SetLine(line);
+                        }
+    
+                        var max = Math.Min(lineFields.Length, allFields.Length);
+    
+                        for (var iter = 0; iter < max; ++iter)
+                        {
+                            var fieldName = allFields[iter];
+                            var fieldValue = lineFields[iter];
+                            if (allValidFields.Contains(fieldName) && !fieldValue.IsNullOrWhiteSpace())
+                            {
+    
+                                var memberDescriptor = classDescriptor.FindMember(fieldName);
+                                if (memberDescriptor != null)
+                                {
+                                    memberDescriptor.Setter(instance, fieldValue.Trim());
+                                }
+                                else
+                                {
+                                    ParserWarning(
+                                        "Line @{0} - Failed to set field {1}: {2}",
+                                        line.LineNo,
+                                        fieldName
+                                        );
+                                }
+                            }
+                        }
+    
+                        yield return instance;
+                    }
+                }
+    
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2199,10 +2417,11 @@ namespace FileInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 namespace FileInclude
 {
     
@@ -2838,10 +3057,11 @@ namespace FileInclude
     
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2887,6 +3107,8 @@ namespace FileInclude
             public readonly MemberDescriptor[]                      Members             ;
             public readonly MemberDescriptor[]                      PublicGetMembers    ;
             public readonly Type                                    Type                ;
+            public readonly object[]                                Attributes          ;
+    
             public readonly Func<object>                            Creator             ;
             public readonly bool                                    HasCreator          ;
     
@@ -2902,9 +3124,10 @@ namespace FileInclude
     
             public ClassDescriptor(Type type)
             {
-                Type = type ?? typeof(object);
-                Name = Type.Name;
-                Members = Type.IsPrimitive 
+                Type        = type ?? typeof(object);
+                Attributes  = Type.GetCustomAttributes(inherit: true);
+                Name        = Type.Name;
+                Members     = Type.IsPrimitive 
                     ?   new MemberDescriptor[0]
                     :   Type
                         .GetMembers(
@@ -3029,6 +3252,7 @@ namespace FileInclude
     
             public readonly MemberInfo              MemberInfo          ;
             public readonly Type                    MemberType          ;
+            public readonly object[]                Attributes          ;
     
             public readonly bool                    HasPublicGetter     ;
             public readonly bool                    HasPublicSetter     ;
@@ -3043,18 +3267,24 @@ namespace FileInclude
             static readonly Func<object, object>    s_defaultGetter    = instance => null  ;
             static readonly Action<object, object>  s_defaultSetter  = (x, v) => { }     ;
     
-            public MemberDescriptor(MemberInfo mi)
+            public MemberDescriptor(MemberInfo memberInfo)
             {
-                MemberInfo  = mi;
-                Name        = mi.Name; 
-                Getter  = GetGetter(mi);
-                Setter  = GetSetter(mi);
+                if (memberInfo == null)
+                {
+                    throw new ArgumentNullException("memberInfo");
+                }
     
-                HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-                HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+                MemberInfo  = memberInfo;
+                Attributes  = MemberInfo.GetCustomAttributes(inherit: true);
+                Name        = MemberInfo.Name; 
+                Getter      = GetGetter(MemberInfo);
+                Setter      = GetSetter(MemberInfo);
     
-                var pi = mi as PropertyInfo;
-                var fi = mi as FieldInfo;
+                HasGetter   = !ReferenceEquals(Getter, s_defaultGetter);
+                HasSetter   = !ReferenceEquals(Setter, s_defaultSetter);
+    
+                var pi = MemberInfo as PropertyInfo;
+                var fi = MemberInfo as FieldInfo;
                 if (pi != null)
                 {
                     MemberType      =   pi.PropertyType                     ;
@@ -3163,10 +3393,11 @@ namespace FileInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3219,10 +3450,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3425,10 +3657,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3472,10 +3705,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3536,10 +3770,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3562,10 +3797,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3790,10 +4026,276 @@ namespace FileInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Text
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Text;
+    
+        sealed partial class Line
+        {
+            static readonly Line s_empty = new Line('\t', 0, 0, null);
+    
+            public readonly char Separator;
+            public readonly int Offset;
+            public readonly int LineNo;
+            public readonly string[] Fields;
+    
+            readonly Lazy<string> m_concatenatedLine;
+            readonly Lazy<string> m_toString;
+    
+            public Line(
+                char separator,
+                int lineNo,
+                int offset,
+                string[] fields
+                )
+            {
+                Separator           = separator;
+                Offset              = Math.Max(0, offset);
+                LineNo              = Math.Max(0, lineNo);
+                Fields              = fields ?? new string[0];
+    
+                m_concatenatedLine  = new Lazy<string>(GetOriginalLine);
+                m_toString          = new Lazy<string>(GetToString);
+                Offset              = offset;
+            }
+    
+            public static Line Empty
+            {
+                get { return s_empty; }
+            }
+    
+            public bool IsEmpty
+            {
+                get
+                {
+                    return
+                            LineNo == 0
+                        ||  Fields.Length == 0
+                        ||  (Fields.Length == 1 && string.IsNullOrEmpty(Fields[0]))
+                        ;
+                }
+            }
+    
+            public string ConcatenatedLine
+            {
+                get
+                {
+                    return m_concatenatedLine.Value;
+                }
+            }
+    
+            public override string ToString()
+            {
+                return m_toString.Value;
+            }
+    
+            string GetOriginalLine()
+            {
+                var sb = new StringBuilder();
+                var first = true;
+    
+                foreach (var field in (Fields ?? new string[0]))
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(Separator);
+                    }
+                    sb.Append(field ?? "");
+                }
+    
+                return sb.ToString();
+            }
+    
+            string GetToString()
+            {
+                var sb = new StringBuilder();
+    
+                sb.Append(LineNo);
+                sb.Append('(');
+                sb.Append(Offset);
+                sb.Append(") - ");
+                sb.Append(ConcatenatedLine);
+    
+                return sb.ToString();
+            }
+    
+        }
+    
+        static partial class LineExtensionMethods
+        {
+            [Flags]
+            enum ParserState : uint
+            {
+                OutsideString           = 0x1                               ,
+                InsideString            = 0x2                               ,
+                OutsideString_Escaped   = OutsideString | Flag_Escaped      ,
+                InsideString_Escaped    = InsideString | Flag_Escaped       ,
+                Mask_State              = 0xFFFF                            ,
+                Mask_Flag               = 0xFFFF0000                        ,
+                Flag_Escaped            = 0x10000                           ,
+            }
+    
+            public static IEnumerable<Line> ReadLines(this IEnumerable<char> text, char separator = '\t')
+            {
+                var currentLine = new List<string>();
+                var currentField = new StringBuilder();
+    
+                var parserState = ParserState.OutsideString;
+                var lineNo = 0;
+                var offset = 0;
+                foreach (var ch in text)
+                {
+                    switch (parserState)
+                    {
+                        case ParserState.OutsideString_Escaped:
+                        case ParserState.InsideString_Escaped:
+                            {
+                                switch (ch)
+                                {
+                                    case 'r':
+                                        currentField.Append('\r');
+                                        break;
+                                    case 'n':
+                                        currentField.Append('\n');
+                                        break;
+                                    case 't':
+                                        currentField.Append('\t');
+                                        break;
+                                    default:
+                                        currentField.Append(ch);
+                                        break;
+                                }
+                                parserState = parserState & ParserState.Mask_State;
+                            }
+                            break;
+                        case ParserState.InsideString:
+                            {
+                                switch (ch)
+                                {
+                                    case '"':
+                                        parserState = ParserState.OutsideString;
+                                        break;
+                                    case '\\':
+                                        parserState = ParserState.InsideString_Escaped;
+                                        break;
+                                    case '\r':
+                                        break;
+                                    case '\n':
+                                        currentField.Append("\r\n");
+                                        break;
+                                    default:
+                                        currentField.Append(ch);
+                                        break;
+                                }
+                            }
+                            break;
+                        case ParserState.OutsideString:
+                            {
+                                if (ch == separator)
+                                {
+                                    currentLine.Add(currentField.ToString());
+                                    currentField.Clear();
+                                }
+                                else
+                                {
+                                    switch (ch)
+                                    {
+                                        case '"':
+                                            parserState = ParserState.InsideString;
+                                            break;
+                                        case '\\':
+                                            parserState = ParserState.OutsideString_Escaped;
+                                            break;
+                                        case '\r':
+                                            break;
+                                        case '\n':
+                                            currentLine.Add(currentField.ToString());
+                                            currentField.Clear();
+                                            ++lineNo;
+                                            yield return new Line(separator, lineNo, offset, currentLine.ToArray());
+                                            currentLine.Clear();
+                                            break;
+                                        default:
+                                            currentField.Append(ch);
+                                            break;
+    
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                    ++offset;
+                }
+    
+                currentLine.Add(currentField.ToString());
+                currentField.Clear();
+                ++lineNo;
+                yield return new Line(separator, lineNo, offset, currentLine.ToArray());
+                currentLine.Clear();
+    
+            }
+        }
+    
+    
+    
+        partial interface IOriginatedFromLine
+        {
+            Line GetLine();
+            void SetLine(Line line);
+        }
+    
+        abstract partial class BaseOriginatedFromLine : IOriginatedFromLine
+        {
+            Line m_line;
+    
+            public void SetLine(Line line)
+            {
+                m_line = line;
+            }
+    
+            public Line GetLine()
+            {
+                return m_line ?? Line.Empty;
+            }
+        }
+    
+        sealed partial class IgnoreMemberAttribute : Attribute
+        {
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4173,10 +4675,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 namespace FileInclude
 {
     // ############################################################################
@@ -4280,10 +4783,11 @@ namespace FileInclude
     }
     
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 namespace FileInclude
 {
     // ############################################################################
@@ -4453,7 +4957,7 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 // ############################################################################
 
 // ############################################################################
@@ -4462,25 +4966,27 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-08T09:39:40";
+        public const string IncludeDate     = @"2013-02-21T21:18:20";
 
-        public const string Include_0       = @"HRON\HRONObjectSerializer.cs";
-        public const string Include_1       = @"HRON\HRONDynamicObjectSerializer.cs";
-        public const string Include_2       = @"Common\ConsoleLog.cs";
-        public const string Include_3       = @"Extensions\BasicExtensions.cs";
-        public const string Include_4       = @"Testing\TestRunner.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################

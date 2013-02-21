@@ -11,6 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Config.cs
+// ### INCLUDE: ../Common/ConsoleLog.cs
 // ### INCLUDE: ../Common/SubString.cs
 // ### INCLUDE: ../Extensions/BasicExtensions.cs
 // ### INCLUDE: ../Hron/HRONDynamicObjectSerializer.cs
