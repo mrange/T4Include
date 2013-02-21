@@ -1846,6 +1846,12 @@ namespace FileInclude
         {
             static partial void ParserWarning(string format, params object[] args);
     
+            public static IEnumerable<T> TextToObjects<T>(this IEnumerable<char> text, char separator = '\t') 
+                where T : class, new()
+            {
+                return text.TextToLines(separator).LineToObject<T>();
+            }
+    
             public static IEnumerable<T> LineToObject<T>(this IEnumerable<Line> lines)
                 where T : class, new()
             {
@@ -4161,7 +4167,7 @@ namespace FileInclude
                 Flag_Escaped            = 0x10000                           ,
             }
     
-            public static IEnumerable<Line> ReadLines(this IEnumerable<char> text, char separator = '\t')
+            public static IEnumerable<Line> TextToLines(this IEnumerable<char> text, char separator = '\t')
             {
                 var currentLine = new List<string>();
                 var currentField = new StringBuilder();
@@ -4966,7 +4972,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-21T21:18:20";
+        public const string IncludeDate     = @"2013-02-21T21:42:48";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

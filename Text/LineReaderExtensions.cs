@@ -129,7 +129,7 @@ namespace Source.Text
             Flag_Escaped            = 0x10000                           ,
         }
 
-        public static IEnumerable<Line> ReadLines(this IEnumerable<char> text, char separator = '\t')
+        public static IEnumerable<Line> TextToLines(this IEnumerable<char> text, char separator = '\t')
         {
             var currentLine = new List<string>();
             var currentField = new StringBuilder();

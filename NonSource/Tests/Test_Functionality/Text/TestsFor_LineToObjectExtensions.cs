@@ -43,8 +43,7 @@ namespace Test_Functionality.Text
         {
             var expected = GetExpected(TestCase);
             var result = TestCase
-                .ReadLines()
-                .LineToObject<Customer>()
+                .TextToObjects<Customer>()
                 .ToArray()
                 ;
 

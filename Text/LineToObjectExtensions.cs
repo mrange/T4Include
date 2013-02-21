@@ -30,6 +30,12 @@ namespace Source.Text
     {
         static partial void ParserWarning(string format, params object[] args);
 
+        public static IEnumerable<T> TextToObjects<T>(this IEnumerable<char> text, char separator = '\t') 
+            where T : class, new()
+        {
+            return text.TextToLines(separator).LineToObject<T>();
+        }
+
         public static IEnumerable<T> LineToObject<T>(this IEnumerable<Line> lines)
             where T : class, new()
         {
