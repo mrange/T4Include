@@ -42,6 +42,8 @@ namespace Source.Reflection
         public readonly MemberDescriptor[]                      Members             ;
         public readonly MemberDescriptor[]                      PublicGetMembers    ;
         public readonly Type                                    Type                ;
+        public readonly object[]                                Attributes          ;
+
         public readonly Func<object>                            Creator             ;
         public readonly bool                                    HasCreator          ;
 
@@ -57,9 +59,10 @@ namespace Source.Reflection
 
         public ClassDescriptor(Type type)
         {
-            Type = type ?? typeof(object);
-            Name = Type.Name;
-            Members = Type.IsPrimitive 
+            Type        = type ?? typeof(object);
+            Attributes  = Type.GetCustomAttributes(inherit: true);
+            Name        = Type.Name;
+            Members     = Type.IsPrimitive 
                 ?   new MemberDescriptor[0]
                 :   Type
                     .GetMembers(
@@ -184,6 +187,7 @@ namespace Source.Reflection
 
         public readonly MemberInfo              MemberInfo          ;
         public readonly Type                    MemberType          ;
+        public readonly object[]                Attributes          ;
 
         public readonly bool                    HasPublicGetter     ;
         public readonly bool                    HasPublicSetter     ;
@@ -198,18 +202,24 @@ namespace Source.Reflection
         static readonly Func<object, object>    s_defaultGetter    = instance => null  ;
         static readonly Action<object, object>  s_defaultSetter  = (x, v) => { }     ;
 
-        public MemberDescriptor(MemberInfo mi)
+        public MemberDescriptor(MemberInfo memberInfo)
         {
-            MemberInfo  = mi;
-            Name        = mi.Name; 
-            Getter  = GetGetter(mi);
-            Setter  = GetSetter(mi);
+            if (memberInfo == null)
+            {
+                throw new ArgumentNullException("memberInfo");
+            }
 
-            HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-            HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+            MemberInfo  = memberInfo;
+            Attributes  = MemberInfo.GetCustomAttributes(inherit: true);
+            Name        = MemberInfo.Name; 
+            Getter      = GetGetter(MemberInfo);
+            Setter      = GetSetter(MemberInfo);
 
-            var pi = mi as PropertyInfo;
-            var fi = mi as FieldInfo;
+            HasGetter   = !ReferenceEquals(Getter, s_defaultGetter);
+            HasSetter   = !ReferenceEquals(Setter, s_defaultSetter);
+
+            var pi = MemberInfo as PropertyInfo;
+            var fi = MemberInfo as FieldInfo;
             if (pi != null)
             {
                 MemberType      =   pi.PropertyType                     ;
