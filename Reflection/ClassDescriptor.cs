@@ -222,9 +222,9 @@ namespace Source.Reflection
             var fi = MemberInfo as FieldInfo;
             if (pi != null)
             {
-                MemberType      =   pi.PropertyType                     ;
-                HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
-                HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
+                MemberType      =   pi.PropertyType                                             ;
+                HasPublicGetter =   HasGetter && pi.GetGetMethod(nonPublic: true).IsPublic   ;
+                HasPublicSetter =   HasSetter && pi.GetSetMethod(nonPublic: true).IsPublic   ;
             }
             else if (fi != null)
             {

@@ -3293,9 +3293,9 @@ namespace FileInclude
                 var fi = MemberInfo as FieldInfo;
                 if (pi != null)
                 {
-                    MemberType      =   pi.PropertyType                     ;
-                    HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
-                    HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
+                    MemberType      =   pi.PropertyType                                             ;
+                    HasPublicGetter =   HasGetter && pi.GetGetMethod(nonPublic: true).IsPublic   ;
+                    HasPublicSetter =   HasSetter && pi.GetSetMethod(nonPublic: true).IsPublic   ;
                 }
                 else if (fi != null)
                 {
@@ -4972,7 +4972,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-21T21:42:48";
+        public const string IncludeDate     = @"2013-02-22T14:04:56";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
