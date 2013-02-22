@@ -51,6 +51,14 @@
                 continue;
             }
 
+            if (BlackList.Any (bl => include.FullPath.Contains (bl.Fragment)))
+            {
+#>
+// @@@ SKIPPING (Blacklisted): <#=include.FullPath#>
+<#
+                continue;
+            }
+
             seenIncludes.Add (include.FullPath);
 
             if (!Extension_Exists (include))
@@ -202,8 +210,9 @@ namespace <#=Namespace#>.Include
     string Namespace    = "T4Include"           ;
     string RootPath     = Extension_RootPath    ;
     
-    IncludeFile[]    Includes    = new IncludeFile[0];
-    UsingNamespace[] Usings      = new UsingNamespace[0];
+    IncludeFile[]               Includes    = new IncludeFile[0];
+    UsingNamespace[]            Usings      = new UsingNamespace[0];
+    BlackListedFileFragment[]   BlackList   = new [] {BlackListFragment("AssemblyInfo.cs")};
 
     static readonly Regex s_matchInclude = new Regex (
         @"^//\s*###\s*INCLUDE\s*:\s*(?<fileName>.*)$",
@@ -214,6 +223,19 @@ namespace <#=Namespace#>.Include
         @"^(\#define|// ReSharper )",
         RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
         );
+
+    class BlackListedFileFragment
+    {
+        public string Fragment;
+    }
+
+    static BlackListedFileFragment BlackListFragment (string fragment)
+    {
+        return new BlackListedFileFragment
+        {
+            Fragment = fragment ?? "",
+        };
+    }
 
     sealed class IncludeFile 
     {
