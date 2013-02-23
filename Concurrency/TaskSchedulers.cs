@@ -11,6 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: ShutDownable.cs
 // ### INCLUDE: RemainingTime.cs
 
 // ReSharper disable InconsistentNaming
@@ -36,7 +37,7 @@ namespace Source.Concurrency
 
         readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
         Thread                              m_executingThread   ;
-        bool                                m_done              ;
+        volatile bool                       m_done              ;
 
         int                                 m_taskFailureCount;
 
@@ -115,7 +116,6 @@ namespace Source.Concurrency
 
         protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
         {
-            Log.Warning ("SequentialTaskScheduler.TryExecuteTaskInline: {0} - Task inline execute not supported", Name);
             return false;
         }
 
@@ -144,7 +144,7 @@ namespace Source.Concurrency
             }
         }
 
-        public void WaitForShutDown (RemainingTime remainingTime)
+        public void ShutDown (RemainingTime remainingTime)
         {
             var thread = Interlocked.Exchange (ref m_executingThread, null);
             if (thread != null)
@@ -152,7 +152,8 @@ namespace Source.Concurrency
                 try
                 {
                     SignalShutDown ();
-                    if (!thread.Join (remainingTime.TimeOut.Milliseconds/2))
+                    var joinTimeOut = (int)remainingTime.Remaining.TotalMilliseconds/2;
+                    if (!thread.Join (joinTimeOut))
                     {
                         Log.Warning (
                             "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
@@ -160,7 +161,8 @@ namespace Source.Concurrency
                             );        
 
                         thread.Abort ();
-                        if (!thread.Join (remainingTime.TimeOut))
+                        var abortTimeOut = remainingTime.Remaining;
+                        if (!thread.Join (abortTimeOut))
                         {
                             Log.Warning (
                                 "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
@@ -183,7 +185,7 @@ namespace Source.Concurrency
 
         public void Dispose ()
         {
-            WaitForShutDown (new RemainingTime (TimeOut));
+            ShutDown (new RemainingTime (TimeOut));
         }
     }
 }

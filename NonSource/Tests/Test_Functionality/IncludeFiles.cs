@@ -23,6 +23,10 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDE_FOUND: ShutDownable.cs
+// @@@ INCLUDE_FOUND: RemainingTime.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -34,8 +38,8 @@
 // @@@ INCLUDE_FOUND: TestFor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
 // @@@ INCLUDE_FOUND: LineReaderExtensions.cs
-// @@@ INCLUDE_FOUND: ../Common/BasicExtensions.cs
-// @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptors.cs
+// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -51,6 +55,9 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
@@ -60,8 +67,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // @@@ INCLUDE_FOUND: Generated_TestFor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
-// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Common\BasicExtensions.cs
-// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Reflection\ClassDescriptors.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
@@ -1437,6 +1444,198 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Concurrency
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Collections.Generic;
+        using System.Threading;
+        using System.Threading.Tasks;
+    
+        using Source.Common;
+    
+        sealed partial class SequentialTaskScheduler : TaskScheduler, IShutDownable
+        {
+            const int                           DefaultTimeOutInMs = 250;
+            public readonly string              Name    ;
+            public readonly TimeSpan            TimeOut ;
+    
+            readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
+            Thread                              m_executingThread   ;
+            volatile bool                       m_done              ;
+    
+            int                                 m_taskFailureCount;
+    
+    
+            partial void Partial_ThreadCreated (Thread thread);
+    
+            partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
+    
+            public SequentialTaskScheduler (string name, TimeSpan? timeOut = null, ApartmentState apartmentState = ApartmentState.Unknown)
+            {
+                Name                = name      ?? "UnnamedTaskScheduler";
+                TimeOut             = timeOut   ?? TimeSpan.FromMilliseconds (DefaultTimeOutInMs);
+                m_executingThread   = new Thread (OnRun)
+                               {
+                                   IsBackground = true
+                               };
+    
+                m_executingThread.SetApartmentState (apartmentState);
+    
+                Partial_ThreadCreated (m_executingThread);
+    
+                m_executingThread.Start ();
+            }
+    
+            void OnRun (object context)
+            {
+                while (!m_done)
+                {
+                    Task task;
+                    try
+                    {
+                        if (m_tasks.TryTake (out task, TimeOut))
+                        {
+                            // null task means exit
+                            if (task == null)
+                            {
+                                m_done = true;
+                                continue;
+                            }
+    
+                            if (!TryExecuteTask (task))
+                            {
+                                Log.Warning (
+                                    "SequentialTaskScheduler.OnRun: {0} - TryExecuteTask failed for task: {1}",
+                                    Name,
+                                    task.Id
+                                    );
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        ++m_taskFailureCount;
+    
+                        Log.Exception (
+                            "SequentialTaskScheduler.OnRun: {0} - Caught exception: {1}",
+                            Name,
+                            exc
+                            );
+    
+                        Partial_TaskFailed (task, exc, m_taskFailureCount, ref m_done);
+                    }
+                }
+            }
+    
+            protected override bool TryDequeue (Task task)
+            {
+                Log.Warning ("SequentialTaskScheduler.TryDequeue: {0} - Task dequeing not supported", Name);
+                return false;
+            }
+    
+            protected override void QueueTask (Task task)
+            {
+                m_tasks.Add (task);
+            }
+    
+            protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
+            {
+                return false;
+            }
+    
+            protected override IEnumerable<Task> GetScheduledTasks ()
+            {
+                return m_tasks.ToArray ();
+            }
+    
+            public int TasksInQueue
+            {
+                get { return m_tasks.Count; }
+            }
+    
+            public bool IsDisposed
+            {
+                get { return m_executingThread == null; }
+            }
+    
+            public void SignalShutDown ()
+            {
+                if (!m_done)
+                {
+                    m_done = true;
+                    // null task to wake up thread
+                    m_tasks.Add (null);                
+                }
+            }
+    
+            public void ShutDown (RemainingTime remainingTime)
+            {
+                var thread = Interlocked.Exchange (ref m_executingThread, null);
+                if (thread != null)
+                {
+                    try
+                    {
+                        SignalShutDown ();
+                        var joinTimeOut = (int)remainingTime.Remaining.TotalMilliseconds/2;
+                        if (!thread.Join (joinTimeOut))
+                        {
+                            Log.Warning (
+                                "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
+                                Name
+                                );        
+    
+                            thread.Abort ();
+                            var abortTimeOut = remainingTime.Remaining;
+                            if (!thread.Join (abortTimeOut))
+                            {
+                                Log.Warning (
+                                    "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
+                                    Name
+                                    );
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception (
+                            "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}",
+                            Name,
+                            exc
+                            );
+                    }
+                }
+                
+            }
+    
+            public void Dispose ()
+            {
+                ShutDown (new RemainingTime (TimeOut));
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 // ############################################################################
 
 // ############################################################################
@@ -3780,6 +3979,151 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Concurrency
+    {
+        using System;
+    
+        using Source.Common;
+    
+        partial interface IShutDownable : IDisposable
+        {
+            /// <summary>
+            /// SignalShutDown - signals the object to shutdown
+            /// Shall not Throw
+            /// Shall not Block
+            /// </summary>
+            void SignalShutDown ();
+    
+            /// <summary>
+            /// ShutDown - waits for the object to shutdown
+            /// Should not Throw
+            /// May Block
+            /// </summary>
+            /// <param name="remainingTime"></param>
+            void ShutDown (RemainingTime remainingTime);
+        }
+    
+        static partial class ShutDownable
+        {
+            public static void ShutDown (RemainingTime remainingTime, params IShutDownable[] shutDownables)
+            {
+                if (shutDownables == null)
+                {
+                    return;
+                }
+    
+                foreach (var shutDownable in shutDownables)
+                {
+                    if (shutDownable != null)
+                    {
+                        shutDownable.SignalShutDown ();
+                    }
+                }
+                
+                foreach (var shutDownable in shutDownables)
+                {
+                    if (shutDownable != null)
+                    {
+                        try
+                        {
+                            shutDownable.ShutDown (remainingTime);
+                        }
+                        catch (Exception exc)
+                        {
+                            Log.Exception ("Failed to shutdown: {0}", exc);
+                        }
+                    }
+                }
+                
+            }
+                
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Concurrency
+    {
+        using System;
+        using System.Diagnostics;
+    
+        partial struct RemainingTime
+        {
+            public readonly TimeSpan    TimeOut     ;
+            readonly        Stopwatch   m_sw        ;
+    
+            public RemainingTime (TimeSpan timeOut)
+            {
+                TimeOut     = timeOut           ;
+                m_sw        = new Stopwatch ()  ;
+    
+                m_sw.Start ();
+            }
+    
+            public TimeSpan Remaining
+            {
+                get
+                {
+                    var elapsed = m_sw.Elapsed;
+    
+                    var remaining = TimeOut - elapsed;
+    
+                    if (remaining < TimeSpan.Zero)
+                    {
+                        return TimeSpan.Zero;
+                    }
+    
+                    return remaining;
+                }
+            }
+    
+            public bool IsTimedOut
+            {
+                get
+                {
+                    return Remaining == TimeSpan.Zero;
+                }
+            }
+            
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
@@ -4972,27 +5316,30 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-22T14:04:56";
+        public const string IncludeDate     = @"2013-02-23T14:54:35";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################

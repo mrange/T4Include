@@ -15,8 +15,8 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 // ### INCLUDE: LineReaderExtensions.cs
-// ### INCLUDE: ../Common/BasicExtensions.cs
-// ### INCLUDE: ../Reflection/ClassDescriptors.cs
+// ### INCLUDE: ../Extensions/BasicExtensions.cs
+// ### INCLUDE: ../Reflection/ClassDescriptor.cs
 
 namespace Source.Text
 {

@@ -10,11 +10,11 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-using Source.Common;
-
 namespace Source.Concurrency
 {
     using System;
+
+    using Source.Common;
 
     partial interface IShutDownable : IDisposable
     {
@@ -26,12 +26,12 @@ namespace Source.Concurrency
         void SignalShutDown ();
 
         /// <summary>
-        /// WaitForShutDown - waits for the object to shutdown
+        /// ShutDown - waits for the object to shutdown
         /// Should not Throw
         /// May Block
         /// </summary>
         /// <param name="remainingTime"></param>
-        void WaitForShutDown (RemainingTime remainingTime);
+        void ShutDown (RemainingTime remainingTime);
     }
 
     static partial class ShutDownable
@@ -57,7 +57,7 @@ namespace Source.Concurrency
                 {
                     try
                     {
-                        shutDownable.WaitForShutDown (remainingTime);
+                        shutDownable.ShutDown (remainingTime);
                     }
                     catch (Exception exc)
                     {

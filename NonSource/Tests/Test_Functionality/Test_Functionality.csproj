@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\TestsFor_SubString.cs" />
+    <Compile Include="Concurrency\TestsFor_TaskSchedulers.cs" />
     <Compile Include="Extensions\TestsFor_EnumParseExtensions.cs" />
     <Compile Include="Reflection\TestsFor_ClassDescriptor.cs" />
     <Compile Include="T4\Generated_Commands.cs">
