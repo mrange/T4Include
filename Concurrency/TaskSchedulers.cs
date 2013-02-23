@@ -11,6 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: RemainingTime.cs
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
@@ -27,7 +28,7 @@ namespace Source.Concurrency
 
     using Source.Common;
 
-    sealed partial class SequentialTaskScheduler : TaskScheduler, IDisposable
+    sealed partial class SequentialTaskScheduler : TaskScheduler, IShutDownable
     {
         const int                           DefaultTimeOutInMs = 250;
         public readonly string              Name    ;
@@ -39,6 +40,8 @@ namespace Source.Concurrency
 
         int                                 m_taskFailureCount;
 
+
+        partial void Partial_ThreadCreated (Thread thread);
 
         partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
 
@@ -52,6 +55,8 @@ namespace Source.Concurrency
                            };
 
             m_executingThread.SetApartmentState (apartmentState);
+
+            Partial_ThreadCreated (m_executingThread);
 
             m_executingThread.Start ();
         }
@@ -129,7 +134,7 @@ namespace Source.Concurrency
             get { return m_executingThread == null; }
         }
 
-        public void ShutDown ()
+        public void SignalShutDown ()
         {
             if (!m_done)
             {
@@ -139,23 +144,23 @@ namespace Source.Concurrency
             }
         }
 
-        public void Dispose ()
+        public void WaitForShutDown (RemainingTime remainingTime)
         {
             var thread = Interlocked.Exchange (ref m_executingThread, null);
             if (thread != null)
             {
                 try
                 {
-                    ShutDown ();
-                    if (!thread.Join (TimeOut + TimeOut))
+                    SignalShutDown ();
+                    if (!thread.Join (remainingTime.TimeOut.Milliseconds/2))
                     {
                         Log.Warning (
                             "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
                             Name
-                            );
+                            );        
 
                         thread.Abort ();
-                        if (!thread.Join (TimeOut))
+                        if (!thread.Join (remainingTime.TimeOut))
                         {
                             Log.Warning (
                                 "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
@@ -167,15 +172,18 @@ namespace Source.Concurrency
                 catch (Exception exc)
                 {
                     Log.Exception (
-                        "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}", 
+                        "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}",
                         Name,
                         exc
                         );
                 }
             }
+            
         }
 
-
-    
+        public void Dispose ()
+        {
+            WaitForShutDown (new RemainingTime (TimeOut));
+        }
     }
 }

@@ -58,6 +58,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
+    <Compile Include="Concurrency\RemainingTime.cs" />
+    <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
     <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
