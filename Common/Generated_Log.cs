@@ -52,7 +52,7 @@ namespace Source.Common
         {
             LogMessage (Level.Exception, format, args);
         }
-#if !NETFX_CORE
+#if !NETFX_CORE && !SILVERLIGHT && !WINDOWS_PHONE
         static ConsoleColor GetLevelColor (Level level)
         {
             switch (level)
