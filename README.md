@@ -27,7 +27,7 @@ Example on how to reference dapper:
         };
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4Include.1.1.1\T4\IncludeWebFile.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4Include.1.1.2\T4\IncludeWebFile.ttinclude" #>
 ```
 
 Why include source code?
