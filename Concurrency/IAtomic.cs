@@ -16,6 +16,7 @@ namespace Source.Concurrency
 {
     partial interface IAtomic<T>
     {
+        T Exchange (T newValue);
         bool CompareExchange (T newValue, T comparand);
         T Value { get; }
     }
