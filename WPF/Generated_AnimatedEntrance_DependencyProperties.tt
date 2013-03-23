@@ -1,0 +1,13 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("AnimatedEntrance")
+        {
+            C ("UIElement"      , "Children"    , flags:PropertyFlags.IsReadOnly    ),
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Functionality", "NonSo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_FunctionalityNet20", "NonSource\Tests\Test_FunctionalityNet20\Test_FunctionalityNet20.csproj", "{14DC7BC3-5B08-4D56-B740-041338FD78E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_WPF", "NonSource\Tests\Test_WPF\Test_WPF.csproj", "{5B25A5E7-4FDF-4030-B740-8000B8D7B885}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{14DC7BC3-5B08-4D56-B740-041338FD78E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14DC7BC3-5B08-4D56-B740-041338FD78E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14DC7BC3-5B08-4D56-B740-041338FD78E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,5 +47,6 @@ Global
 		{1C271517-A4F0-4286-A0FF-1C8D52FDD641} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 		{8D7DB487-2771-4834-931E-C093E861B650} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 		{14DC7BC3-5B08-4D56-B740-041338FD78E1} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
+		{5B25A5E7-4FDF-4030-B740-8000B8D7B885} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 	EndGlobalSection
 EndGlobal
