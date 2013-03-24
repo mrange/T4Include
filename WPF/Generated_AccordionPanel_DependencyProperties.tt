@@ -1,0 +1,16 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("AccordionPanel")
+        {
+            P ("double"                 , "PreviewWidth"    , defaultValue:"10.0"           ),
+            P ("UIElement"              , "ActiveElement"                                  ),
+            P ("AccordionPanel.State"   , "ChildState"      , flags:PropertyFlags.IsAttached),
+
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

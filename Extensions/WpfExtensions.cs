@@ -175,6 +175,11 @@ namespace Source.Extensions
                 t*(to.Y - from.Y) + from.Y
                 );
         }
+
+        public static Rect ToRect (this Size size)
+        {
+            return new Rect(0,0,size.Width, size.Height);
+        }
     
     }
 }
