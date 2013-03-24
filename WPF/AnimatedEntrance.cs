@@ -555,6 +555,11 @@ namespace Source.WPF
             Children = new ObservableCollection<UIElement> ();
         }
 
+        partial void Changed_Children(ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue)
+        {
+            // TODO: Handle the situation when a displayed element is removed
+        }
+
         void OnDelay(object sender, EventArgs e)
         {
             m_delay.Stop ();
