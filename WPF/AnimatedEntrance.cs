@@ -321,7 +321,6 @@ namespace Source.WPF
                         break;
                     default:
                     case Option.Instant:
-                        // TODO:
                         break;
                 }
             }
