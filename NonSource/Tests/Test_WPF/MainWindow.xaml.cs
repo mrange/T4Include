@@ -20,6 +20,7 @@ namespace Test_WPF
         {
             InitializeComponent();
             
+            
         }
 
         void Button_Click(object sender, RoutedEventArgs e)

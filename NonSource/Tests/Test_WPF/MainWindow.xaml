@@ -14,8 +14,8 @@
             <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Third"/>
         </StackPanel>
         <wpf:AnimatedEntrance Grid.Row="2">
-            <Border Background="Yellow">
-                <TextBlock Text="First"/>
+            <Border Background="Yellow" >
+                <TextBlock Text="First" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
             <Border Background="Red">
                 <TextBlock Text="Second"/>

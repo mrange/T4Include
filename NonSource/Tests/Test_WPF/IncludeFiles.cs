@@ -504,11 +504,22 @@ namespace FileInclude
     
             static readonly AnimationClockTickVisitor s_animationClockTickVisitor = new AnimationClockTickVisitor();
             static readonly DelayVisitor s_delayVisitor = new DelayVisitor();
+            static readonly InitializeVisitor s_initializeVisitor = new InitializeVisitor();
     
             DispatcherTimer                 m_delay             ;
             Canvas                          m_canvas;
-            Border                          m_current   = new Border ();
-            Border                          m_next      = new Border ();
+            Border                          m_current   = new Border ()
+                                                              {
+                                                                  Background = Brushes.Aqua,
+                                                                  HorizontalAlignment = HorizontalAlignment.Stretch,
+                                                                  VerticalAlignment = VerticalAlignment.Stretch,
+                                                              };
+            Border                          m_next      = new Border ()
+                                                              {
+                                                                  Background = Brushes.MediumVioletRed,
+                                                                  HorizontalAlignment = HorizontalAlignment.Stretch,
+                                                                  VerticalAlignment = VerticalAlignment.Stretch,
+                                                              };
     
             static AnimatedEntrance()
             {
@@ -548,6 +559,8 @@ namespace FileInclude
                     OnDelay,
                     Dispatcher
                     );
+                m_delay.Stop ();
+    
                 m_currentState = new State_Initial
                                      {
                                          Owner = this,
@@ -559,21 +572,8 @@ namespace FileInclude
             {
                 m_delay.Stop ();
     
-                if (!IsValid)
-                {
-                    return;
-                }
-    
                 UpdateState(s_delayVisitor);
     
-            }
-    
-            bool IsValid
-            {
-                get
-                {
-                    return m_currentState.CurrentState != State.Initial;
-                }
             }
     
             public override void OnApplyTemplate()
@@ -584,7 +584,7 @@ namespace FileInclude
                 if (m_canvas != null)
                 {
                     m_canvas.Children.Add(m_current);
-                    UpdateState (new InitializeVisitor());
+                    UpdateState (s_initializeVisitor);
                 }
     
             }
@@ -596,9 +596,13 @@ namespace FileInclude
     
             protected override Size ArrangeOverride(Size arrangeBounds)
             {
+                Canvas.SetLeft(m_current, 0);
+                Canvas.SetTop(m_current, 0);
                 Canvas.SetRight(m_current, arrangeBounds.Width);
                 Canvas.SetBottom(m_current, arrangeBounds.Height);
     
+                Canvas.SetLeft(m_next, 0);
+                Canvas.SetTop(m_next, 0);
                 Canvas.SetRight(m_next, arrangeBounds.Width);
                 Canvas.SetBottom(m_next, arrangeBounds.Height);
     
@@ -615,21 +619,11 @@ namespace FileInclude
                     return;
                 }
     
-                if (!animatedEntrance.IsValid)
-                {
-                    return;
-                }
-    
                 animatedEntrance.UpdateState(s_animationClockTickVisitor);
             }
     
             public void Present (Option option, UIElement element)
             {
-                if (!IsValid)
-                {
-                    return;
-                }
-    
                 UpdateState(new PresentVisitor(option, element));
             }
         
@@ -1821,7 +1815,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T10:33:10";
+        public const string IncludeDate     = @"2013-03-24T10:47:24";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
