@@ -15,7 +15,6 @@
 // ### INCLUDE: Generated_AccordionPanel_DependencyProperties.cs
 // ### INCLUDE: ../Extensions/WpfExtensions.cs
 
-using System.Windows.Input;
 
 namespace Source.WPF
 {
@@ -25,8 +24,7 @@ namespace Source.WPF
     using System.Windows.Controls;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
-
-
+    using System.Windows.Input;
 
     partial class AccordionPanel : Panel
     {
@@ -35,7 +33,7 @@ namespace Source.WPF
 
         static AccordionPanel ()
         {
-            s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(2000));
+            s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
             s_transitionClock       = new DoubleAnimation(
                 0,
                 1,
@@ -239,7 +237,7 @@ namespace Source.WPF
                 var state = GetChildState(child);
                 var current = state.GetCurrent(animationClock);
 
-                if (current < pos.X)
+                if (current > pos.X)
                 {
                     ActiveElement = hit;
                     return;
@@ -247,7 +245,18 @@ namespace Source.WPF
 
                 hit = child;
             }
+
+            ActiveElement = hit;
         }
 
+        partial void Coerce_PreviewWidth(double value, ref double coercedValue)
+        {
+            coercedValue = Math.Max(8,value);
+        }
+
+        partial void Changed_PreviewWidth(double oldValue, double newValue)
+        {
+            InvalidateArrange ();
+        }
     }
 }

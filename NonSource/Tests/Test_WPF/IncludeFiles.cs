@@ -682,7 +682,6 @@ namespace FileInclude
     
     
     
-    using System.Windows.Input;
     
     namespace Source.WPF
     {
@@ -692,8 +691,7 @@ namespace FileInclude
         using System.Windows.Controls;
         using System.Windows.Media;
         using System.Windows.Media.Animation;
-    
-    
+        using System.Windows.Input;
     
         partial class AccordionPanel : Panel
         {
@@ -702,7 +700,7 @@ namespace FileInclude
     
             static AccordionPanel ()
             {
-                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(2000));
+                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
                 s_transitionClock       = new DoubleAnimation(
                     0,
                     1,
@@ -906,7 +904,7 @@ namespace FileInclude
                     var state = GetChildState(child);
                     var current = state.GetCurrent(animationClock);
     
-                    if (current < pos.X)
+                    if (current > pos.X)
                     {
                         ActiveElement = hit;
                         return;
@@ -914,8 +912,19 @@ namespace FileInclude
     
                     hit = child;
                 }
+    
+                ActiveElement = hit;
             }
     
+            partial void Coerce_PreviewWidth(double value, ref double coercedValue)
+            {
+                coercedValue = Math.Max(8,value);
+            }
+    
+            partial void Changed_PreviewWidth(double oldValue, double newValue)
+            {
+                InvalidateArrange ();
+            }
         }
     }
 }
@@ -2468,7 +2477,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T20:50:03";
+        public const string IncludeDate     = @"2013-03-24T20:57:43";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
