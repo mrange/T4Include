@@ -17,6 +17,7 @@
     Includes = new []
         {
             Include (@"WPF\AnimatedEntrance.cs"),
+            Include (@"WPF\AccordionPanel.cs"),
         };
 #>
 

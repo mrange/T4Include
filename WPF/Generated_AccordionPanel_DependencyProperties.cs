@@ -153,6 +153,41 @@ namespace Source.WPF
 
             return newValue;
         }
+        public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
+            "AnimationClock",
+            typeof (double),
+            typeof (AccordionPanel),
+            new FrameworkPropertyMetadata (
+                default (double),
+                FrameworkPropertyMetadataOptions.None,
+                Changed_AnimationClock,
+                Coerce_AnimationClock          
+            ));
+
+        static void Changed_AnimationClock (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        {
+            if (dependencyObject != null)
+            {
+                var oldValue = (double)eventArgs.OldValue;
+                var newValue = (double)eventArgs.NewValue;
+
+                Changed_AnimationClock (dependencyObject, oldValue, newValue);
+            }
+        }
+
+        static object Coerce_AnimationClock (DependencyObject dependencyObject, object basevalue)
+        {
+            if (dependencyObject == null)
+            {
+                return basevalue;
+            }
+            var oldValue = (double)basevalue;
+            var newValue = oldValue;
+
+            Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+
+            return newValue;
+        }
         #endregion
 
         // --------------------------------------------------------------------
@@ -171,6 +206,7 @@ namespace Source.WPF
             CoerceValue (PreviewWidthProperty);
             CoerceValue (ActiveElementProperty);
             CoerceValue (ChildStateProperty);
+            CoerceValue (AnimationClockProperty);
         }
 
 
@@ -255,6 +291,42 @@ namespace Source.WPF
         // --------------------------------------------------------------------
         static partial void Changed_ChildState (DependencyObject dependencyObject, AccordionPanel.State oldValue, AccordionPanel.State newValue);
         static partial void Coerce_ChildState (DependencyObject dependencyObject, AccordionPanel.State value, ref AccordionPanel.State coercedValue);
+        // --------------------------------------------------------------------
+
+
+           
+        // --------------------------------------------------------------------
+        public static double GetAnimationClock (DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return default (double);
+            }
+
+            return (double)dependencyObject.GetValue (AnimationClockProperty);
+        }
+
+        public static void SetAnimationClock (DependencyObject dependencyObject, double value)
+        {
+            if (dependencyObject != null)
+            {
+                if (GetAnimationClock (dependencyObject) != value)
+                {
+                    dependencyObject.SetValue (AnimationClockProperty, value);
+                }
+            }
+        }
+
+        public static void ClearAnimationClock (DependencyObject dependencyObject)
+        {
+            if (dependencyObject != null)
+            {
+                dependencyObject.ClearValue (AnimationClockProperty);
+            }
+        }
+        // --------------------------------------------------------------------
+        static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
+        static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
         // --------------------------------------------------------------------
 
 

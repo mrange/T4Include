@@ -14,8 +14,11 @@
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable MemberCanBeProtected.Local
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 // ReSharper disable UnassignedField.Local
+// ReSharper disable UnusedParameter.Local
 
 // ### INCLUDE: Generated_AnimatedEntrance_DependencyProperties.cs
 // ### INCLUDE: Generated_AnimatedEntrance_StateMachine.cs
@@ -515,7 +518,7 @@ namespace Source.WPF
                             };
         
             var type = typeof (AnimatedEntrance);
-            var namespaceName = type.Namespace;
+            var namespaceName = type.Namespace ?? "";
             var assemblyName = type.Assembly.FullName;
             parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Internal", namespaceName, assemblyName);
             parserContext.XmlnsDictionary.Add("i", "Internal");

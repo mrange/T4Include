@@ -15,10 +15,15 @@
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs
+// @@@ INCLUDE_FOUND: Generated_AccordionPanel_DependencyProperties.cs
+// @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
@@ -40,9 +45,11 @@
 // ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantCast
+// ReSharper disable RedundantIfElseBlock
 // ReSharper disable RedundantUsingDirective
 // ReSharper disable UnassignedField.Local
 // ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
 // ############################################################################
 
 // ############################################################################
@@ -64,23 +71,22 @@ namespace FileInclude
     
     
     
-    using System.Linq;
-    using System.Windows.Media;
-    using System.Windows.Threading;
-    using Source.Extensions;
-    
     namespace Source.WPF
     {
+        using Source.Extensions;
+        using System;
         using System.Collections.ObjectModel;
+        using System.Linq;
         using System.Windows;
         using System.Windows.Controls;
         using System.Windows.Markup;
-        using System;
+        using System.Windows.Media;
         using System.Windows.Media.Animation;
+        using System.Windows.Threading;
     
         [TemplatePart(Name = PART_Panel    , Type = typeof(Panel))]
         [ContentProperty("Children")]
-        sealed partial class AnimatedEntrance : Control
+        partial class AnimatedEntrance : Control
         {
             const string PART_Panel    = @"PART_Panel"    ;
         
@@ -363,7 +369,6 @@ namespace FileInclude
                             break;
                         default:
                         case Option.Instant:
-                            // TODO:
                             break;
                     }
                 }
@@ -559,7 +564,7 @@ namespace FileInclude
                                 };
             
                 var type = typeof (AnimatedEntrance);
-                var namespaceName = type.Namespace;
+                var namespaceName = type.Namespace ?? "";
                 var assemblyName = type.Assembly.FullName;
                 parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Internal", namespaceName, assemblyName);
                 parserContext.XmlnsDictionary.Add("i", "Internal");
@@ -596,6 +601,11 @@ namespace FileInclude
                                          Owner = this,
                                      };
                 Children = new ObservableCollection<UIElement> ();
+            }
+    
+            partial void Changed_Children(ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue)
+            {
+                // TODO: Handle the situation when a displayed element is removed
             }
     
             void OnDelay(object sender, EventArgs e)
@@ -648,6 +658,225 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using Source.Extensions;
+        using System;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Media;
+        using System.Windows.Media.Animation;
+    
+    
+    
+        partial class AccordionPanel : Panel
+        {
+            readonly static Duration        s_transitionDuration;
+            readonly static DoubleAnimation s_transitionClock   ;
+    
+            static AccordionPanel ()
+            {
+                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(2000));
+                s_transitionClock       = new DoubleAnimation(
+                    0,
+                    1,
+                    s_transitionDuration, 
+                    FillBehavior.Stop
+                    );
+                
+            }
+    
+            public sealed partial class State
+            {
+                public double               From        ;
+                public double               To          ;
+                public TranslateTransform   Transform   ;
+                public double               GetCurrent (double clock)
+                {
+                    return clock.Interpolate(From, To);
+                }
+    
+                public void Update(double x)
+                {
+                    if (Transform != null)
+                    {
+                        Transform.X = x;
+                    }
+                }
+            }
+    
+            AnimationClock m_clock;
+    
+            protected override Size MeasureOverride(Size availableSize)
+            {
+                var count = Children.Count; 
+                if (count == 0)
+                {
+                    return availableSize;
+                }
+    
+                var adjustedSize = new Size (
+                    availableSize.Width - (count - 1) * PreviewWidth, 
+                    availableSize.Height
+                    );
+    
+                for (int index = 0; index < count; index++)
+                {
+                    var child = Children[index];
+                    child.Measure(adjustedSize);
+                }
+    
+                return availableSize;
+            }
+    
+            protected override Size ArrangeOverride(Size finalSize)
+            {
+                var animationClock = GetAnimationClock (this);
+    
+                StopClock();
+    
+                var count = Children.Count; 
+                if (count == 0)
+                {
+                    return finalSize;
+                }
+    
+                var previewWidth = PreviewWidth;
+                var adjustedSize = new Size (
+                    finalSize.Width - (count - 1) * previewWidth, 
+                    finalSize.Height
+                    );
+                var adjustedRect = adjustedSize.ToRect();
+    
+                var activeElement = ActiveElement;
+    
+                var desiredX = 0.0;
+    
+                var doAnimate = false;
+    
+                for (int index = 0; index < count; index++)
+                {
+                    var child = Children[index];
+    
+                    var state = GetChildState(child);
+                    if (state == null)
+                    {
+                        state = new State
+                                    {
+                                        Transform   = new TranslateTransform(),
+                                        From        = finalSize.Width, 
+                                        To          = finalSize.Width, 
+                                    };
+                        SetChildState (child, state);
+                    }
+    
+                    child.Arrange(adjustedRect);
+                    child.RenderTransform = state.Transform;
+    
+                    var current = state.GetCurrent (animationClock); 
+    
+                    state.From  = current;
+                    state.To    = desiredX;
+    
+                    state.Update (current);
+    
+                    doAnimate |= !state.From.IsNear (state.To);
+    
+                    if (ReferenceEquals (child, activeElement))
+                    {
+                        desiredX += adjustedSize.Width;
+                    }
+                    else
+                    {
+                        desiredX += previewWidth;
+                    }
+                }
+    
+                if (doAnimate)
+                {
+                    StartClock();
+                }
+    
+                return finalSize;
+            }
+    
+            void StartClock()
+            {
+                StopClock ();
+                m_clock = s_transitionClock.CreateClock();
+                m_clock.Completed += Transition_Completed;
+                ApplyAnimationClock(AnimationClockProperty, m_clock, HandoffBehavior.SnapshotAndReplace);
+            }
+    
+            void StopClock()
+            {
+                if (m_clock != null)
+                {
+                    m_clock.Completed -= Transition_Completed;
+                    m_clock = null;
+                    ApplyAnimationClock(AnimationClockProperty, null);
+                }
+    
+            }
+    
+            void Transition_Completed(object sender, EventArgs e)
+            {
+                StopClock();
+            }
+    
+            static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
+            {
+                var accordionPanel = dependencyObject as AccordionPanel;
+                if (accordionPanel == null)
+                {
+                    return;
+                }
+    
+                var count = accordionPanel.Children.Count;
+                for (int index = 0; index < count; index++)
+                {
+                    var child = accordionPanel.Children[index];
+                    var state = GetChildState(child);
+                    if (state != null)
+                    {
+                        state.Update (state.GetCurrent(newValue));
+                    }
+                    else
+                    {
+                        accordionPanel.InvalidateArrange();
+                    }
+                }
+            }
+    
+            partial void Changed_ActiveElement(UIElement oldValue, UIElement newValue)
+            {
+                InvalidateArrange();
+            }
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs
 // ############################################################################
 
 // ############################################################################
@@ -1585,23 +1814,388 @@ namespace FileInclude
                 return tt;
             }
     
+            public static bool IsNear (this double v, double c)
+            {
+                return Math.Abs(v - c) < double.Epsilon * 100;            
+            }
+    
             public static double Interpolate (this double t, double from, double to)
             {
+                if (t < 0)
+                {
+                    return from;
+                }
+    
+                if (t > 1)
+                {
+                    return to;
+                }
+    
                 return t*(to - from) + from;
             }
             
             public static Vector Interpolate (this double t, Vector from, Vector to)
             {
+                if (t < 0)
+                {
+                    return from;
+                }
+    
+                if (t > 1)
+                {
+                    return to;
+                }
+    
                 return new Vector (
                     t*(to.X - from.X) + from.X,
                     t*(to.Y - from.Y) + from.Y
                     );
+            }
+    
+            public static Rect ToRect (this Size size)
+            {
+                return new Rect(0,0,size.Width, size.Height);
             }
         
         }
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // AccordionPanel
+        // ------------------------------------------------------------------------
+        partial class AccordionPanel
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty PreviewWidthProperty = DependencyProperty.Register (
+                "PreviewWidth",
+                typeof (double),
+                typeof (AccordionPanel),
+                new FrameworkPropertyMetadata (
+                    10.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_PreviewWidth,
+                    Coerce_PreviewWidth          
+                ));
+    
+            static void Changed_PreviewWidth (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as AccordionPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_PreviewWidth (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_PreviewWidth (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as AccordionPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (double)basevalue;
+                var newValue = oldValue;
+    
+                instance.Coerce_PreviewWidth (oldValue, ref newValue);
+    
+    
+                return newValue;
+            }
+    
+            public static readonly DependencyProperty ActiveElementProperty = DependencyProperty.Register (
+                "ActiveElement",
+                typeof (UIElement),
+                typeof (AccordionPanel),
+                new FrameworkPropertyMetadata (
+                    default (UIElement),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ActiveElement,
+                    Coerce_ActiveElement          
+                ));
+    
+            static void Changed_ActiveElement (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as AccordionPanel;
+                if (instance != null)
+                {
+                    var oldValue = (UIElement)eventArgs.OldValue;
+                    var newValue = (UIElement)eventArgs.NewValue;
+    
+                    instance.Changed_ActiveElement (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ActiveElement (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as AccordionPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (UIElement)basevalue;
+                var newValue = oldValue;
+    
+                instance.Coerce_ActiveElement (oldValue, ref newValue);
+    
+    
+                return newValue;
+            }
+    
+            public static readonly DependencyProperty ChildStateProperty = DependencyProperty.RegisterAttached (
+                "ChildState",
+                typeof (AccordionPanel.State),
+                typeof (AccordionPanel),
+                new FrameworkPropertyMetadata (
+                    default (AccordionPanel.State),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ChildState,
+                    Coerce_ChildState          
+                ));
+    
+            static void Changed_ChildState (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (AccordionPanel.State)eventArgs.OldValue;
+                    var newValue = (AccordionPanel.State)eventArgs.NewValue;
+    
+                    Changed_ChildState (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_ChildState (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (AccordionPanel.State)basevalue;
+                var newValue = oldValue;
+    
+                Coerce_ChildState (dependencyObject, oldValue, ref newValue);
+    
+                return newValue;
+            }
+            public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
+                "AnimationClock",
+                typeof (double),
+                typeof (AccordionPanel),
+                new FrameworkPropertyMetadata (
+                    default (double),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_AnimationClock,
+                    Coerce_AnimationClock          
+                ));
+    
+            static void Changed_AnimationClock (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    Changed_AnimationClock (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_AnimationClock (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (double)basevalue;
+                var newValue = oldValue;
+    
+                Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+    
+                return newValue;
+            }
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public AccordionPanel ()
+            {
+                CoerceAllProperties ();
+                Constructed__AccordionPanel ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__AccordionPanel ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (PreviewWidthProperty);
+                CoerceValue (ActiveElementProperty);
+                CoerceValue (ChildStateProperty);
+                CoerceValue (AnimationClockProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public double PreviewWidth
+            {
+                get
+                {
+                    return (double)GetValue (PreviewWidthProperty);
+                }
+                set
+                {
+                    if (PreviewWidth != value)
+                    {
+                        SetValue (PreviewWidthProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_PreviewWidth (double oldValue, double newValue);
+            partial void Coerce_PreviewWidth (double value, ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public UIElement ActiveElement
+            {
+                get
+                {
+                    return (UIElement)GetValue (ActiveElementProperty);
+                }
+                set
+                {
+                    if (ActiveElement != value)
+                    {
+                        SetValue (ActiveElementProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ActiveElement (UIElement oldValue, UIElement newValue);
+            partial void Coerce_ActiveElement (UIElement value, ref UIElement coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public static AccordionPanel.State GetChildState (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (AccordionPanel.State);
+                }
+    
+                return (AccordionPanel.State)dependencyObject.GetValue (ChildStateProperty);
+            }
+    
+            public static void SetChildState (DependencyObject dependencyObject, AccordionPanel.State value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetChildState (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (ChildStateProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearChildState (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (ChildStateProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_ChildState (DependencyObject dependencyObject, AccordionPanel.State oldValue, AccordionPanel.State newValue);
+            static partial void Coerce_ChildState (DependencyObject dependencyObject, AccordionPanel.State value, ref AccordionPanel.State coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public static double GetAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (double);
+                }
+    
+                return (double)dependencyObject.GetValue (AnimationClockProperty);
+            }
+    
+            public static void SetAnimationClock (DependencyObject dependencyObject, double value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetAnimationClock (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (AnimationClockProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (AnimationClockProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // ############################################################################
 
 // ############################################################################
@@ -1831,15 +2425,17 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T12:23:17";
+        public const string IncludeDate     = @"2013-03-24T20:24:50";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
-        public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

@@ -163,13 +163,38 @@ namespace Source.Extensions
             return tt;
         }
 
+        public static bool IsNear (this double v, double c)
+        {
+            return Math.Abs(v - c) < double.Epsilon * 100;            
+        }
+
         public static double Interpolate (this double t, double from, double to)
         {
+            if (t < 0)
+            {
+                return from;
+            }
+
+            if (t > 1)
+            {
+                return to;
+            }
+
             return t*(to - from) + from;
         }
         
         public static Vector Interpolate (this double t, Vector from, Vector to)
         {
+            if (t < 0)
+            {
+                return from;
+            }
+
+            if (t > 1)
+            {
+                return to;
+            }
+
             return new Vector (
                 t*(to.X - from.X) + from.X,
                 t*(to.Y - from.Y) + from.Y
