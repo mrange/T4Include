@@ -163,8 +163,8 @@ namespace Source.Text
                     for (var iter = 0; iter < max; ++iter)
                     {
                         var fieldName = allFields[iter];
-                        var fieldValue = lineFields[iter];
-                        if (allValidFields.Contains(fieldName) && !fieldValue.IsNullOrWhiteSpace())
+                        var fieldValue = lineFields[iter] ?? "";
+                        if (allValidFields.Contains(fieldName))
                         {
 
                             var memberDescriptor = classDescriptor.FindMember(fieldName);
