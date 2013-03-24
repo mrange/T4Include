@@ -48,6 +48,9 @@ namespace Test_WPF
                 case "Fourth":
                     AE.Present(AnimatedEntrance.Option.Fade, Fourth);
                     break;
+                case "Fifth":
+                    AE.Present(AnimatedEntrance.Option.Instant, Fifth);
+                    break;
                 default:
                     break;
             }

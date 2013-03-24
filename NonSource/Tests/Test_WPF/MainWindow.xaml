@@ -13,6 +13,7 @@
             <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Second" Tag="Second"/>
             <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Third" Tag="Third"/>
             <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fourth" Tag="Fourth"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fifth" Tag="Fifth"/>
         </StackPanel>
         <wpf:AnimatedEntrance x:Name="AE" Grid.Row="2" FontSize="24">
             <Border Background="Yellow" x:Name="First">
@@ -26,6 +27,9 @@
             </Border>
             <Border Background="Green" x:Name="Fourth">
                 <TextBlock Text="Fourth" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+            <Border Background="White" x:Name="Fifth">
+                <TextBlock Text="Fifth" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </wpf:AnimatedEntrance>
     </Grid>

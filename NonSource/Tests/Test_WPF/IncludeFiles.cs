@@ -213,8 +213,7 @@ namespace FileInclude
                             break;
                         default:
                         case Option.Instant:
-                            // TODO:
-                            throw new ArgumentOutOfRangeException();
+                            break;
                     }
     
                     PreviousTransform               = PreviousOffset_Start.ToTranslateTransform();
@@ -251,8 +250,26 @@ namespace FileInclude
                             break;
                     }
     
-                    Owner.Dispatcher.Async_Invoke ("Awaiting measure/arrange before starting animation", StartAnimation);
+                    if (PresentOption != Option.Instant)
+                    {
+                        Owner.Dispatcher.Async_Invoke (
+                            "AnimatedEntrance: Awaiting measure/arrange before starting animation", 
+                            StartAnimation
+                            );
+                    }
+                    else
+                    {
+                        Owner.Dispatcher.Async_Invoke(
+                            "AnimatedEntrance: Switching to next control instantly", 
+                            ShowInstant
+                            );
+                    }
     
+                }
+    
+                void ShowInstant()
+                {
+                    FollowEdge();
                 }
     
                 void StartAnimation()
@@ -265,22 +282,29 @@ namespace FileInclude
     
                 void Transition_Completed(object sender, EventArgs e)
                 {
+                    FollowEdge();
+                }
+    
+                void FollowEdge()
+                {
                     if (Request != null)
                     {
-                        Owner.SetState (
-                            this, 
+                        Owner.SetState(
+                            this,
                             EdgeFrom_Transitioning_To_DelayingNextTransition(Next));
                     }
                     else
                     {
-                        Owner.SetState (this, EdgeFrom_Transitioning_To_PresentingContent(Next));
+                        Owner.SetState(this, EdgeFrom_Transitioning_To_PresentingContent(Next));
                     }
-    
                 }
     
                 partial void Leave_Transitioning(BaseState nextState)
                 {
-                    Clock.Completed   -= Transition_Completed;
+                    if (Clock != null)
+                    {
+                        Clock.Completed   -= Transition_Completed;
+                    }
                     Owner.ApplyAnimationClock(AnimationClockProperty, null);
     
                     var tmp         = Owner.m_current;
@@ -1807,7 +1831,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T11:56:48";
+        public const string IncludeDate     = @"2013-03-24T12:23:17";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
