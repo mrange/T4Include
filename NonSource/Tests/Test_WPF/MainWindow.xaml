@@ -9,19 +9,23 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Button.Click="Button_Click">
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="First"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Second"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Third"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="First" Tag="First"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Second" Tag="Second"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Third" Tag="Third"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fourth" Tag="Fourth"/>
         </StackPanel>
-        <wpf:AnimatedEntrance Grid.Row="2">
-            <Border Background="Yellow" >
+        <wpf:AnimatedEntrance x:Name="AE" Grid.Row="2" FontSize="24">
+            <Border Background="Yellow" x:Name="First">
                 <TextBlock Text="First" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
-            <Border Background="Red">
-                <TextBlock Text="Second"/>
+            <Border Background="Red" x:Name="Second">
+                <TextBlock Text="Second" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
-            <Border Background="Blue">
-                <TextBlock Text="Third"/>
+            <Border Background="Blue" x:Name="Third">
+                <TextBlock Text="Third" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+            <Border Background="Green" x:Name="Fourth">
+                <TextBlock Text="Fourth" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </wpf:AnimatedEntrance>
     </Grid>

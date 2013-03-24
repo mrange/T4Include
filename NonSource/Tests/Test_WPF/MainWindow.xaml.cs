@@ -11,6 +11,8 @@
 // ----------------------------------------------------------------------------------------------
 
 using System.Windows;
+using System.Windows.Controls.Primitives;
+using FileInclude.Source.WPF;
 
 namespace Test_WPF
 {
@@ -25,6 +27,31 @@ namespace Test_WPF
 
         void Button_Click(object sender, RoutedEventArgs e)
         {
+            var button = e.OriginalSource as ButtonBase;
+            if (button == null)
+            {
+                return;
+            }
+
+            var tag = button.Tag as string;
+            switch(tag)
+            {
+                case "First":
+                    AE.Present(AnimatedEntrance.Option.PushFromLeft, First);
+                    break;
+                case "Second":
+                    AE.Present(AnimatedEntrance.Option.RevealToRight, Second);
+                    break;
+                case "Third":
+                    AE.Present(AnimatedEntrance.Option.CoverFromBottom, Third);
+                    break;
+                case "Fourth":
+                    AE.Present(AnimatedEntrance.Option.Fade, Fourth);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 }

@@ -78,11 +78,11 @@ namespace FileInclude
         using System;
         using System.Windows.Media.Animation;
     
-        [TemplatePart(Name = PART_Canvas    , Type = typeof(Canvas))]
+        [TemplatePart(Name = PART_Panel    , Type = typeof(Panel))]
         [ContentProperty("Children")]
         sealed partial class AnimatedEntrance : Control
         {
-            const string PART_Canvas    = @"PART_Canvas"    ;
+            const string PART_Panel    = @"PART_Panel"    ;
         
             public enum Option
             {
@@ -149,11 +149,6 @@ namespace FileInclude
                 public Option           PresentOption           ;
                 public AnimationClock   Clock                   ;
     
-                public double           PreviousOpacity_Start   = 1;
-                public double           PreviousOpacity_End     = 1;
-                public double           NextOpacity_Start       = 1;
-                public double           NextOpacity_End         = 1;
-    
                 public Vector           PreviousOffset_Start    ;
                 public Vector           PreviousOffset_End      ;
                 public Vector           NextOffset_Start        ;
@@ -191,11 +186,11 @@ namespace FileInclude
     
                 partial void Enter_Transitioning(BaseState previousState)
                 {
+                    var nextOpacity = 1.0;
                     switch (PresentOption)
                     {
-                        case Option.Fade:                                              
-                            PreviousOpacity_End = 0;
-                            NextOpacity_Start   = 0;
+                        case Option.Fade:
+                            nextOpacity = 0;                      
                             break;
                         case Option.PushFromLeft:
                         case Option.PushFromRight:
@@ -225,16 +220,13 @@ namespace FileInclude
                     PreviousTransform               = PreviousOffset_Start.ToTranslateTransform();
                     NextTransform                   = NextOffset_Start.ToTranslateTransform();
     
-                    Owner.m_current.Opacity         = PreviousOpacity_Start ;
+                    Owner.m_current.Opacity         = 1                     ;
                     Owner.m_current.RenderTransform = PreviousTransform     ;
     
-                    Owner.m_next.Opacity            = NextOpacity_Start     ;
+                    Owner.m_next.Opacity            = nextOpacity           ;
                     Owner.m_next.RenderTransform    = NextTransform         ;
     
                     Owner.m_next.Child  = Next;
-    
-                    Clock             =  s_transitionClock.CreateClock();
-                    Clock.Completed   += Transition_Completed;
     
                     switch (PresentOption)
                     {
@@ -242,7 +234,7 @@ namespace FileInclude
                         case Option.RevealToRight:
                         case Option.RevealToTop:
                         case Option.RevealToBottom:
-                            Owner.m_canvas.Children.Insert(0, Owner.m_next);
+                            Owner.m_panel.Children.Insert(0, Owner.m_next);
                             break;
                         case Option.Instant:
                         case Option.Fade:
@@ -255,7 +247,7 @@ namespace FileInclude
                         case Option.CoverFromTop:
                         case Option.CoverFromBottom:
                         default:
-                            Owner.m_canvas.Children.Add(Owner.m_next);
+                            Owner.m_panel.Children.Add(Owner.m_next);
                             break;
                     }
     
@@ -265,6 +257,9 @@ namespace FileInclude
     
                 void StartAnimation()
                 {
+                    Clock             =  s_transitionClock.CreateClock();
+                    Clock.Completed   += Transition_Completed;
+    
                     Owner.ApplyAnimationClock(AnimationClockProperty, Clock, HandoffBehavior.SnapshotAndReplace);
                 }
     
@@ -285,13 +280,14 @@ namespace FileInclude
     
                 partial void Leave_Transitioning(BaseState nextState)
                 {
+                    Clock.Completed   -= Transition_Completed;
                     Owner.ApplyAnimationClock(AnimationClockProperty, null);
     
                     var tmp         = Owner.m_current;
                     Owner.m_current = Owner.m_next;
                     Owner.m_next    = tmp;
     
-                    Owner.m_canvas.Children.Remove(Owner.m_next);
+                    Owner.m_panel.Children.Remove(Owner.m_next);
     
                     Owner.m_current.Opacity             = 1     ;
                     Owner.m_current.RenderTransform     = null  ;
@@ -320,8 +316,7 @@ namespace FileInclude
                     switch (PresentOption)
                     {
                         case Option.Fade:
-                            Owner.m_current.Opacity = clock.Interpolate (PreviousOpacity_Start, PreviousOpacity_End);
-                            Owner.m_next.Opacity    = clock.Interpolate (NextOpacity_Start, PreviousOpacity_End);
+                            Owner.m_next.Opacity    = clock.Interpolate (0.0, 1.0);
                             break;
                         case Option.PushFromLeft:
                         case Option.PushFromRight:
@@ -362,6 +357,18 @@ namespace FileInclude
                         ;
                 }
     
+                partial void TransformInto_PresentingContent(UIElement current, State_PresentingContent nextState)
+                {
+                    nextState.Current = current;
+                }
+    
+                partial void TransformInto_Transitioning(Option presentOption, UIElement next, State_Transitioning nextState)
+                {
+                    nextState.Previous      = Current       ;
+                    nextState.Next          = next          ;
+                    nextState.PresentOption = presentOption ;
+                }
+    
                 partial void Enter_DelayingNextTransition(BaseState previousState)
                 {
                     Owner.m_delay.Start ();
@@ -378,6 +385,7 @@ namespace FileInclude
             {
                 partial void TransformInto_PresentingContent(UIElement current, State_PresentingContent nextState)
                 {
+                    nextState.Current = current;
                     nextState.Owner.m_current.Child = current;
                 }
             }
@@ -482,18 +490,18 @@ namespace FileInclude
     
             public const string DefaultStyle = @"
     <Style 
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    TargetType=""{x:Type i:AnimatedEntrance}""
-    >
-    <Setter Property=""Template"">
-        <Setter.Value>
-            <ControlTemplate TargetType=""{x:Type i:AnimatedEntrance}"">
-                <Canvas x:Name=""PART_Canvas"">
-                </Canvas>
-            </ControlTemplate>
-        </Setter.Value>
-    </Setter>
+        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+        TargetType=""{x:Type i:AnimatedEntrance}""
+        >
+        <Setter Property=""Template"">
+            <Setter.Value>
+                <ControlTemplate TargetType=""{x:Type i:AnimatedEntrance}"">
+                    <Grid x:Name=""PART_Panel"">
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     ";
         
@@ -507,16 +515,14 @@ namespace FileInclude
             static readonly InitializeVisitor s_initializeVisitor = new InitializeVisitor();
     
             DispatcherTimer                 m_delay             ;
-            Canvas                          m_canvas;
-            Border                          m_current   = new Border ()
+            Panel                           m_panel;
+            Border                          m_current   = new Border
                                                               {
-                                                                  Background = Brushes.Aqua,
                                                                   HorizontalAlignment = HorizontalAlignment.Stretch,
                                                                   VerticalAlignment = VerticalAlignment.Stretch,
                                                               };
-            Border                          m_next      = new Border ()
+            Border                          m_next      = new Border
                                                               {
-                                                                  Background = Brushes.MediumVioletRed,
                                                                   HorizontalAlignment = HorizontalAlignment.Stretch,
                                                                   VerticalAlignment = VerticalAlignment.Stretch,
                                                               };
@@ -539,8 +545,8 @@ namespace FileInclude
                     parserContext
                     );
         
-                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(0.4));
-                s_delayDuration         = new Duration (TimeSpan.FromMilliseconds(0.2));
+                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
+                s_delayDuration         = new Duration (TimeSpan.FromMilliseconds(200));
                 s_transitionClock       = new DoubleAnimation(
                     0,
                     1,
@@ -576,39 +582,25 @@ namespace FileInclude
     
             }
     
+            protected override Size MeasureOverride(Size constraint)
+            {
+                m_panel.Measure(constraint);
+                return m_current.DesiredSize;
+            }
+    
+    
+    
             public override void OnApplyTemplate()
             {
                 base.OnApplyTemplate();
-                m_canvas    = GetTemplateChild(PART_Canvas) as Canvas;
+                m_panel    = GetTemplateChild(PART_Panel) as Panel;
     
-                if (m_canvas != null)
+                if (m_panel != null)
                 {
-                    m_canvas.Children.Add(m_current);
+                    m_panel.Children.Add(m_current);
                     UpdateState (s_initializeVisitor);
                 }
     
-            }
-    
-            protected override Size MeasureOverride(Size constraint)
-            {
-                return base.MeasureOverride(constraint);
-            }
-    
-            protected override Size ArrangeOverride(Size arrangeBounds)
-            {
-                Canvas.SetLeft(m_current, 0);
-                Canvas.SetTop(m_current, 0);
-                Canvas.SetRight(m_current, arrangeBounds.Width);
-                Canvas.SetBottom(m_current, arrangeBounds.Height);
-    
-                Canvas.SetLeft(m_next, 0);
-                Canvas.SetTop(m_next, 0);
-                Canvas.SetRight(m_next, arrangeBounds.Width);
-                Canvas.SetBottom(m_next, arrangeBounds.Height);
-    
-                var result = base.ArrangeOverride(arrangeBounds);
-    
-                return result;
             }
     
             static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
@@ -1815,7 +1807,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T10:47:24";
+        public const string IncludeDate     = @"2013-03-24T11:56:48";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
