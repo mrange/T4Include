@@ -6,6 +6,13 @@
     {
         new StateMachine ("AnimatedEntrance")
         {
+            new State ("Initial")             
+            {
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+            },
             new State ("PresentingContent")             
             {
                 new Edge ("Transitioning")
@@ -31,6 +38,10 @@
                 {
                     P ("Option"     , "presentOption"   ),
                     P ("UIElement"  , "next"            ),
+                },
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
                 },
             },
         },

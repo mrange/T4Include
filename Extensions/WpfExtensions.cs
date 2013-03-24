@@ -163,7 +163,12 @@ namespace Source.Extensions
             return tt;
         }
 
-        public static Vector Lerp (this double t, Vector from, Vector to)
+        public static double Interpolate (this double t, double from, double to)
+        {
+            return t*(to - from) + from;
+        }
+        
+        public static Vector Interpolate (this double t, Vector from, Vector to)
         {
             return new Vector (
                 t*(to.X - from.X) + from.X,

@@ -10,6 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: Config.cs
 // ### INCLUDE: Generated_Log.cs
 
 // ReSharper disable InconsistentNaming

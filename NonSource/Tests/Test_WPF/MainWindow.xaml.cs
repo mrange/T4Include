@@ -19,11 +19,11 @@ namespace Test_WPF
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         void Button_Click(object sender, RoutedEventArgs e)
         {
-            throw new System.NotImplementedException();
         }
     }
 }

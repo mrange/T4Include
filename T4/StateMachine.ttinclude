@@ -270,6 +270,12 @@ namespace <#=Namespace#>
             {
                 return false;
             }
+
+            if (ReferenceEquals (expectedState, nextState))
+            {
+                return true;
+            }
+
             return ReferenceEquals(Interlocked.CompareExchange(ref m_currentState, nextState, expectedState),expectedState);
         }
 
