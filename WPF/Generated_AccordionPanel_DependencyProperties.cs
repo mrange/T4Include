@@ -43,7 +43,7 @@ namespace Source.WPF
             typeof (double),
             typeof (AccordionPanel),
             new FrameworkPropertyMetadata (
-                10.0,
+                32.0,
                 FrameworkPropertyMetadataOptions.None,
                 Changed_PreviewWidth,
                 Coerce_PreviewWidth          

@@ -536,6 +536,10 @@ namespace Source.WPF
                 s_transitionDuration, 
                 FillBehavior.Stop
                 );
+            s_transitionClock.EasingFunction = new ExponentialEase
+                                                   {
+                                                       EasingMode = EasingMode.EaseInOut,
+                                                   };
 
             StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
         }

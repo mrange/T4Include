@@ -17,7 +17,11 @@
         </StackPanel>
         <wpf:AnimatedEntrance x:Name="AE" Grid.Row="2" FontSize="24">
             <Border Background="Yellow" x:Name="First">
-                <TextBlock Text="First" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <wpf:AccordionPanel Height="100">
+                    <Border Background="Red"></Border>
+                    <Border Background="Green"></Border>
+                    <Border Background="Blue"></Border>
+                </wpf:AccordionPanel>
             </Border>
             <Border Background="Red" x:Name="Second">
                 <TextBlock Text="Second" VerticalAlignment="Center" HorizontalAlignment="Center"/>

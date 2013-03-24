@@ -4,7 +4,7 @@
     {
         new ClassDefinition ("AccordionPanel")
         {
-            P ("double"                 , "PreviewWidth"    , defaultValue:"10.0"           ),
+            P ("double"                 , "PreviewWidth"    , defaultValue:"32.0"           ),
             P ("UIElement"              , "ActiveElement"                                   ),
             P ("AccordionPanel.State"   , "ChildState"      , flags:PropertyFlags.IsAttached),
             P ("double"                 , "AnimationClock"  , flags:PropertyFlags.IsAttached),

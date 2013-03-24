@@ -582,6 +582,10 @@ namespace FileInclude
                     s_transitionDuration, 
                     FillBehavior.Stop
                     );
+                s_transitionClock.EasingFunction = new ExponentialEase
+                                                       {
+                                                           EasingMode = EasingMode.EaseInOut,
+                                                       };
     
                 StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
             }
@@ -678,6 +682,8 @@ namespace FileInclude
     
     
     
+    using System.Windows.Input;
+    
     namespace Source.WPF
     {
         using Source.Extensions;
@@ -703,7 +709,18 @@ namespace FileInclude
                     s_transitionDuration, 
                     FillBehavior.Stop
                     );
+    
+                s_transitionClock.EasingFunction = new ExponentialEase
+                                                       {
+                                                           EasingMode = EasingMode.EaseInOut,
+                                                       };
                 
+            }
+    
+            partial void Constructed__AccordionPanel()
+            {
+                MouseButtonEventHandler mouseButtonEventHandler = Mouse_Down;
+                AddHandler (MouseDownEvent, mouseButtonEventHandler, handledEventsToo: true);
             }
     
             public sealed partial class State
@@ -735,8 +752,9 @@ namespace FileInclude
                     return availableSize;
                 }
     
+                var previewWidth = PreviewWidth;
                 var adjustedSize = new Size (
-                    availableSize.Width - (count - 1) * PreviewWidth, 
+                    Math.Max (availableSize.Width - (count - 1) * previewWidth, previewWidth), 
                     availableSize.Height
                     );
     
@@ -763,7 +781,7 @@ namespace FileInclude
     
                 var previewWidth = PreviewWidth;
                 var adjustedSize = new Size (
-                    finalSize.Width - (count - 1) * previewWidth, 
+                    Math.Max (finalSize.Width - (count - 1) * previewWidth, previewWidth), 
                     finalSize.Height
                     );
                 var adjustedRect = adjustedSize.ToRect();
@@ -842,6 +860,7 @@ namespace FileInclude
             void Transition_Completed(object sender, EventArgs e)
             {
                 StopClock();
+                SetAnimationClock(this, 1);
             }
     
             static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
@@ -871,6 +890,30 @@ namespace FileInclude
             partial void Changed_ActiveElement(UIElement oldValue, UIElement newValue)
             {
                 InvalidateArrange();
+            }
+    
+            void Mouse_Down(object sender, MouseButtonEventArgs e)
+            {
+                var pos = e.GetPosition (this);
+    
+                var animationClock = GetAnimationClock (this);
+    
+                UIElement hit = null;
+                var count = Children.Count;
+                for (int index = 0; index < count; index++)
+                {
+                    var child = Children[index];
+                    var state = GetChildState(child);
+                    var current = state.GetCurrent(animationClock);
+    
+                    if (current < pos.X)
+                    {
+                        ActiveElement = hit;
+                        return;
+                    }
+    
+                    hit = child;
+                }
             }
     
         }
@@ -1902,7 +1945,7 @@ namespace FileInclude
                 typeof (double),
                 typeof (AccordionPanel),
                 new FrameworkPropertyMetadata (
-                    10.0,
+                    32.0,
                     FrameworkPropertyMetadataOptions.None,
                     Changed_PreviewWidth,
                     Coerce_PreviewWidth          
@@ -2425,7 +2468,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T20:24:50";
+        public const string IncludeDate     = @"2013-03-24T20:50:03";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

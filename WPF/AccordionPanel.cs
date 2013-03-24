@@ -15,6 +15,8 @@
 // ### INCLUDE: Generated_AccordionPanel_DependencyProperties.cs
 // ### INCLUDE: ../Extensions/WpfExtensions.cs
 
+using System.Windows.Input;
+
 namespace Source.WPF
 {
     using Source.Extensions;
@@ -40,7 +42,18 @@ namespace Source.WPF
                 s_transitionDuration, 
                 FillBehavior.Stop
                 );
+
+            s_transitionClock.EasingFunction = new ExponentialEase
+                                                   {
+                                                       EasingMode = EasingMode.EaseInOut,
+                                                   };
             
+        }
+
+        partial void Constructed__AccordionPanel()
+        {
+            MouseButtonEventHandler mouseButtonEventHandler = Mouse_Down;
+            AddHandler (MouseDownEvent, mouseButtonEventHandler, handledEventsToo: true);
         }
 
         public sealed partial class State
@@ -72,8 +85,9 @@ namespace Source.WPF
                 return availableSize;
             }
 
+            var previewWidth = PreviewWidth;
             var adjustedSize = new Size (
-                availableSize.Width - (count - 1) * PreviewWidth, 
+                Math.Max (availableSize.Width - (count - 1) * previewWidth, previewWidth), 
                 availableSize.Height
                 );
 
@@ -100,7 +114,7 @@ namespace Source.WPF
 
             var previewWidth = PreviewWidth;
             var adjustedSize = new Size (
-                finalSize.Width - (count - 1) * previewWidth, 
+                Math.Max (finalSize.Width - (count - 1) * previewWidth, previewWidth), 
                 finalSize.Height
                 );
             var adjustedRect = adjustedSize.ToRect();
@@ -179,6 +193,7 @@ namespace Source.WPF
         void Transition_Completed(object sender, EventArgs e)
         {
             StopClock();
+            SetAnimationClock(this, 1);
         }
 
         static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
@@ -208,6 +223,30 @@ namespace Source.WPF
         partial void Changed_ActiveElement(UIElement oldValue, UIElement newValue)
         {
             InvalidateArrange();
+        }
+
+        void Mouse_Down(object sender, MouseButtonEventArgs e)
+        {
+            var pos = e.GetPosition (this);
+
+            var animationClock = GetAnimationClock (this);
+
+            UIElement hit = null;
+            var count = Children.Count;
+            for (int index = 0; index < count; index++)
+            {
+                var child = Children[index];
+                var state = GetChildState(child);
+                var current = state.GetCurrent(animationClock);
+
+                if (current < pos.X)
+                {
+                    ActiveElement = hit;
+                    return;
+                }
+
+                hit = child;
+            }
         }
 
     }
