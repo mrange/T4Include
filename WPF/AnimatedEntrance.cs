@@ -12,7 +12,10 @@
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable MemberCanBeProtected.Local
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable UnassignedField.Local
 
 // ### INCLUDE: Generated_AnimatedEntrance_DependencyProperties.cs
 
@@ -75,18 +78,19 @@ namespace Source.WPF
         {
             public  UIElement   Current     ;
 
-            partial void IsEdgeValid_PresentingContent_To_Transitioning(EdgeParam_PresentingContent_To_Transitioning p, ref bool isValid)
+            partial void IsEdgeValid_PresentingContent_To_Transitioning(Option presentOption, UIElement next, ref bool result)
             {
-                isValid = 
-                        !ReferenceEquals(Current, p.Next)
-                    &&  (p.Next == null || Owner.Children.Contains(p.Next))
+                result = 
+                        !ReferenceEquals(Current, next)
+                    &&  (next == null || Owner.Children.Contains(next))
                     ;
             }
 
-            partial void TransformInto_Transitioning(EdgeParam_PresentingContent_To_Transitioning p, State_Transitioning nextState)
+            partial void TransformInto_Transitioning(Option presentOption, UIElement next, State_Transitioning nextState)
             {
-                nextState.Previous  = Current   ;
-                nextState.Next      = p.Next    ;
+                nextState.Previous      = Current       ;
+                nextState.Next          = next          ;
+                nextState.PresentOption = presentOption ;
             }
             
         }
@@ -239,11 +243,11 @@ namespace Source.WPF
                 {
                     Owner.SetState (
                         this, 
-                        EdgeFrom_Transitioning_To_DelayingNextTransition(new Edge));
+                        EdgeFrom_Transitioning_To_DelayingNextTransition(Next));
                 }
                 else
                 {
-                    Owner.SetState (this, EdgeFrom_Transitioning_To_PresentingContent());
+                    Owner.SetState (this, EdgeFrom_Transitioning_To_PresentingContent(Next));
                 }
 
             }
@@ -285,17 +289,6 @@ namespace Source.WPF
             }
         }
 
-        partial struct EdgeParam_PresentingContent_To_Transitioning
-        {
-            public Option       PresentOption   ;
-            public UIElement    Next            ;
-        }
-
-        partial struct EdgeParam_Transitioning_To_PresentingContent
-        {
-            public UIElement    Current         ;
-        }
-
         sealed partial class PresentVisitor : BaseStateVisitor
         {
             public readonly Option      PresentOption  ;
@@ -310,11 +303,9 @@ namespace Source.WPF
             public override BaseState Visit_PresentingContent(State_PresentingContent state)
             {
                 return state.EdgeFrom_PresentingContent_To_Transitioning(
-                    new EdgeParam_PresentingContent_To_Transitioning
-                    {
-                        PresentOption   = PresentOption     ,
-                        Next            = Next              ,
-                    });
+                        PresentOption     ,
+                        Next              
+                        );
             }
 
             public override BaseState Visit_Transitioning(State_Transitioning state)
@@ -328,19 +319,12 @@ namespace Source.WPF
             }
         }
 
-        sealed partial class AnimationClockTick : BaseStateVisitor
+        sealed partial class AnimationClockTickVisitor : BaseNoActionStateVisitor
         {
-            public override BaseState Visit_PresentingContent(State_PresentingContent state)
-            {
-            }
-
             public override BaseState Visit_Transitioning(State_Transitioning state)
             {
                 state.Tick();
-            }
-
-            public override BaseState Visit_DelayingNextTransition(State_DelayingNextTransition state)
-            {
+                return state;
             }
         }
 
@@ -369,6 +353,7 @@ TargetType=""{x:Type i:AnimatedEntrance}""
         Canvas m_canvas;
         Border m_current   = new Border ();
         Border m_next      = new Border ();
+        static readonly AnimationClockTickVisitor s_animationClockTickVisitor = new AnimationClockTickVisitor();
 
         static AnimatedEntrance()
         {
@@ -437,7 +422,13 @@ TargetType=""{x:Type i:AnimatedEntrance}""
 
         static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
         {
-            UpdateState(new AnimationClockTick());
+            var animatedEntrance = dependencyObject as AnimatedEntrance;
+            if (animatedEntrance == null)
+            {
+                return;
+            }
+
+            animatedEntrance.UpdateState(s_animationClockTickVisitor);
         }
 
         public void Present (Option option, UIElement element)
