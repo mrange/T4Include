@@ -52,6 +52,7 @@ namespace Source.WPF
         {
             MouseButtonEventHandler mouseButtonEventHandler = Mouse_Down;
             AddHandler (MouseDownEvent, mouseButtonEventHandler, handledEventsToo: true);
+            ClipToBounds = true;
         }
 
         public sealed partial class State

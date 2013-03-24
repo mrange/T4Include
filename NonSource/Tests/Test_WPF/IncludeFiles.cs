@@ -719,6 +719,7 @@ namespace FileInclude
             {
                 MouseButtonEventHandler mouseButtonEventHandler = Mouse_Down;
                 AddHandler (MouseDownEvent, mouseButtonEventHandler, handledEventsToo: true);
+                ClipToBounds = true;
             }
     
             public sealed partial class State
@@ -2477,7 +2478,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T20:57:43";
+        public const string IncludeDate     = @"2013-03-24T21:14:48";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
