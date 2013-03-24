@@ -14,31 +14,33 @@
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable MemberCanBeProtected.Local
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 // ReSharper disable UnassignedField.Local
+// ReSharper disable UnusedParameter.Local
 
 // ### INCLUDE: Generated_AnimatedEntrance_DependencyProperties.cs
 // ### INCLUDE: Generated_AnimatedEntrance_StateMachine.cs
 // ### INCLUDE: ../Extensions/WpfExtensions.cs
 
 
-using System.Linq;
-using System.Windows.Media;
-using System.Windows.Threading;
-using Source.Extensions;
-
 namespace Source.WPF
 {
+    using Source.Extensions;
+    using System;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Markup;
-    using System;
+    using System.Windows.Media;
     using System.Windows.Media.Animation;
+    using System.Windows.Threading;
 
     [TemplatePart(Name = PART_Panel    , Type = typeof(Panel))]
     [ContentProperty("Children")]
-    sealed partial class AnimatedEntrance : Control
+    partial class AnimatedEntrance : Control
     {
         const string PART_Panel    = @"PART_Panel"    ;
     
@@ -516,7 +518,7 @@ namespace Source.WPF
                             };
         
             var type = typeof (AnimatedEntrance);
-            var namespaceName = type.Namespace;
+            var namespaceName = type.Namespace ?? "";
             var assemblyName = type.Assembly.FullName;
             parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Internal", namespaceName, assemblyName);
             parserContext.XmlnsDictionary.Add("i", "Internal");
@@ -534,6 +536,10 @@ namespace Source.WPF
                 s_transitionDuration, 
                 FillBehavior.Stop
                 );
+            s_transitionClock.EasingFunction = new ExponentialEase
+                                                   {
+                                                       EasingMode = EasingMode.EaseInOut,
+                                                   };
 
             StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
         }

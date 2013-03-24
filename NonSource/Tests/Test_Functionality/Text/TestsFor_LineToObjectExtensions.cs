@@ -27,6 +27,7 @@ namespace Test_Functionality.Text
 1	Bill	Gates
 2	Steve	Jobs
 3	Linus	Torvalds
+4		NoName
 ";
 
         sealed class Customer

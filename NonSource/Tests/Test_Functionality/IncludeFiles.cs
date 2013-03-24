@@ -54,6 +54,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs
@@ -74,6 +75,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
 // ############################################################################
@@ -2178,8 +2180,8 @@ namespace FileInclude
                         for (var iter = 0; iter < max; ++iter)
                         {
                             var fieldName = allFields[iter];
-                            var fieldValue = lineFields[iter];
-                            if (allValidFields.Contains(fieldName) && !fieldValue.IsNullOrWhiteSpace())
+                            var fieldValue = lineFields[iter] ?? "";
+                            if (allValidFields.Contains(fieldName))
                             {
     
                                 var memberDescriptor = classDescriptor.FindMember(fieldName);
@@ -5086,7 +5088,7 @@ namespace FileInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
-    #if !NETFX_CORE
+    #if !NETFX_CORE && !SILVERLIGHT && !WINDOWS_PHONE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -5316,7 +5318,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-23T14:54:35";
+        public const string IncludeDate     = @"2013-03-24T17:38:23";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
