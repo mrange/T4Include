@@ -180,19 +180,19 @@ namespace <#=Namespace#>
             // From:    <#=state.Name#>
             // To:      <#=edge.To#>
             // ----------------------------------------------------------------- 
-            public bool IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(EdgeParam_<#=state.Name#>_To_<#=edge.To#> p = default (EdgeParam_<#=state.Name#>_To_<#=edge.To#>))
+            public bool IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterList ()#>)
             {
                 var result = true;
 
-                IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (p, ref result);
+                IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (<#=edge.GetParameterValueList ()#>, ref result);
 
                 return result;
             }
 
 
-            public BaseState EdgeFrom_<#=state.Name#>_To_<#=edge.To#>(EdgeParam_<#=state.Name#>_To_<#=edge.To#> p = default (EdgeParam_<#=state.Name#>_To_<#=edge.To#>))            
+            public BaseState EdgeFrom_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterList ()#>)            
             {
-                if (!IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(p))
+                if (!IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterValueList ()#>))
                 {
                     return this;
                 }
@@ -201,7 +201,7 @@ namespace <#=Namespace#>
 
                 InitializeState(nextState);
 
-                TransformInto_<#=edge.To#> (p, nextState);
+                TransformInto_<#=edge.To#> (<#=edge.GetParameterValueList ()#>, nextState);
 
                 LeaveState(nextState);
                 nextState.EnterState(this);
@@ -209,8 +209,8 @@ namespace <#=Namespace#>
                 return nextState;
             }
             // ----------------------------------------------------------------- 
-            partial void IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (EdgeParam_<#=state.Name#>_To_<#=edge.To#> p, ref bool isValid);
-            partial void TransformInto_<#=edge.To#> (EdgeParam_<#=state.Name#>_To_<#=edge.To#> p, State_<#=edge.To#> nextState);
+            partial void IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (<#=edge.GetParameterList ()#>, ref bool result);
+            partial void TransformInto_<#=edge.To#> (<#=edge.GetParameterList ()#>, State_<#=edge.To#> nextState);
             // ----------------------------------------------------------------- 
 
 <#
@@ -218,24 +218,6 @@ namespace <#=Namespace#>
 #>
         }
 
-<#
-    }
-#>
-
-<#
-    foreach (var state in stm)
-    {
-#>
-<#
-    foreach (var edge in state)
-    {
-#>
-        partial struct EdgeParam_<#=state.Name#>_To_<#=edge.To#>
-        {
-        }
-<#
-    }
-#>
 <#
     }
 #>
@@ -351,7 +333,7 @@ namespace <#=Namespace#>
         }          
     }
 
-    class Edge : BaseEntity<State>
+    class Edge : BaseContainer<State, EdgeParameter>
     {
         public readonly string To;
 
@@ -359,5 +341,39 @@ namespace <#=Namespace#>
         {
             To = to ?? S_NoName;
         }          
+
+        public string GetParameterList ()
+        {
+            return string.Join (
+                ", ",
+                this.Select (e => e.Type + " " + e.Name).ToArray ()
+                ); 
+        }
+
+        public string GetParameterValueList ()
+        {
+            return string.Join (
+                ", ",
+                this.Select (e => e.Name).ToArray ()
+                ); 
+        }
     }
+
+    class EdgeParameter : BaseEntity<Edge>
+    {
+        public readonly string Type ;
+        public readonly string Name ;
+
+        public EdgeParameter (string type, string name)
+        {
+            Type    = type  ?? S_NoType ;
+            Name    = name  ?? S_NoName ;
+        }          
+    }
+
+    static EdgeParameter P (string type, string name)
+    {
+        return new EdgeParameter (type, name);
+    }
+
 #>

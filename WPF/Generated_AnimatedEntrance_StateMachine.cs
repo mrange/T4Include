@@ -1,4 +1,6 @@
-﻿
+﻿using System.Windows;
+
+
 // ############################################################################
 // #                                                                          #
 // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -122,19 +124,19 @@ namespace Source.WPF
             // From:    PresentingContent
             // To:      Transitioning
             // ----------------------------------------------------------------- 
-            public bool IsEdgeValid_PresentingContent_To_Transitioning(EdgeParam_PresentingContent_To_Transitioning p = default (EdgeParam_PresentingContent_To_Transitioning))
+            public bool IsEdgeValid_PresentingContent_To_Transitioning(Option presentOption, UIElement next)
             {
                 var result = true;
 
-                IsEdgeValid_PresentingContent_To_Transitioning (p, ref result);
+                IsEdgeValid_PresentingContent_To_Transitioning (presentOption, next, ref result);
 
                 return result;
             }
 
 
-            public BaseState EdgeFrom_PresentingContent_To_Transitioning(EdgeParam_PresentingContent_To_Transitioning p = default (EdgeParam_PresentingContent_To_Transitioning))            
+            public BaseState EdgeFrom_PresentingContent_To_Transitioning(Option presentOption, UIElement next)            
             {
-                if (!IsEdgeValid_PresentingContent_To_Transitioning(p))
+                if (!IsEdgeValid_PresentingContent_To_Transitioning(presentOption, next))
                 {
                     return this;
                 }
@@ -143,7 +145,7 @@ namespace Source.WPF
 
                 InitializeState(nextState);
 
-                TransformInto_Transitioning (p, nextState);
+                TransformInto_Transitioning (presentOption, next, nextState);
 
                 LeaveState(nextState);
                 nextState.EnterState(this);
@@ -151,8 +153,8 @@ namespace Source.WPF
                 return nextState;
             }
             // ----------------------------------------------------------------- 
-            partial void IsEdgeValid_PresentingContent_To_Transitioning (EdgeParam_PresentingContent_To_Transitioning p, ref bool isValid);
-            partial void TransformInto_Transitioning (EdgeParam_PresentingContent_To_Transitioning p, State_Transitioning nextState);
+            partial void IsEdgeValid_PresentingContent_To_Transitioning (Option presentOption, UIElement next, ref bool result);
+            partial void TransformInto_Transitioning (Option presentOption, UIElement next, State_Transitioning nextState);
             // ----------------------------------------------------------------- 
 
         }
@@ -192,19 +194,19 @@ namespace Source.WPF
             // From:    Transitioning
             // To:      PresentingContent
             // ----------------------------------------------------------------- 
-            public bool IsEdgeValid_Transitioning_To_PresentingContent(EdgeParam_Transitioning_To_PresentingContent p = default (EdgeParam_Transitioning_To_PresentingContent))
+            public bool IsEdgeValid_Transitioning_To_PresentingContent(UIElement current)
             {
                 var result = true;
 
-                IsEdgeValid_Transitioning_To_PresentingContent (p, ref result);
+                IsEdgeValid_Transitioning_To_PresentingContent (current, ref result);
 
                 return result;
             }
 
 
-            public BaseState EdgeFrom_Transitioning_To_PresentingContent(EdgeParam_Transitioning_To_PresentingContent p = default (EdgeParam_Transitioning_To_PresentingContent))            
+            public BaseState EdgeFrom_Transitioning_To_PresentingContent(UIElement current)            
             {
-                if (!IsEdgeValid_Transitioning_To_PresentingContent(p))
+                if (!IsEdgeValid_Transitioning_To_PresentingContent(current))
                 {
                     return this;
                 }
@@ -213,7 +215,7 @@ namespace Source.WPF
 
                 InitializeState(nextState);
 
-                TransformInto_PresentingContent (p, nextState);
+                TransformInto_PresentingContent (current, nextState);
 
                 LeaveState(nextState);
                 nextState.EnterState(this);
@@ -221,27 +223,27 @@ namespace Source.WPF
                 return nextState;
             }
             // ----------------------------------------------------------------- 
-            partial void IsEdgeValid_Transitioning_To_PresentingContent (EdgeParam_Transitioning_To_PresentingContent p, ref bool isValid);
-            partial void TransformInto_PresentingContent (EdgeParam_Transitioning_To_PresentingContent p, State_PresentingContent nextState);
+            partial void IsEdgeValid_Transitioning_To_PresentingContent (UIElement current, ref bool result);
+            partial void TransformInto_PresentingContent (UIElement current, State_PresentingContent nextState);
             // ----------------------------------------------------------------- 
 
             // ----------------------------------------------------------------- 
             // From:    Transitioning
             // To:      DelayingNextTransition
             // ----------------------------------------------------------------- 
-            public bool IsEdgeValid_Transitioning_To_DelayingNextTransition(EdgeParam_Transitioning_To_DelayingNextTransition p = default (EdgeParam_Transitioning_To_DelayingNextTransition))
+            public bool IsEdgeValid_Transitioning_To_DelayingNextTransition(UIElement current)
             {
                 var result = true;
 
-                IsEdgeValid_Transitioning_To_DelayingNextTransition (p, ref result);
+                IsEdgeValid_Transitioning_To_DelayingNextTransition (current, ref result);
 
                 return result;
             }
 
 
-            public BaseState EdgeFrom_Transitioning_To_DelayingNextTransition(EdgeParam_Transitioning_To_DelayingNextTransition p = default (EdgeParam_Transitioning_To_DelayingNextTransition))            
+            public BaseState EdgeFrom_Transitioning_To_DelayingNextTransition(UIElement current)            
             {
-                if (!IsEdgeValid_Transitioning_To_DelayingNextTransition(p))
+                if (!IsEdgeValid_Transitioning_To_DelayingNextTransition(current))
                 {
                     return this;
                 }
@@ -250,7 +252,7 @@ namespace Source.WPF
 
                 InitializeState(nextState);
 
-                TransformInto_DelayingNextTransition (p, nextState);
+                TransformInto_DelayingNextTransition (current, nextState);
 
                 LeaveState(nextState);
                 nextState.EnterState(this);
@@ -258,8 +260,8 @@ namespace Source.WPF
                 return nextState;
             }
             // ----------------------------------------------------------------- 
-            partial void IsEdgeValid_Transitioning_To_DelayingNextTransition (EdgeParam_Transitioning_To_DelayingNextTransition p, ref bool isValid);
-            partial void TransformInto_DelayingNextTransition (EdgeParam_Transitioning_To_DelayingNextTransition p, State_DelayingNextTransition nextState);
+            partial void IsEdgeValid_Transitioning_To_DelayingNextTransition (UIElement current, ref bool result);
+            partial void TransformInto_DelayingNextTransition (UIElement current, State_DelayingNextTransition nextState);
             // ----------------------------------------------------------------- 
 
         }
@@ -299,19 +301,19 @@ namespace Source.WPF
             // From:    DelayingNextTransition
             // To:      Transitioning
             // ----------------------------------------------------------------- 
-            public bool IsEdgeValid_DelayingNextTransition_To_Transitioning(EdgeParam_DelayingNextTransition_To_Transitioning p = default (EdgeParam_DelayingNextTransition_To_Transitioning))
+            public bool IsEdgeValid_DelayingNextTransition_To_Transitioning(Option presentOption, UIElement next)
             {
                 var result = true;
 
-                IsEdgeValid_DelayingNextTransition_To_Transitioning (p, ref result);
+                IsEdgeValid_DelayingNextTransition_To_Transitioning (presentOption, next, ref result);
 
                 return result;
             }
 
 
-            public BaseState EdgeFrom_DelayingNextTransition_To_Transitioning(EdgeParam_DelayingNextTransition_To_Transitioning p = default (EdgeParam_DelayingNextTransition_To_Transitioning))            
+            public BaseState EdgeFrom_DelayingNextTransition_To_Transitioning(Option presentOption, UIElement next)            
             {
-                if (!IsEdgeValid_DelayingNextTransition_To_Transitioning(p))
+                if (!IsEdgeValid_DelayingNextTransition_To_Transitioning(presentOption, next))
                 {
                     return this;
                 }
@@ -320,7 +322,7 @@ namespace Source.WPF
 
                 InitializeState(nextState);
 
-                TransformInto_Transitioning (p, nextState);
+                TransformInto_Transitioning (presentOption, next, nextState);
 
                 LeaveState(nextState);
                 nextState.EnterState(this);
@@ -328,25 +330,12 @@ namespace Source.WPF
                 return nextState;
             }
             // ----------------------------------------------------------------- 
-            partial void IsEdgeValid_DelayingNextTransition_To_Transitioning (EdgeParam_DelayingNextTransition_To_Transitioning p, ref bool isValid);
-            partial void TransformInto_Transitioning (EdgeParam_DelayingNextTransition_To_Transitioning p, State_Transitioning nextState);
+            partial void IsEdgeValid_DelayingNextTransition_To_Transitioning (Option presentOption, UIElement next, ref bool result);
+            partial void TransformInto_Transitioning (Option presentOption, UIElement next, State_Transitioning nextState);
             // ----------------------------------------------------------------- 
 
         }
 
-
-        partial struct EdgeParam_PresentingContent_To_Transitioning
-        {
-        }
-        partial struct EdgeParam_Transitioning_To_PresentingContent
-        {
-        }
-        partial struct EdgeParam_Transitioning_To_DelayingNextTransition
-        {
-        }
-        partial struct EdgeParam_DelayingNextTransition_To_Transitioning
-        {
-        }
 
         abstract partial class BaseStateVisitor
         {

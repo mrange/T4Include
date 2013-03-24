@@ -1,4 +1,6 @@
-﻿<#
+﻿using System.Windows;
+
+<#
     Namespace   = "Source.WPF"        ;
     Model       = new []
     {
@@ -6,16 +8,30 @@
         {
             new State ("PresentingContent")             
             {
-                new Edge ("Transitioning"),
+                new Edge ("Transitioning")
+                {
+                    P ("Option"     , "presentOption"   ),
+                    P ("UIElement"  , "next"            ),
+                },
             },
             new State ("Transitioning")             
             {
-                new Edge ("PresentingContent"),
-                new Edge ("DelayingNextTransition"),
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+                new Edge ("DelayingNextTransition")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
             },
             new State ("DelayingNextTransition")             
             {
-                new Edge ("Transitioning"),
+                new Edge ("Transitioning")
+                {
+                    P ("Option"     , "presentOption"   ),
+                    P ("UIElement"  , "next"            ),
+                },
             },
         },
     };    
