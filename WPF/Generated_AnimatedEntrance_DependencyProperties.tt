@@ -4,7 +4,8 @@
     {
         new ClassDefinition ("AnimatedEntrance")
         {
-            C ("UIElement"      , "Children"    , flags:PropertyFlags.IsReadOnly    ),
+            C ("UIElement"      , "Children"        , flags:PropertyFlags.IsReadOnly    ),
+            P ("double"         , "AnimationClock"  , flags:PropertyFlags.IsAttached    ),
         },
     };    
 

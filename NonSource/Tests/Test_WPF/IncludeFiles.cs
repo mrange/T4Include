@@ -60,7 +60,7 @@ namespace FileInclude
         sealed partial class AnimatedEntrance : Control
         {
             const string PART_Canvas    = @"PART_Canvas"    ;
-    
+        
             public enum Option
             {
                 Fade            ,
@@ -77,9 +77,9 @@ namespace FileInclude
                 RevealToTop     , 
                 RevealToBottom  ,
             }
-    
+        
             public const string DefaultStyle = @"
-<Style 
+    <Style 
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     TargetType=""{x:Type i:AnimatedEntrance}""
@@ -92,49 +92,49 @@ namespace FileInclude
             </ControlTemplate>
         </Setter.Value>
     </Setter>
-</Style>
-";
-    
+    </Style>
+    ";
+        
             readonly static Style s_defaultStyle;
             Canvas m_canvas;
-    
+        
             static AnimatedEntrance()
             {
                 var parserContext = new ParserContext
                                 {
                                     XamlTypeMapper = new XamlTypeMapper(new string[0])
                                 };
-        
+            
                 var type = typeof (AnimatedEntrance);
                 var namespaceName = type.Namespace;
                 var assemblyName = type.Assembly.FullName;
                 parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Internal", namespaceName, assemblyName);
                 parserContext.XmlnsDictionary.Add("i", "Internal");
-    
+        
                 s_defaultStyle = (Style)XamlReader.Parse(
                     DefaultStyle,
                     parserContext
                     );
-    
+        
                 StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
             }
-    
+        
             partial void Constructed__AnimatedEntrance()
             {
                 Children = new ObservableCollection<UIElement> ();
             }
-    
+        
             public override void OnApplyTemplate()
             {
                 base.OnApplyTemplate();
                 m_canvas    = GetTemplateChild(PART_Canvas) as Canvas;
             }
-    
+        
             public void Present (Option option, UIElement element)
             {
-                
+                    
             }
-    
+        
         }
     }
 }
@@ -303,7 +303,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-23T21:05:26";
+        public const string IncludeDate     = @"2013-03-23T21:28:41";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";

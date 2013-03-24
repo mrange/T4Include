@@ -14,12 +14,14 @@
 
 // ReSharper disable InconsistentNaming
 
+
 namespace Source.Extensions
 {
     using System;
     using System.Windows.Threading;
     using System.Windows;
     using System.Windows.Data;
+    using System.Windows.Media;
 
     using Source.Common;
 
@@ -143,5 +145,31 @@ namespace Source.Extensions
             return freezable;
         }
 
+        public static TranslateTransform ToTranslateTransform (this Vector v)
+        {
+            return new TranslateTransform (v.X, v.Y);
+        }
+
+        public static TranslateTransform UpdateFromVector (this TranslateTransform tt, Vector v)
+        {
+            if (tt == null)
+            {
+                return null;
+            }
+
+            tt.X = v.X;
+            tt.Y = v.Y;
+
+            return tt;
+        }
+
+        public static Vector Lerp (this double t, Vector from, Vector to)
+        {
+            return new Vector (
+                t*(to.X - from.X) + from.X,
+                t*(to.Y - from.Y) + from.Y
+                );
+        }
+    
     }
 }
