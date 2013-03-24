@@ -11,6 +11,8 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: ShutDownable.cs
+// ### INCLUDE: RemainingTime.cs
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
@@ -27,7 +29,7 @@ namespace Source.Concurrency
 
     using Source.Common;
 
-    sealed partial class SequentialTaskScheduler : TaskScheduler, IDisposable
+    sealed partial class SequentialTaskScheduler : TaskScheduler, IShutDownable
     {
         const int                           DefaultTimeOutInMs = 250;
         public readonly string              Name    ;
@@ -35,10 +37,12 @@ namespace Source.Concurrency
 
         readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
         Thread                              m_executingThread   ;
-        bool                                m_done              ;
+        volatile bool                       m_done              ;
 
         int                                 m_taskFailureCount;
 
+
+        partial void Partial_ThreadCreated (Thread thread);
 
         partial void Partial_TaskFailed (Task task, Exception exc, int failureCount, ref bool done);
 
@@ -52,6 +56,8 @@ namespace Source.Concurrency
                            };
 
             m_executingThread.SetApartmentState (apartmentState);
+
+            Partial_ThreadCreated (m_executingThread);
 
             m_executingThread.Start ();
         }
@@ -110,7 +116,6 @@ namespace Source.Concurrency
 
         protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
         {
-            Log.Warning ("SequentialTaskScheduler.TryExecuteTaskInline: {0} - Task inline execute not supported", Name);
             return false;
         }
 
@@ -129,7 +134,7 @@ namespace Source.Concurrency
             get { return m_executingThread == null; }
         }
 
-        public void ShutDown ()
+        public void SignalShutDown ()
         {
             if (!m_done)
             {
@@ -139,23 +144,25 @@ namespace Source.Concurrency
             }
         }
 
-        public void Dispose ()
+        public void ShutDown (RemainingTime remainingTime)
         {
             var thread = Interlocked.Exchange (ref m_executingThread, null);
             if (thread != null)
             {
                 try
                 {
-                    ShutDown ();
-                    if (!thread.Join (TimeOut + TimeOut))
+                    SignalShutDown ();
+                    var joinTimeOut = (int)remainingTime.Remaining.TotalMilliseconds/2;
+                    if (!thread.Join (joinTimeOut))
                     {
                         Log.Warning (
                             "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown, aborting it...",
                             Name
-                            );
+                            );        
 
                         thread.Abort ();
-                        if (!thread.Join (TimeOut))
+                        var abortTimeOut = remainingTime.Remaining;
+                        if (!thread.Join (abortTimeOut))
                         {
                             Log.Warning (
                                 "SequentialTaskScheduler.Dispose: {0} - Executing thread didn't shutdown after abort, ignoring it...",
@@ -167,15 +174,18 @@ namespace Source.Concurrency
                 catch (Exception exc)
                 {
                     Log.Exception (
-                        "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}", 
+                        "SequentialTaskScheduler.Dispose: {0} - Caught exception: {1}",
                         Name,
                         exc
                         );
                 }
             }
+            
         }
 
-
-    
+        public void Dispose ()
+        {
+            ShutDown (new RemainingTime (TimeOut));
+        }
     }
 }

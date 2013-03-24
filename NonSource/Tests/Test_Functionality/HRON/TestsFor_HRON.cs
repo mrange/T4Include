@@ -18,6 +18,7 @@
 #pragma warning disable 0649
 
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;
@@ -92,6 +93,12 @@ namespace Test_Functionality.HRON
             }
         }
 
+        enum MyFlag
+        {
+            MyDefaultValue  ,
+            MyFlagValue     ,
+        }
+
         public void Test_TryParseDynamic()
         {
             var lines = s_test2_hron.ReadLines().ToArray();
@@ -100,6 +107,11 @@ namespace Test_Functionality.HRON
             var result = HRONSerializer.TryParseDynamic(int.MaxValue, lines, out dyn, out errors);
             if (TestFor.Equality(true, result, "HRON should be parsed successfully"))
             {
+                MyFlag myFlag = dyn.Common.MyFlag;
+                MyFlag myMissingFlag = dyn.Common.MyMissingFlag;
+                TestFor.Equality((int)MyFlag.MyFlagValue, (int)myFlag, "Expects MyFlagValue");
+                TestFor.Equality((int)MyFlag.MyDefaultValue, (int)myMissingFlag, "Expects the default MyFlag");
+
                 dynamic connections = dyn.DataBaseConnection;
                 if (TestFor.Equality(2, connections.GetCount(), "Expects two database connections"))
                 {
@@ -207,6 +219,20 @@ namespace Test_Functionality.HRON
                     "HRON after deserialize/serialize to object should be identical to test case"
                     );
             }
+        }
+
+        public void Test_NameValueCollection()
+        {
+            var nvc = new NameValueCollection
+                          {
+                              {"Key1", "Value1"}, 
+                              {"Key1", "Value2"}, 
+                              {"Key1", "Value3"}
+                          };
+
+            var value = HRONSerializer.ObjectAsString(nvc);
+
+            // This test case is just to test that NameValueCollection doesn't crash the serializer
         }
 
         public void Test_ObjectAsString()

@@ -1,0 +1,52 @@
+﻿using System.Windows;
+
+<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new StateMachine ("AnimatedEntrance")
+        {
+            new State ("Initial")             
+            {
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+            },
+            new State ("PresentingContent")             
+            {
+                new Edge ("Transitioning")
+                {
+                    P ("Option"     , "presentOption"   ),
+                    P ("UIElement"  , "next"            ),
+                },
+            },
+            new State ("Transitioning")             
+            {
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+                new Edge ("DelayingNextTransition")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+            },
+            new State ("DelayingNextTransition")             
+            {
+                new Edge ("Transitioning")
+                {
+                    P ("Option"     , "presentOption"   ),
+                    P ("UIElement"  , "next"            ),
+                },
+                new Edge ("PresentingContent")
+                {
+                    P ("UIElement"  , "current"         ),
+                },
+            },
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\StateMachine.ttinclude"     #>                                   

@@ -19,6 +19,7 @@ namespace Test_Functionality
 
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             var testResult = TestRunner.ExecuteTests(typeof(TestFor).Assembly);

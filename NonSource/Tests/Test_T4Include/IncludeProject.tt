@@ -18,8 +18,6 @@
         BlackListFragment ("Program.cs"),
     };
     ProjectFileName = @"..\..\..\Source.csproj" ;
-
-
 #>
 
 <#@ include file="$(SolutionDir)\T4\IncludeProject.ttinclude" #>

@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------
-// Copyright (c) Mårten Rånge.
+// Copyright (c) Mï¿½rten Rï¿½nge.
 // ----------------------------------------------------------------------------------------------
 // This source code is subject to terms and conditions of the Microsoft Public License. A 
 // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -19,9 +19,9 @@ namespace Source.Collections
     using System.Linq;
     using System.Linq.Expressions;
 
-    sealed class TrieMap<TValue>
+    sealed partial class TrieMap<TValue>
     {
-        sealed class CaseInsensitiveCharComparer : IEqualityComparer<char>
+        sealed partial class CaseInsensitiveCharComparer : IEqualityComparer<char>
         {
             public bool Equals(char x, char y)
             {
@@ -33,7 +33,8 @@ namespace Source.Collections
                 return char.ToUpperInvariant(obj).GetHashCode();
             }
         }
-        sealed class Node
+
+        sealed partial class Node
         {
             readonly Dictionary<char, Node> m_edges = new Dictionary<char, Node>(new CaseInsensitiveCharComparer());
             readonly Func<char, Node> m_defaultFindEdge;

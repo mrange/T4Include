@@ -12,6 +12,7 @@
 
 // ### INCLUDE: ../Common/Config.cs
 // ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: ../Extensions/BasicExtensions.cs
 // ### INCLUDE: TestFor.cs
 
 namespace Source.Testing

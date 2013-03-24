@@ -41,6 +41,7 @@ namespace Source.Common
 <#
     }
 #>
+#if !NETFX_CORE && !SILVERLIGHT && !WINDOWS_PHONE
         static ConsoleColor GetLevelColor (Level level)
         {
             switch (level)
@@ -58,7 +59,7 @@ namespace Source.Common
                     return ConsoleColor.Magenta;
             }
         }
-
+#endif
         static string GetLevelMessage (Level level)
         {
             switch (level)

@@ -13,8 +13,10 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 
 // ### INCLUDE: HRONSerializer.cs
+// ### INCLUDE: ../Extensions/EnumParseExtensions.cs
 // ### INCLUDE: ../Extensions/ParseExtensions.cs
 
 namespace Source.HRON
@@ -109,6 +111,12 @@ namespace Source.HRON
             return m_entities.Length > 0;
         }
 
+        public override IEnumerable<string> GetDynamicMemberNames ()
+        {
+            var entity = m_entities.FirstOrEmpty ();
+            return entity.GetMemberNames ();
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if (indexes.Length == 1 && indexes[0] is int)
@@ -146,6 +154,19 @@ namespace Source.HRON
             return base.TryGetMember(binder, out result);
         }
 
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            var entity = m_entities.FirstOrEmpty();
+
+            var dynamicObject = entity as DynamicObject;
+            if (dynamicObject != null)
+            {
+                return dynamicObject.TryInvokeMember(binder, args, out result);
+            }
+
+            return base.TryInvokeMember(binder, args, out result);
+        }
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var returnType = binder.ReturnType;
@@ -164,17 +185,17 @@ namespace Source.HRON
                 result = m_entities;
                 return true;
             }
-            else if (returnType.CanParse())
+            else if (BaseHRONEntity.IsParseable (returnType))
             {
-                result = m_entities.FirstOrEmpty().GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue());
+                result = BaseHRONEntity.Parse (returnType, m_entities.FirstOrEmpty().GetValue());
                 return true;                
             }
             else if (returnType.IsArray)
             {
                 var elementType = returnType.GetElementType();
-                if (elementType.CanParse())
+                if (BaseHRONEntity.IsParseable (elementType))
                 {
-                    var values = m_entities.Select(entity => entity.GetValue().Parse(Config.DefaultCulture, elementType, elementType.GetDefaultValue())).ToArray();
+                    var values = m_entities.Select (entity => BaseHRONEntity.Parse (elementType, entity.GetValue())).ToArray();
                     var array = Array.CreateInstance(elementType, values.Length);
                     values.CopyTo(array, 0);
                     result = array;
@@ -195,6 +216,29 @@ namespace Source.HRON
         public abstract void Apply(SubString name, IHRONVisitor visitor);
         public abstract void ToString(StringBuilder sb);
 
+        internal static bool IsParseable (Type type)
+        {
+            return type.CanParseEnumValue() || type.CanParse();
+        }
+
+        public override IEnumerable<string> GetDynamicMemberNames ()
+        {
+            return GetMemberNames ();
+        }
+
+        internal static object Parse(Type type, string value)
+        {
+            value = value ?? "";
+
+            if (type.CanParseEnumValue())                    
+            {
+                return value.ParseEnumValue(type) ?? type.GetDefaultEnumValue ();
+            }
+
+            return value.Parse (Config.DefaultCulture, type, type.GetParsedDefaultValue());
+        }
+
+
         public override string ToString()
         {
             var sb = new StringBuilder(128);
@@ -208,6 +252,12 @@ namespace Source.HRON
             return true;
         }
 
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            result = new HRONDynamicMembers(GetMember(binder.Name));
+            return true;
+        }
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var returnType = binder.ReturnType;
@@ -216,9 +266,9 @@ namespace Source.HRON
                 result = GetValue();
                 return true;
             }
-            else if (returnType.CanParse())
+            else if (IsParseable(returnType))
             {
-                result = GetValue().Parse(Config.DefaultCulture, returnType, returnType.GetDefaultValue ());
+                result = Parse(returnType, GetValue());
                 return true;
             }
             return base.TryConvert(binder, out result);
@@ -228,6 +278,8 @@ namespace Source.HRON
 
     sealed partial class HRONObject : BaseHRONEntity
     {
+        public static HRONObject Empty = new HRONObject (null);
+
         public partial struct Member
         {
             readonly string m_name;
@@ -236,7 +288,7 @@ namespace Source.HRON
             public Member(string name, IHRONEntity value)
                 : this()
             {
-                m_name = name;
+                m_name = name.Trim ();
                 m_value = value;
             }
 

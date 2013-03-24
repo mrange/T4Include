@@ -33,6 +33,11 @@ namespace Source.Concurrency
             m_value = value;
         }
 
+        public <#=atomic.Name#> Exchange (<#=atomic.Name#> newValue)
+        {
+            return Interlocked.Exchange (ref m_value, newValue);
+        }
+
         public bool CompareExchange (<#=atomic.Name#> newValue, <#=atomic.Name#> comparand)
         {
             return Interlocked.CompareExchange (ref m_value, newValue, comparand) == comparand;
@@ -56,6 +61,11 @@ namespace Source.Concurrency
         public Atomic (T value = null)
         {
             m_value = value;
+        }
+
+        public T Exchange (T newValue)
+        {
+            return Interlocked.Exchange (ref m_value, newValue);
         }
 
         public bool CompareExchange (T newValue, T comparand)

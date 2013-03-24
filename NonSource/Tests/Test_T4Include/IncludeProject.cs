@@ -1,7 +1,6 @@
 ﻿
 
 
-// @@@ SKIPPING (Blacklisted): C:\temp\GitHub\T4Include\NonSource\Source\Program.cs
 
 // ############################################################################
 // #                                                                          #
@@ -23,6 +22,16 @@
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
+// @@@ INCLUDE_FOUND: ../Common/ConsoleLog.cs
+// @@@ INCLUDE_FOUND: ../Common/SubString.cs
+// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: ../Hron/HRONDynamicObjectSerializer.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -31,11 +40,21 @@
 // @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 // @@@ INCLUDE_FOUND: HRONSerializer.cs
+// @@@ INCLUDE_FOUND: ../Extensions/EnumParseExtensions.cs
+// @@@ INCLUDE_FOUND: ../Extensions/ParseExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 // @@@ INCLUDE_FOUND: HRONSerializer.cs
-// @@@ INCLUDE_FOUND: ../Extensions/NumericalExtensions.cs
+// @@@ INCLUDE_FOUND: ../Extensions/ParseExtensions.cs
 // @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
 // @@@ INCLUDE_FOUND: ../Reflection/StaticReflection.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+// @@@ INCLUDE_FOUND: LineReaderExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptors.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\BindingCache.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Bindings\BasicBindings.cs
+// @@@ INCLUDE_FOUND: ../BindingCache.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
@@ -55,18 +74,40 @@
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ SKIPPING (Blacklisted): C:\temp\GitHub\T4Include\NonSource\Source\Program.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestFor.cs
+// @@@ INCLUDE_FOUND: Generated_TestFor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
+// @@@ INCLUDE_FOUND: ../Common/Config.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
+// @@@ INCLUDE_FOUND: TestFor.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\SubString.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Hron\HRONDynamicObjectSerializer.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\SubString.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
-// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Common\BasicExtensions.cs
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Reflection\ClassDescriptors.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\WPF\BindingCache.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
@@ -75,19 +116,27 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Testing\TestFor.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
 // ReSharper disable CompareOfFloatsByEqualityOperator
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
+// ReSharper disable RedundantIfElseBlock
 // ReSharper disable RedundantNameQualifier
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -110,8 +159,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -165,8 +217,11 @@ namespace ProjectInclude
     
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -210,8 +265,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -264,22 +322,13 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 namespace ProjectInclude
 {
-    // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
-    // ----------------------------------------------------------------------------------------------
-    // This source code is subject to terms and conditions of the Microsoft Public License. A 
-    // copy of the license can be found in the License.html file at the root of this distribution. 
-    // If you cannot locate the  Microsoft Public License, please send an email to 
-    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-    //  by the terms of the Microsoft Public License.
-    // ----------------------------------------------------------------------------------------------
-    // You must not remove this notice, or any other, from this software.
-    // ----------------------------------------------------------------------------------------------
-    
     // ############################################################################
     // #                                                                          #
     // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
@@ -288,6 +337,7 @@ namespace ProjectInclude
     // # regenerated. Changes should instead be applied to the corresponding      #
     // # template file (.tt)                                                      #
     // ############################################################################
+    
     
     
     
@@ -333,6 +383,7 @@ namespace ProjectInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
+    #if !NETFX_CORE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -353,7 +404,7 @@ namespace ProjectInclude
                         return ConsoleColor.Magenta;
                 }
             }
-    
+    #endif
             static string GetLevelMessage (Level level)
             {
                 switch (level)
@@ -379,8 +430,982 @@ namespace ProjectInclude
     }
     
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.ConsoleApp
+    {
+        using System;
+        using System.IO;
+        using System.Linq;
+        using System.Reflection;
+        using System.Globalization;
+        using System.Threading;
+    
+        using Source.Common;
+        using Source.Extensions;
+        using Source.HRON;
+    
+        enum ExitCode
+        {
+            Ok                  = 0         ,
+            InvalidConfigFile   = 101       ,
+            Unknown             = 999       ,
+        }
+    
+        sealed partial class ExitCodeException : Exception
+        {
+            public readonly ExitCode ExitCode;
+    
+            public ExitCodeException(ExitCode exitCode)
+            {
+                ExitCode = exitCode;
+            }
+        }
+    
+        static partial class Runner
+        {
+            static partial void Partial_Run (string[] args, dynamic config);
+    
+            public static readonly CultureInfo Default_CurrentCulture  = Thread.CurrentThread.CurrentCulture    ;
+            public static readonly CultureInfo Default_CurrentUICulture= Thread.CurrentThread.CurrentUICulture  ;
+            public static readonly string      Default_Directory       = Environment.CurrentDirectory           ;
+    
+            static readonly string s_consoleName = Assembly.GetExecutingAssembly().GetName().Name;
+    
+            public static void Run(string[] args)
+            {
+                Log.HighLight("{0} is starting...", s_consoleName);
+                try
+                {
+                    Thread.CurrentThread.CurrentCulture = Config.DefaultCulture;
+                    Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    
+                    object config;
+                    var configFile = "{0}.ini".FormatWith(s_consoleName);
+                    if (File.Exists(configFile))
+                    {
+                        Log.Info("Loading config file: {0}", configFile);
+                        using (var streamReader = new StreamReader(configFile))
+                        {
+                            HRONDynamicParseError[] parserErrors;
+                            if (!HRONSerializer.TryParseDynamic(
+                                int.MaxValue,
+                                streamReader.ReadLines().Select(x => x.ToSubString()),
+                                out config,
+                                out parserErrors
+                                ))
+                            {
+                                throw new ExitCodeException(ExitCode.InvalidConfigFile);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        config = HRONObject.Empty;
+                    }
+    
+                    Log.Info("Initial setup is done, executing main program");
+    
+                    Partial_Run(args, config);
+    
+                    Log.Success("{0} completed", s_consoleName);
+                }
+                catch (ExitCodeException exc)
+                {
+                    Environment.ExitCode = (int) exc.ExitCode;
+                    Log.Exception(
+                        "Terminated {0} {1}({2:000}), caught exception: {3}",
+                        s_consoleName,
+                        exc.ExitCode,
+                        Environment.ExitCode,
+                        exc
+                        );
+                }
+                catch (Exception exc)
+                {
+                    Environment.ExitCode = 999;
+                    Log.Exception(
+                        "Terminated {0} Unknown({1:000}), caught exception: {2}",
+                        s_consoleName,
+                        Environment.ExitCode,
+                        exc
+                        );
+                }
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Reflection;
+    
+        using Source.Reflection;
+    
+        static partial class EnumParseExtensions
+        {
+            enum Dummy {}
+    
+            sealed partial class EnumParser
+            {
+                public Func<string, object> ParseEnum   ;
+                public Func<object>         DefaultEnum ;
+            }
+    
+            static readonly MethodInfo s_parseEnum = StaticReflection.GetMethodInfo (() => ParseEnum<Dummy>(default (string)));
+            static readonly MethodInfo s_genericParseEnum = s_parseEnum.GetGenericMethodDefinition ();
+    
+            static readonly MethodInfo s_defaultEnum = StaticReflection.GetMethodInfo (() => DefaultEnum<Dummy>());
+            static readonly MethodInfo s_genericDefaultEnum = s_defaultEnum.GetGenericMethodDefinition ();
+    
+            static readonly MethodInfo s_parseNullableEnum = StaticReflection.GetMethodInfo(() => ParseNullableEnum<Dummy>(default(string)));
+            static readonly MethodInfo s_genericParseNullableEnum = s_parseNullableEnum.GetGenericMethodDefinition();
+    
+            static readonly MethodInfo s_defaultNullableEnum = StaticReflection.GetMethodInfo(() => DefaultNullableEnum<Dummy>());
+            static readonly MethodInfo s_genericDefaultNullableEnum = s_defaultNullableEnum.GetGenericMethodDefinition();
+    
+            static readonly ConcurrentDictionary<Type, EnumParser> s_enumParsers = new ConcurrentDictionary<Type, EnumParser>();
+            static readonly Func<Type, EnumParser> s_createParser = type => CreateParser (type);
+    
+            static EnumParser CreateParser(Type type)
+            {
+                if (type.IsEnum)
+                {
+                    return new EnumParser
+                               {
+                                   ParseEnum = (Func<string, object>)Delegate.CreateDelegate(
+                                                        typeof(Func<string, object>),
+                                                        s_genericParseEnum.MakeGenericMethod(type)
+                                                        ),
+                                   DefaultEnum = (Func<object>)Delegate.CreateDelegate(
+                                                       typeof(Func<object>),
+                                                       s_genericDefaultEnum.MakeGenericMethod(type)
+                                                       ),
+                               };
+    
+                }
+                else if (
+                        type.IsGenericType
+                    && type.GetGenericTypeDefinition() == typeof(Nullable<>)
+                    && type.GetGenericArguments()[0].IsEnum
+                    )
+                {
+                    var enumType = type.GetGenericArguments()[0];
+                    return new EnumParser
+                               {
+                                   ParseEnum = (Func<string, object>)Delegate.CreateDelegate(
+                                                        typeof(Func<string, object>),
+                                                        s_genericParseNullableEnum.MakeGenericMethod(enumType)
+                                                        ),
+                                   DefaultEnum = (Func<object>)Delegate.CreateDelegate(
+                                                       typeof(Func<object>),
+                                                       s_genericDefaultNullableEnum.MakeGenericMethod(enumType)
+                                                       ),
+                               };
+    
+                }
+                else
+                {
+                    return null;
+                }
+            }
+    
+            static object ParseEnum<TEnum>(string value)
+                where TEnum : struct
+            {
+                TEnum result;
+                return Enum.TryParse (value, true, out result)
+                    ? (object)result
+                    : null
+                    ;
+            }
+    
+            static object DefaultEnum<TEnum>()
+                where TEnum : struct
+            {
+                return default (TEnum);
+            }
+    
+            static object ParseNullableEnum<TEnum>(string value)
+                where TEnum : struct
+            {
+                TEnum result;
+                return Enum.TryParse(value, true, out result)
+                    ? (object)(TEnum?)result
+                    : null
+                    ;
+            }
+    
+            static object DefaultNullableEnum<TEnum>()
+                where TEnum : struct
+            {
+                return default(TEnum?);
+            }
+    
+            public static bool TryParseEnumValue(this string s, Type type, out object value)
+            {
+                value = null;
+                if (string.IsNullOrEmpty (s))
+                {
+                    return false;
+                }
+    
+                var enumParser = TryGetParser (type);
+                if (enumParser == null)
+                {
+                    return false;
+    
+                }
+                
+    
+                value = enumParser.ParseEnum (s);
+    
+                return value != null;
+            }
+    
+            public static bool CanParseEnumValue (this Type type)
+            {
+                var enumParser = TryGetParser (type);
+    
+                return enumParser != null;
+            }
+    
+            static EnumParser TryGetParser (Type type)
+            {
+                if (type == null)
+                {
+                    return null;
+                }
+    
+                var enumParser = s_enumParsers.GetOrAdd (type, s_createParser);
+    
+                return enumParser;
+            }
+    
+            public static object ParseEnumValue (this string s, Type type)
+            {
+                object value;
+                return s.TryParseEnumValue (type, out value)
+                    ? value
+                    : null
+                    ;
+            }
+    
+            public static object GetDefaultEnumValue (this Type type)
+            {
+                var enumParser = TryGetParser (type);
+                return enumParser != null ? enumParser.DefaultEnum () : null;
+            }
+    
+            public static TEnum ParseEnumValue<TEnum>(this string s, TEnum defaultValue) 
+                where TEnum : struct
+            {
+                TEnum value;
+                return Enum.TryParse (s, true, out value)
+                    ? value
+                    : defaultValue
+                    ;
+            }
+    
+            public static TEnum? ParseEnumValue<TEnum>(this string s)
+                where TEnum : struct
+            {
+                TEnum value;
+                return Enum.TryParse(s, true, out value)
+                    ? (TEnum?)value
+                    : null
+                    ;
+            }
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
+namespace ProjectInclude
+{
+    
+    
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Globalization;
+    
+        using Source.Common;
+    
+        static partial class ParseExtensions
+        {
+            static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
+                {
+    #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+                    { typeof(Boolean)      , () => default (Boolean)},
+                    { typeof(Boolean?)     , () => default (Boolean?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+                    { typeof(Char)      , () => default (Char)},
+                    { typeof(Char?)     , () => default (Char?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+                    { typeof(SByte)      , () => default (SByte)},
+                    { typeof(SByte?)     , () => default (SByte?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+                    { typeof(Int16)      , () => default (Int16)},
+                    { typeof(Int16?)     , () => default (Int16?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+                    { typeof(Int32)      , () => default (Int32)},
+                    { typeof(Int32?)     , () => default (Int32?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+                    { typeof(Int64)      , () => default (Int64)},
+                    { typeof(Int64?)     , () => default (Int64?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+                    { typeof(Byte)      , () => default (Byte)},
+                    { typeof(Byte?)     , () => default (Byte?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+                    { typeof(UInt16)      , () => default (UInt16)},
+                    { typeof(UInt16?)     , () => default (UInt16?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+                    { typeof(UInt32)      , () => default (UInt32)},
+                    { typeof(UInt32?)     , () => default (UInt32?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+                    { typeof(UInt64)      , () => default (UInt64)},
+                    { typeof(UInt64?)     , () => default (UInt64?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+                    { typeof(Single)      , () => default (Single)},
+                    { typeof(Single?)     , () => default (Single?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+                    { typeof(Double)      , () => default (Double)},
+                    { typeof(Double?)     , () => default (Double?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+                    { typeof(Decimal)      , () => default (Decimal)},
+                    { typeof(Decimal?)     , () => default (Decimal?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+                    { typeof(TimeSpan)      , () => default (TimeSpan)},
+                    { typeof(TimeSpan?)     , () => default (TimeSpan?)},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+                    { typeof(DateTime)      , () => default (DateTime)},
+                    { typeof(DateTime?)     , () => default (DateTime?)},
+    #endif
+                };
+            static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
+                {
+    #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+                    { typeof(Boolean)  , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)(Boolean?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+                    { typeof(Char)  , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)(Char?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+                    { typeof(SByte)  , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)(SByte?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+                    { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)(Int16?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+                    { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)(Int32?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+                    { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)(Int64?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+                    { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)(Byte?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+                    { typeof(UInt16)  , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)(UInt16?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+                    { typeof(UInt32)  , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)(UInt32?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+                    { typeof(UInt64)  , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)(UInt64?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+                    { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)(Single?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+                    { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)(Double?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+                    { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)(Decimal?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+                    { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)(TimeSpan?)value : null;}},
+    #endif
+    #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+                    { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
+                    { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)(DateTime?)value : null;}},
+    #endif
+                };
+    
+            public static bool CanParse (this Type type)
+            {
+                if (type == null)
+                {
+                    return false;
+                }
+    
+                return s_parsers.ContainsKey (type);
+            }
+    
+            public static object GetParsedDefaultValue (this Type type)
+            {
+                type = type ?? typeof (object);
+    
+                Func<object> getValue;
+    
+                return s_defaultValues.TryGetValue (type, out getValue) ? getValue () : null;
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
+            {
+                value = null;
+                if (type == null)
+                {
+                    return false;
+                }                
+                
+                Func<string, CultureInfo, object> parser;
+    
+                if (s_parsers.TryGetValue (type, out parser))
+                {
+                    value = parser (s, cultureInfo);
+                }
+    
+                return value != null;
+            }
+    
+            public static bool TryParse (this string s, Type type, out object value)
+            {
+                return s.TryParse (Config.DefaultCulture, type, out value);
+            }
+    
+            public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
+            {
+                object value;
+                return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
+            }
+    
+            public static object Parse (this string s, Type type, object defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, type, defaultValue);
+            }
+    
+            // Boolean (BoolLike)
+    
+    #if !T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Boolean value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Boolean Parse (this string s, CultureInfo cultureInfo, Boolean defaultValue)
+            {
+                Boolean value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Boolean Parse (this string s, Boolean defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Boolean value)
+            {
+                return Boolean.TryParse (s ?? "", out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_BOOLEAN_PARSE_EXTENSIONS
+    
+            // Char (CharLike)
+    
+    #if !T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Char value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Char Parse (this string s, CultureInfo cultureInfo, Char defaultValue)
+            {
+                Char value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Char Parse (this string s, Char defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Char value)
+            {
+                return Char.TryParse (s ?? "", out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_CHAR_PARSE_EXTENSIONS
+    
+            // SByte (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out SByte value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static SByte Parse (this string s, CultureInfo cultureInfo, SByte defaultValue)
+            {
+                SByte value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static SByte Parse (this string s, SByte defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out SByte value)
+            {
+                return SByte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_SBYTE_PARSE_EXTENSIONS
+    
+            // Int16 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Int16 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
+            {
+                Int16 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int16 Parse (this string s, Int16 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
+            {
+                return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT16_PARSE_EXTENSIONS
+    
+            // Int32 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Int32 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
+            {
+                Int32 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int32 Parse (this string s, Int32 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
+            {
+                return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT32_PARSE_EXTENSIONS
+    
+            // Int64 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Int64 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
+            {
+                Int64 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Int64 Parse (this string s, Int64 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
+            {
+                return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_INT64_PARSE_EXTENSIONS
+    
+            // Byte (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Byte value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
+            {
+                Byte value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Byte Parse (this string s, Byte defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
+            {
+                return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_BYTE_PARSE_EXTENSIONS
+    
+            // UInt16 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out UInt16 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static UInt16 Parse (this string s, CultureInfo cultureInfo, UInt16 defaultValue)
+            {
+                UInt16 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static UInt16 Parse (this string s, UInt16 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt16 value)
+            {
+                return UInt16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_UINT16_PARSE_EXTENSIONS
+    
+            // UInt32 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out UInt32 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static UInt32 Parse (this string s, CultureInfo cultureInfo, UInt32 defaultValue)
+            {
+                UInt32 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static UInt32 Parse (this string s, UInt32 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt32 value)
+            {
+                return UInt32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_UINT32_PARSE_EXTENSIONS
+    
+            // UInt64 (IntLike)
+    
+    #if !T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out UInt64 value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static UInt64 Parse (this string s, CultureInfo cultureInfo, UInt64 defaultValue)
+            {
+                UInt64 value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static UInt64 Parse (this string s, UInt64 defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt64 value)
+            {
+                return UInt64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_UINT64_PARSE_EXTENSIONS
+    
+            // Single (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Single value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
+            {
+                Single value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Single Parse (this string s, Single defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
+            {                                                  
+                return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_SINGLE_PARSE_EXTENSIONS
+    
+            // Double (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Double value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
+            {
+                Double value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Double Parse (this string s, Double defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
+            {                                                  
+                return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DOUBLE_PARSE_EXTENSIONS
+    
+            // Decimal (FloatLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out Decimal value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
+            {
+                Decimal value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static Decimal Parse (this string s, Decimal defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
+            {                                                  
+                return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DECIMAL_PARSE_EXTENSIONS
+    
+            // TimeSpan (TimeSpanLike)
+    
+    #if !T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out TimeSpan value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
+            {
+                TimeSpan value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static TimeSpan Parse (this string s, TimeSpan defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
+            {                                                  
+                return TimeSpan.TryParse (s ?? "", cultureInfo, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_TIMESPAN_PARSE_EXTENSIONS
+    
+            // DateTime (DateTimeLike)
+    
+    #if !T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+    
+            public static bool TryParse (this string s, out DateTime value)
+            {
+                return s.TryParse (Config.DefaultCulture, out value);
+            }
+    
+            public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
+            {
+                DateTime value;
+    
+                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
+            }
+    
+            public static DateTime Parse (this string s, DateTime defaultValue)
+            {
+                return s.Parse (Config.DefaultCulture, defaultValue);
+            }
+    
+            public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)
+            {                                                  
+                return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
+            }
+    
+    #endif // T4INCLUDE__SUPPRESS_DATETIME_PARSE_EXTENSIONS
+    
+        }
+    }
+    
+    
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -398,8 +1423,6 @@ namespace ProjectInclude
     
     
     
-    using System.Collections.Concurrent;
-    
     namespace Source.HRON
     {
         using System.Collections.Generic;
@@ -408,6 +1431,9 @@ namespace ProjectInclude
     
         partial interface IHRONVisitor
         {
+            void Document_Begin ();
+            void Document_End ();
+            void PreProcessor (SubString line);
             void Empty (SubString line);
     
             void Comment(int indent, SubString comment);
@@ -424,31 +1450,56 @@ namespace ProjectInclude
     
         abstract partial class BaseHRONWriterVisitor : IHRONVisitor
         {
-            readonly StringBuilder m_sb = new StringBuilder();
-            int m_indent;
-            
-            protected abstract void WriteLine (string line);
-            protected abstract void WriteLine (StringBuilder line);
+            readonly    StringBuilder   m_sb    = new StringBuilder();
+            bool                        m_first = true  ;
+            int                         m_indent        ;
+    
+            protected abstract void Write       (StringBuilder line);
+            protected abstract void WriteLine   ();
+            void                    WriteLine   (StringBuilder line)
+            {
+                if (m_first)
+                {
+                    m_first = false;
+                }
+                else
+                {
+                    WriteLine ();
+                }
+    
+                Write (line);
+            }
+    
+            public abstract void Document_Begin();
+            public abstract void Document_End();
+    
+            public void PreProcessor(SubString line)
+            {
+                m_sb.Remove(0, m_sb.Length);
+                m_sb.Append('!');
+                m_sb.AppendSubString(line);
+                WriteLine(m_sb);
+            }
     
             public void Empty (SubString line)
             {
-                m_sb.Clear();
-                m_sb.Append(line);
+                m_sb.Remove(0, m_sb.Length);
+                m_sb.AppendSubString(line);
                 WriteLine(m_sb);
             }
     
             public void Comment(int indent, SubString comment)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', indent);
                 m_sb.Append('#');
-                m_sb.Append(comment);
+                m_sb.AppendSubString(comment);
                 WriteLine(m_sb);
             }
     
             public void Value_Begin(SubString name)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
                 m_sb.Append('=');
                 m_sb.Append(name);
@@ -458,9 +1509,9 @@ namespace ProjectInclude
     
             public void Value_Line(SubString value)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
-                m_sb.Append(value);
+                m_sb.AppendSubString(value);
                 WriteLine(m_sb);
             }
     
@@ -471,10 +1522,10 @@ namespace ProjectInclude
     
             public void Object_Begin(SubString name)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.Append('\t', m_indent);
                 m_sb.Append('@');
-                m_sb.Append(name);
+                m_sb.AppendSubString(name);
                 WriteLine(m_sb);
                 ++m_indent;
             }
@@ -486,7 +1537,7 @@ namespace ProjectInclude
     
             public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
             {
-                m_sb.Clear();
+                m_sb.Remove(0, m_sb.Length);
                 m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
                 WriteLine(m_sb);
             }
@@ -505,19 +1556,22 @@ namespace ProjectInclude
                 }
             }
     
-            protected override void WriteLine(string line)
+            protected override void Write(StringBuilder line)
             {
-                m_sb.AppendLine(line);
+                m_sb.Append(line.ToString());
             }
     
-            protected override void WriteLine(StringBuilder line)
+            protected override void WriteLine()
             {
-                var count = line.Length;
-                for (var iter = 0; iter < count; ++iter)
-                {
-                    m_sb.Append(line[iter]);
-                }
                 m_sb.AppendLine();
+            }
+    
+            public override void Document_Begin()
+            {
+            }
+    
+            public override void Document_End()
+            {
             }
         }
     
@@ -531,11 +1585,12 @@ namespace ProjectInclude
     
             public enum ParseError
             {
+                ProgrammingError                ,
                 IndentIncreasedMoreThanExpected ,
                 TagIsNotCorrectlyFormatted      ,
             }
     
-            public static void Parse (
+            public static void Parse(
                 int maxErrorCount,
                 IEnumerable<SubString> lines,
                 IHRONVisitor visitor
@@ -546,181 +1601,227 @@ namespace ProjectInclude
                     return;
                 }
     
-                lines = lines ?? Array<SubString>.Empty;
+                visitor.Document_Begin();
     
-                var state = ParseState.ExpectingTag;
-                var expectedIndent = 0;
-                var lineNo = 0;
-                var context = new Stack<SubString>();
-    
-                foreach (var line in lines)
+                try
                 {
-                    ++lineNo;
+                    var errorCount = 0;
     
-                    var currentIndent = 0;
-                    var lineLength = line.Length;
+                    lines = lines ?? Array<SubString>.Empty;
     
-                    for (var iter = 0; iter < lineLength; ++iter)
+                    var state = ParseState.ExpectingTag;
+                    var expectedIndent = 0;
+                    var lineNo = 0;
+                    var context = new Stack<SubString>();
+    
+                    var acceptsPreProcessor = true;
+    
+                    foreach (var line in lines)
                     {
-                        var ch = line[iter];
-                        if (ch == '\t')
+                        ++lineNo;
+    
+                        var lineLength = line.Length;
+                        var begin = line.Begin;
+                        var end = line.End;
+    
+                        var currentIndent = 0;
+                        var baseString = line.BaseString;
+    
+                        if (acceptsPreProcessor)
                         {
-                            ++currentIndent;
+                            if (lineLength > 0 && baseString[begin] == '!')
+                            {
+                                visitor.PreProcessor(line.ToSubString(1));
+                                continue;
+                            }
+                            else
+                            {
+                                acceptsPreProcessor = false;
+                            }
                         }
-                        else
+    
+                        for (var iter = begin; iter < end; ++iter)
                         {
-                            iter = lineLength;
+                            var ch = baseString[iter];
+                            if (ch == '\t')
+                            {
+                                ++currentIndent;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                    }
     
-                    if (currentIndent > expectedIndent)
-                    {
-                        visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
-                        continue;
-                    }
-    
-                    bool isComment;
-                    switch (state)
-                    {
-                        case ParseState.ExpectingTag:
-                            isComment = currentIndent < lineLength
-                                && line[currentIndent] == '#'
-                                ;
-                            break;
-                        case ParseState.ExpectingValue:
-                        default:
-                            isComment = currentIndent < expectedIndent
-                                && currentIndent < lineLength
-                                && line[currentIndent] == '#'
-                                ;
-                            break;
-                    }
-    
-                    var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
-    
-                    if (isComment)
-                    {
-                        visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
-                    }
-                    else if (isWhiteSpace && currentIndent < expectedIndent)
-                    {
+                        bool isComment;
                         switch (state)
                         {
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(SubString.Empty);
-                                break;
                             case ParseState.ExpectingTag:
+                                isComment = currentIndent < lineLength
+                                            && baseString[currentIndent + begin] == '#'
+                                    ;
+                                break;
+                            case ParseState.ExpectingValue:
                             default:
-                                visitor.Empty(line);
+                                isComment = currentIndent < expectedIndent
+                                            && currentIndent < lineLength
+                                            && baseString[currentIndent + begin] == '#'
+                                    ;
                                 break;
                         }
-                    }
-                    else if (isWhiteSpace)
-                    {
-                        switch (state)
+    
+                        var isWhiteSpace = line.ToSubString(currentIndent).IsWhiteSpace;
+    
+                        if (isComment)
                         {
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(line.ToSubString(expectedIndent));
-                                break;
-                            case ParseState.ExpectingTag:
-                            default:
-                                visitor.Empty(line);
-                                break;
+                            visitor.Comment(currentIndent, line.ToSubString(currentIndent + 1));
                         }
-                    }
-                    else
-                    {
-                        if (currentIndent < expectedIndent)
+                        else if (isWhiteSpace && currentIndent < expectedIndent)
                         {
                             switch (state)
                             {
+                                case ParseState.ExpectingValue:
+                                    visitor.Value_Line(SubString.Empty);
+                                    break;
                                 case ParseState.ExpectingTag:
-                                    for (var iter = currentIndent; iter < expectedIndent; ++iter)
-                                    {
-                                        visitor.Object_End(context.Peek());
+                                default:
+                                    visitor.Empty(line);
+                                    break;
+                            }
+                        }
+                        else if (isWhiteSpace)
+                        {
+                            switch (state)
+                            {
+                                case ParseState.ExpectingValue:
+                                    visitor.Value_Line(line.ToSubString(expectedIndent));
+                                    break;
+                                case ParseState.ExpectingTag:
+                                default:
+                                    visitor.Empty(line);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            if (currentIndent < expectedIndent)
+                            {
+                                switch (state)
+                                {
+                                    case ParseState.ExpectingTag:
+                                        for (var iter = currentIndent; iter < expectedIndent; ++iter)
+                                        {
+                                            visitor.Object_End(context.Peek());
+                                            context.Pop();
+                                        }
+                                        break;
+                                    case ParseState.ExpectingValue:
+                                    default:
+                                        visitor.Value_End(context.Peek());
+                                        // Popping the value name
                                         context.Pop();
+                                        for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
+                                        {
+                                            visitor.Object_End(context.Peek());
+                                            context.Pop();
+                                        }
+                                        break;
+                                }
+    
+                                expectedIndent = currentIndent;
+                                state = ParseState.ExpectingTag;
+                            }
+    
+                            switch (state)
+                            {
+                                case ParseState.ExpectingTag:
+                                    if (currentIndent > expectedIndent)
+                                    {
+                                        visitor.Error(lineNo, line, ParseError.IndentIncreasedMoreThanExpected);
+                                        if (++errorCount > 0)
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    else if (currentIndent < lineLength)
+                                    {
+                                        var first = baseString[currentIndent + begin];
+                                        switch (first)
+                                        {
+                                            case '@':
+                                                state = ParseState.ExpectingTag;
+                                                ++expectedIndent;
+                                                context.Push(line.ToSubString(currentIndent + 1));
+                                                visitor.Object_Begin(context.Peek());
+                                                break;
+                                            case '=':
+                                                state = ParseState.ExpectingValue;
+                                                ++expectedIndent;
+                                                context.Push(line.ToSubString(currentIndent + 1));
+                                                visitor.Value_Begin(context.Peek());
+                                                break;
+                                            default:
+                                                visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
+                                                if (++errorCount > 0)
+                                                {
+                                                    return;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        visitor.Error(lineNo, line, ParseError.ProgrammingError);
+                                        if (++errorCount > 0)
+                                        {
+                                            return;
+                                        }
                                     }
                                     break;
                                 case ParseState.ExpectingValue:
-                                default:
-                                    visitor.Value_End(context.Peek());
-                                    // Popping the value name
-                                    context.Pop();
-                                    for (var iter = currentIndent + 1; iter < expectedIndent; ++iter)
-                                    {
-                                        visitor.Object_End(context.Peek());
-                                        context.Pop();
-                                    }
+                                    visitor.Value_Line(line.ToSubString(expectedIndent));
                                     break;
                             }
-    
-                            expectedIndent = currentIndent;
-                            state = ParseState.ExpectingTag;
-                        }
-    
-                        switch (state)
-                        {
-                            case ParseState.ExpectingTag:
-                                if (currentIndent < lineLength)
-                                {
-                                    var first = line[currentIndent];
-                                    switch (first)
-                                    {
-                                        case '@':
-                                            state = ParseState.ExpectingTag;
-                                            ++expectedIndent;
-                                            context.Push(line.ToSubString(currentIndent + 1));
-                                            visitor.Object_Begin(context.Peek());
-                                            break;
-                                        case '=':
-                                            state = ParseState.ExpectingValue;
-                                            ++expectedIndent;
-                                            context.Push(line.ToSubString(currentIndent + 1));
-                                            visitor.Value_Begin(context.Peek());
-                                            break;
-                                        default:
-                                            visitor.Error(lineNo, line, ParseError.TagIsNotCorrectlyFormatted);
-                                            break;
-                                    }
-                                }
-                                break;
-                            case ParseState.ExpectingValue:
-                                visitor.Value_Line(line.ToSubString(expectedIndent));
-                                break;
                         }
                     }
-                }
     
-                switch (state)
+                    switch (state)
+                    {
+                        case ParseState.ExpectingTag:
+                            for (var iter = 0; iter < expectedIndent; ++iter)
+                            {
+                                visitor.Object_End(context.Peek());
+                                context.Pop();
+                            }
+                            break;
+                        case ParseState.ExpectingValue:
+                        default:
+                            visitor.Value_End(context.Peek());
+                            // Popping the value name
+                            context.Pop();
+                            for (var iter = 0 + 1; iter < expectedIndent; ++iter)
+                            {
+                                visitor.Object_End(context.Peek());
+                                context.Pop();
+                            }
+                            break;
+                    }
+    
+                }
+                finally
                 {
-                    case ParseState.ExpectingTag:
-                        for (var iter = 0; iter < expectedIndent; ++iter)
-                        {
-                            visitor.Object_End(context.Peek());
-                            context.Pop();
-                        }
-                        break;
-                    case ParseState.ExpectingValue:
-                    default:
-                        visitor.Value_End(context.Peek());
-                        // Popping the value name
-                        context.Pop();
-                        for (var iter = 0 + 1; iter < expectedIndent; ++iter)
-                        {
-                            visitor.Object_End(context.Peek());
-                            context.Pop();
-                        }
-                        break;
+                    visitor.Document_End();
                 }
-    
             }
-    
         }
     
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -744,6 +1845,7 @@ namespace ProjectInclude
     
         static partial class Log
         {
+            static partial void Partial_LogLevel (Level level);
             static partial void Partial_LogMessage (Level level, string message);
             static partial void Partial_ExceptionOnLog (Level level, string format, object[] args, Exception exc);
     
@@ -751,6 +1853,7 @@ namespace ProjectInclude
             {
                 try
                 {
+                    Partial_LogLevel (level);
                     Partial_LogMessage (level, GetMessage (format, args));
                 }
                 catch (Exception exc)
@@ -779,8 +1882,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -797,17 +1903,16 @@ namespace ProjectInclude
     
     
     
-    
-    
     namespace Source.HRON
     {
-        using System.Collections;
+        using System;
         using System.Collections.Generic;
         using System.Dynamic;
         using System.Linq;
         using System.Text;
     
         using Source.Common;
+        using Source.Extensions;
     
         static partial class HronExtensions
         {
@@ -857,9 +1962,43 @@ namespace ProjectInclude
                 m_entities = (entities ?? Array<IHRONEntity>.Empty).ToArray ();
             }
     
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+    
+                var first = true;
+    
+                foreach (var entity in m_entities)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(", ");
+                    }
+    
+                    entity.ToString(sb);
+                }
+    
+                return sb.ToString();
+            }
+    
             public int GetCount ()
             {
                 return m_entities.Length;
+            }
+    
+            public bool Exists ()
+            {
+                return m_entities.Length > 0;
+            }
+    
+            public override IEnumerable<string> GetDynamicMemberNames ()
+            {
+                var entity = m_entities.FirstOrEmpty ();
+                return entity.GetMemberNames ();
             }
     
             public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
@@ -899,22 +2038,53 @@ namespace ProjectInclude
                 return base.TryGetMember(binder, out result);
             }
     
+            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+            {
+                var entity = m_entities.FirstOrEmpty();
+    
+                var dynamicObject = entity as DynamicObject;
+                if (dynamicObject != null)
+                {
+                    return dynamicObject.TryInvokeMember(binder, args, out result);
+                }
+    
+                return base.TryInvokeMember(binder, args, out result);
+            }
+    
             public override bool TryConvert(ConvertBinder binder, out object result)
             {
-                if (binder.ReturnType == typeof(string))
+                var returnType = binder.ReturnType;
+                if (returnType == typeof(string))
                 {
                     result = m_entities.FirstOrEmpty().GetValue ();
                     return true;
                 }
-                else if (binder.ReturnType == typeof(string[]))
+                else if (returnType == typeof(string[]))
                 {
                     result = m_entities.Select(e => e.GetValue()).ToArray();
                     return true;
                 }
-                else if (binder.ReturnType ==typeof(object[]))
+                else if (returnType ==typeof(object[]))
                 {
                     result = m_entities;
                     return true;
+                }
+                else if (BaseHRONEntity.IsParseable (returnType))
+                {
+                    result = BaseHRONEntity.Parse (returnType, m_entities.FirstOrEmpty().GetValue());
+                    return true;                
+                }
+                else if (returnType.IsArray)
+                {
+                    var elementType = returnType.GetElementType();
+                    if (BaseHRONEntity.IsParseable (elementType))
+                    {
+                        var values = m_entities.Select (entity => BaseHRONEntity.Parse (elementType, entity.GetValue())).ToArray();
+                        var array = Array.CreateInstance(elementType, values.Length);
+                        values.CopyTo(array, 0);
+                        result = array;
+                        return true;
+                    }
                 }
                 return base.TryConvert(binder, out result);
             }
@@ -930,6 +2100,29 @@ namespace ProjectInclude
             public abstract void Apply(SubString name, IHRONVisitor visitor);
             public abstract void ToString(StringBuilder sb);
     
+            internal static bool IsParseable (Type type)
+            {
+                return type.CanParseEnumValue() || type.CanParse();
+            }
+    
+            public override IEnumerable<string> GetDynamicMemberNames ()
+            {
+                return GetMemberNames ();
+            }
+    
+            internal static object Parse(Type type, string value)
+            {
+                value = value ?? "";
+    
+                if (type.CanParseEnumValue())                    
+                {
+                    return value.ParseEnumValue(type) ?? type.GetDefaultEnumValue ();
+                }
+    
+                return value.Parse (Config.DefaultCulture, type, type.GetParsedDefaultValue());
+            }
+    
+    
             public override string ToString()
             {
                 var sb = new StringBuilder(128);
@@ -943,11 +2136,23 @@ namespace ProjectInclude
                 return true;
             }
     
+            public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+            {
+                result = new HRONDynamicMembers(GetMember(binder.Name));
+                return true;
+            }
+    
             public override bool TryConvert(ConvertBinder binder, out object result)
             {
-                if (binder.ReturnType == typeof(string))
+                var returnType = binder.ReturnType;
+                if (returnType == typeof(string))
                 {
                     result = GetValue();
+                    return true;
+                }
+                else if (IsParseable(returnType))
+                {
+                    result = Parse(returnType, GetValue());
                     return true;
                 }
                 return base.TryConvert(binder, out result);
@@ -957,6 +2162,8 @@ namespace ProjectInclude
     
         sealed partial class HRONObject : BaseHRONEntity
         {
+            public static HRONObject Empty = new HRONObject (null);
+    
             public partial struct Member
             {
                 readonly string m_name;
@@ -965,7 +2172,7 @@ namespace ProjectInclude
                 public Member(string name, IHRONEntity value)
                     : this()
                 {
-                    m_name = name;
+                    m_name = name.Trim ();
                     m_value = value;
                 }
     
@@ -1122,7 +2329,21 @@ namespace ProjectInclude
             public override void ToString(StringBuilder sb)
             {
                 sb.Append('"');
-                sb.Append(m_value);
+    
+                var first = true;
+    
+                foreach (var line in m_value.ReadLines())
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(", ");
+                    }
+                    sb.AppendSubString(line);                
+                }
                 sb.Append('"');
             }
         }
@@ -1158,6 +2379,18 @@ namespace ProjectInclude
             public Item Top
             {
                 get { return m_stack.Peek(); }
+            }
+    
+            public void Document_Begin()
+            {
+            }
+    
+            public void Document_End()
+            {
+            }
+    
+            public void PreProcessor(SubString line)
+            {
             }
     
             public void Empty(SubString line)
@@ -1253,6 +2486,25 @@ namespace ProjectInclude
             public static bool TryParseDynamic(
                 int maxErrorCount,
                 IEnumerable<SubString> lines,
+                out dynamic dyn,
+                out HRONDynamicParseError[] errors
+                )
+            {
+                HRONObject hronObject;
+    
+                if (!TryParseDynamic(maxErrorCount, lines, out hronObject, out errors))
+                {
+                    dyn = null;
+                    return false;
+                }
+    
+                dyn = hronObject;
+                return true;
+            }
+    
+            public static bool TryParseDynamic(
+                int maxErrorCount,
+                IEnumerable<SubString> lines,
                 out HRONObject hronObject,
                 out HRONDynamicParseError[] errors
                 )
@@ -1278,8 +2530,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1362,6 +2617,18 @@ namespace ProjectInclude
             public T Instance
             {
                 get { return (T)Top.Value; }
+            }
+    
+            public void Document_Begin()
+            {
+            }
+    
+            public void Document_End()
+            {
+            }
+    
+            public void PreProcessor(SubString line)
+            {
             }
     
             public void Empty(SubString line)
@@ -1777,26 +3044,27 @@ namespace ProjectInclude
                 return true;
             }
     
-            public static string ObjectAsString<T>(T value)
+            public static string ObjectAsString<T>(T value, bool omitIfNullOrEmpty = true)
             {
                 var visitor = new HRONWriterVisitor();
-                VisitObject(value, visitor);
+                VisitObject(value, visitor, omitIfNullOrEmpty);
                 return visitor.Value;
             }
-    
+        
             public static void VisitObject(
                 object value,
-                IHRONVisitor visitor
+                IHRONVisitor visitor,
+                bool omitIfNullOrEmpty = true
                 )
             {
                 if (value == null)
                 {
                     return;
                 }
-    
+        
                 var type = value.GetType();
                 var classDescriptor = type.GetClassDescriptor();
-    
+        
                 if (classDescriptor.IsDictionaryLike)
                 {
                     var dictionary = (IDictionary)value;
@@ -1806,7 +3074,7 @@ namespace ProjectInclude
                         var keyAsString = key as string;
                         if (keyAsString != null)
                         {
-                            VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                            VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                         }
                     }
                 }
@@ -1816,7 +3084,7 @@ namespace ProjectInclude
                     for (var index = 0; index < list.Count; index++)
                     {
                         var innerValue = list[index];
-                        VisitMember(new SubString(), innerValue, visitor);
+                        VisitMember(new SubString(), innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
                 else
@@ -1826,20 +3094,25 @@ namespace ProjectInclude
                         var mi = classDescriptor.PublicGetMembers[index];
                         var memberName = mi.Name.ToSubString();
                         var memberValue = mi.Getter(value);
-                        VisitMember(memberName, memberValue, visitor);
+                        VisitMember(memberName, memberValue, visitor, omitIfNullOrEmpty);
                     }
                 }
             }
     
-            static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor)
+            static void VisitMember(SubString memberName, object memberValue, IHRONVisitor visitor, bool omitIfNullOrEmpty)
             {
                 if (memberValue == null)
                 {
+                    if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
+                        visitor.Value_End(memberName);
+                    }
                     return;
                 }
-    
+        
                 var classDescriptor = memberValue.GetType().GetClassDescriptor();
-    
+        
                 if (classDescriptor.IsDictionaryLike)
                 {
                     visitor.Object_Begin(memberName);
@@ -1850,7 +3123,7 @@ namespace ProjectInclude
                         var keyAsString = key as string;
                         if (keyAsString != null)
                         {
-                            VisitMember(keyAsString.ToSubString(), innerValue, visitor);
+                            VisitMember(keyAsString.ToSubString(), innerValue, visitor, omitIfNullOrEmpty);
                         }
                     }
                     visitor.Object_End(memberName);
@@ -1861,7 +3134,7 @@ namespace ProjectInclude
                     for (var index = 0; index < list.Count; index++)
                     {
                         var innerValue = list[index];
-                        VisitMember(memberName, innerValue, visitor);
+                        VisitMember(memberName, innerValue, visitor, omitIfNullOrEmpty);
                     }
                 }
                 else if (memberValue is string)
@@ -1876,6 +3149,11 @@ namespace ProjectInclude
                         }
                         visitor.Value_End(memberName);
                     }
+                    else if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
+                        visitor.Value_End(memberName);
+                    }
                 }
                 else if (classDescriptor.Type.CanParse())
                 {
@@ -1885,6 +3163,11 @@ namespace ProjectInclude
                     {
                         visitor.Value_Begin(memberName);
                         visitor.Value_Line(memberAsString.ToSubString());
+                        visitor.Value_End(memberName);
+                    }
+                    else if (!omitIfNullOrEmpty)
+                    {
+                        visitor.Value_Begin(memberName);
                         visitor.Value_End(memberName);
                     }
                 }
@@ -1899,8 +3182,627 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Text
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Text;
+    
+        sealed partial class Line
+        {
+            static readonly Line s_empty = new Line('\t', 0, 0, null);
+    
+            public readonly char Separator;
+            public readonly int Offset;
+            public readonly int LineNo;
+            public readonly string[] Fields;
+    
+            readonly Lazy<string> m_concatenatedLine;
+            readonly Lazy<string> m_toString;
+    
+            public Line(
+                char separator,
+                int lineNo,
+                int offset,
+                string[] fields
+                )
+            {
+                Separator           = separator;
+                Offset              = Math.Max(0, offset);
+                LineNo              = Math.Max(0, lineNo);
+                Fields              = fields ?? new string[0];
+    
+                m_concatenatedLine  = new Lazy<string>(GetOriginalLine);
+                m_toString          = new Lazy<string>(GetToString);
+                Offset              = offset;
+            }
+    
+            public static Line Empty
+            {
+                get { return s_empty; }
+            }
+    
+            public bool IsEmpty
+            {
+                get
+                {
+                    return
+                            LineNo == 0
+                        ||  Fields.Length == 0
+                        ||  (Fields.Length == 1 && string.IsNullOrEmpty(Fields[0]))
+                        ;
+                }
+            }
+    
+            public string ConcatenatedLine
+            {
+                get
+                {
+                    return m_concatenatedLine.Value;
+                }
+            }
+    
+            public override string ToString()
+            {
+                return m_toString.Value;
+            }
+    
+            string GetOriginalLine()
+            {
+                var sb = new StringBuilder();
+                var first = true;
+    
+                foreach (var field in (Fields ?? new string[0]))
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(Separator);
+                    }
+                    sb.Append(field ?? "");
+                }
+    
+                return sb.ToString();
+            }
+    
+            string GetToString()
+            {
+                var sb = new StringBuilder();
+    
+                sb.Append(LineNo);
+                sb.Append('(');
+                sb.Append(Offset);
+                sb.Append(") - ");
+                sb.Append(ConcatenatedLine);
+    
+                return sb.ToString();
+            }
+    
+        }
+    
+        static partial class LineExtensionMethods
+        {
+            [Flags]
+            enum ParserState : uint
+            {
+                OutsideString           = 0x1                               ,
+                InsideString            = 0x2                               ,
+                OutsideString_Escaped   = OutsideString | Flag_Escaped      ,
+                InsideString_Escaped    = InsideString | Flag_Escaped       ,
+                Mask_State              = 0xFFFF                            ,
+                Mask_Flag               = 0xFFFF0000                        ,
+                Flag_Escaped            = 0x10000                           ,
+            }
+    
+            public static IEnumerable<Line> TextToLines(this IEnumerable<char> text, char separator = '\t')
+            {
+                var currentLine = new List<string>();
+                var currentField = new StringBuilder();
+    
+                var parserState = ParserState.OutsideString;
+                var lineNo = 0;
+                var offset = 0;
+                foreach (var ch in text)
+                {
+                    switch (parserState)
+                    {
+                        case ParserState.OutsideString_Escaped:
+                        case ParserState.InsideString_Escaped:
+                            {
+                                switch (ch)
+                                {
+                                    case 'r':
+                                        currentField.Append('\r');
+                                        break;
+                                    case 'n':
+                                        currentField.Append('\n');
+                                        break;
+                                    case 't':
+                                        currentField.Append('\t');
+                                        break;
+                                    default:
+                                        currentField.Append(ch);
+                                        break;
+                                }
+                                parserState = parserState & ParserState.Mask_State;
+                            }
+                            break;
+                        case ParserState.InsideString:
+                            {
+                                switch (ch)
+                                {
+                                    case '"':
+                                        parserState = ParserState.OutsideString;
+                                        break;
+                                    case '\\':
+                                        parserState = ParserState.InsideString_Escaped;
+                                        break;
+                                    case '\r':
+                                        break;
+                                    case '\n':
+                                        currentField.Append("\r\n");
+                                        break;
+                                    default:
+                                        currentField.Append(ch);
+                                        break;
+                                }
+                            }
+                            break;
+                        case ParserState.OutsideString:
+                            {
+                                if (ch == separator)
+                                {
+                                    currentLine.Add(currentField.ToString());
+                                    currentField.Clear();
+                                }
+                                else
+                                {
+                                    switch (ch)
+                                    {
+                                        case '"':
+                                            parserState = ParserState.InsideString;
+                                            break;
+                                        case '\\':
+                                            parserState = ParserState.OutsideString_Escaped;
+                                            break;
+                                        case '\r':
+                                            break;
+                                        case '\n':
+                                            currentLine.Add(currentField.ToString());
+                                            currentField.Clear();
+                                            ++lineNo;
+                                            yield return new Line(separator, lineNo, offset, currentLine.ToArray());
+                                            currentLine.Clear();
+                                            break;
+                                        default:
+                                            currentField.Append(ch);
+                                            break;
+    
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                    ++offset;
+                }
+    
+                currentLine.Add(currentField.ToString());
+                currentField.Clear();
+                ++lineNo;
+                yield return new Line(separator, lineNo, offset, currentLine.ToArray());
+                currentLine.Clear();
+    
+            }
+        }
+    
+    
+    
+        partial interface IOriginatedFromLine
+        {
+            Line GetLine();
+            void SetLine(Line line);
+        }
+    
+        abstract partial class BaseOriginatedFromLine : IOriginatedFromLine
+        {
+            Line m_line;
+    
+            public void SetLine(Line line)
+            {
+                m_line = line;
+            }
+    
+            public Line GetLine()
+            {
+                return m_line ?? Line.Empty;
+            }
+        }
+    
+        sealed partial class IgnoreMemberAttribute : Attribute
+        {
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Text
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using Source.Extensions;
+        using Source.Reflection;
+    
+        static partial class LineToObjectExtensions
+        {
+            static partial void ParserWarning(string format, params object[] args);
+    
+            public static IEnumerable<T> TextToObjects<T>(this IEnumerable<char> text, char separator = '\t') 
+                where T : class, new()
+            {
+                return text.TextToLines(separator).LineToObject<T>();
+            }
+    
+            public static IEnumerable<T> LineToObject<T>(this IEnumerable<Line> lines)
+                where T : class, new()
+            {
+                if (lines == null)
+                {
+                    yield break;
+                }
+    
+                var classDescriptor = ClassDescriptor.GetClassDescriptor(typeof(T));
+    
+                using (var e = lines.GetEnumerator())
+                {
+                    Line header = null;
+                    string[] allFields = null;
+                    HashSet<string> allValidFields = null;
+                    if (e.MoveNext())
+                    {
+                        header = e.Current;
+    
+                        allFields = header.Fields.Select(f => f.Trim()).ToArray();
+    
+                        var allMembers = classDescriptor
+                            .Members
+                            .Where(m => m.MemberInfo.GetCustomAttributes(typeof(IgnoreMemberAttribute), true).Length == 0)
+                            .ToArray()
+                            ;
+    
+                        var allWriteableMembers = allMembers
+                            .Where(m => m.HasSetter)
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+                        var allStringMembers = allMembers
+                            .Where(m => m.MemberType == typeof(string))
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+    
+                        var allNonWriteableMembers = allMembers
+                            .Where(m => !m.HasSetter)
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+                        var allNonStringMembers = allMembers
+                            .Where(m => m.MemberType != typeof(string))
+                            .Select(memberDefinition => memberDefinition.Name)
+                            .ToArray();
+    
+                        var emptyFieldCount = allFields.Count(s => s.IsNullOrWhiteSpace());
+                        if (emptyFieldCount > 0)
+                        {
+                            ParserWarning("Empty field names in header line: {0}", emptyFieldCount);
+                        }
+    
+                        var missingFields = allWriteableMembers.Except(allFields).ToArray();
+                        if (missingFields.Length > 0)
+                        {
+                            ParserWarning("Missing field names in header line: {0}", missingFields.Concatenate());
+                        }
+    
+                        var additionalFields = allFields.Except(allWriteableMembers).ToArray();
+                        if (additionalFields.Length > 0)
+                        {
+                            ParserWarning("Additionals field names in header line (ignored): {0}", additionalFields.Concatenate());
+                        }
+    
+                        var allNonWriteableFields = allFields.Intersect(allNonWriteableMembers).ToArray();
+                        if (allNonWriteableFields.Length > 0)
+                        {
+                            ParserWarning("Non writeable fields referenced: {0}", allNonWriteableFields.Concatenate());
+                        }
+    
+                        var allNonStringFields = allFields.Intersect(allNonStringMembers).ToArray();
+                        if (allNonWriteableFields.Length > 0)
+                        {
+                            ParserWarning("Non string fields referenced: {0}", allNonStringFields.Concatenate());
+                        }
+    
+                        allValidFields = new HashSet<string>(allFields
+                                                                 .Intersect(allWriteableMembers)
+                                                                 .Intersect(allStringMembers)
+                            );
+    
+                    }
+    
+                    if (header == null)
+                    {
+                        yield break;
+                    }
+    
+                    while (e.MoveNext())
+                    {
+                        var line = e.Current;
+                        if (line.IsEmpty)
+                        {
+                            continue;
+                        }
+    
+                        var lineFields = line.Fields;
+    
+                        if (allFields.Length < lineFields.Length)
+                        {
+                            ParserWarning(
+                                "Line @{0} - {1} additinal fields detected",
+                                line.LineNo,
+                                lineFields.Length - allFields.Length
+                                );
+                        }
+    
+                        if (lineFields.Length < allFields.Length)
+                        {
+                            ParserWarning(
+                                "Line @{0} - {1} missing fields detected",
+                                line.LineNo,
+                                allFields.Length - lineFields.Length
+                                );
+                        }
+    
+                        var instance = new T();
+                        var lineSource = instance as IOriginatedFromLine;
+                        if (lineSource != null)
+                        {
+                            lineSource.SetLine(line);
+                        }
+    
+                        var max = Math.Min(lineFields.Length, allFields.Length);
+    
+                        for (var iter = 0; iter < max; ++iter)
+                        {
+                            var fieldName = allFields[iter];
+                            var fieldValue = lineFields[iter];
+                            if (allValidFields.Contains(fieldName) && !fieldValue.IsNullOrWhiteSpace())
+                            {
+    
+                                var memberDescriptor = classDescriptor.FindMember(fieldName);
+                                if (memberDescriptor != null)
+                                {
+                                    memberDescriptor.Setter(instance, fieldValue.Trim());
+                                }
+                                else
+                                {
+                                    ParserWarning(
+                                        "Line @{0} - Failed to set field {1}: {2}",
+                                        line.LineNo,
+                                        fieldName
+                                        );
+                                }
+                            }
+                        }
+    
+                        yield return instance;
+                    }
+                }
+    
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\BindingCache.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.Windows.Data;
+    
+        sealed partial class BindingCache<TKey, TBinding>
+            where TBinding : BindingBase
+        {
+            readonly ConcurrentDictionary<TKey, TBinding> m_cache = new ConcurrentDictionary<TKey, TBinding>();
+            readonly Func<TKey, TBinding> m_bindingFactory;
+    
+            public BindingCache(Func<TKey, TBinding> bindingFactory)
+            {
+                if (bindingFactory == null)
+                {
+                    throw new ArgumentNullException("bindingFactory");
+                }
+    
+                m_bindingFactory = bindingFactory;
+            }
+    
+            public TBinding GetOrAdd(TKey key)
+            {
+                return m_cache.GetOrAdd(key, m_bindingFactory);
+            }
+    
+            public object ProvideValue(TKey key, IServiceProvider serviceProvider)
+            {
+                return GetOrAdd(key).ProvideValue(serviceProvider);
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\BindingCache.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Bindings\BasicBindings.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF.Bindings
+    {
+        using System;
+        using System.Windows.Data;
+        using System.Windows.Markup;
+    
+        sealed partial class OneTime : MarkupExtension
+        {
+            static readonly BindingCache<string, Binding> s_cache = new BindingCache<string, Binding>(
+                k => new Binding(k) { Mode=BindingMode.OneTime,}
+                );
+    
+            public readonly string Path;
+    
+            public OneTime(string path)
+            {
+                Path = path ?? "";
+            }
+    
+            public override object ProvideValue(IServiceProvider serviceProvider)
+            {
+                return s_cache.ProvideValue(Path, serviceProvider);
+            }
+        }
+    
+        sealed partial class OneWay : MarkupExtension
+        {
+            static readonly BindingCache<string, Binding> s_cache = new BindingCache<string, Binding>(
+                k => new Binding(k) { Mode = BindingMode.OneWay, ValidatesOnDataErrors = true,}
+                );
+    
+            public readonly string Path;
+    
+            public OneWay(string path)
+            {
+                Path = path ?? "";
+            }
+    
+            public override object ProvideValue(IServiceProvider serviceProvider)
+            {
+                return s_cache.ProvideValue(Path, serviceProvider);
+            }
+        }
+    
+        sealed partial class TwoWay : MarkupExtension
+        {
+            static readonly BindingCache<string, Binding> s_cache = new BindingCache<string, Binding>(
+                k => new Binding(k) { Mode = BindingMode.TwoWay, ValidatesOnDataErrors = true, }
+                );
+    
+            public readonly string Path;
+    
+            public TwoWay(string path)
+            {
+                Path = path ?? "";
+            }
+    
+            public override object ProvideValue(IServiceProvider serviceProvider)
+            {
+                return s_cache.ProvideValue(Path, serviceProvider);
+            }
+        }
+    
+        sealed partial class Immediate : MarkupExtension
+        {
+            static readonly BindingCache<string, Binding> s_cache = new BindingCache<string, Binding>(
+                k => new Binding(k) { Mode = BindingMode.TwoWay, ValidatesOnDataErrors = true, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged, }
+                );
+    
+            public readonly string Path;
+    
+            public Immediate(string path)
+            {
+                Path = path ?? "";
+            }
+    
+            public override object ProvideValue(IServiceProvider serviceProvider)
+            {
+                return s_cache.ProvideValue(Path, serviceProvider);
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Bindings\BasicBindings.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -1916,11 +3818,10 @@ namespace ProjectInclude
     // ----------------------------------------------------------------------------------------------
     
     
-    using System.Collections;
-    
     namespace Source.Reflection
     {
         using System;
+        using System.Collections;
         using System.Collections.Concurrent;
         using System.Collections.Generic;
         using System.Linq;
@@ -1947,6 +3848,8 @@ namespace ProjectInclude
             public readonly MemberDescriptor[]                      Members             ;
             public readonly MemberDescriptor[]                      PublicGetMembers    ;
             public readonly Type                                    Type                ;
+            public readonly object[]                                Attributes          ;
+    
             public readonly Func<object>                            Creator             ;
             public readonly bool                                    HasCreator          ;
     
@@ -1962,26 +3865,32 @@ namespace ProjectInclude
     
             public ClassDescriptor(Type type)
             {
-                Type = type ?? typeof(object);
-                Name = Type.Name;
-                Members = Type
-                    .GetMembers(
-                            BindingFlags.Instance
-                        |   BindingFlags.Public
-                        |   BindingFlags.NonPublic
-                        )
-                    .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
-                    .Select(mi => new MemberDescriptor(mi))
-                    .ToArray()
-                    ;
+                Type        = type ?? typeof(object);
+                Attributes  = Type.GetCustomAttributes(inherit: true);
+                Name        = Type.Name;
+                Members     = Type.IsPrimitive 
+                    ?   new MemberDescriptor[0]
+                    :   Type
+                        .GetMembers(
+                                BindingFlags.Instance
+                            |   BindingFlags.Public
+                            |   BindingFlags.NonPublic
+                            )
+                        .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                        .Where(mi => !HasIndexParameters(mi))
+                        .Select(mi => new MemberDescriptor(mi))
+                        .ToArray()
+                        ;
+    
                 PublicGetMembers= Members.Where (mi => mi.HasPublicGetter).ToArray ();
                 m_memberLookup  = Members.ToDictionary (mi => mi.Name);
     
                 Creator = GetCreator(Type);
                 HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
     
-                IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
-                NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
+                var isNullableType  = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);;
+                IsNullable          = isNullableType || !Type.IsValueType;
+                NonNullableType     = isNullableType ? Type.GetGenericArguments()[0] : Type;
     
                 IsListLike          = false;
                 IsDictionaryLike    = false;
@@ -1989,36 +3898,41 @@ namespace ProjectInclude
                 DictionaryKeyType   = typeof (object);
                 DictionaryValueType = typeof (object);
     
-                if (typeof (IDictionary).IsAssignableFrom (Type))
+                var possibleDictionaryType = AsGenericType(Type, typeof(IDictionary<,>));
+                var possibleListType = AsGenericType(Type, typeof(IList<>));
+    
+                IsDictionaryLike = possibleDictionaryType  != null || typeof (IDictionary).IsAssignableFrom (Type);
+                if (possibleDictionaryType != null)
                 {
-                    IsDictionaryLike = true;
-    
-                    var possibleDictionaryType = Type
-                        .GetInterfaces()
-                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-                        ;
-    
-                    if (possibleDictionaryType != null)
-                    {
-                        var genericArguments = possibleDictionaryType.GetGenericArguments();
-                        DictionaryKeyType   = genericArguments[0];
-                        DictionaryValueType = genericArguments[1];
-                    }
+                    var genericArguments = possibleDictionaryType.GetGenericArguments();
+                    DictionaryKeyType   = genericArguments[0];
+                    DictionaryValueType = genericArguments[1];
                 }
-                else if (typeof (IList).IsAssignableFrom (Type))
+    
+                IsListLike = possibleListType  != null || typeof (IList).IsAssignableFrom (Type);
+                if (possibleListType != null)
                 {
-                    IsListLike = true;
-    
-                    var possibleListType = Type
-                        .GetInterfaces()
-                        .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                        ;
-    
-                    if (possibleListType != null)
-                    {
-                        ListItemType = possibleListType.GetGenericArguments()[0];
-                    }
+                    ListItemType = possibleListType.GetGenericArguments()[0];
                 }
+            }
+    
+            static bool HasIndexParameters (MemberInfo mi)
+            {
+                var pi = mi as PropertyInfo;
+                return pi != null && pi.GetIndexParameters().Length > 0;
+            }
+    
+            static Type AsGenericType (Type type, Type asType)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition () == asType)
+                {
+                    return type;
+                }
+                
+                return type
+                    .GetInterfaces()
+                    .FirstOrDefault(t =>  t.IsGenericType && t.GetGenericTypeDefinition() == asType)
+                    ;
             }
     
             public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
@@ -2079,6 +3993,7 @@ namespace ProjectInclude
     
             public readonly MemberInfo              MemberInfo          ;
             public readonly Type                    MemberType          ;
+            public readonly object[]                Attributes          ;
     
             public readonly bool                    HasPublicGetter     ;
             public readonly bool                    HasPublicSetter     ;
@@ -2093,23 +4008,29 @@ namespace ProjectInclude
             static readonly Func<object, object>    s_defaultGetter    = instance => null  ;
             static readonly Action<object, object>  s_defaultSetter  = (x, v) => { }     ;
     
-            public MemberDescriptor(MemberInfo mi)
+            public MemberDescriptor(MemberInfo memberInfo)
             {
-                MemberInfo  = mi;
-                Name        = mi.Name; 
-                Getter  = GetGetter(mi);
-                Setter  = GetSetter(mi);
+                if (memberInfo == null)
+                {
+                    throw new ArgumentNullException("memberInfo");
+                }
     
-                HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-                HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+                MemberInfo  = memberInfo;
+                Attributes  = MemberInfo.GetCustomAttributes(inherit: true);
+                Name        = MemberInfo.Name; 
+                Getter      = GetGetter(MemberInfo);
+                Setter      = GetSetter(MemberInfo);
     
-                var pi = mi as PropertyInfo;
-                var fi = mi as FieldInfo;
+                HasGetter   = !ReferenceEquals(Getter, s_defaultGetter);
+                HasSetter   = !ReferenceEquals(Setter, s_defaultSetter);
+    
+                var pi = MemberInfo as PropertyInfo;
+                var fi = MemberInfo as FieldInfo;
                 if (pi != null)
                 {
-                    MemberType      =   pi.PropertyType                     ;
-                    HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
-                    HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
+                    MemberType      =   pi.PropertyType                                             ;
+                    HasPublicGetter =   HasGetter && pi.GetGetMethod(nonPublic: true).IsPublic   ;
+                    HasPublicSetter =   HasSetter && pi.GetSetMethod(nonPublic: true).IsPublic   ;
                 }
                 else if (fi != null)
                 {
@@ -2213,8 +4134,11 @@ namespace ProjectInclude
     
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2235,14 +4159,27 @@ namespace ProjectInclude
         using System.Linq.Expressions;
         using System.Reflection;
     
-        static partial class StaticReflection<T>
+        static partial class StaticReflection
         {
-            public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
+            public static MethodInfo GetMethodInfo (Expression<Action> expr)
             {
                 return ((MethodCallExpression)expr.Body).Method;
             }
     
-            public static MethodInfo GetMethodInfo(Expression<Action> expr)
+            public static MemberInfo GetMemberInfo<TReturn> (Expression<Func<TReturn>> expr)
+            {
+                return ((MemberExpression)expr.Body).Member;
+            }
+    
+            public static ConstructorInfo GetConstructorInfo<TReturn> (Expression<Func<TReturn>> expr)
+            {
+                return ((NewExpression)expr.Body).Constructor;
+            }
+        }
+    
+        static partial class StaticReflection<T>
+        {
+            public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
             {
                 return ((MethodCallExpression)expr.Body).Method;
             }
@@ -2251,21 +4188,14 @@ namespace ProjectInclude
             {
                 return ((MemberExpression)expr.Body).Member;
             }
-    
-            public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<TReturn>> expr)
-            {
-                return ((MemberExpression)expr.Body).Member;
-            }
-    
-            public static ConstructorInfo GetConstructorInfo<TReturn>(Expression<Func<TReturn>> expr)
-            {
-                return ((NewExpression)expr.Body).Constructor;
-            }
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2291,16 +4221,41 @@ namespace ProjectInclude
     
         static class SubStringExtensions
         {
-            public static void Append (this StringBuilder sb, SubString ss)
+            public static void AppendSubString (this StringBuilder sb, SubString ss)
             {
                 sb.Append(ss.BaseString, ss.Begin, ss.Length);
             }
     
-            public static void AppendLine(this StringBuilder sb, SubString ss)
+            public static string Concatenate (this IEnumerable<SubString> values, string delimiter = null)
             {
-                sb.Append(ss.BaseString, ss.Begin, ss.Length);
-                sb.AppendLine();
+                if (values == null)
+                {
+                    return "";
+                }
+    
+                delimiter = delimiter ?? ", ";
+    
+                var first = true;
+    
+                var sb = new StringBuilder();
+                foreach (var value in values)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        sb.Append(delimiter);
+                    }
+    
+                    sb.AppendSubString(value);
+                }
+    
+                return sb.ToString();
             }
+    
+    
     
             public static SubString ToSubString (this string value, int begin = 0, int count = int.MaxValue / 2)
             {
@@ -2406,8 +4361,12 @@ namespace ProjectInclude
                 switch (state)
                 {
                     case ParseLineState.NewLine:
+                        yield return new SubString(baseString, 0, 0);
                         break;
                     case ParseLineState.ConsumedCR:
+                        yield return new SubString(baseString, beginLine, count);
+                        yield return new SubString(baseString, 0, 0);
+                        break;
                     case ParseLineState.Inline:
                     default:
                         yield return new SubString(baseString, beginLine, count);
@@ -2451,30 +4410,28 @@ namespace ProjectInclude
     
             public SubString(SubString subString, int begin, int count) : this()
             {
-                m_baseString = subString.BaseString;
-                var length = subString.Length;
+                m_baseString    = subString.BaseString;
+                var length      = subString.Length;
     
-                begin = Clamp(begin, 0, length);
-                count = Clamp(count, 0, length - begin);
+                begin           = Clamp(begin, 0, length);
+                count           = Clamp(count, 0, length - begin);
+                var end         = begin + count;
     
-                var end = begin + count;
-    
-                m_begin = subString.Begin + begin;
-                m_end = subString.Begin + end;
+                m_begin         = subString.Begin + begin;
+                m_end           = subString.Begin + end;
             }
     
             public SubString(string baseString, int begin, int count) : this()
             {
-                m_baseString = baseString;
-                var length = BaseString.Length;
+                m_baseString    = baseString;
+                var length      = BaseString.Length;
     
-                begin = Clamp(begin, 0, length);
-                count = Clamp(count, 0, length - begin);
+                begin           = Clamp(begin, 0, length);
+                count           = Clamp(count, 0, length - begin);
+                var end         = begin + count;
     
-                var end = begin + count;
-    
-                m_begin = begin;
-                m_end = end;
+                m_begin         = begin;
+                m_end           = end;
             }
     
             public bool Equals(SubString other)
@@ -2618,8 +4575,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Collections\TrieMap.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -2642,9 +4602,9 @@ namespace ProjectInclude
         using System.Linq;
         using System.Linq.Expressions;
     
-        sealed class TrieMap<TValue>
+        sealed partial class TrieMap<TValue>
         {
-            sealed class CaseInsensitiveCharComparer : IEqualityComparer<char>
+            sealed partial class CaseInsensitiveCharComparer : IEqualityComparer<char>
             {
                 public bool Equals(char x, char y)
                 {
@@ -2656,7 +4616,8 @@ namespace ProjectInclude
                     return char.ToUpperInvariant(obj).GetHashCode();
                 }
             }
-            sealed class Node
+    
+            sealed partial class Node
             {
                 readonly Dictionary<char, Node> m_edges = new Dictionary<char, Node>(new CaseInsensitiveCharComparer());
                 readonly Func<char, Node> m_defaultFindEdge;
@@ -2959,8 +4920,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Collections\TrieMap.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
 namespace ProjectInclude
 {
     // ############################################################################
@@ -3090,8 +5054,11 @@ namespace ProjectInclude
     }
     
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\Atomic.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3116,8 +5083,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -3297,10 +5267,24 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
 namespace ProjectInclude
 {
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
     
     
     
@@ -3329,163 +5313,9 @@ namespace ProjectInclude
     
         static partial class NumericalExtensions
         {
-            static readonly Dictionary<Type, Func<string, CultureInfo, object>> s_parsers = new Dictionary<Type, Func<string, CultureInfo, object>> 
-                {
-    #if !T4INCLUDE__SUPPRESS_BOOLEAN_NUMERICAL_EXTENSIONS
-                    { typeof(Boolean)  , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Boolean?) , (s, ci) => { Boolean value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_CHAR_NUMERICAL_EXTENSIONS
-                    { typeof(Char)  , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Char?) , (s, ci) => { Char value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_SBYTE_NUMERICAL_EXTENSIONS
-                    { typeof(SByte)  , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(SByte?) , (s, ci) => { SByte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-                    { typeof(Int16)  , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int16?) , (s, ci) => { Int16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-                    { typeof(Int32)  , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int32?) , (s, ci) => { Int32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-                    { typeof(Int64)  , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Int64?) , (s, ci) => { Int64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-                    { typeof(Byte)  , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Byte?) , (s, ci) => { Byte value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_UINT16_NUMERICAL_EXTENSIONS
-                    { typeof(UInt16)  , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt16?) , (s, ci) => { UInt16 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_UINT32_NUMERICAL_EXTENSIONS
-                    { typeof(UInt32)  , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt32?) , (s, ci) => { UInt32 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_UINT64_NUMERICAL_EXTENSIONS
-                    { typeof(UInt64)  , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(UInt64?) , (s, ci) => { UInt64 value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-                    { typeof(Single)  , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Single?) , (s, ci) => { Single value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-                    { typeof(Double)  , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Double?) , (s, ci) => { Double value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-                    { typeof(Decimal)  , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(Decimal?) , (s, ci) => { Decimal value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-                    { typeof(TimeSpan)  , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(TimeSpan?) , (s, ci) => { TimeSpan value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-    #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-                    { typeof(DateTime)  , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
-                    { typeof(DateTime?) , (s, ci) => { DateTime value; return s.TryParse(ci, out value) ? (object)value : null;}},
-    #endif
-                };
-    
-            public static bool CanParse (this Type type)
-            {
-                if (type == null)
-                {
-                    return false;
-                }
-    
-                return s_parsers.ContainsKey (type);
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, Type type, out object value)
-            {
-                value = null;
-                if (type == null)
-                {
-                    return false;
-                }                
-                
-                Func<string, CultureInfo, object> parser;
-    
-                if (s_parsers.TryGetValue (type, out parser))
-                {
-                    value = parser (s, cultureInfo);
-                }
-    
-                return value != null;
-            }
-    
-            public static bool TryParse (this string s, Type type, out object value)
-            {
-                return s.TryParse (Config.DefaultCulture, type, out value);
-            }
-    
-            public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
-            {
-                object value;
-                return s.TryParse (cultureInfo, type, out value) ? value : defaultValue;
-            }
-    
-            public static object Parse (this string s, Type type, object defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, type, defaultValue);
-            }
-    
-            // Boolean (BoolLike)
-    
-    #if !T4INCLUDE__SUPPRESS_BOOLEAN_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Boolean value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Boolean Parse (this string s, CultureInfo cultureInfo, Boolean defaultValue)
-            {
-                Boolean value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Boolean Parse (this string s, Boolean defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Boolean value)
-            {
-                return Boolean.TryParse (s ?? "", out value);
-            }
-    
-    #endif // T4INCLUDE__SUPPRESS_BOOLEAN_NUMERICAL_EXTENSIONS
-    
-            // Char (CharLike)
+            // Char (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_CHAR_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Char value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Char Parse (this string s, CultureInfo cultureInfo, Char defaultValue)
-            {
-                Char value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Char Parse (this string s, Char defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Char Min (this Char left, Char right) 
             {
@@ -3556,35 +5386,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Char value)
-            {
-                return Char.TryParse (s ?? "", out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_CHAR_NUMERICAL_EXTENSIONS
     
             // SByte (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_SBYTE_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out SByte value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static SByte Parse (this string s, CultureInfo cultureInfo, SByte defaultValue)
-            {
-                SByte value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static SByte Parse (this string s, SByte defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static SByte Min (this SByte left, SByte right) 
             {
@@ -3655,35 +5462,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out SByte value)
-            {
-                return SByte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_SBYTE_NUMERICAL_EXTENSIONS
     
             // Int16 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Int16 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
-            {
-                Int16 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int16 Parse (this string s, Int16 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Int16 Min (this Int16 left, Int16 right) 
             {
@@ -3754,35 +5538,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
-            {
-                return Int16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_INT16_NUMERICAL_EXTENSIONS
     
             // Int32 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Int32 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
-            {
-                Int32 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int32 Parse (this string s, Int32 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Int32 Min (this Int32 left, Int32 right) 
             {
@@ -3853,35 +5614,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
-            {
-                return Int32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_INT32_NUMERICAL_EXTENSIONS
     
             // Int64 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Int64 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
-            {
-                Int64 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Int64 Parse (this string s, Int64 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Int64 Min (this Int64 left, Int64 right) 
             {
@@ -3952,35 +5690,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
-            {
-                return Int64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_INT64_NUMERICAL_EXTENSIONS
     
             // Byte (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Byte value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
-            {
-                Byte value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Byte Parse (this string s, Byte defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Byte Min (this Byte left, Byte right) 
             {
@@ -4051,35 +5766,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
-            {
-                return Byte.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_BYTE_NUMERICAL_EXTENSIONS
     
             // UInt16 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_UINT16_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out UInt16 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static UInt16 Parse (this string s, CultureInfo cultureInfo, UInt16 defaultValue)
-            {
-                UInt16 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static UInt16 Parse (this string s, UInt16 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static UInt16 Min (this UInt16 left, UInt16 right) 
             {
@@ -4150,35 +5842,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt16 value)
-            {
-                return UInt16.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_UINT16_NUMERICAL_EXTENSIONS
     
             // UInt32 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_UINT32_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out UInt32 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static UInt32 Parse (this string s, CultureInfo cultureInfo, UInt32 defaultValue)
-            {
-                UInt32 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static UInt32 Parse (this string s, UInt32 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static UInt32 Min (this UInt32 left, UInt32 right) 
             {
@@ -4249,35 +5918,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt32 value)
-            {
-                return UInt32.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_UINT32_NUMERICAL_EXTENSIONS
     
             // UInt64 (IntLike)
     
     #if !T4INCLUDE__SUPPRESS_UINT64_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out UInt64 value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static UInt64 Parse (this string s, CultureInfo cultureInfo, UInt64 defaultValue)
-            {
-                UInt64 value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static UInt64 Parse (this string s, UInt64 defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static UInt64 Min (this UInt64 left, UInt64 right) 
             {
@@ -4348,35 +5994,12 @@ namespace ProjectInclude
             {
                 return (value & test) == 0;
             }
-             
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt64 value)
-            {
-                return UInt64.TryParse (s ?? "", NumberStyles.Integer, cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_UINT64_NUMERICAL_EXTENSIONS
     
             // Single (FloatLike)
     
     #if !T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Single value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
-            {
-                Single value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Single Parse (this string s, Single defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Single Min (this Single left, Single right) 
             {
@@ -4437,34 +6060,11 @@ namespace ProjectInclude
                 return t.Clamp (0,1) * (to - from) + from;
             }
     
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
-            {                                                  
-                return Single.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
-            }
-    
     #endif // T4INCLUDE__SUPPRESS_SINGLE_NUMERICAL_EXTENSIONS
     
             // Double (FloatLike)
     
     #if !T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Double value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
-            {
-                Double value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Double Parse (this string s, Double defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Double Min (this Double left, Double right) 
             {
@@ -4525,34 +6125,11 @@ namespace ProjectInclude
                 return t.Clamp (0,1) * (to - from) + from;
             }
     
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
-            {                                                  
-                return Double.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
-            }
-    
     #endif // T4INCLUDE__SUPPRESS_DOUBLE_NUMERICAL_EXTENSIONS
     
             // Decimal (FloatLike)
     
     #if !T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out Decimal value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
-            {
-                Decimal value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static Decimal Parse (this string s, Decimal defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static Decimal Min (this Decimal left, Decimal right) 
             {
@@ -4613,34 +6190,11 @@ namespace ProjectInclude
                 return t.Clamp (0,1) * (to - from) + from;
             }
     
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
-            {                                                  
-                return Decimal.TryParse (s ?? "", NumberStyles.Float, cultureInfo, out value);
-            }
-    
     #endif // T4INCLUDE__SUPPRESS_DECIMAL_NUMERICAL_EXTENSIONS
     
             // TimeSpan (TimeSpanLike)
     
     #if !T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out TimeSpan value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
-            {
-                TimeSpan value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static TimeSpan Parse (this string s, TimeSpan defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static TimeSpan Min (this TimeSpan left, TimeSpan right) 
             {
@@ -4692,34 +6246,12 @@ namespace ProjectInclude
                 return true;
             }
     
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
-            {                                                  
-                return TimeSpan.TryParse (s ?? "", cultureInfo, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_TIMESPAN_NUMERICAL_EXTENSIONS
     
             // DateTime (DateTimeLike)
     
     #if !T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
-    
-            public static bool TryParse (this string s, out DateTime value)
-            {
-                return s.TryParse (Config.DefaultCulture, out value);
-            }
-    
-            public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
-            {
-                DateTime value;
-    
-                return s.TryParse (cultureInfo, out value) ? value : defaultValue;
-            }
-    
-            public static DateTime Parse (this string s, DateTime defaultValue)
-            {
-                return s.Parse (Config.DefaultCulture, defaultValue);
-            }
-    
     
             public static DateTime Min (this DateTime left, DateTime right) 
             {
@@ -4771,10 +6303,6 @@ namespace ProjectInclude
                 return true;
             }
     
-            public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)
-            {                                                  
-                return DateTime.TryParse (s ?? "", cultureInfo, DateTimeStyles.AssumeLocal, out value);
-            }
     
     #endif // T4INCLUDE__SUPPRESS_DATETIME_NUMERICAL_EXTENSIONS
     
@@ -4783,8 +6311,11 @@ namespace ProjectInclude
     
     
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -4853,7 +6384,7 @@ namespace ProjectInclude
                 return defaultValue;
             }
     
-            public static string DefaultTo(this string v, string defaultValue = null)
+            public static string DefaultTo (this string v, string defaultValue = null)
             {
                 return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");
             }
@@ -4962,12 +6493,12 @@ namespace ProjectInclude
                 return value is TTo ? (TTo) value : defaultValue;
             }
     
-            public static string Concatenate(this IEnumerable<string> values, string delimiter = null, int capacity = 16)
+            public static string Concatenate (this IEnumerable<string> values, string delimiter = null, int capacity = 16)
             {
                 values = values ?? Array<string>.Empty;
                 delimiter = delimiter ?? ", ";
     
-                return string.Join(delimiter, values);
+                return string.Join (delimiter, values);
             }
     
             public static string GetResourceString (this Assembly assembly, string name, string defaultValue = null)
@@ -4979,7 +6510,7 @@ namespace ProjectInclude
                     return defaultValue;
                 }
     
-                var stream = assembly.GetManifestResourceStream(name ?? "");
+                var stream = assembly.GetManifestResourceStream (name ?? "");
                 if (stream == null)
                 {
                     return defaultValue;
@@ -4988,11 +6519,11 @@ namespace ProjectInclude
                 using (stream)
                 using (var streamReader = new StreamReader (stream))
                 {
-                    return streamReader.ReadToEnd();
+                    return streamReader.ReadToEnd ();
                 }
             }
     
-            public static IEnumerable<string> ReadLines(this TextReader textReader)
+            public static IEnumerable<string> ReadLines (this TextReader textReader)
             {
                 if (textReader == null)
                 {
@@ -5001,12 +6532,13 @@ namespace ProjectInclude
     
                 string line;
     
-                while ((line = textReader.ReadLine()) != null)
+                while ((line = textReader.ReadLine ()) != null)
                 {
                     yield return line;
                 }
             }
     
+    #if !NETFX_CORE
             public static IEnumerable<Type> GetInheritanceChain (this Type type)
             {
                 while (type != null)
@@ -5015,11 +6547,15 @@ namespace ProjectInclude
                     type = type.BaseType;
                 }
             }
+    #endif
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -5229,8 +6765,11 @@ namespace ProjectInclude
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs
+// ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -5359,9 +6898,567 @@ namespace ProjectInclude
                     BindingOperations.SetBinding (dependencyObject, dependencyProperty, binding);
                 }
             }
+    
+            public static TFreezable FreezeObject<TFreezable> (this TFreezable freezable)
+                where TFreezable : Freezable
+            {
+                if (freezable == null)
+                {
+                    return null;
+                }
+    
+                if (!freezable.IsFrozen && freezable.CanFreeze)
+                {
+                    freezable.Freeze ();
+                }
+    
+                return freezable;
+            }
+    
         }
     }
 }
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
+namespace ProjectInclude
+{
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    namespace Source.Testing
+    {
+        using System;
+        using System.Collections.Generic;
+    
+        partial class TestFor
+        {
+            public static bool SequenceEquality (IEnumerable<String> expected, IEnumerable<String> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (String expected, String found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Char> expected, IEnumerable<Char> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Char expected, Char found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Boolean> expected, IEnumerable<Boolean> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Boolean expected, Boolean found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<SByte> expected, IEnumerable<SByte> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (SByte expected, SByte found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int16> expected, IEnumerable<Int16> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int16 expected, Int16 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int32> expected, IEnumerable<Int32> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int32 expected, Int32 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Int64> expected, IEnumerable<Int64> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Int64 expected, Int64 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Byte> expected, IEnumerable<Byte> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Byte expected, Byte found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt16> expected, IEnumerable<UInt16> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt16 expected, UInt16 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt32> expected, IEnumerable<UInt32> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt32 expected, UInt32 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<UInt64> expected, IEnumerable<UInt64> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (UInt64 expected, UInt64 found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Single> expected, IEnumerable<Single> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Single expected, Single found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Double> expected, IEnumerable<Double> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Double expected, Double found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<Decimal> expected, IEnumerable<Decimal> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (Decimal expected, Decimal found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<TimeSpan> expected, IEnumerable<TimeSpan> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (TimeSpan expected, TimeSpan found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+            public static bool SequenceEquality (IEnumerable<DateTime> expected, IEnumerable<DateTime> found, string message)
+            {
+                return SequenceEqualityImpl (expected, found, message);
+            }
+    
+            public static bool Equality (DateTime expected, DateTime found, string message)
+            {
+                return EqualityImpl (expected, found, message);
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) M�rten R�nge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Testing
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using Source.Common;
+        using Source.Extensions;
+    
+        static partial class TestFor
+        {
+            public static int FailureCount;
+    
+            const string NullValue = "<NULL>";
+    
+            static string ToString(this string v, int start, int count)
+            {
+                v = v ?? "";
+    
+                start = start - count/2;
+    
+                if (start < 0)
+                {
+                    count += -start;
+                    start = 0;
+                }
+    
+                if (start >= v.Length)
+                {
+                    return "";
+                }
+    
+                count = Math.Min(count, v.Length - start);
+    
+                return v
+                    .Substring(start, count)
+                    .Replace("\r", "\\r")
+                    .Replace("\t", "\\t")
+                    .Replace("\n", "\\n")
+                    ;
+            }
+    
+            static bool SequenceEqualityImpl<T>(IEnumerable<T> expected, IEnumerable<T> found, string message)
+            {
+                object oExpected = expected;
+                object oFound = found;
+                var finalMessage = "TestFor.SequenceEquality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+                    .FormatWith(
+                        (oExpected ?? NullValue).GetType().Name,
+                        (oFound ?? NullValue).GetType().Name,
+                        message
+                        );
+                try
+                {
+    
+    
+                    if (ReferenceEquals(expected, found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (oExpected != null && oFound == null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (oExpected == null && oFound != null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (expected.Equals(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (expected.SequenceEqual(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+    
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception(finalMessage);
+                    Log.Exception("    Caught exception: {0}", exc);
+                    ++FailureCount;
+                    throw;
+                }
+            }
+    
+            static bool EqualityImpl<T> (T expected, T found, string message)
+            {
+                var sExpected = expected as string;
+    
+                object oExpected    = expected;
+                object oFound       = found;
+                if (sExpected != null)
+                {
+                    var sFound = (oFound ?? NullValue).ToString ();
+    
+                    var firstDiff = -1;
+                    var length = Math.Min(sExpected.Length, sFound.Length);
+                    for (var iter = 0; iter < length; ++iter)
+                    {
+                        if (sExpected[iter] != sFound[iter])
+                        {
+                            firstDiff = iter;
+                            iter = length;
+                        }                    
+                    }
+    
+                    if (firstDiff > -1)
+                    {
+                        ++FailureCount;
+                        Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - First diff @{2} - {3}",
+                            sExpected.ToString(firstDiff, 16),
+                            sFound.ToString(firstDiff, 16),
+                            length,
+                            message
+                            );
+                        return false;
+                    }
+                    else if (sExpected.Length != sFound.Length)
+                    {
+                        ++FailureCount;
+                        Log.Error("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - Difference in length@{2} - {3}",
+                            sExpected.ToString(length, 16),
+                            sFound.ToString(length, 16),
+                            length,
+                            message
+                            );
+                        return false;
+                    }
+                    else
+                    {
+                        Log.Success("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}",
+                            sExpected.ToString(0, 16),
+                            sFound.ToString(0, 16),
+                            message
+                            );
+                        return true;
+                    }
+    
+                }
+    
+                var finalMessage = "TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}"
+                    .FormatWith(
+                        oExpected ?? NullValue,
+                        oFound ?? NullValue,
+                        message
+                        );
+                try
+                {
+    
+    
+                    if (ReferenceEquals(expected, found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    if (oExpected != null && oFound == null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (oExpected == null && oFound != null)
+                    {
+                        Log.Error(finalMessage);
+                        ++FailureCount;
+                        return false;
+                    }
+    
+                    if (expected.Equals(found))
+                    {
+                        Log.Success(finalMessage);
+                        return true;
+                    }
+    
+                    Log.Error(finalMessage);
+                    ++FailureCount;
+                    return false;
+    
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception(finalMessage);
+                    Log.Exception("    Caught exception: {0}", exc);
+                    ++FailureCount;
+                    throw;
+                }
+            }
+        }
+    
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
+namespace ProjectInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Testing
+    {
+        using System;
+        using System.Linq;
+        using System.Reflection;
+        using Source.Common;
+    
+        static partial class TestRunner
+        {
+            public static bool ExecuteTests (Assembly assemblyContainingTests = null)
+            {
+                var assembly = assemblyContainingTests ?? Assembly.GetExecutingAssembly();
+    
+                var preFailureCount = TestFor.FailureCount;
+                var assemblyName = assembly.GetName().Name;
+                try
+                {
+                    Log.Info("Executing tests contained in: {0}", assemblyName);
+    
+                    Log.Info("Locating test classes...");
+                    var testClasses = assembly
+                        .GetTypes()
+                        .Where(t => t.Name.StartsWith("TestsFor_", StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(t => t.Name)
+                        .ToArray()
+                        ;
+                    Log.HighLight("Found {0} test classes", testClasses.Length);
+    
+                    foreach (var testClass in testClasses)
+                    {
+                        var preClassFailureCount = TestFor.FailureCount;
+                        var className = testClass.Name;
+                        try
+                        {
+                            Log.Info("Executing tests contained in class: {0}", className);
+                            var instance = Activator.CreateInstance(testClass, nonPublic: true);
+                            using (var disposable = instance as IDisposable)
+                            {
+                                var testMethods = testClass
+                                    .GetMethods()
+                                    .Where(mi => mi.Name.StartsWith("Test_", StringComparison.OrdinalIgnoreCase))
+                                    .ToArray();
+    
+                                foreach (var testMethod in testMethods)
+                                {
+                                    var preMethodFailureCount = TestFor.FailureCount;
+                                    try
+                                    {
+                                        if (testMethod.GetParameters().Length > 0)
+                                        {
+                                            Log.Warning(
+                                                "Can't execute test method as it has more than 0 parameters: {0}.{1}",
+                                                className,
+                                                testMethod.Name
+                                                );
+    
+                                            continue;
+                                        }
+    
+                                        Log.Info("Executing test: {0}.{1}", className, testMethod.Name);
+    
+                                        testMethod.Invoke(instance, new object[0]);
+                                    }
+                                    catch (Exception exc)
+                                    {
+                                        Log.Exception("Caught method level exception for: {0}", exc);
+                                        ++TestFor.FailureCount;
+                                    }
+                                    finally
+                                    {
+                                        if (TestFor.FailureCount == preMethodFailureCount)
+                                        {
+                                            Log.Success("Executed test: {0}.{1}", className, testMethod.Name);
+                                        }
+                                        else
+                                        {
+                                            Log.Error("Executed test: {0}.{1}", className, testMethod.Name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            Log.Exception("Caught class level exception", exc);
+                            ++TestFor.FailureCount;
+                        }
+                        finally
+                        {
+                            if (preClassFailureCount == TestFor.FailureCount)
+                            {
+                                Log.Success("Executed tests in class: {0}", className);
+                            }
+                            else
+                            {
+                                Log.Error("Executed tests in class: {0}", className);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    if (preFailureCount == TestFor.FailureCount)
+                    {
+                        Log.Success("Executed tests in assembly: {0}", assemblyName);
+                    }
+                    else
+                    {
+                        Log.Error("Executed tests in assembly: {0}", assemblyName);
+                    }
+                }
+    
+                return preFailureCount == TestFor.FailureCount;
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // ############################################################################
 
 // ############################################################################
@@ -5370,28 +7467,38 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2012-11-12T19:34:46";
+        public const string IncludeDate     = @"2013-02-22T14:06:13";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Collections\TrieMap.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Concurrency\Atomic.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\ConsoleApp\Runner.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\WPF\BindingCache.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\WPF\Bindings\BasicBindings.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Collections\TrieMap.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Concurrency\Atomic.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Concurrency\IAtomic.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
+        public const string Include_23       = @"C:\temp\GitHub\T4Include\Extensions\NumericalExtensions.cs";
+        public const string Include_24       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_25       = @"C:\temp\GitHub\T4Include\Extensions\EnumerableExtensions.cs";
+        public const string Include_26       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_27       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_28       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_29       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
     }
 }
 // ############################################################################

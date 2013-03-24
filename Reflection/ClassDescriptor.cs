@@ -42,6 +42,8 @@ namespace Source.Reflection
         public readonly MemberDescriptor[]                      Members             ;
         public readonly MemberDescriptor[]                      PublicGetMembers    ;
         public readonly Type                                    Type                ;
+        public readonly object[]                                Attributes          ;
+
         public readonly Func<object>                            Creator             ;
         public readonly bool                                    HasCreator          ;
 
@@ -57,9 +59,10 @@ namespace Source.Reflection
 
         public ClassDescriptor(Type type)
         {
-            Type = type ?? typeof(object);
-            Name = Type.Name;
-            Members = Type.IsPrimitive 
+            Type        = type ?? typeof(object);
+            Attributes  = Type.GetCustomAttributes(inherit: true);
+            Name        = Type.Name;
+            Members     = Type.IsPrimitive 
                 ?   new MemberDescriptor[0]
                 :   Type
                     .GetMembers(
@@ -68,6 +71,7 @@ namespace Source.Reflection
                         |   BindingFlags.NonPublic
                         )
                     .Where(mi => mi.MemberType == MemberTypes.Property || mi.MemberType == MemberTypes.Field)
+                    .Where(mi => !HasIndexParameters(mi))
                     .Select(mi => new MemberDescriptor(mi))
                     .ToArray()
                     ;
@@ -78,8 +82,9 @@ namespace Source.Reflection
             Creator = GetCreator(Type);
             HasCreator = !ReferenceEquals(Creator, s_defaultCreator);
 
-            IsNullable      = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);
-            NonNullableType = IsNullable ? Type.GetGenericArguments()[0] : Type;
+            var isNullableType  = Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>);;
+            IsNullable          = isNullableType || !Type.IsValueType;
+            NonNullableType     = isNullableType ? Type.GetGenericArguments()[0] : Type;
 
             IsListLike          = false;
             IsDictionaryLike    = false;
@@ -87,36 +92,41 @@ namespace Source.Reflection
             DictionaryKeyType   = typeof (object);
             DictionaryValueType = typeof (object);
 
-            if (typeof (IDictionary).IsAssignableFrom (Type))
+            var possibleDictionaryType = AsGenericType(Type, typeof(IDictionary<,>));
+            var possibleListType = AsGenericType(Type, typeof(IList<>));
+
+            IsDictionaryLike = possibleDictionaryType  != null || typeof (IDictionary).IsAssignableFrom (Type);
+            if (possibleDictionaryType != null)
             {
-                IsDictionaryLike = true;
-
-                var possibleDictionaryType = Type
-                    .GetInterfaces()
-                    .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-                    ;
-
-                if (possibleDictionaryType != null)
-                {
-                    var genericArguments = possibleDictionaryType.GetGenericArguments();
-                    DictionaryKeyType   = genericArguments[0];
-                    DictionaryValueType = genericArguments[1];
-                }
+                var genericArguments = possibleDictionaryType.GetGenericArguments();
+                DictionaryKeyType   = genericArguments[0];
+                DictionaryValueType = genericArguments[1];
             }
-            else if (typeof (IList).IsAssignableFrom (Type))
+
+            IsListLike = possibleListType  != null || typeof (IList).IsAssignableFrom (Type);
+            if (possibleListType != null)
             {
-                IsListLike = true;
-
-                var possibleListType = Type
-                    .GetInterfaces()
-                    .FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IList<>))
-                    ;
-
-                if (possibleListType != null)
-                {
-                    ListItemType = possibleListType.GetGenericArguments()[0];
-                }
+                ListItemType = possibleListType.GetGenericArguments()[0];
             }
+        }
+
+        static bool HasIndexParameters (MemberInfo mi)
+        {
+            var pi = mi as PropertyInfo;
+            return pi != null && pi.GetIndexParameters().Length > 0;
+        }
+
+        static Type AsGenericType (Type type, Type asType)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition () == asType)
+            {
+                return type;
+            }
+            
+            return type
+                .GetInterfaces()
+                .FirstOrDefault(t =>  t.IsGenericType && t.GetGenericTypeDefinition() == asType)
+                ;
         }
 
         public MemberDescriptor FindMember (string name, bool requirePublicGet = true, bool requirePublicSet = true)
@@ -177,6 +187,7 @@ namespace Source.Reflection
 
         public readonly MemberInfo              MemberInfo          ;
         public readonly Type                    MemberType          ;
+        public readonly object[]                Attributes          ;
 
         public readonly bool                    HasPublicGetter     ;
         public readonly bool                    HasPublicSetter     ;
@@ -191,23 +202,29 @@ namespace Source.Reflection
         static readonly Func<object, object>    s_defaultGetter    = instance => null  ;
         static readonly Action<object, object>  s_defaultSetter  = (x, v) => { }     ;
 
-        public MemberDescriptor(MemberInfo mi)
+        public MemberDescriptor(MemberInfo memberInfo)
         {
-            MemberInfo  = mi;
-            Name        = mi.Name; 
-            Getter  = GetGetter(mi);
-            Setter  = GetSetter(mi);
+            if (memberInfo == null)
+            {
+                throw new ArgumentNullException("memberInfo");
+            }
 
-            HasGetter = !ReferenceEquals(Getter, s_defaultGetter);
-            HasSetter = !ReferenceEquals(Setter, s_defaultSetter);
+            MemberInfo  = memberInfo;
+            Attributes  = MemberInfo.GetCustomAttributes(inherit: true);
+            Name        = MemberInfo.Name; 
+            Getter      = GetGetter(MemberInfo);
+            Setter      = GetSetter(MemberInfo);
 
-            var pi = mi as PropertyInfo;
-            var fi = mi as FieldInfo;
+            HasGetter   = !ReferenceEquals(Getter, s_defaultGetter);
+            HasSetter   = !ReferenceEquals(Setter, s_defaultSetter);
+
+            var pi = MemberInfo as PropertyInfo;
+            var fi = MemberInfo as FieldInfo;
             if (pi != null)
             {
-                MemberType      =   pi.PropertyType                     ;
-                HasPublicGetter    =   HasGetter && pi.GetMethod.IsPublic  ;
-                HasPublicSetter    =   HasSetter && pi.SetMethod.IsPublic  ;
+                MemberType      =   pi.PropertyType                                             ;
+                HasPublicGetter =   HasGetter && pi.GetGetMethod(nonPublic: true).IsPublic   ;
+                HasPublicSetter =   HasSetter && pi.GetSetMethod(nonPublic: true).IsPublic   ;
             }
             else if (fi != null)
             {

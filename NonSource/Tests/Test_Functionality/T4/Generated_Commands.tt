@@ -1,0 +1,18 @@
+﻿
+<#
+
+    Namespace = "Test_Functionality.T4";
+
+    Model = new []
+    {
+        new ClassDefinition ("TestControl")
+        {
+            C ("Activate")  , 
+        },
+    };
+
+#>
+
+<#@ include file="$(SolutionDir)\T4\RoutedCommands.ttinclude" #>
+
+

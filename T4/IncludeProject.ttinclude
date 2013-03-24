@@ -24,15 +24,15 @@
 <#
    
     const string XmlNamespace   = @"http://schemas.microsoft.com/developer/msbuild/2003";
-    const string Project       = @"{"+XmlNamespace+@"}Project";
-    const string ItemGroup     = @"{"+XmlNamespace+@"}ItemGroup";
-    const string Compile       = @"{"+XmlNamespace+@"}Compile";
+    const string Project        = @"{"+XmlNamespace+@"}Project";
+    const string ItemGroup      = @"{"+XmlNamespace+@"}ItemGroup";
+    const string Compile        = @"{"+XmlNamespace+@"}Compile";
 
     var projectFilePath         = Host.ResolvePath (ProjectFileName);
 
     RootPath                    = Path.GetDirectoryName (projectFilePath);
 
-    using (var streamReader    = new StreamReader (projectFilePath))
+    using (var streamReader     = new StreamReader (projectFilePath))
     {
         var xdoc = XDocument.Load (streamReader);
 
@@ -47,20 +47,6 @@
                     Path.Combine (
                         RootPath, 
                         compileElement.Attribute ("Include").Value)))
-            .Where (p => 
-                {
-                    if (BlackList.Any (bl => p.Contains (bl.Fragment)))
-                    {
-#>
-// @@@ SKIPPING (Blacklisted): <#=p#>
-<#
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                })                        
             .Select (p => Include (p))
             .ToArray ();
     }
@@ -70,20 +56,4 @@
 
 <#+
     string ProjectFileName      = "Source.csproj";
-
-    BlackListedFileFragment[]   BlackList = new BlackListedFileFragment[0];
-
-    class BlackListedFileFragment
-    {
-        public string Fragment;
-    }
-
-    static BlackListedFileFragment BlackListFragment (string fragment)
-    {
-        return new BlackListedFileFragment
-        {
-            Fragment = fragment ?? "",
-        };
-    }
-
 #>

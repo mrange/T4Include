@@ -27,7 +27,7 @@
     // ----------------------------------------------------------------------------------------------
 #>
 <#
-    var seenIncludes = new HashSet<string> ();
+    var seenIncludes = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 #>
 
 // ############################################################################
@@ -35,44 +35,46 @@
     var processed = new List<IncludeFile> ();
     var toBeProcessed = new Queue<IncludeFile> (Includes ?? new IncludeFile[0]);
 
-    const string NewFileToken   = "<<New File>>";
-
-    var topLines        = new List<string>();
-    var bottomLines = new List<string>();
-
     while (toBeProcessed.Count > 0)
     {
         var include         = toBeProcessed.Dequeue ();
-        var fullPath        = Extension_GetFullPath (include); 
+        include.FullPath    = Extension_GetFullPath (include); 
         try
         {
             var fullContainer   = Extension_GetFullContainer (include);
 
-            if (seenIncludes.Contains (fullPath))
+            if (seenIncludes.Contains (include.FullPath))
             {
 #>
-// @@@ SKIPPING (Already seen): <#=fullPath#>
+// @@@ SKIPPING (Already seen): <#=include.FullPath#>
 <#
                 continue;
             }
 
-            seenIncludes.Add (fullPath);
+            if (BlackList.Any (bl => include.FullPath.Contains (bl.Fragment)))
+            {
+#>
+// @@@ SKIPPING (Blacklisted): <#=include.FullPath#>
+<#
+                continue;
+            }
+
+            seenIncludes.Add (include.FullPath);
 
             if (!Extension_Exists (include))
             {
 #>
-// @@@ SKIPPING (Not found): <#=fullPath#>
+// @@@ SKIPPING (Not found): <#=include.FullPath#>
 <#
                 continue;
             }
 #>
-// @@@ INCLUDING: <#=fullPath#>
+// @@@ INCLUDING: <#=include.FullPath#>
 <#
             processed.Add (include);
             var lines = Extension_ReadAllLines (include);
 
 
-            bottomLines.Add (NewFileToken);
             foreach (var line in lines)
             {
                 var includeMatch = s_matchInclude.Match (line);
@@ -83,22 +85,22 @@
 #>
 // @@@ INCLUDE_FOUND: <#=fileName#>
 <#
-                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName)));
+                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName), include.NoOuterNamespace));
                 }
                 else if (topMatch.Success)
                 {
-                    topLines.Add (line);
+                    include.TopLines.Add (line);
                 }
                 else
                 {
-                    bottomLines.Add (line);
+                    include.BottomLines.Add (line);
                 }
             }
         }
         catch (Exception exc)
         {
 #>
-// @@@ SKIPPING (Exception: "<#=exc.Message#>"): <#=fullPath#>
+// @@@ SKIPPING (Exception: "<#=exc.Message#>"): <#=include.FullPath#>
 <#
             continue;
         }
@@ -109,7 +111,7 @@
 // moved to top in order to work properly    
 // ############################################################################
 <#
-    foreach (var topLine in topLines.Distinct ().OrderBy (p => p))
+    foreach (var topLine in processed.SelectMany(i => i.TopLines).Distinct ().OrderBy (p => p))
     {
         WriteLine (topLine);
     }
@@ -127,46 +129,62 @@ using <#=u.Namespace#>;
 <#
     }
 
-    var first = true;
-    foreach (var bottomLine in bottomLines)
+    foreach (var include in processed)
     {
-        if (ReferenceEquals (NewFileToken, bottomLine))
-        {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-#>
-}
-<#
-            }
+        var hasNamespace = 
+                !string.IsNullOrEmpty (Namespace) 
+            &&  !include.NoOuterNamespace
+            ;
 #>
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: <#=include.FullPath#>
+<#
+        if (hasNamespace)
+        {
+#>
 namespace <#=Namespace#>
 {
 <#
         }
-        else
+
+        foreach (var bottomLine in include.BottomLines)
         {
-            Write ("    ");
+            if (hasNamespace)
+            {
+                Write ("    ");
+            }
+
             WriteLine (bottomLine);
         }
-    }
-
-    if (!first)
-    {
+        if (hasNamespace)
+        {
 #>
 }
+<#
+        }
+#>
+// @@@ END_INCLUDE: <#=include.FullPath#>
 // ############################################################################
 <#
     }
 #>
 
 // ############################################################################
+<#
+    if (string.IsNullOrEmpty (Namespace))
+    {
+#>
+namespace Include
+<#
+    }
+    else
+    {
+#>
 namespace <#=Namespace#>.Include
+<#
+    }
+#>
 {
     static partial class MetaData
     {
@@ -179,7 +197,7 @@ namespace <#=Namespace#>.Include
     {
         ++iter;
 #>
-        public const string Include_<#=iter#>       = @"<#=include.LocalPath#>";
+        public const string Include_<#=iter#>       = @"<#=include.FullPath#>";
 <#
     }
 #>
@@ -192,8 +210,9 @@ namespace <#=Namespace#>.Include
     string Namespace    = "T4Include"           ;
     string RootPath     = Extension_RootPath    ;
     
-    IncludeFile[]    Includes    = new IncludeFile[0];
-    UsingNamespace[] Usings      = new UsingNamespace[0];
+    IncludeFile[]               Includes    = new IncludeFile[0];
+    UsingNamespace[]            Usings      = new UsingNamespace[0];
+    BlackListedFileFragment[]   BlackList   = new [] {BlackListFragment("AssemblyInfo.cs")};
 
     static readonly Regex s_matchInclude = new Regex (
         @"^//\s*###\s*INCLUDE\s*:\s*(?<fileName>.*)$",
@@ -205,14 +224,36 @@ namespace <#=Namespace#>.Include
         RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
         );
 
-    sealed class IncludeFile 
+    class BlackListedFileFragment
     {
-        public string LocalPath;
+        public string Fragment;
     }
 
-    static IncludeFile Include (string file)
+    static BlackListedFileFragment BlackListFragment (string fragment)
     {
-        return new IncludeFile { LocalPath = file ?? "", };
+        return new BlackListedFileFragment
+        {
+            Fragment = fragment ?? "",
+        };
+    }
+
+    sealed class IncludeFile 
+    {
+        public string LocalPath             ;
+        public bool   NoOuterNamespace      ;
+
+        public string FullPath              ;
+        public List<string> TopLines        = new List<string> ();
+        public List<string> BottomLines     = new List<string> ();
+    }
+
+    static IncludeFile Include (string file, bool noOuterNamespace = false)
+    {
+        return new IncludeFile 
+            { 
+                LocalPath       = file ?? ""        , 
+                NoOuterNamespace= noOuterNamespace  ,
+            };
     }
 
     sealed class UsingNamespace 

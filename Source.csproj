@@ -11,6 +11,8 @@
     <AssemblyName>Source</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -21,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -55,6 +59,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Log.tt</DependentUpon>
     </Compile>
+    <Compile Include="Concurrency\RemainingTime.cs" />
+    <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
     <Compile Include="DataStreams\Generated_Serializer.cs">
       <DependentUpon>Generated_Serializer.tt</DependentUpon>
@@ -62,6 +68,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="DataStreams\DataStream.cs" />
+    <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -81,6 +88,33 @@
     <Compile Include="InterProcess\IChannel.cs" />
     <Compile Include="InterProcess\ISerializableMessage.cs" />
     <Compile Include="InterProcess\SharedMemoryChannel.cs" />
+    <Compile Include="Text\LineReaderExtensions.cs" />
+    <Compile Include="Text\LineToObjectExtensions.cs" />
+    <Compile Include="WPF\AnimatedEntrance.cs" />
+    <Compile Include="WPF\BindingCache.cs" />
+    <Compile Include="WPF\Bindings\BasicBindings.cs" />
+    <Compile Include="WPF\Generated_AnimatedEntrance_DependencyProperties.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_AnimatedEntrance_DependencyProperties.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WPF\Generated_AnimatedEntrance_StateMachine.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_AnimatedEntrance_StateMachine.tt</DependentUpon>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="NET20\Generated_Common.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_Common.cs</LastGenOutput>
+    </None>
+    <None Include="NET20\LINQ.cs" />
+    <None Include="NET20\Common.cs" />
+    <None Include="NET20\Generated_Common.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_Common.tt</DependentUpon>
+    </None>
     <Compile Include="Reflection\ClassDescriptor.cs" />
     <Compile Include="Reflection\StaticReflection.cs" />
     <Compile Include="Common\SubString.cs" />
@@ -108,6 +142,15 @@
     </Compile>
     <Compile Include="Testing\TestFor.cs" />
     <Compile Include="Testing\TestRunner.cs" />
+    <None Include="T4\StateMachine.ttinclude" />
+    <None Include="WPF\Generated_AnimatedEntrance_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_AnimatedEntrance_DependencyProperties.cs</LastGenOutput>
+    </None>
+    <None Include="WPF\Generated_AnimatedEntrance_StateMachine.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -136,9 +179,19 @@
     <None Include="InterProcess\Generated_SerializableMessages.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_SerializableMessages.cs</LastGenOutput>
+    <None Include="NonSource\NuGet\content\Generated_Commands.tt.pp">
+      <LastGenOutput>Generated_Commands.tt.cs</LastGenOutput>
+    </None>
+    <None Include="NonSource\NuGet\content\Generated_DependencyProperties.tt.pp">
+      <LastGenOutput>Generated_DependencyProperties.tt.cs</LastGenOutput>
+    </None>
+    <None Include="NonSource\NuGet\content\Generated_Events.tt.pp">
+      <LastGenOutput>Generated_Events.tt.cs</LastGenOutput>
     </None>
     <None Include="NonSource\NuGet\content\Include_T4Include.tt.pp" />
-    <None Include="NonSource\NuGet\T4Include.nuspec" />
+    <None Include="NonSource\NuGet\T4Include.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="README.md" />
     <None Include="T4\ParseExtensions.ttinclude" />
     <None Include="T4\DependencyProperties.ttinclude" />
@@ -157,6 +210,14 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NonSource\NuGet\T4IncludeWPF.nuspec">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NonSource\NuGet\content\T4IncludeControl.cs.pp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

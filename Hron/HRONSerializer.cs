@@ -71,7 +71,7 @@ namespace Source.HRON
 
         public void PreProcessor(SubString line)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.Append('!');
             m_sb.AppendSubString(line);
             WriteLine(m_sb);
@@ -79,14 +79,14 @@ namespace Source.HRON
 
         public void Empty (SubString line)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.AppendSubString(line);
             WriteLine(m_sb);
         }
 
         public void Comment(int indent, SubString comment)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.Append('\t', indent);
             m_sb.Append('#');
             m_sb.AppendSubString(comment);
@@ -95,7 +95,7 @@ namespace Source.HRON
 
         public void Value_Begin(SubString name)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.Append('\t', m_indent);
             m_sb.Append('=');
             m_sb.Append(name);
@@ -105,7 +105,7 @@ namespace Source.HRON
 
         public void Value_Line(SubString value)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.Append('\t', m_indent);
             m_sb.AppendSubString(value);
             WriteLine(m_sb);
@@ -118,7 +118,7 @@ namespace Source.HRON
 
         public void Object_Begin(SubString name)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.Append('\t', m_indent);
             m_sb.Append('@');
             m_sb.AppendSubString(name);
@@ -133,7 +133,7 @@ namespace Source.HRON
 
         public void Error(int lineNo, SubString line, HRONSerializer.ParseError parseError)
         {
-            m_sb.Clear();
+            m_sb.Remove(0, m_sb.Length);
             m_sb.AppendFormat(Config.DefaultCulture, "# Error at line {0}: {1}", lineNo, parseError);
             WriteLine(m_sb);
         }

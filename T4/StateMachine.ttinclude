@@ -1,0 +1,385 @@
+﻿<#@ include file="Header.ttinclude" #>
+
+<#
+// ----------------------------------------------------------------------------------------------
+// Copyright (c) Mårten Rånge.
+// ----------------------------------------------------------------------------------------------
+// This source code is subject to terms and conditions of the Microsoft Public License. A 
+// copy of the license can be found in the License.html file at the root of this distribution. 
+// If you cannot locate the  Microsoft Public License, please send an email to 
+// dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+//  by the terms of the Microsoft Public License.
+// ----------------------------------------------------------------------------------------------
+// You must not remove this notice, or any other, from this software.
+// ----------------------------------------------------------------------------------------------
+#>
+
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable InconsistentNaming
+// ReSharper disable InvocationIsSkipped
+// ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable MemberCanBeProtected.Local
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable PartialMethodWithSinglePart
+// ReSharper disable UnusedMember.Local
+
+namespace <#=Namespace#>
+{
+    using System;
+    using System.Threading;
+
+<#
+    foreach (var stm in Model)
+    {
+        var baseStates = stm
+            .Select(x => x.BaseName)
+            .Distinct()
+            .Where (x => x != "BaseState")
+            .ToArray()
+            ;
+#>
+    partial class <#=stm.Name#>
+    {
+        abstract partial class BaseState
+        {   
+            public abstract State CurrentState {get;}
+
+            // ----------------------------------------------------------------- 
+            protected BaseState ()
+            {
+                Constructed_BaseState();
+            }
+            // ----------------------------------------------------------------- 
+            partial void Constructed_BaseState();
+            // ----------------------------------------------------------------- 
+
+            // ----------------------------------------------------------------- 
+            public void InitializeState(BaseState state)
+            {
+                OnInitializeState(state);
+            }
+
+            public void EnterState(BaseState previousState)
+            {
+                OnEnterState(previousState);
+            }
+
+            public void LeaveState(BaseState nextState)
+            {
+                OnLeaveState(nextState);
+            }
+
+            protected virtual void OnInitializeState(BaseState state)
+            {
+                Initialize_BaseState(state);
+            }
+
+            protected virtual void OnEnterState(BaseState previousState)
+            {
+                Enter_BaseState(previousState);
+            }
+
+            protected virtual void OnLeaveState(BaseState nextState)
+            {
+                Leave_BaseState(nextState);
+            }
+            // ----------------------------------------------------------------- 
+            partial void Initialize_BaseState(BaseState state);
+            partial void Enter_BaseState(BaseState previousState);
+            partial void Leave_BaseState(BaseState nextState);
+            // ----------------------------------------------------------------- 
+        }
+
+<#
+    foreach (var baseState in baseStates)
+    {
+#>
+        abstract partial class <#=baseState#> : BaseState
+        {   
+            // ----------------------------------------------------------------- 
+            protected <#=baseState#> ()
+            {
+                Constructed_<#=baseState#>();
+            }
+            // ----------------------------------------------------------------- 
+            partial void Constructed_<#=baseState#>();
+            // ----------------------------------------------------------------- 
+
+
+            // ----------------------------------------------------------------- 
+            protected override void OnEnterState(BaseState previousState)
+            {
+                Enter_<#=baseState#>(previousState);
+            }
+
+            protected override void OnLeaveState(BaseState nextState)
+            {
+                Leave_<#=baseState#>(nextState);
+            }
+            // ----------------------------------------------------------------- 
+            partial void Enter_<#=baseState#>(BaseState previousState);
+            partial void Leave_<#=baseState#>(BaseState nextState);
+            // ----------------------------------------------------------------- 
+        }
+<#
+    }
+#>
+
+        enum State
+        {
+<#
+    foreach (var state in stm)
+    {
+#>
+            <#=state.Name#>,
+<#
+    }
+#>
+        }
+
+<#
+    foreach (var state in stm)
+    {
+#>
+        sealed partial class State_<#=state.Name#> : <#=state.BaseName#>
+        {
+            // ----------------------------------------------------------------- 
+            public State_<#=state.Name#> ()
+            {
+                Constructed_State_<#=state.Name#>();
+            }
+            // ----------------------------------------------------------------- 
+            partial void Constructed_State_<#=state.Name#>();
+            // ----------------------------------------------------------------- 
+
+            public override State CurrentState { get { return State.<#=state.Name#>; } }
+
+            // ----------------------------------------------------------------- 
+            protected override void OnEnterState(BaseState previousState)
+            {
+                base.OnEnterState(previousState);
+                Enter_<#=state.Name#>(previousState);
+            }
+
+            protected override void OnLeaveState(BaseState nextState)
+            {
+                Leave_<#=state.Name#>(nextState);
+                base.OnLeaveState(nextState);
+            }
+            // ----------------------------------------------------------------- 
+            partial void Enter_<#=state.Name#>(BaseState previousState);
+            partial void Leave_<#=state.Name#>(BaseState nextState);
+            // ----------------------------------------------------------------- 
+
+
+<#
+    foreach (var edge in state)
+    {
+#>
+            // ----------------------------------------------------------------- 
+            // From:    <#=state.Name#>
+            // To:      <#=edge.To#>
+            // ----------------------------------------------------------------- 
+            public bool IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterList ()#>)
+            {
+                var result = true;
+
+                IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (<#=edge.GetParameterValueList ()#>, ref result);
+
+                return result;
+            }
+
+
+            public BaseState EdgeFrom_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterList ()#>)            
+            {
+                if (!IsEdgeValid_<#=state.Name#>_To_<#=edge.To#>(<#=edge.GetParameterValueList ()#>))
+                {
+                    return this;
+                }
+
+                var nextState = new State_<#=edge.To#>();
+
+                InitializeState(nextState);
+
+                TransformInto_<#=edge.To#> (<#=edge.GetParameterValueList ()#>, nextState);
+
+                LeaveState(nextState);
+                nextState.EnterState(this);
+               
+                return nextState;
+            }
+            // ----------------------------------------------------------------- 
+            partial void IsEdgeValid_<#=state.Name#>_To_<#=edge.To#> (<#=edge.GetParameterList ()#>, ref bool result);
+            partial void TransformInto_<#=edge.To#> (<#=edge.GetParameterList ()#>, State_<#=edge.To#> nextState);
+            // ----------------------------------------------------------------- 
+
+<#
+    }
+#>
+        }
+
+<#
+    }
+#>
+
+        abstract partial class BaseStateVisitor
+        {
+<#
+    foreach (var state in stm)
+    {
+#>
+            public abstract BaseState Visit_<#=state.Name#>(State_<#=state.Name#> state);
+<#
+    }
+#>
+        }
+
+        abstract partial class BaseThrowingStateVisitor : BaseStateVisitor
+        {
+<#
+    foreach (var state in stm)
+    {
+#>
+            public override BaseState Visit_<#=state.Name#>(State_<#=state.Name#> state)
+            {
+                throw new ArgumentException ("state");
+            }
+<#
+    }
+#>
+        }
+
+        abstract partial class BaseNoActionStateVisitor : BaseStateVisitor
+        {
+<#
+    foreach (var state in stm)
+    {
+#>
+            public override BaseState Visit_<#=state.Name#>(State_<#=state.Name#> state)
+            {
+                return state;
+            }
+<#
+    }
+#>
+        }
+
+        bool SetState (BaseState expectedState, BaseState nextState)
+        {
+            if (nextState == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals (expectedState, nextState))
+            {
+                return true;
+            }
+
+            return ReferenceEquals(Interlocked.CompareExchange(ref m_currentState, nextState, expectedState),expectedState);
+        }
+
+        bool UpdateState(BaseStateVisitor visitor)
+        {
+            var currentState = m_currentState;
+            if (visitor != null && currentState != null)
+            {
+                switch (currentState.CurrentState)
+                {
+<#
+    foreach (var state in stm)
+    {
+#>
+                case State.<#=state.Name#>:
+                    return SetState (currentState, visitor.Visit_<#=state.Name#>((State_<#=state.Name#>)currentState));
+<#
+    }
+#>
+                default:
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        BaseState m_currentState;
+    }
+<#
+    }
+#>
+}
+
+<#+
+    static string Namespace = "Source";
+
+    static StateMachine[] Model = new StateMachine[0];
+
+    class StateMachine : BaseContainer<Root, State>
+    {
+        public readonly string Name     ;
+
+        public StateMachine (string name)
+        {
+            Name        = name      ?? S_NoName;
+        }
+    }
+
+    class State : BaseContainer<StateMachine, Edge>
+    {
+        public readonly string Name     ;
+        public readonly string BaseName ;
+
+        public State (string name, string baseName = null)
+        {
+            Name        = name      ?? S_NoName     ;
+            BaseName    = baseName  ?? "BaseState"  ;
+        }          
+    }
+
+    class Edge : BaseContainer<State, EdgeParameter>
+    {
+        public readonly string To;
+
+        public Edge (string to)
+        {
+            To = to ?? S_NoName;
+        }          
+
+        public string GetParameterList ()
+        {
+            return string.Join (
+                ", ",
+                this.Select (e => e.Type + " " + e.Name).ToArray ()
+                ); 
+        }
+
+        public string GetParameterValueList ()
+        {
+            return string.Join (
+                ", ",
+                this.Select (e => e.Name).ToArray ()
+                ); 
+        }
+    }
+
+    class EdgeParameter : BaseEntity<Edge>
+    {
+        public readonly string Type ;
+        public readonly string Name ;
+
+        public EdgeParameter (string type, string name)
+        {
+            Type    = type  ?? S_NoType ;
+            Name    = name  ?? S_NoName ;
+        }          
+    }
+
+    static EdgeParameter P (string type, string name)
+    {
+        return new EdgeParameter (type, name);
+    }
+
+#>

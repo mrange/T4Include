@@ -1,0 +1,23 @@
+﻿
+<#
+
+    Namespace = "Test_Functionality.T4";
+
+    Default_GenerateChangedEvent            = false ;              
+    Default_GenerateCoerceEvent             = false ;
+    Default_GenerateCollectionChangedEvent  = false ;              
+
+    Model = new []
+    {
+        new ClassDefinition ("TestControl")
+        {
+            P ("bool"   ,   "IsValid"       , generateChangedEvent:true         ),
+            P ("string" ,   "Additional"    , flags:PropertyFlags.IsAttached    )
+        },
+    };
+
+#>
+
+<#@ include file="$(SolutionDir)\T4\DependencyProperties.ttinclude" #>
+
+

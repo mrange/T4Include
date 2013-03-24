@@ -16,6 +16,24 @@ namespace Source.Reflection
     using System.Linq.Expressions;
     using System.Reflection;
 
+    static partial class StaticReflection
+    {
+        public static MethodInfo GetMethodInfo (Expression<Action> expr)
+        {
+            return ((MethodCallExpression)expr.Body).Method;
+        }
+
+        public static MemberInfo GetMemberInfo<TReturn> (Expression<Func<TReturn>> expr)
+        {
+            return ((MemberExpression)expr.Body).Member;
+        }
+
+        public static ConstructorInfo GetConstructorInfo<TReturn> (Expression<Func<TReturn>> expr)
+        {
+            return ((NewExpression)expr.Body).Constructor;
+        }
+    }
+
     static partial class StaticReflection<T>
     {
         public static MethodInfo GetMethodInfo (Expression<Action<T>> expr)
@@ -23,24 +41,9 @@ namespace Source.Reflection
             return ((MethodCallExpression)expr.Body).Method;
         }
 
-        public static MethodInfo GetMethodInfo(Expression<Action> expr)
-        {
-            return ((MethodCallExpression)expr.Body).Method;
-        }
-
         public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<T, TReturn>> expr)
         {
             return ((MemberExpression)expr.Body).Member;
-        }
-
-        public static MemberInfo GetMemberInfo<TReturn>(Expression<Func<TReturn>> expr)
-        {
-            return ((MemberExpression)expr.Body).Member;
-        }
-
-        public static ConstructorInfo GetConstructorInfo<TReturn>(Expression<Func<TReturn>> expr)
-        {
-            return ((NewExpression)expr.Body).Constructor;
         }
     }
 }
