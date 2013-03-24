@@ -22,23 +22,22 @@
 // ### INCLUDE: ../Extensions/WpfExtensions.cs
 
 
-using System.Linq;
-using System.Windows.Media;
-using System.Windows.Threading;
-using Source.Extensions;
-
 namespace Source.WPF
 {
+    using Source.Extensions;
+    using System;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Markup;
-    using System;
+    using System.Windows.Media;
     using System.Windows.Media.Animation;
+    using System.Windows.Threading;
 
     [TemplatePart(Name = PART_Panel    , Type = typeof(Panel))]
     [ContentProperty("Children")]
-    sealed partial class AnimatedEntrance : Control
+    partial class AnimatedEntrance : Control
     {
         const string PART_Panel    = @"PART_Panel"    ;
     
