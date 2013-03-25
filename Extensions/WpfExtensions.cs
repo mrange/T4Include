@@ -205,6 +205,32 @@ namespace Source.Extensions
         {
             return new Rect(0,0,size.Width, size.Height);
         }
+
+        public static Size ScaleToFit (this Size size, Size toFit)
+        {
+            if (size.Height.IsNear (0))
+            {
+                return new Size (toFit.Width, 0);
+            }
+
+            if (toFit.Height.IsNear (0))
+            {
+                return new Size (toFit.Width, 0);
+            }
+
+            var ratio = size.Width / size.Height;
+            var toFitRatio = toFit.Width / size.Height;
+
+            if (ratio > toFitRatio)
+            {
+                return new Size(toFit.Width, toFit.Width/ratio);    
+            }
+            else
+            {
+                return new Size(toFit.Height*ratio, toFit.Height);    
+            }
+
+        }
     
     }
 }
