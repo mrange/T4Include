@@ -1,0 +1,14 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("CachedVisual")
+        {
+            P ("UIElement"              , "Child"                                       ),
+            P ("Strategy"               , "CacheStrategy"                               ),
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

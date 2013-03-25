@@ -77,6 +77,12 @@
     <Compile Include="WPF\AnimatedEntrance.cs" />
     <Compile Include="WPF\BindingCache.cs" />
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
+    <Compile Include="WPF\CachedVisual.cs" />
+    <Compile Include="WPF\Generated_CachedVisual_DependencyProperties.cs">
+      <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WPF\Generated_AccordionPanel_DependencyProperties.cs">
       <DependentUpon>Generated_AccordionPanel_DependencyProperties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -132,6 +138,10 @@
     <Compile Include="Testing\TestFor.cs" />
     <Compile Include="Testing\TestRunner.cs" />
     <None Include="T4\StateMachine.ttinclude" />
+    <None Include="WPF\Generated_CachedVisual_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_CachedVisual_DependencyProperties.cs</LastGenOutput>
+    </None>
     <None Include="WPF\Generated_AccordionPanel_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_AccordionPanel_DependencyProperties.cs</LastGenOutput>
