@@ -249,7 +249,7 @@ namespace Source.Reflection
             var pi = mi as PropertyInfo;
             var fi = mi as FieldInfo;
 
-            if (pi != null && pi.GetMethod != null && pi.GetMethod.GetParameters().Length == 0)
+            if (pi != null && pi.GetGetMethod(nonPublic:true) != null && pi.GetGetMethod(nonPublic:true).GetParameters().Length == 0)
             {
                 var instance = Expression.Parameter(typeof(object), "instance");
 
