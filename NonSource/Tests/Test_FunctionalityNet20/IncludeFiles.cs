@@ -32,6 +32,7 @@
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -443,10 +444,11 @@ namespace FileInclude
     
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\NET20\Common.cs
 // ----------------------------------------------------------------------------------------------
 // Copyright (c) Mårten Rånge.
 // ----------------------------------------------------------------------------------------------
@@ -470,10 +472,11 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\NET20\Common.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -496,10 +499,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
@@ -543,14 +547,15 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Config.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
+    // Copyright (c) M�rten R�nge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -926,10 +931,11 @@ namespace FileInclude
         }
     }
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\SubString.cs
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\NET20\Generated_Common.cs
 // ----------------------------------------------------------------------------------------------
 // Copyright (c) Mårten Rånge.
 // ----------------------------------------------------------------------------------------------
@@ -1026,7 +1032,7 @@ namespace System
 
 
 }
-
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\NET20\Generated_Common.cs
 // ############################################################################
 
 // ############################################################################
@@ -1035,10 +1041,10 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2012-12-16T14:58:51";
+        public const string IncludeDate     = @"2013-03-29T07:35:03";
 
-        public const string Include_0       = @"HRON\HRONSerializer.cs";
-        public const string Include_1       = @"NET20\Common.cs";
+        public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_1       = @"C:\temp\GitHub\T4Include\NET20\Common.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";

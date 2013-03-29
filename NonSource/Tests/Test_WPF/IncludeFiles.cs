@@ -21,9 +21,11 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
@@ -39,6 +41,7 @@
 // ReSharper disable InvocationIsSkipped
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable MemberCanBeProtected.Local
+// ReSharper disable NotAccessedField.Local
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable PossibleUnintendedReferenceComparison
@@ -46,6 +49,7 @@
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantCast
 // ReSharper disable RedundantIfElseBlock
+// ReSharper disable RedundantNameQualifier
 // ReSharper disable RedundantUsingDirective
 // ReSharper disable UnassignedField.Local
 // ReSharper disable UnusedMember.Local
@@ -1722,10 +1726,12 @@ namespace FileInclude
     namespace Source.Extensions
     {
         using System;
-        using System.Windows.Threading;
+        using System.Collections.Generic;
+        using System.Linq;
         using System.Windows;
         using System.Windows.Data;
         using System.Windows.Media;
+        using System.Windows.Threading;
     
         using Source.Common;
     
@@ -1910,6 +1916,29 @@ namespace FileInclude
                 return new Rect(0,0,size.Width, size.Height);
             }
         
+            public static IEnumerable<DependencyObject> GetVisualChildren (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var count = VisualTreeHelper.GetChildrenCount (dependencyObject);
+                for (var iter = 0; iter < count; ++iter)
+                {
+                    yield return VisualTreeHelper.GetChild (dependencyObject, iter);
+                }
+            }
+    
+            public static IEnumerable<DependencyObject> GetLogicalChildren (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return Array<DependencyObject>.Empty;    
+                }
+    
+                return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
+            }
         }
     }
 }
@@ -2252,6 +2281,33 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Common
+    {
+        static class Array<T>
+        {
+            public static readonly T[] Empty = new T[0];
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
 namespace FileInclude
 {
@@ -2478,7 +2534,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T21:14:48";
+        public const string IncludeDate     = @"2013-03-29T07:35:03";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
@@ -2486,9 +2542,10 @@ namespace FileInclude.Include
         public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
         public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

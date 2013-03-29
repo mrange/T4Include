@@ -21,9 +21,11 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
@@ -530,7 +532,7 @@ namespace FileInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
-    #if !NETFX_CORE
+    #if !NETFX_CORE && !SILVERLIGHT && !WINDOWS_PHONE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -586,7 +588,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-02-17T09:47:12";
+        public const string IncludeDate     = @"2013-03-29T07:35:00";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";

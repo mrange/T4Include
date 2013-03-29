@@ -3272,7 +3272,7 @@ namespace FileInclude
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
+    // Copyright (c) M�rten R�nge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -3521,7 +3521,7 @@ namespace FileInclude
                 var pi = mi as PropertyInfo;
                 var fi = mi as FieldInfo;
     
-                if (pi != null && pi.GetMethod != null && pi.GetMethod.GetParameters().Length == 0)
+                if (pi != null && pi.GetGetMethod(nonPublic:true) != null && pi.GetGetMethod(nonPublic:true).GetParameters().Length == 0)
                 {
                     var instance = Expression.Parameter(typeof(object), "instance");
     
@@ -3559,7 +3559,7 @@ namespace FileInclude
                 var pi = mi as PropertyInfo;
                 var fi = mi as FieldInfo;
     
-                if (pi != null && pi.SetMethod != null && pi.SetMethod.GetParameters().Length == 1)
+                if (pi != null && pi.GetSetMethod(nonPublic:true) != null && pi.GetSetMethod(nonPublic:true).GetParameters().Length == 1)
                 {
                     var instance = Expression.Parameter(typeof(object), "instance");
                     var value = Expression.Parameter(typeof(object), "value");
@@ -4157,7 +4157,7 @@ namespace FileInclude
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
+    // Copyright (c) M�rten R�nge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -4651,7 +4651,7 @@ namespace FileInclude
 namespace FileInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) Mårten Rånge.
+    // Copyright (c) M�rten R�nge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -5318,7 +5318,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-24T17:38:23";
+        public const string IncludeDate     = @"2013-03-29T07:35:02";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

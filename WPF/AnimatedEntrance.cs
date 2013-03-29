@@ -13,10 +13,12 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable MemberCanBeProtected.Local
+// ReSharper disable NotAccessedField.Local
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantIfElseBlock
+// ReSharper disable RedundantNameQualifier
 // ReSharper disable UnassignedField.Local
 // ReSharper disable UnusedParameter.Local
 
