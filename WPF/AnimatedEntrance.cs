@@ -183,9 +183,11 @@ namespace Source.WPF
 
                 Owner.m_current.Opacity         = 1                     ;
                 Owner.m_current.RenderTransform = PreviousTransform     ;
+                Owner.m_current.IsHitTestVisible= false                 ;
 
                 Owner.m_next.Opacity            = nextOpacity           ;
                 Owner.m_next.RenderTransform    = NextTransform         ;
+                Owner.m_next.IsHitTestVisible   = false                 ;
 
                 Owner.m_next.Child  = Next;
 
@@ -277,9 +279,11 @@ namespace Source.WPF
 
                 Owner.m_current.Opacity             = 1     ;
                 Owner.m_current.RenderTransform     = null  ;
+                Owner.m_current.IsHitTestVisible    = true  ;
 
                 Owner.m_next.Opacity                = 1     ;
-                Owner.m_current.RenderTransform     = null  ;
+                Owner.m_next.RenderTransform        = null  ;
+                Owner.m_next.IsHitTestVisible       = true  ;
                 
                 Owner.m_next.Child                  = null  ;
 

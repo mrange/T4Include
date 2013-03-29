@@ -234,9 +234,11 @@ namespace FileInclude
     
                     Owner.m_current.Opacity         = 1                     ;
                     Owner.m_current.RenderTransform = PreviousTransform     ;
+                    Owner.m_current.IsHitTestVisible= false                 ;
     
                     Owner.m_next.Opacity            = nextOpacity           ;
                     Owner.m_next.RenderTransform    = NextTransform         ;
+                    Owner.m_next.IsHitTestVisible   = false                 ;
     
                     Owner.m_next.Child  = Next;
     
@@ -328,9 +330,11 @@ namespace FileInclude
     
                     Owner.m_current.Opacity             = 1     ;
                     Owner.m_current.RenderTransform     = null  ;
+                    Owner.m_current.IsHitTestVisible    = true  ;
     
                     Owner.m_next.Opacity                = 1     ;
-                    Owner.m_current.RenderTransform     = null  ;
+                    Owner.m_next.RenderTransform        = null  ;
+                    Owner.m_next.IsHitTestVisible       = true  ;
                     
                     Owner.m_next.Child                  = null  ;
     
@@ -2915,7 +2919,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T08:13:56";
+        public const string IncludeDate     = @"2013-03-29T08:38:46";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
