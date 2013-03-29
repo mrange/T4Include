@@ -354,29 +354,31 @@ namespace FileInclude
                 {
                     var clock = GetAnimationClock(Owner);
     
+                    var clockWithEase = s_transitionEase.Ease(clock);
+    
                     switch (PresentOption)
                     {
                         case Option.Fade:
-                            Owner.m_next.Opacity    = clock.Interpolate (0.0, 1.0);
+                            Owner.m_next.Opacity    = clockWithEase.Interpolate (0.0, 1.0);
                             break;
                         case Option.PushFromLeft:
                         case Option.PushFromRight:
                         case Option.PushFromTop:
                         case Option.PushFromBottom:
-                            PreviousTransform.UpdateFromVector(clock.Interpolate (PreviousOffset_Start, PreviousOffset_End));
-                            NextTransform.UpdateFromVector(clock.Interpolate (NextOffset_Start, NextOffset_End));
+                            PreviousTransform.UpdateFromVector(clockWithEase.Interpolate (PreviousOffset_Start, PreviousOffset_End));
+                            NextTransform.UpdateFromVector(clockWithEase.Interpolate (NextOffset_Start, NextOffset_End));
                             break;
                         case Option.CoverFromLeft:
                         case Option.CoverFromRight:
                         case Option.CoverFromTop:
                         case Option.CoverFromBottom:
-                            NextTransform.UpdateFromVector(clock.Interpolate (NextOffset_Start, NextOffset_End));
+                            NextTransform.UpdateFromVector(clockWithEase.Interpolate (NextOffset_Start, NextOffset_End));
                             break;
                         case Option.RevealToLeft:
                         case Option.RevealToRight:
                         case Option.RevealToTop:
                         case Option.RevealToBottom:
-                            PreviousTransform.UpdateFromVector(clock.Interpolate (PreviousOffset_Start, PreviousOffset_End));
+                            PreviousTransform.UpdateFromVector(clockWithEase.Interpolate (PreviousOffset_Start, PreviousOffset_End));
                             break;
                         default:
                         case Option.Instant:
@@ -549,6 +551,7 @@ namespace FileInclude
             readonly static Duration        s_transitionDuration;
             readonly static Duration        s_delayDuration     ;
             readonly static DoubleAnimation s_transitionClock   ;
+            readonly static IEasingFunction s_transitionEase    ;
     
             static readonly AnimationClockTickVisitor s_animationClockTickVisitor = new AnimationClockTickVisitor();
             static readonly DelayVisitor s_delayVisitor = new DelayVisitor();
@@ -566,6 +569,13 @@ namespace FileInclude
                                                                   HorizontalAlignment = HorizontalAlignment.Stretch,
                                                                   VerticalAlignment = VerticalAlignment.Stretch,
                                                               };
+    
+    
+            static partial void Initialize (
+                ref Duration transitionDuration,
+                ref Duration delayDuration,
+                ref IEasingFunction transitionEase
+                );
     
             static AnimatedEntrance()
             {
@@ -585,18 +595,29 @@ namespace FileInclude
                     parserContext
                     );
         
-                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
-                s_delayDuration         = new Duration (TimeSpan.FromMilliseconds(200));
+                var transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
+                var delayDuration         = new Duration (TimeSpan.FromMilliseconds(200));
+                IEasingFunction transitionEase        = new ExponentialEase
+                                                {
+                                                    EasingMode = EasingMode.EaseInOut,
+                                                };
+    
+                s_transitionDuration      = transitionDuration  ;
+                s_delayDuration           = delayDuration       ;
+                s_transitionEase          = transitionEase      ;
+    
+                Initialize (ref transitionDuration, ref delayDuration, ref transitionEase);
+    
+                s_transitionDuration      = transitionDuration  ;
+                s_delayDuration           = delayDuration       ;
+                s_transitionEase          = transitionEase      ;
+    
                 s_transitionClock       = new DoubleAnimation(
                     0,
                     1,
                     s_transitionDuration, 
                     FillBehavior.Stop
                     );
-                s_transitionClock.EasingFunction = new ExponentialEase
-                                                       {
-                                                           EasingMode = EasingMode.EaseInOut,
-                                                       };
     
                 StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
             }
@@ -708,22 +729,35 @@ namespace FileInclude
         {
             readonly static Duration        s_transitionDuration;
             readonly static DoubleAnimation s_transitionClock   ;
-            readonly static ExponentialEase s_animationEase     ;
+            readonly static IEasingFunction s_animationEase     ;
+    
+            static partial void Initialize (
+                ref Duration animationDuration,
+                ref IEasingFunction animationEase
+                );
     
             static AccordionPanel ()
             {
-                s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
+                var transitionDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+                IEasingFunction animationEase       = new ExponentialEase
+                                        {
+                                            EasingMode = EasingMode.EaseInOut,
+                                        };
+    
+                s_transitionDuration    = transitionDuration;
+                s_animationEase         = animationEase;
+    
+                Initialize (ref transitionDuration, ref animationEase);
+    
+                s_transitionDuration    = transitionDuration;
+                s_animationEase         = animationEase;
+    
                 s_transitionClock       = new DoubleAnimation(
-                    0,
-                    1,
-                    s_transitionDuration, 
+                    0                       ,
+                    1                       ,
+                    s_transitionDuration    , 
                     FillBehavior.Stop
                     );
-    
-                s_animationEase = new ExponentialEase
-                                    {
-                                        EasingMode = EasingMode.EaseInOut,
-                                    };
                 
             }
     
@@ -2918,7 +2952,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T10:58:54";
+        public const string IncludeDate     = @"2013-03-29T11:11:37";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

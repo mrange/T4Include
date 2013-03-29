@@ -34,7 +34,7 @@ namespace Source.WPF
 
         static partial void Initialize (
             ref Duration animationDuration,
-            ref IEasingFunction animationEasy
+            ref IEasingFunction animationEase
             );
 
         static AccordionPanel ()
