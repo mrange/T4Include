@@ -71,6 +71,8 @@
     <Compile Include="Common\Log.cs" />
     <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
     <Compile Include="HRON\HRONObjectSerializer.cs" />
+    <Compile Include="NonSource\Global_AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\LineReaderExtensions.cs" />
     <Compile Include="Text\LineToObjectExtensions.cs" />
     <Compile Include="WPF\AccordionPanel.cs" />
@@ -155,9 +157,7 @@
       <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Common\Generated_Log.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
