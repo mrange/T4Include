@@ -12,5 +12,5 @@
 
 using System.Reflection;
 
-[assembly: AssemblyTitle("Test_Functionality")]
+[assembly: AssemblyTitle("Test_T4Include")]
 [assembly: AssemblyDescription("")]
