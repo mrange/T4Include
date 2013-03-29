@@ -30,21 +30,35 @@ namespace Source.WPF
     {
         readonly static Duration        s_transitionDuration;
         readonly static DoubleAnimation s_transitionClock   ;
+        readonly static IEasingFunction s_animationEase     ;
+
+        static partial void Initialize (
+            ref Duration animationDuration,
+            ref IEasingFunction animationEasy
+            );
 
         static AccordionPanel ()
         {
-            s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
+            var transitionDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+            IEasingFunction animationEase       = new ExponentialEase
+                                    {
+                                        EasingMode = EasingMode.EaseInOut,
+                                    };
+
+            s_transitionDuration    = transitionDuration;
+            s_animationEase         = animationEase;
+
+            Initialize (ref transitionDuration, ref animationEase);
+
+            s_transitionDuration    = transitionDuration;
+            s_animationEase         = animationEase;
+
             s_transitionClock       = new DoubleAnimation(
-                0,
-                1,
-                s_transitionDuration, 
+                0                       ,
+                1                       ,
+                s_transitionDuration    , 
                 FillBehavior.Stop
                 );
-
-            s_transitionClock.EasingFunction = new ExponentialEase
-                                                   {
-                                                       EasingMode = EasingMode.EaseInOut,
-                                                   };
             
         }
 
@@ -60,17 +74,15 @@ namespace Source.WPF
             public double               From        ;
             public double               To          ;
             public TranslateTransform   Transform   ;
-            public double               GetCurrent (double clock)
+
+            public double               GetCurrentX (double clock)
             {
-                return clock.Interpolate(From, To);
+                return s_animationEase.Ease(clock).Interpolate(From, To);
             }
 
-            public void Update(double x)
+            public void UpdateX(double x)
             {
-                if (Transform != null)
-                {
-                    Transform.X = x;
-                }
+                Transform.X = x;
             }
         }
 
@@ -143,12 +155,12 @@ namespace Source.WPF
                 child.Arrange(adjustedRect);
                 child.RenderTransform = state.Transform;
 
-                var current = state.GetCurrent (animationClock); 
+                var current = state.GetCurrentX (animationClock); 
 
                 state.From  = current;
                 state.To    = desiredX;
 
-                state.Update (current);
+                state.UpdateX (current);
 
                 doAnimate |= !state.From.IsNear (state.To);
 
@@ -210,7 +222,7 @@ namespace Source.WPF
                 var state = GetChildState(child);
                 if (state != null)
                 {
-                    state.Update (state.GetCurrent(newValue));
+                    state.UpdateX (state.GetCurrentX(newValue));
                 }
                 else
                 {
@@ -236,7 +248,7 @@ namespace Source.WPF
             {
                 var child = Children[index];
                 var state = GetChildState(child);
-                var current = state.GetCurrent(animationClock);
+                var current = state.GetCurrentX(animationClock);
 
                 if (current > pos.X)
                 {

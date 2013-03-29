@@ -708,6 +708,7 @@ namespace FileInclude
         {
             readonly static Duration        s_transitionDuration;
             readonly static DoubleAnimation s_transitionClock   ;
+            readonly static ExponentialEase s_animationEase     ;
     
             static AccordionPanel ()
             {
@@ -719,10 +720,10 @@ namespace FileInclude
                     FillBehavior.Stop
                     );
     
-                s_transitionClock.EasingFunction = new ExponentialEase
-                                                       {
-                                                           EasingMode = EasingMode.EaseInOut,
-                                                       };
+                s_animationEase = new ExponentialEase
+                                    {
+                                        EasingMode = EasingMode.EaseInOut,
+                                    };
                 
             }
     
@@ -738,17 +739,15 @@ namespace FileInclude
                 public double               From        ;
                 public double               To          ;
                 public TranslateTransform   Transform   ;
-                public double               GetCurrent (double clock)
+    
+                public double               GetCurrentX (double clock)
                 {
-                    return clock.Interpolate(From, To);
+                    return s_animationEase.Ease(clock).Interpolate(From, To);
                 }
     
-                public void Update(double x)
+                public void UpdateX(double x)
                 {
-                    if (Transform != null)
-                    {
-                        Transform.X = x;
-                    }
+                    Transform.X = x;
                 }
             }
     
@@ -821,12 +820,12 @@ namespace FileInclude
                     child.Arrange(adjustedRect);
                     child.RenderTransform = state.Transform;
     
-                    var current = state.GetCurrent (animationClock); 
+                    var current = state.GetCurrentX (animationClock); 
     
                     state.From  = current;
                     state.To    = desiredX;
     
-                    state.Update (current);
+                    state.UpdateX (current);
     
                     doAnimate |= !state.From.IsNear (state.To);
     
@@ -888,7 +887,7 @@ namespace FileInclude
                     var state = GetChildState(child);
                     if (state != null)
                     {
-                        state.Update (state.GetCurrent(newValue));
+                        state.UpdateX (state.GetCurrentX(newValue));
                     }
                     else
                     {
@@ -914,7 +913,7 @@ namespace FileInclude
                 {
                     var child = Children[index];
                     var state = GetChildState(child);
-                    var current = state.GetCurrent(animationClock);
+                    var current = state.GetCurrentX(animationClock);
     
                     if (current > pos.X)
                     {
@@ -2919,7 +2918,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T08:38:46";
+        public const string IncludeDate     = @"2013-03-29T10:58:54";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
