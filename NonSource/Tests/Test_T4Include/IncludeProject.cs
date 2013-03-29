@@ -3806,7 +3806,7 @@ namespace ProjectInclude
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) M�rten R�nge.
+    // Copyright (c) Mårten Rånge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -4199,7 +4199,7 @@ namespace ProjectInclude
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) M�rten R�nge.
+    // Copyright (c) Mårten Rånge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -4583,7 +4583,7 @@ namespace ProjectInclude
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) M�rten R�nge.
+    // Copyright (c) Mårten Rånge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
@@ -7100,7 +7100,7 @@ namespace ProjectInclude
 namespace ProjectInclude
 {
     // ----------------------------------------------------------------------------------------------
-    // Copyright (c) M�rten R�nge.
+    // Copyright (c) Mårten Rånge.
     // ----------------------------------------------------------------------------------------------
     // This source code is subject to terms and conditions of the Microsoft Public License. A 
     // copy of the license can be found in the License.html file at the root of this distribution. 
