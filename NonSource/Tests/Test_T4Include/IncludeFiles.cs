@@ -588,7 +588,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T07:35:00";
+        public const string IncludeDate     = @"2013-03-29T07:39:53";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";

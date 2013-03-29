@@ -588,7 +588,7 @@ namespace WebInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"https://raw.github.com/";
-        public const string IncludeDate     = @"2013-03-29T07:35:02";
+        public const string IncludeDate     = @"2013-03-29T07:39:55";
 
         public const string Include_0       = @"https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs";
         public const string Include_1       = @"https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs";

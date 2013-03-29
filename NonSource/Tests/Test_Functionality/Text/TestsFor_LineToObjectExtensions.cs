@@ -11,6 +11,8 @@
 // ----------------------------------------------------------------------------------------------
 
 // ReSharper disable InconsistentNaming
+#pragma warning disable 169
+#pragma warning disable 649
 
 using System.IO;
 using System.Linq;

@@ -4196,10 +4196,10 @@ namespace ProjectInclude
                 public Option           PresentOption           ;
                 public AnimationClock   Clock                   ;
     
-                public Vector           PreviousOffset_Start    ;
+                public readonly Vector  PreviousOffset_Start    = new Vector ();
                 public Vector           PreviousOffset_End      ;
                 public Vector           NextOffset_Start        ;
-                public Vector           NextOffset_End          ;
+                public readonly Vector  NextOffset_End          = new Vector ();
     
                 public TranslateTransform   PreviousTransform   ;
                 public TranslateTransform   NextTransform       ;
@@ -7312,7 +7312,7 @@ namespace ProjectInclude
     
             readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
             Thread                              m_executingThread   ;
-            volatile bool                       m_done              ;
+            bool                                m_done              ;
     
             int                                 m_taskFailureCount;
     
@@ -9753,7 +9753,7 @@ namespace ProjectInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"C:\temp\GitHub\T4Include\NonSource\Tests\Test_T4Include\..\..\..";
-        public const string IncludeDate     = @"2013-03-29T07:35:00";
+        public const string IncludeDate     = @"2013-03-29T07:39:53";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";

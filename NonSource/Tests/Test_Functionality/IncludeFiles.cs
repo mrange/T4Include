@@ -1484,7 +1484,7 @@ namespace FileInclude
     
             readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
             Thread                              m_executingThread   ;
-            volatile bool                       m_done              ;
+            bool                                m_done              ;
     
             int                                 m_taskFailureCount;
     
@@ -5318,7 +5318,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T07:35:02";
+        public const string IncludeDate     = @"2013-03-29T07:39:55";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
