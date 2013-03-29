@@ -159,10 +159,10 @@ namespace FileInclude
                 public Option           PresentOption           ;
                 public AnimationClock   Clock                   ;
     
-                public Vector           PreviousOffset_Start    ;
+                public readonly Vector  PreviousOffset_Start    = new Vector ();
                 public Vector           PreviousOffset_End      ;
                 public Vector           NextOffset_Start        ;
-                public Vector           NextOffset_End          ;
+                public readonly Vector  NextOffset_End          = new Vector ();
     
                 public TranslateTransform   PreviousTransform   ;
                 public TranslateTransform   NextTransform       ;
