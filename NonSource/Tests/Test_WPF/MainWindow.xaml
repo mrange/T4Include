@@ -33,8 +33,14 @@
                     </Border>
                 </wpf:AccordionPanel>
             </Border>
-            <Border Background="Red" x:Name="Second">
-                <TextBlock Text="Second" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Border 
+                Background="Red" 
+                x:Name="Second"
+                >
+                <Border.LayoutTransform>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                </Border.LayoutTransform>
+                <wpf:WatermarkTextBox FontSize="12" Width="200" Height="24"/>
             </Border>
             <Border Background="Blue" x:Name="Third">
                 <TextBlock Text="Third" VerticalAlignment="Center" HorizontalAlignment="Center"/>

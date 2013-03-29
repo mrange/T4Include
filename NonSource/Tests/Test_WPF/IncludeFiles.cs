@@ -18,6 +18,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs
 // @@@ INCLUDE_FOUND: Generated_AccordionPanel_DependencyProperties.cs
 // @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
+// @@@ INCLUDE_FOUND: Generated_WatermarkTextBox_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
@@ -25,6 +27,7 @@
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
@@ -934,6 +937,128 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Markup;
+    
+        partial class WatermarkTextBox : TextBox
+        {
+            const string DefaultStyle = @"
+    <Style 
+        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+        TargetType=""{x:Type i:WatermarkTextBox}"">
+        <Setter Property=""FocusVisualStyle"" Value=""{x:Null}""/>
+        <Setter Property=""Foreground"" Value=""#000""/>
+        <Setter Property=""BorderBrush"" Value=""#888""/>
+        <Setter Property=""WatermarkForeground"" Value=""#888""/>
+        <Setter Property=""WatermarkText"" Value=""Enter some text...""/>
+        <Setter Property=""BorderThickness"" Value=""1""/>
+        <Setter Property=""SnapsToDevicePixels"" Value=""true""/>
+        <Setter Property=""Template"">
+            <Setter.Value>
+                <ControlTemplate TargetType=""{x:Type i:WatermarkTextBox}"">
+                    <Grid>
+                        <Border x:Name=""Border""
+                            Background=""{TemplateBinding Background}""
+                            BorderBrush=""{TemplateBinding BorderBrush}""
+                            BorderThickness=""{TemplateBinding BorderThickness}""
+                            Padding=""2""
+                            CornerRadius=""2""
+                            >
+        
+                            <Grid>
+                                <!-- The implementation places the Content into the ScrollViewer. It must be named PART_ContentHost for the control to function -->
+                                <ScrollViewer
+                                    Margin=""0""
+                                    x:Name=""PART_ContentHost""
+                                    SnapsToDevicePixels=""{TemplateBinding SnapsToDevicePixels}""
+                                />
+                                <TextBlock
+                                    Margin=""4,0,0,0""
+                                    VerticalAlignment=""Top""
+                                    x:Name=""Watermark""
+                                    Foreground=""{TemplateBinding WatermarkForeground}""
+                                    FontStyle=""Italic""
+                                    Text=""{TemplateBinding WatermarkText}""
+                                    SnapsToDevicePixels=""{TemplateBinding SnapsToDevicePixels}""
+                                    />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property=""IsEnabled"" Value=""False"">
+                            <Setter Property=""Opacity"" Value=""0.67""/>
+                        </Trigger>
+                        <Trigger Property=""IsFocused"" Value=""true"">
+                            <Setter TargetName=""Border"" Property=""BorderBrush"" Value=""#FF9000""/>
+                            <Setter TargetName=""Border"" Property=""BorderThickness"" Value=""2""/>
+                            <Setter TargetName=""Border"" Property=""Margin"" Value=""-1""/>
+                        </Trigger>
+                        <Trigger Property=""IsWatermarkVisible"" Value=""False"">
+                            <Setter Property=""Visibility"" Value=""Collapsed"" TargetName=""Watermark""/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    ";
+    
+            static readonly Style s_defaultStyle;
+            
+            static WatermarkTextBox ()
+            {
+                var parserContext = new ParserContext
+                                {
+                                    XamlTypeMapper = new XamlTypeMapper(new string[0])
+                                };
+            
+                var type = typeof (WatermarkTextBox);
+                var namespaceName = type.Namespace ?? "";
+                var assemblyName = type.Assembly.FullName;
+                parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Internal", namespaceName, assemblyName);
+                parserContext.XmlnsDictionary.Add("i", "Internal");
+        
+                s_defaultStyle = (Style)XamlReader.Parse(
+                    DefaultStyle,
+                    parserContext
+                    );
+                
+                StyleProperty.OverrideMetadata(typeof(WatermarkTextBox), new FrameworkPropertyMetadata(s_defaultStyle));
+            }
+    
+            protected override void OnTextChanged(TextChangedEventArgs e)
+            {
+                base.OnTextChanged(e);
+                IsWatermarkVisible = string.IsNullOrEmpty (Text);
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
 // ############################################################################
 
 // ############################################################################
@@ -2281,6 +2406,262 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // WatermarkTextBox
+        // ------------------------------------------------------------------------
+        partial class WatermarkTextBox
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty WatermarkTextProperty = DependencyProperty.Register (
+                "WatermarkText",
+                typeof (string),
+                typeof (WatermarkTextBox),
+                new FrameworkPropertyMetadata (
+                    default (string),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_WatermarkText,
+                    Coerce_WatermarkText          
+                ));
+    
+            static void Changed_WatermarkText (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance != null)
+                {
+                    var oldValue = (string)eventArgs.OldValue;
+                    var newValue = (string)eventArgs.NewValue;
+    
+                    instance.Changed_WatermarkText (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_WatermarkText (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (string)basevalue;
+                var newValue = oldValue;
+    
+                instance.Coerce_WatermarkText (oldValue, ref newValue);
+    
+    
+                return newValue;
+            }
+    
+            public static readonly DependencyProperty WatermarkForegroundProperty = DependencyProperty.Register (
+                "WatermarkForeground",
+                typeof (Brush),
+                typeof (WatermarkTextBox),
+                new FrameworkPropertyMetadata (
+                    default (Brush),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_WatermarkForeground,
+                    Coerce_WatermarkForeground          
+                ));
+    
+            static void Changed_WatermarkForeground (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance != null)
+                {
+                    var oldValue = (Brush)eventArgs.OldValue;
+                    var newValue = (Brush)eventArgs.NewValue;
+    
+                    instance.Changed_WatermarkForeground (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_WatermarkForeground (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (Brush)basevalue;
+                var newValue = oldValue;
+    
+                instance.Coerce_WatermarkForeground (oldValue, ref newValue);
+    
+    
+                return newValue;
+            }
+    
+            static readonly DependencyPropertyKey IsWatermarkVisiblePropertyKey = DependencyProperty.RegisterReadOnly (
+                "IsWatermarkVisible",
+                typeof (bool),
+                typeof (WatermarkTextBox),
+                new FrameworkPropertyMetadata (
+                    true,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_IsWatermarkVisible,
+                    Coerce_IsWatermarkVisible          
+                ));
+    
+            public static readonly DependencyProperty IsWatermarkVisibleProperty = IsWatermarkVisiblePropertyKey.DependencyProperty;
+    
+            static void Changed_IsWatermarkVisible (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance != null)
+                {
+                    var oldValue = (bool)eventArgs.OldValue;
+                    var newValue = (bool)eventArgs.NewValue;
+    
+                    instance.Changed_IsWatermarkVisible (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_IsWatermarkVisible (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WatermarkTextBox;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var oldValue = (bool)basevalue;
+                var newValue = oldValue;
+    
+                instance.Coerce_IsWatermarkVisible (oldValue, ref newValue);
+    
+    
+                return newValue;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public WatermarkTextBox ()
+            {
+                CoerceAllProperties ();
+                Constructed__WatermarkTextBox ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__WatermarkTextBox ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (WatermarkTextProperty);
+                CoerceValue (WatermarkForegroundProperty);
+                CoerceValue (IsWatermarkVisibleProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public string WatermarkText
+            {
+                get
+                {
+                    return (string)GetValue (WatermarkTextProperty);
+                }
+                set
+                {
+                    if (WatermarkText != value)
+                    {
+                        SetValue (WatermarkTextProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_WatermarkText (string oldValue, string newValue);
+            partial void Coerce_WatermarkText (string value, ref string coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public Brush WatermarkForeground
+            {
+                get
+                {
+                    return (Brush)GetValue (WatermarkForegroundProperty);
+                }
+                set
+                {
+                    if (WatermarkForeground != value)
+                    {
+                        SetValue (WatermarkForegroundProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_WatermarkForeground (Brush oldValue, Brush newValue);
+            partial void Coerce_WatermarkForeground (Brush value, ref Brush coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public bool IsWatermarkVisible
+            {
+                get
+                {
+                    return (bool)GetValue (IsWatermarkVisibleProperty);
+                }
+                private set
+                {
+                    if (IsWatermarkVisible != value)
+                    {
+                        SetValue (IsWatermarkVisiblePropertyKey, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_IsWatermarkVisible (bool oldValue, bool newValue);
+            partial void Coerce_IsWatermarkVisible (bool value, ref bool coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
@@ -2534,18 +2915,20 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T07:39:56";
+        public const string IncludeDate     = @"2013-03-29T08:13:56";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
-        public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################
