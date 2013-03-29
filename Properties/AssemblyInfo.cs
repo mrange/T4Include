@@ -12,5 +12,5 @@
 
 using System.Reflection;
 
-[assembly: AssemblyTitle("Test_WPF")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Source")]
+[assembly: AssemblyDescription("This library is not meant to be compiled and referenced. Instead it's meant to be included")]
