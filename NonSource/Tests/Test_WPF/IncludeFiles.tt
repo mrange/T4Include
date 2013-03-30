@@ -16,6 +16,7 @@
     RootPath    = @"..\..\..";
     Includes = new []
         {
+            Include (@"Extensions\WPF.cs"),
             Include (@"WPF\AnimatedEntrance.cs"),
             Include (@"WPF\AccordionPanel.cs"),
             Include (@"WPF\WatermarkTextBox.cs"),

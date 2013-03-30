@@ -11,6 +11,7 @@
 
 
 // ############################################################################
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Extensions\WPF.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_StateMachine.cs
@@ -279,7 +280,6 @@ namespace FileInclude
                             ShowInstant
                             );
                     }
-    
                 }
     
                 void ShowInstant()
@@ -613,11 +613,13 @@ namespace FileInclude
                 s_transitionEase          = transitionEase      ;
     
                 s_transitionClock       = new DoubleAnimation(
-                    0,
-                    1,
-                    s_transitionDuration, 
+                    0                       ,
+                    1                       ,
+                    s_transitionDuration    , 
                     FillBehavior.Stop
-                    );
+                    )
+                    .FreezeObject ()
+                    ;
     
                 StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
             }
@@ -637,6 +639,14 @@ namespace FileInclude
                                          Owner = this,
                                      };
                 Children = new ObservableCollection<UIElement> ();
+            }
+    
+            protected override System.Collections.IEnumerator LogicalChildren
+            {
+                get
+                {
+                    return Children.GetEnumerator();
+                }
             }
     
             partial void Changed_Children(ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue)
@@ -755,9 +765,11 @@ namespace FileInclude
                 s_animationClock       = new DoubleAnimation(
                     0                       ,
                     1                       ,
-                    s_animationDuration    , 
+                    s_animationDuration     , 
                     FillBehavior.Stop
-                    );
+                    )
+                    .FreezeObject ()
+                    ;
                 
             }
     
@@ -2099,6 +2111,56 @@ namespace FileInclude
     
                 return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
             }
+    
+            public static IEnumerable<DependencyObject> GetVisualTree_BreadthFirst (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var queue = new Queue<DependencyObject> ();
+                queue.Enqueue (dependencyObject);
+    
+                while (queue.Count > 0)
+                {
+                    var obj = queue.Dequeue ();
+    
+                    foreach (var child in obj.GetVisualChildren ())
+                    {
+                        if (child != null)
+                        {
+                            queue.Enqueue (child);
+                            yield return child;                        
+                        }
+                    }                
+                }
+            }
+    
+            public static IEnumerable<DependencyObject> GetLogicalTree_BreadthFirst (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var queue = new Queue<DependencyObject> ();
+                queue.Enqueue (dependencyObject);
+    
+                while (queue.Count > 0)
+                {
+                    var obj = queue.Dequeue ();
+    
+                    foreach (var child in obj.GetLogicalChildren ())
+                    {
+                        if (child != null)
+                        {
+                            queue.Enqueue (child);
+                            yield return child;                        
+                        }
+                    }                
+                }
+            }
         }
     }
 }
@@ -2943,7 +3005,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-30T10:16:06";
+        public const string IncludeDate     = @"2013-03-30T19:51:41";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
