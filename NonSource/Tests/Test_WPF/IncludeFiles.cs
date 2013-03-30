@@ -20,6 +20,8 @@
 // @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
 // @@@ INCLUDE_FOUND: Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\WheelPanel.cs
+// @@@ INCLUDE_FOUND: Generated_WheelPanel_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
@@ -28,6 +30,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WheelPanel_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
@@ -38,6 +41,7 @@
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
 // ############################################################################
+#pragma warning disable 0649
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable InconsistentNaming
@@ -1096,6 +1100,251 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\WheelPanel.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Media;
+        using System.Windows.Media.Animation;
+    
+        using Source.Extensions;
+    
+        partial class WheelPanel : Panel
+        {
+            public partial class State
+            {
+                public MatrixTransform  Transform   ;
+                public double           FromAngle   ;
+                public double           ToAngle     ;
+                public double           FromScale   ;
+                public double           ToScale     ;
+                
+                public double           GetCurrentAngle (double clock)
+                {
+                    return s_animationEase.Ease(clock).Interpolate(FromAngle, ToAngle);
+                }
+    
+                public double           GetCurrentScale (double clock)
+                {
+                    return s_animationEase.Ease(clock).Interpolate(FromScale, ToScale);
+                }
+    
+                public void             UpdateTransform (double angle, double scale, Vector centre, double radius)
+                {   
+                    if (Transform != null)
+                    {
+                        var transform = Matrix.Identity;
+                        transform.Translate(-radius,0);
+                        transform.Rotate(angle);
+                        transform.Scale(scale, scale);
+                        transform.Translate(centre.X, centre.Y);
+                        Transform.Matrix = transform;
+                    }
+                }
+            }
+    
+            readonly static Duration        s_animationDuration ;
+            readonly static DoubleAnimation s_animationClock    ;
+            readonly static IEasingFunction s_animationEase     ;
+            AnimationClock m_clock;
+    
+            static partial void Initialize (
+                ref Duration animationDuration,
+                ref IEasingFunction animationEase
+                );
+    
+            static WheelPanel ()
+            {
+                var animationDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+                IEasingFunction animationEase       = new ExponentialEase
+                                        {
+                                            EasingMode = EasingMode.EaseInOut,
+                                        };
+    
+                s_animationDuration     = animationDuration ;
+                s_animationEase         = animationEase     ;
+    
+                Initialize (ref s_animationDuration, ref animationEase);
+    
+                s_animationDuration     = animationDuration ;
+                s_animationEase         = animationEase;
+    
+                s_animationClock        = new DoubleAnimation(
+                    0                       ,
+                    1                       ,
+                    s_animationDuration     , 
+                    FillBehavior.Stop
+                    );
+                
+            }
+    
+            protected override Size MeasureOverride(Size availableSize)
+            {
+                for (int index = 0; index < Children.Count; index++)
+                {
+                    var child = Children[index];
+                    child.Measure (availableSize);
+                }
+                return availableSize;
+            }
+    
+            protected override Size ArrangeOverride(Size finalSize)
+            {
+                var count = Children.Count;
+                if (count == 0)
+                {
+                    return finalSize;
+                }
+    
+                var maxCount = 0;
+    
+                var clock = GetAnimationClock (this);
+    
+                StopClock ();
+    
+                var centre = Centre;
+    
+                var currentAngle    = ToAngle;
+                var currentCentre   = new Vector (centre.X * finalSize.Width, centre.Y * finalSize.Height);
+                var currentRadius   = Radius*finalSize.Width;
+                var finalRect       = finalSize.ToRect();
+    
+    
+                for (int index = 0; index < count && currentAngle < FromAngle; index++)
+                {
+                    var child = Children[index];
+                    var state = GetChildState(child);
+                    if (state == null)
+                    {
+                        state = new State
+                                    {
+                                        Transform   = new MatrixTransform(),
+                                    };
+                        SetChildState (child, state);
+                    }
+                    child.Arrange (finalRect);
+    
+    
+                }
+    
+                return finalSize;
+            }
+    
+            void StartClock()
+            {
+                StopClock ();
+                m_clock = s_animationClock.CreateClock();
+                m_clock.Completed += Animation_Completed;
+                ApplyAnimationClock(AnimationClockProperty, m_clock, HandoffBehavior.SnapshotAndReplace);
+            }
+    
+            void StopClock()
+            {
+                if (m_clock != null)
+                {
+                    m_clock.Completed -= Animation_Completed;
+                    m_clock = null;
+                    ApplyAnimationClock(AnimationClockProperty, null);
+                }
+    
+            }
+    
+            void Animation_Completed(object sender, EventArgs e)
+            {
+                StopClock();
+                SetAnimationClock(this, 1);
+            }
+    
+            partial void Coerce_FromAngle(ref double coercedValue)
+            {
+                coercedValue = Clamp(coercedValue, double.MinValue, ToAngle);
+            }
+    
+            partial void Changed_FromAngle(double oldValue, double newValue)
+            {
+                InvalidateArrange();
+            }
+    
+            partial void Coerce_ToAngle(ref double coercedValue)
+            {
+                coercedValue = Clamp(coercedValue, FromAngle, double.MaxValue);
+            }
+    
+            partial void Changed_ToAngle(double oldValue, double newValue)
+            {
+                InvalidateArrange();
+            }
+    
+            static double Clamp (double v, double f, double t)
+            {
+                if (v < f)
+                {
+                    return f;
+                }
+    
+                if (v > t)
+                {
+                    return t;
+                }
+    
+                return v;
+            }
+    
+            partial void Coerce_StepAngle(ref double coercedValue)
+            {
+                coercedValue = Clamp(coercedValue, 1, double.MaxValue);
+            }
+    
+            partial void Changed_StepAngle(double oldValue, double newValue)
+            {
+                InvalidateArrange();
+            }
+    
+            partial void Changed_Centre(Point oldValue, Point newValue)
+            {
+                InvalidateArrange();
+            }
+    
+            partial void Coerce_Radius(ref double coercedValue)
+            {
+                coercedValue = Clamp(coercedValue, 0, double.MaxValue);
+            }
+    
+            partial void Changed_Radius(double oldValue, double newValue)
+            {
+                InvalidateArrange();
+            }
+    
+            partial void Changed_StepScale(double oldValue, double newValue)
+            {
+                InvalidateArrange();
+            }
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\WheelPanel.cs
 // ############################################################################
 
 // ############################################################################
@@ -2690,6 +2939,585 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_WheelPanel_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // WheelPanel
+        // ------------------------------------------------------------------------
+        partial class WheelPanel
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty FromAngleProperty = DependencyProperty.Register (
+                "FromAngle",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    180.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_FromAngle,
+                    Coerce_FromAngle          
+                ));
+    
+            static void Changed_FromAngle (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_FromAngle (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_FromAngle (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_FromAngle (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty ToAngleProperty = DependencyProperty.Register (
+                "ToAngle",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    0.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ToAngle,
+                    Coerce_ToAngle          
+                ));
+    
+            static void Changed_ToAngle (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_ToAngle (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ToAngle (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_ToAngle (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty StepAngleProperty = DependencyProperty.Register (
+                "StepAngle",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    10.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_StepAngle,
+                    Coerce_StepAngle          
+                ));
+    
+            static void Changed_StepAngle (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_StepAngle (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_StepAngle (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_StepAngle (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty StepScaleProperty = DependencyProperty.Register (
+                "StepScale",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    0.9,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_StepScale,
+                    Coerce_StepScale          
+                ));
+    
+            static void Changed_StepScale (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_StepScale (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_StepScale (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_StepScale (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register (
+                "Radius",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    0.25,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_Radius,
+                    Coerce_Radius          
+                ));
+    
+            static void Changed_Radius (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_Radius (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_Radius (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_Radius (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty CentreProperty = DependencyProperty.Register (
+                "Centre",
+                typeof (Point),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    new Point (0.5,0.5),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_Centre,
+                    Coerce_Centre          
+                ));
+    
+            static void Changed_Centre (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance != null)
+                {
+                    var oldValue = (Point)eventArgs.OldValue;
+                    var newValue = (Point)eventArgs.NewValue;
+    
+                    instance.Changed_Centre (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_Centre (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as WheelPanel;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (Point)basevalue;
+    
+                instance.Coerce_Centre (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty ChildStateProperty = DependencyProperty.RegisterAttached (
+                "ChildState",
+                typeof (State),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    default (State),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ChildState,
+                    Coerce_ChildState          
+                ));
+    
+            static void Changed_ChildState (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (State)eventArgs.OldValue;
+                    var newValue = (State)eventArgs.NewValue;
+    
+                    Changed_ChildState (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_ChildState (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var value = (State)basevalue;
+    
+                Coerce_ChildState (dependencyObject, ref value);
+    
+                return value;
+            }
+            public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
+                "AnimationClock",
+                typeof (double),
+                typeof (WheelPanel),
+                new FrameworkPropertyMetadata (
+                    default (double),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_AnimationClock,
+                    Coerce_AnimationClock          
+                ));
+    
+            static void Changed_AnimationClock (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    Changed_AnimationClock (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_AnimationClock (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                Coerce_AnimationClock (dependencyObject, ref value);
+    
+                return value;
+            }
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public WheelPanel ()
+            {
+                CoerceAllProperties ();
+                Constructed__WheelPanel ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__WheelPanel ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (FromAngleProperty);
+                CoerceValue (ToAngleProperty);
+                CoerceValue (StepAngleProperty);
+                CoerceValue (StepScaleProperty);
+                CoerceValue (RadiusProperty);
+                CoerceValue (CentreProperty);
+                CoerceValue (ChildStateProperty);
+                CoerceValue (AnimationClockProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public double FromAngle
+            {
+                get
+                {
+                    return (double)GetValue (FromAngleProperty);
+                }
+                set
+                {
+                    if (FromAngle != value)
+                    {
+                        SetValue (FromAngleProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_FromAngle (double oldValue, double newValue);
+            partial void Coerce_FromAngle (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double ToAngle
+            {
+                get
+                {
+                    return (double)GetValue (ToAngleProperty);
+                }
+                set
+                {
+                    if (ToAngle != value)
+                    {
+                        SetValue (ToAngleProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ToAngle (double oldValue, double newValue);
+            partial void Coerce_ToAngle (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double StepAngle
+            {
+                get
+                {
+                    return (double)GetValue (StepAngleProperty);
+                }
+                set
+                {
+                    if (StepAngle != value)
+                    {
+                        SetValue (StepAngleProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_StepAngle (double oldValue, double newValue);
+            partial void Coerce_StepAngle (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double StepScale
+            {
+                get
+                {
+                    return (double)GetValue (StepScaleProperty);
+                }
+                set
+                {
+                    if (StepScale != value)
+                    {
+                        SetValue (StepScaleProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_StepScale (double oldValue, double newValue);
+            partial void Coerce_StepScale (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double Radius
+            {
+                get
+                {
+                    return (double)GetValue (RadiusProperty);
+                }
+                set
+                {
+                    if (Radius != value)
+                    {
+                        SetValue (RadiusProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_Radius (double oldValue, double newValue);
+            partial void Coerce_Radius (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public Point Centre
+            {
+                get
+                {
+                    return (Point)GetValue (CentreProperty);
+                }
+                set
+                {
+                    if (Centre != value)
+                    {
+                        SetValue (CentreProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_Centre (Point oldValue, Point newValue);
+            partial void Coerce_Centre (ref Point coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public static State GetChildState (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (State);
+                }
+    
+                return (State)dependencyObject.GetValue (ChildStateProperty);
+            }
+    
+            public static void SetChildState (DependencyObject dependencyObject, State value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetChildState (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (ChildStateProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearChildState (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (ChildStateProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_ChildState (DependencyObject dependencyObject, State oldValue, State newValue);
+            static partial void Coerce_ChildState (DependencyObject dependencyObject, ref State coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public static double GetAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (double);
+                }
+    
+                return (double)dependencyObject.GetValue (AnimationClockProperty);
+            }
+    
+            public static void SetAnimationClock (DependencyObject dependencyObject, double value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetAnimationClock (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (AnimationClockProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (AnimationClockProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_WheelPanel_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
@@ -2943,20 +3771,22 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-30T10:16:06";
+        public const string IncludeDate     = @"2013-03-30T10:28:26";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\WheelPanel.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\WPF\Generated_WheelPanel_DependencyProperties.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

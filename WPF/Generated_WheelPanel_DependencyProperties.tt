@@ -1,0 +1,20 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("WheelPanel")
+        {
+            P ("double"                 , "FromAngle"           , defaultValue:"180.0"              ),
+            P ("double"                 , "ToAngle"             , defaultValue:"0.0"                ),
+            P ("double"                 , "StepAngle"           , defaultValue:"10.0"               ),
+            P ("double"                 , "StepScale"           , defaultValue:"0.9"                ),
+            P ("double"                 , "Radius"              , defaultValue:"0.25"               ),
+            P ("Point"                  , "Centre"              , defaultValue:"new Point (0.5,0.5)"),
+            P ("State"                  , "ChildState"          , flags:PropertyFlags.IsAttached    ),
+            P ("double"                 , "AnimationClock"      , flags:PropertyFlags.IsAttached    ),
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

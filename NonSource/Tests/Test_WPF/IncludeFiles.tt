@@ -19,6 +19,7 @@
             Include (@"WPF\AnimatedEntrance.cs"),
             Include (@"WPF\AccordionPanel.cs"),
             Include (@"WPF\WatermarkTextBox.cs"),
+            Include (@"WPF\WheelPanel.cs"),
         };
 #>
 

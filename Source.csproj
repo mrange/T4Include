@@ -99,7 +99,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_AnimatedEntrance_StateMachine.tt</DependentUpon>
     </Compile>
+    <Compile Include="WPF\Generated_WheelPanel_DependencyProperties.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_WheelPanel_DependencyProperties.tt</DependentUpon>
+    </Compile>
     <Compile Include="WPF\WatermarkTextBox.cs" />
+    <Compile Include="WPF\WheelPanel.cs" />
     <None Include="app.config" />
     <None Include="NET20\Generated_Common.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -155,6 +161,10 @@
     <None Include="WPF\Generated_AnimatedEntrance_StateMachine.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
+    </None>
+    <None Include="WPF\Generated_WheelPanel_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_WheelPanel_DependencyProperties.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup />
