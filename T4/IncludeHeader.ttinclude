@@ -224,7 +224,7 @@ namespace <#=Namespace#>.Include
         );
 
     static readonly Regex s_matchMoveToTop = new Regex (
-        @"^(\#define|// ReSharper )",
+        @"^(\#define|\#pragma|// ReSharper )",
         RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
         );
 
