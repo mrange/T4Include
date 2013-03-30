@@ -232,5 +232,55 @@ namespace Source.Extensions
 
             return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
         }
+
+        public static IEnumerable<DependencyObject> GetVisualTree_BreadthFirst (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var queue = new Queue<DependencyObject> ();
+            queue.Enqueue (dependencyObject);
+
+            while (queue.Count > 0)
+            {
+                var obj = queue.Dequeue ();
+
+                foreach (var child in obj.GetVisualChildren ())
+                {
+                    if (child != null)
+                    {
+                        queue.Enqueue (child);
+                        yield return child;                        
+                    }
+                }                
+            }
+        }
+
+        public static IEnumerable<DependencyObject> GetLogicalTree_BreadthFirst (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var queue = new Queue<DependencyObject> ();
+            queue.Enqueue (dependencyObject);
+
+            while (queue.Count > 0)
+            {
+                var obj = queue.Dequeue ();
+
+                foreach (var child in obj.GetLogicalChildren ())
+                {
+                    if (child != null)
+                    {
+                        queue.Enqueue (child);
+                        yield return child;                        
+                    }
+                }                
+            }
+        }
     }
 }
