@@ -228,7 +228,6 @@ namespace Source.WPF
                         ShowInstant
                         );
                 }
-
             }
 
             void ShowInstant()
@@ -562,11 +561,13 @@ namespace Source.WPF
             s_transitionEase          = transitionEase      ;
 
             s_transitionClock       = new DoubleAnimation(
-                0,
-                1,
-                s_transitionDuration, 
+                0                       ,
+                1                       ,
+                s_transitionDuration    , 
                 FillBehavior.Stop
-                );
+                )
+                .FreezeObject ()
+                ;
 
             StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
         }
@@ -586,6 +587,14 @@ namespace Source.WPF
                                      Owner = this,
                                  };
             Children = new ObservableCollection<UIElement> ();
+        }
+
+        protected override System.Collections.IEnumerator LogicalChildren
+        {
+            get
+            {
+                return Children.GetEnumerator();
+            }
         }
 
         partial void Changed_Children(ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue)

@@ -56,9 +56,11 @@ namespace Source.WPF
             s_animationClock       = new DoubleAnimation(
                 0                       ,
                 1                       ,
-                s_animationDuration    , 
+                s_animationDuration     , 
                 FillBehavior.Stop
-                );
+                )
+                .FreezeObject ()
+                ;
             
         }
 
