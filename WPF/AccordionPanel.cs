@@ -28,8 +28,8 @@ namespace Source.WPF
 
     partial class AccordionPanel : Panel
     {
-        readonly static Duration        s_transitionDuration;
-        readonly static DoubleAnimation s_transitionClock   ;
+        readonly static Duration        s_animationDuration ;
+        readonly static DoubleAnimation s_animationClock    ;
         readonly static IEasingFunction s_animationEase     ;
 
         static partial void Initialize (
@@ -39,24 +39,24 @@ namespace Source.WPF
 
         static AccordionPanel ()
         {
-            var transitionDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+            var animationDuration   = new Duration (TimeSpan.FromMilliseconds(400));
             IEasingFunction animationEase       = new ExponentialEase
                                     {
                                         EasingMode = EasingMode.EaseInOut,
                                     };
 
-            s_transitionDuration    = transitionDuration;
+            s_animationDuration     = animationDuration;
             s_animationEase         = animationEase;
 
-            Initialize (ref transitionDuration, ref animationEase);
+            Initialize (ref animationDuration, ref animationEase);
 
-            s_transitionDuration    = transitionDuration;
+            s_animationDuration     = animationDuration;
             s_animationEase         = animationEase;
 
-            s_transitionClock       = new DoubleAnimation(
+            s_animationClock       = new DoubleAnimation(
                 0                       ,
                 1                       ,
-                s_transitionDuration    , 
+                s_animationDuration    , 
                 FillBehavior.Stop
                 );
             
@@ -80,7 +80,7 @@ namespace Source.WPF
                 return s_animationEase.Ease(clock).Interpolate(From, To);
             }
 
-            public void UpdateX(double x)
+            public void UpdateTransform(double x)
             {
                 Transform.X = x;
             }
@@ -160,7 +160,7 @@ namespace Source.WPF
                 state.From  = current;
                 state.To    = desiredX;
 
-                state.UpdateX (current);
+                state.UpdateTransform (current);
 
                 doAnimate |= !state.From.IsNear (state.To);
 
@@ -185,8 +185,8 @@ namespace Source.WPF
         void StartClock()
         {
             StopClock ();
-            m_clock = s_transitionClock.CreateClock();
-            m_clock.Completed += Transition_Completed;
+            m_clock = s_animationClock.CreateClock();
+            m_clock.Completed += Animation_Completed;
             ApplyAnimationClock(AnimationClockProperty, m_clock, HandoffBehavior.SnapshotAndReplace);
         }
 
@@ -194,14 +194,14 @@ namespace Source.WPF
         {
             if (m_clock != null)
             {
-                m_clock.Completed -= Transition_Completed;
+                m_clock.Completed -= Animation_Completed;
                 m_clock = null;
                 ApplyAnimationClock(AnimationClockProperty, null);
             }
 
         }
 
-        void Transition_Completed(object sender, EventArgs e)
+        void Animation_Completed(object sender, EventArgs e)
         {
             StopClock();
             SetAnimationClock(this, 1);
@@ -222,7 +222,7 @@ namespace Source.WPF
                 var state = GetChildState(child);
                 if (state != null)
                 {
-                    state.UpdateX (state.GetCurrentX(newValue));
+                    state.UpdateTransform (state.GetCurrentX(newValue));
                 }
                 else
                 {
@@ -262,9 +262,9 @@ namespace Source.WPF
             ActiveElement = hit;
         }
 
-        partial void Coerce_PreviewWidth(double value, ref double coercedValue)
+        partial void Coerce_PreviewWidth(ref double coercedValue)
         {
-            coercedValue = Math.Max(8,value);
+            coercedValue = Math.Max(8, coercedValue);
         }
 
         partial void Changed_PreviewWidth(double oldValue, double newValue)

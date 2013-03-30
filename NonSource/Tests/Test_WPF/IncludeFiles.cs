@@ -5,7 +5,7 @@
 // #                                                                          #
 // # This means that any edits to the .cs file will be lost when its          #
 // # regenerated. Changes should instead be applied to the corresponding      #
-// # text template file (.tt)                                                      #
+// # text template file (.tt)                                                 #
 // ############################################################################
 
 
@@ -727,8 +727,8 @@ namespace FileInclude
     
         partial class AccordionPanel : Panel
         {
-            readonly static Duration        s_transitionDuration;
-            readonly static DoubleAnimation s_transitionClock   ;
+            readonly static Duration        s_animationDuration ;
+            readonly static DoubleAnimation s_animationClock    ;
             readonly static IEasingFunction s_animationEase     ;
     
             static partial void Initialize (
@@ -738,24 +738,24 @@ namespace FileInclude
     
             static AccordionPanel ()
             {
-                var transitionDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+                var animationDuration   = new Duration (TimeSpan.FromMilliseconds(400));
                 IEasingFunction animationEase       = new ExponentialEase
                                         {
                                             EasingMode = EasingMode.EaseInOut,
                                         };
     
-                s_transitionDuration    = transitionDuration;
+                s_animationDuration     = animationDuration;
                 s_animationEase         = animationEase;
     
-                Initialize (ref transitionDuration, ref animationEase);
+                Initialize (ref animationDuration, ref animationEase);
     
-                s_transitionDuration    = transitionDuration;
+                s_animationDuration     = animationDuration;
                 s_animationEase         = animationEase;
     
-                s_transitionClock       = new DoubleAnimation(
+                s_animationClock       = new DoubleAnimation(
                     0                       ,
                     1                       ,
-                    s_transitionDuration    , 
+                    s_animationDuration    , 
                     FillBehavior.Stop
                     );
                 
@@ -779,7 +779,7 @@ namespace FileInclude
                     return s_animationEase.Ease(clock).Interpolate(From, To);
                 }
     
-                public void UpdateX(double x)
+                public void UpdateTransform(double x)
                 {
                     Transform.X = x;
                 }
@@ -859,7 +859,7 @@ namespace FileInclude
                     state.From  = current;
                     state.To    = desiredX;
     
-                    state.UpdateX (current);
+                    state.UpdateTransform (current);
     
                     doAnimate |= !state.From.IsNear (state.To);
     
@@ -884,8 +884,8 @@ namespace FileInclude
             void StartClock()
             {
                 StopClock ();
-                m_clock = s_transitionClock.CreateClock();
-                m_clock.Completed += Transition_Completed;
+                m_clock = s_animationClock.CreateClock();
+                m_clock.Completed += Animation_Completed;
                 ApplyAnimationClock(AnimationClockProperty, m_clock, HandoffBehavior.SnapshotAndReplace);
             }
     
@@ -893,14 +893,14 @@ namespace FileInclude
             {
                 if (m_clock != null)
                 {
-                    m_clock.Completed -= Transition_Completed;
+                    m_clock.Completed -= Animation_Completed;
                     m_clock = null;
                     ApplyAnimationClock(AnimationClockProperty, null);
                 }
     
             }
     
-            void Transition_Completed(object sender, EventArgs e)
+            void Animation_Completed(object sender, EventArgs e)
             {
                 StopClock();
                 SetAnimationClock(this, 1);
@@ -921,7 +921,7 @@ namespace FileInclude
                     var state = GetChildState(child);
                     if (state != null)
                     {
-                        state.UpdateX (state.GetCurrentX(newValue));
+                        state.UpdateTransform (state.GetCurrentX(newValue));
                     }
                     else
                     {
@@ -961,9 +961,9 @@ namespace FileInclude
                 ActiveElement = hit;
             }
     
-            partial void Coerce_PreviewWidth(double value, ref double coercedValue)
+            partial void Coerce_PreviewWidth(ref double coercedValue)
             {
-                coercedValue = Math.Max(8,value);
+                coercedValue = Math.Max(8, coercedValue);
             }
     
             partial void Changed_PreviewWidth(double oldValue, double newValue)
@@ -1186,17 +1186,16 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (ObservableCollection<UIElement>)basevalue;
-                var newValue = oldValue;
+                var value = (ObservableCollection<UIElement>)basevalue;
     
-                instance.Coerce_Children (oldValue, ref newValue);
+                instance.Coerce_Children (ref value);
     
-                if (newValue == null)
+                if (value == null)
                 {
-                   newValue = new ObservableCollection<UIElement> ();
+                   value = new ObservableCollection<UIElement> ();
                 }
     
-                return newValue;
+                return value;
             }
     
             public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
@@ -1227,12 +1226,11 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (double)basevalue;
-                var newValue = oldValue;
+                var value = (double)basevalue;
     
-                Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+                Coerce_AnimationClock (dependencyObject, ref value);
     
-                return newValue;
+                return value;
             }
             #endregion
     
@@ -1276,7 +1274,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_Children (ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue);
-            partial void Coerce_Children (ObservableCollection<UIElement> value, ref ObservableCollection<UIElement> coercedValue);
+            partial void Coerce_Children (ref ObservableCollection<UIElement> coercedValue);
             partial void CollectionChanged_Children (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
             // --------------------------------------------------------------------
     
@@ -1313,7 +1311,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
-            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2172,13 +2170,12 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (double)basevalue;
-                var newValue = oldValue;
+                var value = (double)basevalue;
     
-                instance.Coerce_PreviewWidth (oldValue, ref newValue);
+                instance.Coerce_PreviewWidth (ref value);
     
     
-                return newValue;
+                return value;
             }
     
             public static readonly DependencyProperty ActiveElementProperty = DependencyProperty.Register (
@@ -2212,13 +2209,12 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (UIElement)basevalue;
-                var newValue = oldValue;
+                var value = (UIElement)basevalue;
     
-                instance.Coerce_ActiveElement (oldValue, ref newValue);
+                instance.Coerce_ActiveElement (ref value);
     
     
-                return newValue;
+                return value;
             }
     
             public static readonly DependencyProperty ChildStateProperty = DependencyProperty.RegisterAttached (
@@ -2249,12 +2245,11 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (AccordionPanel.State)basevalue;
-                var newValue = oldValue;
+                var value = (AccordionPanel.State)basevalue;
     
-                Coerce_ChildState (dependencyObject, oldValue, ref newValue);
+                Coerce_ChildState (dependencyObject, ref value);
     
-                return newValue;
+                return value;
             }
             public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
                 "AnimationClock",
@@ -2284,12 +2279,11 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (double)basevalue;
-                var newValue = oldValue;
+                var value = (double)basevalue;
     
-                Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+                Coerce_AnimationClock (dependencyObject, ref value);
     
-                return newValue;
+                return value;
             }
             #endregion
     
@@ -2335,7 +2329,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_PreviewWidth (double oldValue, double newValue);
-            partial void Coerce_PreviewWidth (double value, ref double coercedValue);
+            partial void Coerce_PreviewWidth (ref double coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2357,7 +2351,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_ActiveElement (UIElement oldValue, UIElement newValue);
-            partial void Coerce_ActiveElement (UIElement value, ref UIElement coercedValue);
+            partial void Coerce_ActiveElement (ref UIElement coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2393,7 +2387,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             static partial void Changed_ChildState (DependencyObject dependencyObject, AccordionPanel.State oldValue, AccordionPanel.State newValue);
-            static partial void Coerce_ChildState (DependencyObject dependencyObject, AccordionPanel.State value, ref AccordionPanel.State coercedValue);
+            static partial void Coerce_ChildState (DependencyObject dependencyObject, ref AccordionPanel.State coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2429,7 +2423,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
-            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2507,13 +2501,12 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (string)basevalue;
-                var newValue = oldValue;
+                var value = (string)basevalue;
     
-                instance.Coerce_WatermarkText (oldValue, ref newValue);
+                instance.Coerce_WatermarkText (ref value);
     
     
-                return newValue;
+                return value;
             }
     
             public static readonly DependencyProperty WatermarkForegroundProperty = DependencyProperty.Register (
@@ -2547,13 +2540,12 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (Brush)basevalue;
-                var newValue = oldValue;
+                var value = (Brush)basevalue;
     
-                instance.Coerce_WatermarkForeground (oldValue, ref newValue);
+                instance.Coerce_WatermarkForeground (ref value);
     
     
-                return newValue;
+                return value;
             }
     
             static readonly DependencyPropertyKey IsWatermarkVisiblePropertyKey = DependencyProperty.RegisterReadOnly (
@@ -2589,13 +2581,12 @@ namespace FileInclude
                 {
                     return basevalue;
                 }
-                var oldValue = (bool)basevalue;
-                var newValue = oldValue;
+                var value = (bool)basevalue;
     
-                instance.Coerce_IsWatermarkVisible (oldValue, ref newValue);
+                instance.Coerce_IsWatermarkVisible (ref value);
     
     
-                return newValue;
+                return value;
             }
     
             #endregion
@@ -2641,7 +2632,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_WatermarkText (string oldValue, string newValue);
-            partial void Coerce_WatermarkText (string value, ref string coercedValue);
+            partial void Coerce_WatermarkText (ref string coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2663,7 +2654,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_WatermarkForeground (Brush oldValue, Brush newValue);
-            partial void Coerce_WatermarkForeground (Brush value, ref Brush coercedValue);
+            partial void Coerce_WatermarkForeground (ref Brush coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2685,7 +2676,7 @@ namespace FileInclude
             }
             // --------------------------------------------------------------------
             partial void Changed_IsWatermarkVisible (bool oldValue, bool newValue);
-            partial void Coerce_IsWatermarkVisible (bool value, ref bool coercedValue);
+            partial void Coerce_IsWatermarkVisible (ref bool coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -2952,7 +2943,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T11:11:37";
+        public const string IncludeDate     = @"2013-03-30T10:16:06";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

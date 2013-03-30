@@ -69,13 +69,12 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (string)basevalue;
-            var newValue = oldValue;
+            var value = (string)basevalue;
 
-            instance.Coerce_WatermarkText (oldValue, ref newValue);
+            instance.Coerce_WatermarkText (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         public static readonly DependencyProperty WatermarkForegroundProperty = DependencyProperty.Register (
@@ -109,13 +108,12 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (Brush)basevalue;
-            var newValue = oldValue;
+            var value = (Brush)basevalue;
 
-            instance.Coerce_WatermarkForeground (oldValue, ref newValue);
+            instance.Coerce_WatermarkForeground (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         static readonly DependencyPropertyKey IsWatermarkVisiblePropertyKey = DependencyProperty.RegisterReadOnly (
@@ -151,13 +149,12 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (bool)basevalue;
-            var newValue = oldValue;
+            var value = (bool)basevalue;
 
-            instance.Coerce_IsWatermarkVisible (oldValue, ref newValue);
+            instance.Coerce_IsWatermarkVisible (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         #endregion
@@ -203,7 +200,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_WatermarkText (string oldValue, string newValue);
-        partial void Coerce_WatermarkText (string value, ref string coercedValue);
+        partial void Coerce_WatermarkText (ref string coercedValue);
         // --------------------------------------------------------------------
 
 
@@ -225,7 +222,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_WatermarkForeground (Brush oldValue, Brush newValue);
-        partial void Coerce_WatermarkForeground (Brush value, ref Brush coercedValue);
+        partial void Coerce_WatermarkForeground (ref Brush coercedValue);
         // --------------------------------------------------------------------
 
 
@@ -247,7 +244,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_IsWatermarkVisible (bool oldValue, bool newValue);
-        partial void Coerce_IsWatermarkVisible (bool value, ref bool coercedValue);
+        partial void Coerce_IsWatermarkVisible (ref bool coercedValue);
         // --------------------------------------------------------------------
 
 

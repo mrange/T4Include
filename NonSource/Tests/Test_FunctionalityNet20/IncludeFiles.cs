@@ -5,7 +5,7 @@
 // #                                                                          #
 // # This means that any edits to the .cs file will be lost when its          #
 // # regenerated. Changes should instead be applied to the corresponding      #
-// # text template file (.tt)                                                      #
+// # text template file (.tt)                                                 #
 // ############################################################################
 
 
@@ -1041,7 +1041,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-29T07:39:56";
+        public const string IncludeDate     = @"2013-03-30T10:16:06";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\NET20\Common.cs";
