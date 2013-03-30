@@ -13,10 +13,12 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable MemberCanBeProtected.Local
+// ReSharper disable NotAccessedField.Local
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantIfElseBlock
+// ReSharper disable RedundantNameQualifier
 // ReSharper disable UnassignedField.Local
 // ReSharper disable UnusedParameter.Local
 
@@ -109,10 +111,10 @@ namespace Source.WPF
             public Option           PresentOption           ;
             public AnimationClock   Clock                   ;
 
-            public Vector           PreviousOffset_Start    ;
+            public readonly Vector  PreviousOffset_Start    = new Vector ();
             public Vector           PreviousOffset_End      ;
             public Vector           NextOffset_Start        ;
-            public Vector           NextOffset_End          ;
+            public readonly Vector  NextOffset_End          = new Vector ();
 
             public TranslateTransform   PreviousTransform   ;
             public TranslateTransform   NextTransform       ;
@@ -181,9 +183,11 @@ namespace Source.WPF
 
                 Owner.m_current.Opacity         = 1                     ;
                 Owner.m_current.RenderTransform = PreviousTransform     ;
+                Owner.m_current.IsHitTestVisible= false                 ;
 
                 Owner.m_next.Opacity            = nextOpacity           ;
                 Owner.m_next.RenderTransform    = NextTransform         ;
+                Owner.m_next.IsHitTestVisible   = false                 ;
 
                 Owner.m_next.Child  = Next;
 
@@ -275,9 +279,11 @@ namespace Source.WPF
 
                 Owner.m_current.Opacity             = 1     ;
                 Owner.m_current.RenderTransform     = null  ;
+                Owner.m_current.IsHitTestVisible    = true  ;
 
                 Owner.m_next.Opacity                = 1     ;
-                Owner.m_current.RenderTransform     = null  ;
+                Owner.m_next.RenderTransform        = null  ;
+                Owner.m_next.IsHitTestVisible       = true  ;
                 
                 Owner.m_next.Child                  = null  ;
 
@@ -297,29 +303,31 @@ namespace Source.WPF
             {
                 var clock = GetAnimationClock(Owner);
 
+                var clockWithEase = s_transitionEase.Ease(clock);
+
                 switch (PresentOption)
                 {
                     case Option.Fade:
-                        Owner.m_next.Opacity    = clock.Interpolate (0.0, 1.0);
+                        Owner.m_next.Opacity    = clockWithEase.Interpolate (0.0, 1.0);
                         break;
                     case Option.PushFromLeft:
                     case Option.PushFromRight:
                     case Option.PushFromTop:
                     case Option.PushFromBottom:
-                        PreviousTransform.UpdateFromVector(clock.Interpolate (PreviousOffset_Start, PreviousOffset_End));
-                        NextTransform.UpdateFromVector(clock.Interpolate (NextOffset_Start, NextOffset_End));
+                        PreviousTransform.UpdateFromVector(clockWithEase.Interpolate (PreviousOffset_Start, PreviousOffset_End));
+                        NextTransform.UpdateFromVector(clockWithEase.Interpolate (NextOffset_Start, NextOffset_End));
                         break;
                     case Option.CoverFromLeft:
                     case Option.CoverFromRight:
                     case Option.CoverFromTop:
                     case Option.CoverFromBottom:
-                        NextTransform.UpdateFromVector(clock.Interpolate (NextOffset_Start, NextOffset_End));
+                        NextTransform.UpdateFromVector(clockWithEase.Interpolate (NextOffset_Start, NextOffset_End));
                         break;
                     case Option.RevealToLeft:
                     case Option.RevealToRight:
                     case Option.RevealToTop:
                     case Option.RevealToBottom:
-                        PreviousTransform.UpdateFromVector(clock.Interpolate (PreviousOffset_Start, PreviousOffset_End));
+                        PreviousTransform.UpdateFromVector(clockWithEase.Interpolate (PreviousOffset_Start, PreviousOffset_End));
                         break;
                     default:
                     case Option.Instant:
@@ -492,6 +500,7 @@ namespace Source.WPF
         readonly static Duration        s_transitionDuration;
         readonly static Duration        s_delayDuration     ;
         readonly static DoubleAnimation s_transitionClock   ;
+        readonly static IEasingFunction s_transitionEase    ;
 
         static readonly AnimationClockTickVisitor s_animationClockTickVisitor = new AnimationClockTickVisitor();
         static readonly DelayVisitor s_delayVisitor = new DelayVisitor();
@@ -509,6 +518,13 @@ namespace Source.WPF
                                                               HorizontalAlignment = HorizontalAlignment.Stretch,
                                                               VerticalAlignment = VerticalAlignment.Stretch,
                                                           };
+
+
+        static partial void Initialize (
+            ref Duration transitionDuration,
+            ref Duration delayDuration,
+            ref IEasingFunction transitionEase
+            );
 
         static AnimatedEntrance()
         {
@@ -528,18 +544,29 @@ namespace Source.WPF
                 parserContext
                 );
     
-            s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
-            s_delayDuration         = new Duration (TimeSpan.FromMilliseconds(200));
+            var transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
+            var delayDuration         = new Duration (TimeSpan.FromMilliseconds(200));
+            IEasingFunction transitionEase        = new ExponentialEase
+                                            {
+                                                EasingMode = EasingMode.EaseInOut,
+                                            };
+
+            s_transitionDuration      = transitionDuration  ;
+            s_delayDuration           = delayDuration       ;
+            s_transitionEase          = transitionEase      ;
+
+            Initialize (ref transitionDuration, ref delayDuration, ref transitionEase);
+
+            s_transitionDuration      = transitionDuration  ;
+            s_delayDuration           = delayDuration       ;
+            s_transitionEase          = transitionEase      ;
+
             s_transitionClock       = new DoubleAnimation(
                 0,
                 1,
                 s_transitionDuration, 
                 FillBehavior.Stop
                 );
-            s_transitionClock.EasingFunction = new ExponentialEase
-                                                   {
-                                                       EasingMode = EasingMode.EaseInOut,
-                                                   };
 
             StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
         }

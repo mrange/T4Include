@@ -37,7 +37,7 @@ namespace Source.Concurrency
 
         readonly BlockingCollection<Task>   m_tasks = new BlockingCollection<Task>();
         Thread                              m_executingThread   ;
-        volatile bool                       m_done              ;
+        bool                                m_done              ;
 
         int                                 m_taskFailureCount;
 

@@ -92,17 +92,16 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (ObservableCollection<UIElement>)basevalue;
-            var newValue = oldValue;
+            var value = (ObservableCollection<UIElement>)basevalue;
 
-            instance.Coerce_Children (oldValue, ref newValue);
+            instance.Coerce_Children (ref value);
 
-            if (newValue == null)
+            if (value == null)
             {
-               newValue = new ObservableCollection<UIElement> ();
+               value = new ObservableCollection<UIElement> ();
             }
 
-            return newValue;
+            return value;
         }
 
         public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
@@ -133,12 +132,11 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (double)basevalue;
-            var newValue = oldValue;
+            var value = (double)basevalue;
 
-            Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+            Coerce_AnimationClock (dependencyObject, ref value);
 
-            return newValue;
+            return value;
         }
         #endregion
 
@@ -182,7 +180,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_Children (ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue);
-        partial void Coerce_Children (ObservableCollection<UIElement> value, ref ObservableCollection<UIElement> coercedValue);
+        partial void Coerce_Children (ref ObservableCollection<UIElement> coercedValue);
         partial void CollectionChanged_Children (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
         // --------------------------------------------------------------------
 
@@ -219,7 +217,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
-        static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
+        static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
         // --------------------------------------------------------------------
 
 

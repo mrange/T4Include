@@ -88,12 +88,19 @@
     <Compile Include="InterProcess\IChannel.cs" />
     <Compile Include="InterProcess\ISerializableMessage.cs" />
     <Compile Include="InterProcess\SharedMemoryChannel.cs" />
+    <Compile Include="NonSource\Global_AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\LineReaderExtensions.cs" />
     <Compile Include="Text\LineToObjectExtensions.cs" />
     <Compile Include="WPF\AccordionPanel.cs" />
     <Compile Include="WPF\AnimatedEntrance.cs" />
     <Compile Include="WPF\BindingCache.cs" />
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
+    <Compile Include="WPF\Generated_WatermarkTextBox_DependencyProperties.cs">
+      <DependentUpon>Generated_WatermarkTextBox_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WPF\Generated_AccordionPanel_DependencyProperties.cs">
       <DependentUpon>Generated_AccordionPanel_DependencyProperties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -109,6 +116,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_AnimatedEntrance_StateMachine.tt</DependentUpon>
     </Compile>
+    <Compile Include="WPF\WatermarkTextBox.cs" />
     <None Include="app.config" />
     <None Include="NET20\Generated_Common.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -149,6 +157,10 @@
     <Compile Include="Testing\TestFor.cs" />
     <Compile Include="Testing\TestRunner.cs" />
     <None Include="T4\StateMachine.ttinclude" />
+    <None Include="WPF\Generated_WatermarkTextBox_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_WatermarkTextBox_DependencyProperties.cs</LastGenOutput>
+    </None>
     <None Include="WPF\Generated_AccordionPanel_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_AccordionPanel_DependencyProperties.cs</LastGenOutput>
@@ -162,9 +174,7 @@
       <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Common\Generated_Log.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

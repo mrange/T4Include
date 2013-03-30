@@ -1,0 +1,15 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("WatermarkTextBox")
+        {
+            P ("string"         , "WatermarkText"           ),
+            P ("Brush"          , "WatermarkForeground"     ),
+            P ("bool"           , "IsWatermarkVisible"      , defaultValue:"true"   , flags:PropertyFlags.IsReadOnly    ),
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

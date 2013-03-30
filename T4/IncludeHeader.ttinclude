@@ -4,7 +4,7 @@
 // #                                                                          #
 // # This means that any edits to the .cs file will be lost when its          #
 // # regenerated. Changes should instead be applied to the corresponding      #
-// # text template file (.tt)                                                      #
+// # text template file (.tt)                                                 #
 // ############################################################################
 
 <#@ assembly    name        = "System.Core"                     #>
@@ -212,7 +212,11 @@ namespace <#=Namespace#>.Include
     
     IncludeFile[]               Includes    = new IncludeFile[0];
     UsingNamespace[]            Usings      = new UsingNamespace[0];
-    BlackListedFileFragment[]   BlackList   = new [] {BlackListFragment("AssemblyInfo.cs")};
+    BlackListedFileFragment[]   BlackList   = new [] 
+                                                {
+                                                    BlackListFragment("AssemblyInfo.cs"),
+                                                    BlackListFragment("Global_AssemblyInfo.cs"),
+                                                };
 
     static readonly Regex s_matchInclude = new Regex (
         @"^//\s*###\s*INCLUDE\s*:\s*(?<fileName>.*)$",
@@ -220,7 +224,7 @@ namespace <#=Namespace#>.Include
         );
 
     static readonly Regex s_matchMoveToTop = new Regex (
-        @"^(\#define|// ReSharper )",
+        @"^(\#define|\#pragma|// ReSharper )",
         RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
         );
 

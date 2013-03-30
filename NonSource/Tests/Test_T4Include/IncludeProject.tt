@@ -16,6 +16,8 @@
     BlackList       = new []
     {
         BlackListFragment ("Program.cs"),
+        BlackListFragment ("AssemblyInfo.cs"),
+        BlackListFragment ("Global_AssemblyInfo.cs"),
     };
     ProjectFileName = @"..\..\..\Source.csproj" ;
 #>

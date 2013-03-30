@@ -11,6 +11,16 @@
 // ----------------------------------------------------------------------------------------------
 
 using System.Reflection;
+using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Test_Functionality")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("T4Include")]
+[assembly: AssemblyCopyright("Copyright © Mårten Rånge 2013")]
+[assembly: AssemblyTrademark("T4Include")]
+[assembly: AssemblyCulture("")]
+
+[assembly: ComVisible(false)]
+
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

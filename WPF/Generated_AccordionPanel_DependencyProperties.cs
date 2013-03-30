@@ -69,13 +69,12 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (double)basevalue;
-            var newValue = oldValue;
+            var value = (double)basevalue;
 
-            instance.Coerce_PreviewWidth (oldValue, ref newValue);
+            instance.Coerce_PreviewWidth (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         public static readonly DependencyProperty ActiveElementProperty = DependencyProperty.Register (
@@ -109,13 +108,12 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (UIElement)basevalue;
-            var newValue = oldValue;
+            var value = (UIElement)basevalue;
 
-            instance.Coerce_ActiveElement (oldValue, ref newValue);
+            instance.Coerce_ActiveElement (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         public static readonly DependencyProperty ChildStateProperty = DependencyProperty.RegisterAttached (
@@ -146,12 +144,11 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (AccordionPanel.State)basevalue;
-            var newValue = oldValue;
+            var value = (AccordionPanel.State)basevalue;
 
-            Coerce_ChildState (dependencyObject, oldValue, ref newValue);
+            Coerce_ChildState (dependencyObject, ref value);
 
-            return newValue;
+            return value;
         }
         public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
             "AnimationClock",
@@ -181,12 +178,11 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (double)basevalue;
-            var newValue = oldValue;
+            var value = (double)basevalue;
 
-            Coerce_AnimationClock (dependencyObject, oldValue, ref newValue);
+            Coerce_AnimationClock (dependencyObject, ref value);
 
-            return newValue;
+            return value;
         }
         #endregion
 
@@ -232,7 +228,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_PreviewWidth (double oldValue, double newValue);
-        partial void Coerce_PreviewWidth (double value, ref double coercedValue);
+        partial void Coerce_PreviewWidth (ref double coercedValue);
         // --------------------------------------------------------------------
 
 
@@ -254,7 +250,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_ActiveElement (UIElement oldValue, UIElement newValue);
-        partial void Coerce_ActiveElement (UIElement value, ref UIElement coercedValue);
+        partial void Coerce_ActiveElement (ref UIElement coercedValue);
         // --------------------------------------------------------------------
 
 
@@ -290,7 +286,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         static partial void Changed_ChildState (DependencyObject dependencyObject, AccordionPanel.State oldValue, AccordionPanel.State newValue);
-        static partial void Coerce_ChildState (DependencyObject dependencyObject, AccordionPanel.State value, ref AccordionPanel.State coercedValue);
+        static partial void Coerce_ChildState (DependencyObject dependencyObject, ref AccordionPanel.State coercedValue);
         // --------------------------------------------------------------------
 
 
@@ -326,7 +322,7 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
-        static partial void Coerce_AnimationClock (DependencyObject dependencyObject, double value, ref double coercedValue);
+        static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
         // --------------------------------------------------------------------
 
 

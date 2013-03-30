@@ -13,11 +13,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Button.Click="Button_Click">
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="First" Tag="First"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Second" Tag="Second"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Third" Tag="Third"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fourth" Tag="Fourth"/>
-            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fifth" Tag="Fifth"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Push left" Tag="First"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Reveal right" Tag="Second"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Cover buttom" Tag="Third"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Fade" Tag="Fourth"/>
+            <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Instant" Tag="Fifth"/>
         </StackPanel>
         <wpf:AnimatedEntrance x:Name="AE" Grid.Row="2" FontSize="24">
             <Border Background="Yellow" x:Name="First">
@@ -33,8 +33,14 @@
                     </Border>
                 </wpf:AccordionPanel>
             </Border>
-            <Border Background="Red" x:Name="Second">
-                <TextBlock Text="Second" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Border 
+                Background="Red" 
+                x:Name="Second"
+                >
+                <Border.LayoutTransform>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                </Border.LayoutTransform>
+                <wpf:WatermarkTextBox FontSize="12" Width="200" Height="24"/>
             </Border>
             <Border Background="Blue" x:Name="Third">
                 <TextBlock Text="Third" VerticalAlignment="Center" HorizontalAlignment="Center"/>
