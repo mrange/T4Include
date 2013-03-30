@@ -10,6 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: ../Common/Array.cs
 // ### INCLUDE: ../Common/Log.cs
 
 // ReSharper disable InconsistentNaming
@@ -18,10 +19,12 @@
 namespace Source.Extensions
 {
     using System;
-    using System.Windows.Threading;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Media;
+    using System.Windows.Threading;
 
     using Source.Common;
 
@@ -232,5 +235,28 @@ namespace Source.Extensions
 
         }
     
+        public static IEnumerable<DependencyObject> GetVisualChildren (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var count = VisualTreeHelper.GetChildrenCount (dependencyObject);
+            for (var iter = 0; iter < count; ++iter)
+            {
+                yield return VisualTreeHelper.GetChild (dependencyObject, iter);
+            }
+        }
+
+        public static IEnumerable<DependencyObject> GetLogicalChildren (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return Array<DependencyObject>.Empty;    
+            }
+
+            return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
+        }
     }
 }

@@ -5,7 +5,7 @@
 // #                                                                          #
 // # This means that any edits to the .cs file will be lost when its          #
 // # regenerated. Changes should instead be applied to the corresponding      #
-// # text template file (.tt)                                                      #
+// # text template file (.tt)                                                 #
 // ############################################################################
 
 
@@ -21,9 +21,11 @@
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Array.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Log.cs
+// @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
 // @@@ SKIPPING (Already seen): https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // @@@ SKIPPING (Already seen): https://raw.github.com/mrange/T4Include/master/Common/Log.cs
+// @@@ SKIPPING (Already seen): https://raw.github.com/mrange/T4Include/master/Common/Config.cs
 // @@@ INCLUDING: https://raw.github.com/mrange/T4Include/master/Common/Generated_Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
@@ -530,7 +532,7 @@ namespace WebInclude
             {
                 LogMessage (Level.Exception, format, args);
             }
-    #if !NETFX_CORE
+    #if !NETFX_CORE && !SILVERLIGHT && !WINDOWS_PHONE
             static ConsoleColor GetLevelColor (Level level)
             {
                 switch (level)
@@ -586,7 +588,7 @@ namespace WebInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"https://raw.github.com/";
-        public const string IncludeDate     = @"2013-02-17T09:47:08";
+        public const string IncludeDate     = @"2013-03-30T10:16:05";
 
         public const string Include_0       = @"https://raw.github.com/mrange/T4Include/master/Extensions/BasicExtensions.cs";
         public const string Include_1       = @"https://raw.github.com/mrange/T4Include/master/Common/ConsoleLog.cs";

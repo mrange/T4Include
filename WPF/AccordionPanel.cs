@@ -28,23 +28,37 @@ namespace Source.WPF
 
     partial class AccordionPanel : Panel
     {
-        readonly static Duration        s_transitionDuration;
-        readonly static DoubleAnimation s_transitionClock   ;
+        readonly static Duration        s_animationDuration ;
+        readonly static DoubleAnimation s_animationClock    ;
+        readonly static IEasingFunction s_animationEase     ;
+
+        static partial void Initialize (
+            ref Duration animationDuration,
+            ref IEasingFunction animationEase
+            );
 
         static AccordionPanel ()
         {
-            s_transitionDuration    = new Duration (TimeSpan.FromMilliseconds(400));
-            s_transitionClock       = new DoubleAnimation(
-                0,
-                1,
-                s_transitionDuration, 
+            var animationDuration   = new Duration (TimeSpan.FromMilliseconds(400));
+            IEasingFunction animationEase       = new ExponentialEase
+                                    {
+                                        EasingMode = EasingMode.EaseInOut,
+                                    };
+
+            s_animationDuration     = animationDuration;
+            s_animationEase         = animationEase;
+
+            Initialize (ref animationDuration, ref animationEase);
+
+            s_animationDuration     = animationDuration;
+            s_animationEase         = animationEase;
+
+            s_animationClock       = new DoubleAnimation(
+                0                       ,
+                1                       ,
+                s_animationDuration    , 
                 FillBehavior.Stop
                 );
-
-            s_transitionClock.EasingFunction = new ExponentialEase
-                                                   {
-                                                       EasingMode = EasingMode.EaseInOut,
-                                                   };
             
         }
 
@@ -52,6 +66,7 @@ namespace Source.WPF
         {
             MouseButtonEventHandler mouseButtonEventHandler = Mouse_Down;
             AddHandler (MouseDownEvent, mouseButtonEventHandler, handledEventsToo: true);
+            ClipToBounds = true;
         }
 
         public sealed partial class State
@@ -59,17 +74,15 @@ namespace Source.WPF
             public double               From        ;
             public double               To          ;
             public TranslateTransform   Transform   ;
-            public double               GetCurrent (double clock)
+
+            public double               GetCurrentX (double clock)
             {
-                return clock.Interpolate(From, To);
+                return s_animationEase.Ease(clock).Interpolate(From, To);
             }
 
-            public void Update(double x)
+            public void UpdateTransform(double x)
             {
-                if (Transform != null)
-                {
-                    Transform.X = x;
-                }
+                Transform.X = x;
             }
         }
 
@@ -142,12 +155,12 @@ namespace Source.WPF
                 child.Arrange(adjustedRect);
                 child.RenderTransform = state.Transform;
 
-                var current = state.GetCurrent (animationClock); 
+                var current = state.GetCurrentX (animationClock); 
 
                 state.From  = current;
                 state.To    = desiredX;
 
-                state.Update (current);
+                state.UpdateTransform (current);
 
                 doAnimate |= !state.From.IsNear (state.To);
 
@@ -172,8 +185,8 @@ namespace Source.WPF
         void StartClock()
         {
             StopClock ();
-            m_clock = s_transitionClock.CreateClock();
-            m_clock.Completed += Transition_Completed;
+            m_clock = s_animationClock.CreateClock();
+            m_clock.Completed += Animation_Completed;
             ApplyAnimationClock(AnimationClockProperty, m_clock, HandoffBehavior.SnapshotAndReplace);
         }
 
@@ -181,14 +194,14 @@ namespace Source.WPF
         {
             if (m_clock != null)
             {
-                m_clock.Completed -= Transition_Completed;
+                m_clock.Completed -= Animation_Completed;
                 m_clock = null;
                 ApplyAnimationClock(AnimationClockProperty, null);
             }
 
         }
 
-        void Transition_Completed(object sender, EventArgs e)
+        void Animation_Completed(object sender, EventArgs e)
         {
             StopClock();
             SetAnimationClock(this, 1);
@@ -209,7 +222,7 @@ namespace Source.WPF
                 var state = GetChildState(child);
                 if (state != null)
                 {
-                    state.Update (state.GetCurrent(newValue));
+                    state.UpdateTransform (state.GetCurrentX(newValue));
                 }
                 else
                 {
@@ -235,7 +248,7 @@ namespace Source.WPF
             {
                 var child = Children[index];
                 var state = GetChildState(child);
-                var current = state.GetCurrent(animationClock);
+                var current = state.GetCurrentX(animationClock);
 
                 if (current > pos.X)
                 {
@@ -249,9 +262,9 @@ namespace Source.WPF
             ActiveElement = hit;
         }
 
-        partial void Coerce_PreviewWidth(double value, ref double coercedValue)
+        partial void Coerce_PreviewWidth(ref double coercedValue)
         {
-            coercedValue = Math.Max(8,value);
+            coercedValue = Math.Max(8, coercedValue);
         }
 
         partial void Changed_PreviewWidth(double oldValue, double newValue)
