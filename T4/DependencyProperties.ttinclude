@@ -162,24 +162,23 @@ namespace <#=Namespace#>
             {
                 return basevalue;
             }
-            var oldValue = (<#=propertyDef.Type#>)basevalue;
-            var newValue = oldValue;
+            var value = (<#=propertyDef.Type#>)basevalue;
 
-            <#=propertyDef.PropertyCoerceEventName#> (dependencyObject, oldValue, ref newValue);
+            <#=propertyDef.PropertyCoerceEventName#> (dependencyObject, ref value);
 
 <#
             if (propertyDef.IsCollection)
             {
 #>
-            if (newValue == null)
+            if (value == null)
             {
-               newValue = new <#=propertyDef.Type#> ();
+               value = new <#=propertyDef.Type#> ();
             }
 
 <#
             }
 #>
-            return newValue;
+            return value;
         }
 <#
                 }
@@ -255,24 +254,23 @@ namespace <#=Namespace#>
             {
                 return basevalue;
             }
-            var oldValue = (<#=propertyDef.Type#>)basevalue;
-            var newValue = oldValue;
+            var value = (<#=propertyDef.Type#>)basevalue;
 
-            instance.<#=propertyDef.PropertyCoerceEventName#> (oldValue, ref newValue);
+            instance.<#=propertyDef.PropertyCoerceEventName#> (ref value);
 
 <#
             if (propertyDef.IsCollection)
             {
 #>
-            if (newValue == null)
+            if (value == null)
             {
-               newValue = new <#=propertyDef.Type#> ();
+               value = new <#=propertyDef.Type#> ();
             }
 <#
             }
 #>
 
-            return newValue;
+            return value;
         }
 
 <#
@@ -407,7 +405,7 @@ namespace <#=Namespace#>
                 if (propertyDef.IsGeneratingCoerceEvent)
                 {
 #>
-        static partial void <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, <#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+        static partial void <#=propertyDef.PropertyCoerceEventName#> (DependencyObject dependencyObject, ref <#=propertyDef.Type#> coercedValue);
 <#
                 }
 #>
@@ -474,7 +472,7 @@ namespace <#=Namespace#>
                 if (propertyDef.IsGeneratingCoerceEvent)
                 {
 #>
-        partial void <#=propertyDef.PropertyCoerceEventName#> (<#=propertyDef.Type#> value, ref <#=propertyDef.Type#> coercedValue);
+        partial void <#=propertyDef.PropertyCoerceEventName#> (ref <#=propertyDef.Type#> coercedValue);
 <#
                 }
 #>
