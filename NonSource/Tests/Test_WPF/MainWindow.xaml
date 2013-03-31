@@ -17,14 +17,17 @@
             Foreground="White"
             FontSize="48"
             />
-        <Grid x:Name="Content">
+        <Grid x:Name="Cnt">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="4"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Button.Click="Button_Click">
-                <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="16" Foreground="White" Text="Push us ==>"/>
+            <StackPanel Orientation="Horizontal" Button.Click="Button_Click" Margin="4">
+                <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontSize="16" Foreground="White">
+                    <Run Text="Transition effects "/>
+                    <Run FontFamily="Segoe UI Symbol" Text="&#x21DB;"/>
+                </TextBlock>
                 <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Push left" Tag="First"/>
                 <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Reveal right" Tag="Second"/>
                 <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Cover buttom" Tag="Third"/>
@@ -32,31 +35,29 @@
                 <Button Margin="0,0,8,0" Padding="16,4,16,4" Content="Instant" Tag="Fifth"/>
             </StackPanel>
             <wpf:AnimatedEntrance x:Name="AE" Grid.Row="2" >
-                <Border x:Name="First" TextBlock.FontSize="24" TextBlock.Foreground="White">
-                    <wpf:AccordionPanel PreviewWidth="64">
-                        <Grid>
-                            <Image
-                                Source="http://fc00.deviantart.net/fs70/i/2013/088/7/6/modern_french_revolution_by_thebizarrebirdcage-d5zp4zb.jpg"
-                                Stretch="UniformToFill"
-                                />
-                            <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="modern french revolution@deviantart"/>
-                        </Grid>
-                        <Grid>
-                            <Image
-                                Source="http://fc05.deviantart.net/fs70/i/2013/087/c/b/the_communist_spirit_by_matthias_haker-d5zklk5.jpg"
-                                Stretch="UniformToFill"
-                                />
-                            <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="communist spirit@deviantart"/>
-                        </Grid>
-                        <Grid>
-                            <Image
-                                Source="http://fc09.deviantart.net/fs70/f/2013/089/d/e/enjoy_the_colors_by_ryky-d5zsu6m.jpg"
-                                Stretch="UniformToFill"
-                                />
-                            <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="enjoy the colors@deviantart"/>
-                        </Grid>
-                    </wpf:AccordionPanel>
-                </Border>
+                <wpf:AccordionPanel PreviewWidth="64" x:Name="First" TextBlock.FontSize="24" TextBlock.Foreground="White">
+                    <Grid>
+                        <Image
+                            Source="http://fc08.deviantart.net/fs71/f/2013/089/5/f/machines_by_chriscold-d5zs7v3.jpg"
+                            Stretch="UniformToFill"
+                            />
+                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="machines@deviantart"/>
+                    </Grid>
+                    <Grid>
+                        <Image
+                            Source="http://fc05.deviantart.net/fs70/i/2013/087/c/b/the_communist_spirit_by_matthias_haker-d5zklk5.jpg"
+                            Stretch="UniformToFill"
+                            />
+                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="communist spirit@deviantart"/>
+                    </Grid>
+                    <Grid>
+                        <Image
+                            Source="http://fc09.deviantart.net/fs70/f/2013/089/d/e/enjoy_the_colors_by_ryky-d5zsu6m.jpg"
+                            Stretch="UniformToFill"
+                            />
+                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="enjoy the colors@deviantart"/>
+                    </Grid>
+                </wpf:AccordionPanel>
                 <Border 
                     x:Name="Second"
                     >
@@ -72,33 +73,27 @@
                     </Border.LayoutTransform>
                     <wpf:WatermarkTextBox Width="200" Height="24"/>
                 </Border>
-                <Border x:Name="Third" TextBlock.FontSize="24" TextBlock.Foreground="White">
-                    <Grid>
-                        <Image 
-                            Source="http://fc07.deviantart.net/fs71/i/2013/087/6/e/summer_by_sanguisgelidus-d5zk1vf.jpg"
-                            Stretch="UniformToFill"
+                <Grid x:Name="Third" TextBlock.FontSize="24" TextBlock.Foreground="White">
+                    <Image
+                        Source="http://fc07.deviantart.net/fs71/i/2013/087/6/e/summer_by_sanguisgelidus-d5zk1vf.jpg"
+                        Stretch="UniformToFill"
+                        />
+                    <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="summer@deviantart"/>
+                </Grid>
+                <Grid x:Name="Fourth" Background="Black" TextBlock.FontSize="24" TextBlock.Foreground="White">
+                    <Image
+                        Source="http://fc09.deviantart.net/fs70/f/2012/097/2/5/africa_by_ryoman-d4vagug.jpg"
+                        Stretch="Uniform"
                             />
-                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="summer@deviantart"/>
-                    </Grid>
-                </Border>
-                <Border x:Name="Fourth" Background="Black" TextBlock.FontSize="24" TextBlock.Foreground="White">
-                    <Grid>
-                        <Image
-                            Source="http://fc09.deviantart.net/fs70/f/2012/097/2/5/africa_by_ryoman-d4vagug.jpg"
-                            Stretch="Uniform"
-                                />
-                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="africa@deviantart"/>
-                    </Grid>
-                </Border>
-                <Border x:Name="Fifth" TextBlock.FontSize="24" TextBlock.Foreground="White">
-                    <Grid>
-                        <Image
-                            Source="http://fc07.deviantart.net/fs8/i/2006/350/4/3/Abstract_by_Louen666.jpg"
-                            Stretch="UniformToFill"
-                                />
-                        <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="abstract@deviantart"/>
-                    </Grid>
-                </Border>
+                    <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="africa@deviantart"/>
+                </Grid>
+                <Grid x:Name="Fifth" TextBlock.FontSize="24" TextBlock.Foreground="White">
+                    <Image
+                        Source="http://fc07.deviantart.net/fs8/i/2006/350/4/3/Abstract_by_Louen666.jpg"
+                        Stretch="UniformToFill"
+                            />
+                    <TextBlock LayoutTransform="{StaticResource Rotate90}" Text="abstract@deviantart"/>
+                </Grid>
             </wpf:AnimatedEntrance>
         </Grid>
     </Grid>

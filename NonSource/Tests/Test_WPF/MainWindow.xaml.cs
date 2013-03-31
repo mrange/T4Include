@@ -11,6 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,8 +43,8 @@ namespace Test_WPF
 
             Loaded += Loaded_MainWindow;
 
-            Content.IsHitTestVisible = false;
-            Content.Opacity = 0;
+            Cnt.IsHitTestVisible = false;
+            Cnt.Opacity = 0;
         }
 
         void Loaded_MainWindow(object sender, RoutedEventArgs e)
@@ -62,6 +63,13 @@ namespace Test_WPF
                 bitmapSource.DownloadCompleted  += bitmapSource_DownloadCompleted;
                 bitmapSource.DownloadFailed     += bitmapSource_DownloadFailed;
             }
+
+            var logicalTree = this.GetLogicalTree_AsString ();
+            var visualTree  = this.GetVisualTree_AsString ();
+
+            Trace.WriteLine (logicalTree);
+            Trace.WriteLine (visualTree);
+
         }
 
         void bitmapSource_DownloadCompleted(object sender, EventArgs e)
@@ -73,18 +81,18 @@ namespace Test_WPF
         {
             if (!m_bitmapSources.Any(bs => bs.IsDownloading))
             {
-                Content.IsHitTestVisible = true;
+                Cnt.IsHitTestVisible = true;
                 m_clock = m_opacityAnimation.CreateClock ();
                 m_clock.Completed += clock_Completed;
-                Content.ApplyAnimationClock(OpacityProperty, m_clock);
+                Cnt.ApplyAnimationClock(OpacityProperty, m_clock);
             }
         }
 
         void clock_Completed(object sender, EventArgs e)
         {
             m_clock.Completed -= clock_Completed;
-            Content.ApplyAnimationClock(OpacityProperty, null);
-            Content.Opacity = 1;
+            Cnt.ApplyAnimationClock(OpacityProperty, null);
+            Cnt.Opacity = 1;
         }
 
         void bitmapSource_DownloadFailed(object sender, System.Windows.Media.ExceptionEventArgs e)

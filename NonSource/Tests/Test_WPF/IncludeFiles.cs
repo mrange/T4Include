@@ -1895,15 +1895,19 @@ namespace FileInclude
     
     
     
+    
     namespace Source.Extensions
     {
         using System;
         using System.Collections.Generic;
+        using System.Globalization;
         using System.Linq;
+        using System.Text;
         using System.Windows;
         using System.Windows.Data;
         using System.Windows.Media;
         using System.Windows.Threading;
+        using System.Xml;
     
         using Source.Common;
     
@@ -2110,6 +2114,89 @@ namespace FileInclude
                 }
     
                 return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
+            }
+    
+            static string GetValueAsString (object obj)
+            {
+                var formattable = obj as IFormattable;
+                if (formattable != null)
+                {
+                    return formattable.ToString ("", CultureInfo.InvariantCulture);
+                }
+    
+                if (obj != null)
+                {
+                    return obj.ToString ();
+                }
+    
+                return "";
+            }
+    
+            static void GetTree_AsString_Impl (
+                this DependencyObject dependencyObject, 
+                XmlWriter xmlWriter,
+                Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+                )
+            {
+                if (dependencyObject == null)
+                {
+                    return;
+                }
+                
+                xmlWriter.WriteStartElement (dependencyObject.GetType().Name);
+    
+                var enumerator = dependencyObject.GetLocalValueEnumerator ();
+                while (enumerator.MoveNext ())
+                {
+                    var current = enumerator.Current;
+    
+                    xmlWriter.WriteAttributeString (
+                        current.Property.Name, 
+                        GetValueAsString (current.Value)
+                        );
+                }
+    
+                foreach (var child in childrenGetter (dependencyObject))
+                {
+                    child.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+                }
+    
+                xmlWriter.WriteEndElement ();
+    
+            }
+    
+            static string GetTree_AsString (
+                this DependencyObject dependencyObject,             
+                Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+                )
+            {
+                var settings =  new XmlWriterSettings
+                                    {
+                                        Indent  = true  ,
+                                    };
+    
+                var sb = new StringBuilder (128);
+    
+                using (var xmlWriter = XmlWriter.Create (sb, settings))
+                {
+                    xmlWriter.WriteStartDocument ();
+    
+                    dependencyObject.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+    
+                    xmlWriter.WriteEndDocument ();
+                }
+    
+                return sb.ToString ();            
+            }
+    
+            public static string GetLogicalTree_AsString (this DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetTree_AsString (d => d.GetLogicalChildren ());
+            }
+    
+            public static string GetVisualTree_AsString (this DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetTree_AsString (d => d.GetVisualChildren ());
             }
     
             public static IEnumerable<DependencyObject> GetVisualTree_BreadthFirst (this DependencyObject dependencyObject)
@@ -3005,7 +3092,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-30T19:51:41";
+        public const string IncludeDate     = @"2013-03-31T11:16:07";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
