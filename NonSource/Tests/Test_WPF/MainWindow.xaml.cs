@@ -10,19 +10,94 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using FileInclude.Source.Extensions;
 using FileInclude.Source.WPF;
 
 namespace Test_WPF
 {
     public partial class MainWindow
     {
+        BitmapSource[] m_bitmapSources;
+        readonly DoubleAnimation m_opacityAnimation = new DoubleAnimation
+                                                 {
+                                                     To         = 1,
+                                                     From       = 0,
+                                                     Duration   = new Duration (TimeSpan.FromSeconds(1)),
+                                                     FillBehavior = FillBehavior.Stop
+                                                 }.FreezeObject ()
+                                                 ;
+
+        AnimationClock m_clock;
+
         public MainWindow()
         {
             InitializeComponent();
-            
-            
+
+            Loaded += Loaded_MainWindow;
+
+            Cnt.IsHitTestVisible = false;
+            Cnt.Opacity = 0;
+        }
+
+        void Loaded_MainWindow(object sender, RoutedEventArgs e)
+        {
+            m_bitmapSources = this
+                .GetLogicalTree_BreadthFirst ()
+                .OfType<Image> ()
+                .Select (i => i.Source)
+                .OfType<BitmapSource> ()
+                .Where (bs => bs.IsDownloading)
+                .ToArray ();
+
+
+            foreach (var bitmapSource in m_bitmapSources)
+            {
+                bitmapSource.DownloadCompleted  += bitmapSource_DownloadCompleted;
+                bitmapSource.DownloadFailed     += bitmapSource_DownloadFailed;
+            }
+
+            var logicalTree = this.GetLogicalTree_AsString ();
+            var visualTree  = this.GetVisualTree_AsString ();
+
+            Trace.WriteLine (logicalTree);
+            Trace.WriteLine (visualTree);
+
+        }
+
+        void bitmapSource_DownloadCompleted(object sender, EventArgs e)
+        {
+            ShowContent();
+        }
+
+        void ShowContent()
+        {
+            if (!m_bitmapSources.Any(bs => bs.IsDownloading))
+            {
+                Cnt.IsHitTestVisible = true;
+                m_clock = m_opacityAnimation.CreateClock ();
+                m_clock.Completed += clock_Completed;
+                Cnt.ApplyAnimationClock(OpacityProperty, m_clock);
+            }
+        }
+
+        void clock_Completed(object sender, EventArgs e)
+        {
+            m_clock.Completed -= clock_Completed;
+            Cnt.ApplyAnimationClock(OpacityProperty, null);
+            Cnt.Opacity = 1;
+        }
+
+        void bitmapSource_DownloadFailed(object sender, System.Windows.Media.ExceptionEventArgs e)
+        {
+            ShowContent();
         }
 
         void Button_Click(object sender, RoutedEventArgs e)
