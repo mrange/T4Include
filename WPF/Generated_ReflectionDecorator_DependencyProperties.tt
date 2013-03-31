@@ -4,7 +4,8 @@
     {
         new ClassDefinition ("ReflectionDecorator")
         {
-            P ("double"                 , "ReflectionHeight", defaultValue:"48.0"           ),
+            P ("double"                 , "ReflectionSize"      , defaultValue:"48.0"           ),
+            P ("double"                 , "ReflectionSeparation", defaultValue:"4.0"            ),
 
         },
     };    

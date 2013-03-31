@@ -38,18 +38,18 @@ namespace Source.WPF
     partial class ReflectionDecorator
     {
         #region Uninteresting generated code
-        public static readonly DependencyProperty ReflectionHeightProperty = DependencyProperty.Register (
-            "ReflectionHeight",
+        public static readonly DependencyProperty ReflectionSizeProperty = DependencyProperty.Register (
+            "ReflectionSize",
             typeof (double),
             typeof (ReflectionDecorator),
             new FrameworkPropertyMetadata (
                 48.0,
                 FrameworkPropertyMetadataOptions.None,
-                Changed_ReflectionHeight,
-                Coerce_ReflectionHeight          
+                Changed_ReflectionSize,
+                Coerce_ReflectionSize          
             ));
 
-        static void Changed_ReflectionHeight (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        static void Changed_ReflectionSize (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var instance = dependencyObject as ReflectionDecorator;
             if (instance != null)
@@ -57,12 +57,12 @@ namespace Source.WPF
                 var oldValue = (double)eventArgs.OldValue;
                 var newValue = (double)eventArgs.NewValue;
 
-                instance.Changed_ReflectionHeight (oldValue, newValue);
+                instance.Changed_ReflectionSize (oldValue, newValue);
             }
         }
 
 
-        static object Coerce_ReflectionHeight (DependencyObject dependencyObject, object basevalue)
+        static object Coerce_ReflectionSize (DependencyObject dependencyObject, object basevalue)
         {
             var instance = dependencyObject as ReflectionDecorator;
             if (instance == null)
@@ -71,7 +71,46 @@ namespace Source.WPF
             }
             var value = (double)basevalue;
 
-            instance.Coerce_ReflectionHeight (ref value);
+            instance.Coerce_ReflectionSize (ref value);
+
+
+            return value;
+        }
+
+        public static readonly DependencyProperty ReflectionSeparationProperty = DependencyProperty.Register (
+            "ReflectionSeparation",
+            typeof (double),
+            typeof (ReflectionDecorator),
+            new FrameworkPropertyMetadata (
+                4.0,
+                FrameworkPropertyMetadataOptions.None,
+                Changed_ReflectionSeparation,
+                Coerce_ReflectionSeparation          
+            ));
+
+        static void Changed_ReflectionSeparation (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        {
+            var instance = dependencyObject as ReflectionDecorator;
+            if (instance != null)
+            {
+                var oldValue = (double)eventArgs.OldValue;
+                var newValue = (double)eventArgs.NewValue;
+
+                instance.Changed_ReflectionSeparation (oldValue, newValue);
+            }
+        }
+
+
+        static object Coerce_ReflectionSeparation (DependencyObject dependencyObject, object basevalue)
+        {
+            var instance = dependencyObject as ReflectionDecorator;
+            if (instance == null)
+            {
+                return basevalue;
+            }
+            var value = (double)basevalue;
+
+            instance.Coerce_ReflectionSeparation (ref value);
 
 
             return value;
@@ -92,7 +131,8 @@ namespace Source.WPF
         // --------------------------------------------------------------------
         void CoerceAllProperties ()
         {
-            CoerceValue (ReflectionHeightProperty);
+            CoerceValue (ReflectionSizeProperty);
+            CoerceValue (ReflectionSeparationProperty);
         }
 
 
@@ -102,23 +142,45 @@ namespace Source.WPF
 
            
         // --------------------------------------------------------------------
-        public double ReflectionHeight
+        public double ReflectionSize
         {
             get
             {
-                return (double)GetValue (ReflectionHeightProperty);
+                return (double)GetValue (ReflectionSizeProperty);
             }
             set
             {
-                if (ReflectionHeight != value)
+                if (ReflectionSize != value)
                 {
-                    SetValue (ReflectionHeightProperty, value);
+                    SetValue (ReflectionSizeProperty, value);
                 }
             }
         }
         // --------------------------------------------------------------------
-        partial void Changed_ReflectionHeight (double oldValue, double newValue);
-        partial void Coerce_ReflectionHeight (ref double coercedValue);
+        partial void Changed_ReflectionSize (double oldValue, double newValue);
+        partial void Coerce_ReflectionSize (ref double coercedValue);
+        // --------------------------------------------------------------------
+
+
+           
+        // --------------------------------------------------------------------
+        public double ReflectionSeparation
+        {
+            get
+            {
+                return (double)GetValue (ReflectionSeparationProperty);
+            }
+            set
+            {
+                if (ReflectionSeparation != value)
+                {
+                    SetValue (ReflectionSeparationProperty, value);
+                }
+            }
+        }
+        // --------------------------------------------------------------------
+        partial void Changed_ReflectionSeparation (double oldValue, double newValue);
+        partial void Coerce_ReflectionSeparation (ref double coercedValue);
         // --------------------------------------------------------------------
 
 

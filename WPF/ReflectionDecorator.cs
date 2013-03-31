@@ -77,39 +77,57 @@ namespace Source.WPF
 
         protected override Size MeasureOverride(Size constraint)
         {
-            var reflectionHeight = ReflectionHeight;
+            var fullReflectionSize = FullReflectionSize;
             var adjustedSize = new Size (
                 constraint.Width, 
-                (constraint.Height - reflectionHeight).LimitBy(constraint.Height)
+                (constraint.Height - fullReflectionSize).LimitBy(constraint.Height)
                 );
             var measuredSize = base.MeasureOverride (adjustedSize);
 
-            var result = new Size(measuredSize.Width, measuredSize.Height + reflectionHeight).LimitBy(constraint);
+            var result = new Size(measuredSize.Width, measuredSize.Height + fullReflectionSize).LimitBy(constraint);
 
             return result;
+        }
+
+        double FullReflectionSize
+        {
+            get
+            {
+                return ReflectionSeparation + ReflectionSize;
+            }
         }
 
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            var reflectionHeight = ReflectionHeight;
+            var fullReflectionSize = FullReflectionSize;
             var adjustedSize = new Size (
                 arrangeSize.Width, 
-                (arrangeSize.Height - reflectionHeight).LimitBy(arrangeSize.Height)
+                (arrangeSize.Height - fullReflectionSize).LimitBy(arrangeSize.Height)
                 );
 
                 var finalSize = base.ArrangeOverride (adjustedSize);
 
-            var result = new Size(finalSize.Width, finalSize.Height + reflectionHeight).LimitBy(arrangeSize);
+            var result = new Size(finalSize.Width, finalSize.Height + fullReflectionSize).LimitBy(arrangeSize);
 
             return result;
         }
 
-        partial void Coerce_ReflectionHeight(ref double coercedValue)
+        partial void Coerce_ReflectionSeparation(ref double coercedValue)
         {
             coercedValue = Math.Max (0, coercedValue);
         }
 
-        partial void Changed_ReflectionHeight(double oldValue, double newValue)
+        partial void Changed_ReflectionSeparation(double oldValue, double newValue)
+        {
+            InvalidateMeasure();
+        }
+
+        partial void Coerce_ReflectionSize(ref double coercedValue)
+        {
+            coercedValue = Math.Max (0, coercedValue);
+        }
+
+        partial void Changed_ReflectionSize(double oldValue, double newValue)
         {
             InvalidateMeasure();
         }
@@ -130,11 +148,12 @@ namespace Source.WPF
 
             var renderSize = RenderSize;
             var childRenderSize = child.RenderSize;
-            var reflectionHeight = ReflectionHeight;
+            var reflectionSize = ReflectionSize;
+            var reflectionSeparation = ReflectionSeparation;
 
             var matrix = Matrix.Identity;
             matrix.Scale(1,-1);
-            matrix.Translate (0, childRenderSize.Height + reflectionHeight);
+            matrix.Translate (0, childRenderSize.Height + reflectionSize + reflectionSeparation);
 
             m_transform.Matrix = matrix;
 
@@ -145,7 +164,7 @@ namespace Source.WPF
                 0, 
                 0, 
                 renderSize.Width, 
-                reflectionHeight
+                reflectionSize
                 );
 
             drawingContext.DrawRectangle (
