@@ -1143,42 +1143,108 @@ namespace FileInclude
         partial class ReflectionDecorator : Decorator
         {
             VisualBrush m_brush;
+            LinearGradientBrush m_opacityMask;
+            MatrixTransform m_transform;
     
             partial void Constructed__ReflectionDecorator()
             {
-                m_brush = new VisualBrush
+                m_opacityMask   = new LinearGradientBrush (
+                    new GradientStopCollection
+                        {
+                            new GradientStop (Colors.Transparent                , 0     ),    
+                            new GradientStop ("#2000".ParseColor(Colors.Black)  , 0.25  ),    
+                            new GradientStop ("#4000".ParseColor(Colors.Black)  , 0.50  ),    
+                            new GradientStop ("#8000".ParseColor(Colors.Black)  , 0.75  ),    
+                            new GradientStop (Colors.Black                      , 1     ),    
+                        },
+                    90
+                    ).FreezeObject ();    
+    
+                m_transform = new MatrixTransform ();
+    
+                VerticalAlignment = VerticalAlignment.Center;       
+                HorizontalAlignment = HorizontalAlignment.Center;
+            }
+    
+            public override UIElement Child
+            {
+                get
+                {
+                    return base.Child;
+                }
+                set
+                {
+                    base.Child = value;
+                    if (value == null)
+                    {
+                        m_brush = null;
+                    }
+                    else if (m_brush == null || !ReferenceEquals (m_brush.Visual, value))
+                    {
+                        m_brush = new VisualBrush (value)
+                                        {
+                                            Stretch           = Stretch.None      ,
+                                            AlignmentY        = AlignmentY.Bottom , 
+                                            AutoLayoutContent = false             , 
+                                            TileMode          = TileMode.None     ,
+                                        }.FreezeObject ();
+                    }
+                }
             }
     
             protected override Size MeasureOverride(Size constraint)
             {
-                var reflectionHeight = ReflectionHeight;
+                var fullReflectionSize = FullReflectionSize;
                 var adjustedSize = new Size (
                     constraint.Width, 
-                    (constraint.Height - reflectionHeight).LimitBy(constraint.Height)
+                    (constraint.Height - fullReflectionSize).LimitBy(constraint.Height)
                     );
                 var measuredSize = base.MeasureOverride (adjustedSize);
     
-                return new Size (measuredSize.Width, measuredSize.Height + reflectionHeight).LimitBy (constraint);
+                var result = new Size(measuredSize.Width, measuredSize.Height + fullReflectionSize).LimitBy(constraint);
+    
+                return result;
+            }
+    
+            double FullReflectionSize
+            {
+                get
+                {
+                    return ReflectionSeparation + ReflectionSize;
+                }
             }
     
             protected override Size ArrangeOverride(Size arrangeSize)
             {
-                var reflectionHeight = ReflectionHeight;
+                var fullReflectionSize = FullReflectionSize;
                 var adjustedSize = new Size (
                     arrangeSize.Width, 
-                    (arrangeSize.Height - reflectionHeight).LimitBy(arrangeSize.Height)
+                    (arrangeSize.Height - fullReflectionSize).LimitBy(arrangeSize.Height)
                     );
     
                     var finalSize = base.ArrangeOverride (adjustedSize);
-        
-                    return new Size (finalSize.Width, finalSize.Height + reflectionHeight).LimitBy (arrangeSize);
+    
+                var result = new Size(finalSize.Width, finalSize.Height + fullReflectionSize).LimitBy(arrangeSize);
+    
+                return result;
             }
     
-            partial void Coerce_ReflectionHeight(ref double coercedValue)
+            partial void Coerce_ReflectionSeparation(ref double coercedValue)
             {
                 coercedValue = Math.Max (0, coercedValue);
             }
-            partial void Changed_ReflectionHeight(double oldValue, double newValue)
+    
+            partial void Changed_ReflectionSeparation(double oldValue, double newValue)
+            {
+                InvalidateMeasure();
+            }
+    
+            partial void Coerce_ReflectionSize(ref double coercedValue)
+            {
+                coercedValue = Math.Max (0, coercedValue);
+            }
+    
+            partial void Changed_ReflectionSize(double oldValue, double newValue)
             {
                 InvalidateMeasure();
             }
@@ -1186,22 +1252,36 @@ namespace FileInclude
     
             protected override void OnRender(DrawingContext drawingContext)
             {
-                var renderSize = RenderSize;
-    
-                var reflectionHeight = ReflectionHeight;
-    
                 var child = Child;
-    
-                if (!ReferenceEquals(m_brush.Visual, child))
+                if (child == null)
                 {
-                    m_brush.Visual = child;    
+                    return;
                 }
+    
+                if (m_brush == null)
+                {
+                    return;
+                }
+    
+                var renderSize = RenderSize;
+                var childRenderSize = child.RenderSize;
+                var reflectionSize = ReflectionSize;
+                var reflectionSeparation = ReflectionSeparation;
+    
+                var matrix = Matrix.Identity;
+                matrix.Scale(1,-1);
+                matrix.Translate (0, childRenderSize.Height + reflectionSize + reflectionSeparation);
+    
+                m_transform.Matrix = matrix;
+    
+                drawingContext.PushTransform (m_transform);
+                drawingContext.PushOpacityMask (m_opacityMask);
     
                 var rectangle = new Rect(
                     0, 
-                    (renderSize.Height - reflectionHeight).LimitBy(renderSize.Height), 
+                    0, 
                     renderSize.Width, 
-                    reflectionHeight
+                    reflectionSize
                     );
     
                 drawingContext.DrawRectangle (
@@ -1209,6 +1289,9 @@ namespace FileInclude
                     null, 
                     rectangle
                     );
+    
+                drawingContext.Pop();
+                drawingContext.Pop();
             }
         }
     }
@@ -2384,6 +2467,97 @@ namespace FileInclude
                     size.Height.LimitBy(constraint.Height)
                     );    
             }
+    
+            static byte HexColor (this char ch)
+            {
+                switch (ch)
+                {
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        return (byte) (ch - '0');
+                    case 'a':
+                    case 'b':
+                    case 'c':
+                    case 'd':
+                    case 'e':
+                    case 'f':
+                        return (byte) (ch - 'a' + 10);
+                    case 'A':
+                    case 'B':
+                    case 'C':
+                    case 'D':
+                    case 'E':
+                    case 'F':
+                        return (byte) (ch - 'A' + 10);
+                    default:
+                        return 0;
+                }       
+            }
+    
+            static byte ExpandNibble (this byte b)
+            {
+                var n = b & 0xF;
+                return (byte) (n | (n << 4));
+            }
+    
+            public static Color ParseColor (this string color, Color defaultTo)
+            {
+                if (string.IsNullOrEmpty (color))
+                {
+                    return defaultTo;                
+                }
+    
+                if (color[0] != '#')
+                {                   
+                    return defaultTo;
+                }
+    
+                switch (color.Length)
+                {
+                    default:
+                        return defaultTo;
+                    case 4:
+                        // #FFF
+                        return Color.FromRgb (
+                            color[1].HexColor().ExpandNibble(),
+                            color[2].HexColor().ExpandNibble(),
+                            color[3].HexColor().ExpandNibble()
+                            );
+                    case 5:
+                        // #FFFF
+                        return Color.FromArgb (
+                            color[1].HexColor().ExpandNibble(),
+                            color[2].HexColor().ExpandNibble(),
+                            color[3].HexColor().ExpandNibble(),
+                            color[4].HexColor().ExpandNibble()
+                            );
+                    case 7:
+                        // #FFFFFF
+                        return Color.FromRgb (
+                            (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                            (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                            (byte) ((color[5].HexColor() << 4) + color[6].HexColor())
+                            );
+                    case 9:
+                        // #FFFFFFFF
+                        return Color.FromArgb (
+                            (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                            (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                            (byte) ((color[5].HexColor() << 4) + color[6].HexColor()),
+                            (byte) ((color[7].HexColor() << 4) + color[8].HexColor())
+                            );
+                }
+    
+            }
+    
         }
     }
 }
@@ -3008,18 +3182,18 @@ namespace FileInclude
         partial class ReflectionDecorator
         {
             #region Uninteresting generated code
-            public static readonly DependencyProperty ReflectionHeightProperty = DependencyProperty.Register (
-                "ReflectionHeight",
+            public static readonly DependencyProperty ReflectionSizeProperty = DependencyProperty.Register (
+                "ReflectionSize",
                 typeof (double),
                 typeof (ReflectionDecorator),
                 new FrameworkPropertyMetadata (
                     48.0,
                     FrameworkPropertyMetadataOptions.None,
-                    Changed_ReflectionHeight,
-                    Coerce_ReflectionHeight          
+                    Changed_ReflectionSize,
+                    Coerce_ReflectionSize          
                 ));
     
-            static void Changed_ReflectionHeight (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            static void Changed_ReflectionSize (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
             {
                 var instance = dependencyObject as ReflectionDecorator;
                 if (instance != null)
@@ -3027,12 +3201,12 @@ namespace FileInclude
                     var oldValue = (double)eventArgs.OldValue;
                     var newValue = (double)eventArgs.NewValue;
     
-                    instance.Changed_ReflectionHeight (oldValue, newValue);
+                    instance.Changed_ReflectionSize (oldValue, newValue);
                 }
             }
     
     
-            static object Coerce_ReflectionHeight (DependencyObject dependencyObject, object basevalue)
+            static object Coerce_ReflectionSize (DependencyObject dependencyObject, object basevalue)
             {
                 var instance = dependencyObject as ReflectionDecorator;
                 if (instance == null)
@@ -3041,7 +3215,46 @@ namespace FileInclude
                 }
                 var value = (double)basevalue;
     
-                instance.Coerce_ReflectionHeight (ref value);
+                instance.Coerce_ReflectionSize (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty ReflectionSeparationProperty = DependencyProperty.Register (
+                "ReflectionSeparation",
+                typeof (double),
+                typeof (ReflectionDecorator),
+                new FrameworkPropertyMetadata (
+                    4.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ReflectionSeparation,
+                    Coerce_ReflectionSeparation          
+                ));
+    
+            static void Changed_ReflectionSeparation (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_ReflectionSeparation (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ReflectionSeparation (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_ReflectionSeparation (ref value);
     
     
                 return value;
@@ -3062,7 +3275,8 @@ namespace FileInclude
             // --------------------------------------------------------------------
             void CoerceAllProperties ()
             {
-                CoerceValue (ReflectionHeightProperty);
+                CoerceValue (ReflectionSizeProperty);
+                CoerceValue (ReflectionSeparationProperty);
             }
     
     
@@ -3072,23 +3286,45 @@ namespace FileInclude
     
                
             // --------------------------------------------------------------------
-            public double ReflectionHeight
+            public double ReflectionSize
             {
                 get
                 {
-                    return (double)GetValue (ReflectionHeightProperty);
+                    return (double)GetValue (ReflectionSizeProperty);
                 }
                 set
                 {
-                    if (ReflectionHeight != value)
+                    if (ReflectionSize != value)
                     {
-                        SetValue (ReflectionHeightProperty, value);
+                        SetValue (ReflectionSizeProperty, value);
                     }
                 }
             }
             // --------------------------------------------------------------------
-            partial void Changed_ReflectionHeight (double oldValue, double newValue);
-            partial void Coerce_ReflectionHeight (ref double coercedValue);
+            partial void Changed_ReflectionSize (double oldValue, double newValue);
+            partial void Coerce_ReflectionSize (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double ReflectionSeparation
+            {
+                get
+                {
+                    return (double)GetValue (ReflectionSeparationProperty);
+                }
+                set
+                {
+                    if (ReflectionSeparation != value)
+                    {
+                        SetValue (ReflectionSeparationProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ReflectionSeparation (double oldValue, double newValue);
+            partial void Coerce_ReflectionSeparation (ref double coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -3355,7 +3591,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-31T18:33:08";
+        public const string IncludeDate     = @"2013-03-31T19:56:42";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

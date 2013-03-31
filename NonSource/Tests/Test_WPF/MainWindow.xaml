@@ -71,7 +71,7 @@
                     <Border.LayoutTransform>
                         <ScaleTransform ScaleX="2" ScaleY="2"/>
                     </Border.LayoutTransform>
-                    <wpf:ReflectionDecorator>
+                    <wpf:ReflectionDecorator ReflectionSize="24">
                         <wpf:WatermarkTextBox Width="200" Height="24"/>
                     </wpf:ReflectionDecorator>
                 </Border>
