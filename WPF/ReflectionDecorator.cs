@@ -10,6 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ReSharper disable InconsistentNaming
 
 // ### INCLUDE: Generated_ReflectionDecorator_DependencyProperties.cs
 
@@ -25,10 +26,53 @@ namespace Source.WPF
     partial class ReflectionDecorator : Decorator
     {
         VisualBrush m_brush;
+        LinearGradientBrush m_opacityMask;
+        MatrixTransform m_transform;
 
         partial void Constructed__ReflectionDecorator()
         {
-            m_brush = new VisualBrush
+            m_opacityMask   = new LinearGradientBrush (
+                new GradientStopCollection
+                    {
+                        new GradientStop (Colors.Transparent                , 0     ),    
+                        new GradientStop ("#2000".ParseColor(Colors.Black)  , 0.25  ),    
+                        new GradientStop ("#4000".ParseColor(Colors.Black)  , 0.50  ),    
+                        new GradientStop ("#8000".ParseColor(Colors.Black)  , 0.75  ),    
+                        new GradientStop (Colors.Black                      , 1     ),    
+                    },
+                90
+                ).FreezeObject ();    
+
+            m_transform = new MatrixTransform ();
+
+            VerticalAlignment = VerticalAlignment.Center;       
+            HorizontalAlignment = HorizontalAlignment.Center;
+        }
+
+        public override UIElement Child
+        {
+            get
+            {
+                return base.Child;
+            }
+            set
+            {
+                base.Child = value;
+                if (value == null)
+                {
+                    m_brush = null;
+                }
+                else if (m_brush == null || !ReferenceEquals (m_brush.Visual, value))
+                {
+                    m_brush = new VisualBrush (value)
+                                    {
+                                        Stretch           = Stretch.None      ,
+                                        AlignmentY        = AlignmentY.Bottom , 
+                                        AutoLayoutContent = false             , 
+                                        TileMode          = TileMode.None     ,
+                                    }.FreezeObject ();
+                }
+            }
         }
 
         protected override Size MeasureOverride(Size constraint)
@@ -40,7 +84,9 @@ namespace Source.WPF
                 );
             var measuredSize = base.MeasureOverride (adjustedSize);
 
-            return new Size (measuredSize.Width, measuredSize.Height + reflectionHeight).LimitBy (constraint);
+            var result = new Size(measuredSize.Width, measuredSize.Height + reflectionHeight).LimitBy(constraint);
+
+            return result;
         }
 
         protected override Size ArrangeOverride(Size arrangeSize)
@@ -52,14 +98,17 @@ namespace Source.WPF
                 );
 
                 var finalSize = base.ArrangeOverride (adjustedSize);
-    
-                return new Size (finalSize.Width, finalSize.Height + reflectionHeight).LimitBy (arrangeSize);
+
+            var result = new Size(finalSize.Width, finalSize.Height + reflectionHeight).LimitBy(arrangeSize);
+
+            return result;
         }
 
         partial void Coerce_ReflectionHeight(ref double coercedValue)
         {
             coercedValue = Math.Max (0, coercedValue);
         }
+
         partial void Changed_ReflectionHeight(double oldValue, double newValue)
         {
             InvalidateMeasure();
@@ -68,20 +117,33 @@ namespace Source.WPF
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var renderSize = RenderSize;
+            var child = Child;
+            if (child == null)
+            {
+                return;
+            }
 
+            if (m_brush == null)
+            {
+                return;
+            }
+
+            var renderSize = RenderSize;
+            var childRenderSize = child.RenderSize;
             var reflectionHeight = ReflectionHeight;
 
-            var child = Child;
+            var matrix = Matrix.Identity;
+            matrix.Scale(1,-1);
+            matrix.Translate (0, childRenderSize.Height + reflectionHeight);
 
-            if (!ReferenceEquals(m_brush.Visual, child))
-            {
-                m_brush.Visual = child;    
-            }
+            m_transform.Matrix = matrix;
+
+            drawingContext.PushTransform (m_transform);
+            drawingContext.PushOpacityMask (m_opacityMask);
 
             var rectangle = new Rect(
                 0, 
-                (renderSize.Height - reflectionHeight).LimitBy(renderSize.Height), 
+                0, 
                 renderSize.Width, 
                 reflectionHeight
                 );
@@ -91,6 +153,9 @@ namespace Source.WPF
                 null, 
                 rectangle
                 );
+
+            drawingContext.Pop();
+            drawingContext.Pop();
         }
     }
 }
