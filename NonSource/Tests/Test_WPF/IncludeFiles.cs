@@ -21,6 +21,8 @@
 // @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
 // @@@ INCLUDE_FOUND: Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+// @@@ INCLUDE_FOUND: Generated_ReflectionDecorator_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
@@ -29,6 +31,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
@@ -1108,6 +1111,109 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Media;
+    
+        using Source.Extensions;
+    
+        partial class ReflectionDecorator : Decorator
+        {
+            VisualBrush m_brush;
+    
+            partial void Constructed__ReflectionDecorator()
+            {
+                m_brush = new VisualBrush
+            }
+    
+            protected override Size MeasureOverride(Size constraint)
+            {
+                var reflectionHeight = ReflectionHeight;
+                var adjustedSize = new Size (
+                    constraint.Width, 
+                    (constraint.Height - reflectionHeight).LimitBy(constraint.Height)
+                    );
+                var measuredSize = base.MeasureOverride (adjustedSize);
+    
+                return new Size (measuredSize.Width, measuredSize.Height + reflectionHeight).LimitBy (constraint);
+            }
+    
+            protected override Size ArrangeOverride(Size arrangeSize)
+            {
+                var reflectionHeight = ReflectionHeight;
+                var adjustedSize = new Size (
+                    arrangeSize.Width, 
+                    (arrangeSize.Height - reflectionHeight).LimitBy(arrangeSize.Height)
+                    );
+    
+                    var finalSize = base.ArrangeOverride (adjustedSize);
+        
+                    return new Size (finalSize.Width, finalSize.Height + reflectionHeight).LimitBy (arrangeSize);
+            }
+    
+            partial void Coerce_ReflectionHeight(ref double coercedValue)
+            {
+                coercedValue = Math.Max (0, coercedValue);
+            }
+            partial void Changed_ReflectionHeight(double oldValue, double newValue)
+            {
+                InvalidateMeasure();
+            }
+    
+    
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                var renderSize = RenderSize;
+    
+                var reflectionHeight = ReflectionHeight;
+    
+                var child = Child;
+    
+                if (!ReferenceEquals(m_brush.Visual, child))
+                {
+                    m_brush.Visual = child;    
+                }
+    
+                var rectangle = new Rect(
+                    0, 
+                    (renderSize.Height - reflectionHeight).LimitBy(renderSize.Height), 
+                    renderSize.Width, 
+                    reflectionHeight
+                    );
+    
+                drawingContext.DrawRectangle (
+                    m_brush, 
+                    null, 
+                    rectangle
+                    );
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
 // ############################################################################
 
 // ############################################################################
@@ -2248,6 +2354,36 @@ namespace FileInclude
                     }                
                 }
             }
+    
+            public static double LimitBy (this double size, double constraint)
+            {
+                constraint = Math.Max (0, constraint);
+    
+                if (double.IsNaN (size))
+                {
+                    return size;
+                }
+    
+                if (size < 0)
+                {
+                    return 0;
+                }
+    
+                if (size > constraint)
+                {
+                    return constraint;
+                }
+    
+                return size;
+            }
+    
+            public static Size LimitBy (this Size size, Size constraint)
+            {
+                return new Size(
+                    size.Width.LimitBy(constraint.Width), 
+                    size.Height.LimitBy(constraint.Height)
+                    );    
+            }
         }
     }
 }
@@ -2839,6 +2975,133 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // ReflectionDecorator
+        // ------------------------------------------------------------------------
+        partial class ReflectionDecorator
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty ReflectionHeightProperty = DependencyProperty.Register (
+                "ReflectionHeight",
+                typeof (double),
+                typeof (ReflectionDecorator),
+                new FrameworkPropertyMetadata (
+                    48.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ReflectionHeight,
+                    Coerce_ReflectionHeight          
+                ));
+    
+            static void Changed_ReflectionHeight (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_ReflectionHeight (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ReflectionHeight (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_ReflectionHeight (ref value);
+    
+    
+                return value;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public ReflectionDecorator ()
+            {
+                CoerceAllProperties ();
+                Constructed__ReflectionDecorator ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__ReflectionDecorator ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (ReflectionHeightProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public double ReflectionHeight
+            {
+                get
+                {
+                    return (double)GetValue (ReflectionHeightProperty);
+                }
+                set
+                {
+                    if (ReflectionHeight != value)
+                    {
+                        SetValue (ReflectionHeightProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ReflectionHeight (double oldValue, double newValue);
+            partial void Coerce_ReflectionHeight (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
@@ -3092,20 +3355,22 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-31T11:16:07";
+        public const string IncludeDate     = @"2013-03-31T18:33:08";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

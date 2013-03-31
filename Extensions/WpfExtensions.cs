@@ -369,5 +369,35 @@ namespace Source.Extensions
                 }                
             }
         }
+
+        public static double LimitBy (this double size, double constraint)
+        {
+            constraint = Math.Max (0, constraint);
+
+            if (double.IsNaN (size))
+            {
+                return size;
+            }
+
+            if (size < 0)
+            {
+                return 0;
+            }
+
+            if (size > constraint)
+            {
+                return constraint;
+            }
+
+            return size;
+        }
+
+        public static Size LimitBy (this Size size, Size constraint)
+        {
+            return new Size(
+                size.Width.LimitBy(constraint.Width), 
+                size.Height.LimitBy(constraint.Height)
+                );    
+        }
     }
 }
