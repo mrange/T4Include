@@ -20,6 +20,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using FileInclude.Source.Extensions;
 using FileInclude.Source.WPF;
+using FileInclude.Source.WPF.Debug;
 
 namespace Test_WPF
 {
@@ -64,12 +65,7 @@ namespace Test_WPF
                 bitmapSource.DownloadFailed     += bitmapSource_DownloadFailed;
             }
 
-            var logicalTree = this.GetLogicalTree_AsString ();
-            var visualTree  = this.GetVisualTree_AsString ();
-
-            Trace.WriteLine (logicalTree);
-            Trace.WriteLine (visualTree);
-
+            DebugContainerControl.ShowWindow (this, "Test_WPF: Debug view");
         }
 
         void bitmapSource_DownloadCompleted(object sender, EventArgs e)
