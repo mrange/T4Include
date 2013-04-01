@@ -17,22 +17,21 @@
 // ReSharper disable InconsistentNaming
 
 
-using System;
-using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Source.WPF.Debug
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
     using System.Windows;
-    using System.Windows.Markup;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
-    using System.Linq;
-    using Source.Extensions;
+    using System.Windows.Markup;
 
+    using Source.Extensions;
 
     [TemplatePart (Name = PART_SelectButton     , Type = typeof (ButtonBase))   ]
     [TemplatePart (Name = PART_RefreshButton    , Type = typeof (ButtonBase))   ]
@@ -84,7 +83,19 @@ namespace Source.WPF.Debug
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
-                    <DataGrid   Grid.Row=""2"" Grid.Column=""2"" x:Name=""PART_PropertyDataGrid""   ItemsSource=""{Binding ElementName=PART_VisualTreeView,Path=SelectedValue.Properties}"">
+                    <DataGrid   
+                        Grid.Row=""2"" 
+                        Grid.Column=""2"" 
+                        x:Name=""PART_PropertyDataGrid""   
+                        ItemsSource=""{Binding ElementName=PART_VisualTreeView,Path=SelectedValue.Properties}"" 
+                        EnableColumnVirtualization=""False"" 
+                        EnableRowVirtualization=""True"" 
+                        AutoGenerateColumns=""False""                        
+                        >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn IsReadOnly=""True"" Header=""Name"" Binding=""{Binding Path=Name, Mode=OneTime}""/>
+                            <DataGridTextColumn Header=""Name"" Binding=""{Binding Path=Value, Mode=TwoWay}""/>
+                        </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </ControlTemplate>
@@ -122,7 +133,14 @@ namespace Source.WPF.Debug
                 }
                 set
                 {
-                    DependencyObject.SetValue (DependencyProperty, value);
+                    if (DependencyProperty.ReadOnly)
+                    {
+                        OnPropertyChanged("Value");
+                    }
+                    else
+                    {
+                        DependencyObject.SetValue (DependencyProperty, value);                        
+                    }
                 }
             }
 
