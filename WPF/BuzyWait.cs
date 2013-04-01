@@ -87,14 +87,14 @@ namespace Source.WPF
         {
             Stop ();
             m_clock = s_animationClock.CreateClock ();
-            ApplyAnimationClock (AnimationClockProperty, null);
+            ApplyAnimationClock (AnimationClockProperty, m_clock);
         }
 
         void Stop ()
         {
             if (m_clock != null)
             {
-                ApplyAnimationClock (AnimationClockProperty, m_clock);
+                ApplyAnimationClock (AnimationClockProperty, null);
                 m_clock = null;
             }
         }

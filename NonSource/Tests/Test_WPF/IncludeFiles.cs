@@ -1407,14 +1407,14 @@ namespace FileInclude
             {
                 Stop ();
                 m_clock = s_animationClock.CreateClock ();
-                ApplyAnimationClock (AnimationClockProperty, null);
+                ApplyAnimationClock (AnimationClockProperty, m_clock);
             }
     
             void Stop ()
             {
                 if (m_clock != null)
                 {
-                    ApplyAnimationClock (AnimationClockProperty, m_clock);
+                    ApplyAnimationClock (AnimationClockProperty, null);
                     m_clock = null;
                 }
             }
@@ -4880,7 +4880,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-01T21:08:05";
+        public const string IncludeDate     = @"2013-04-01T21:11:08";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
