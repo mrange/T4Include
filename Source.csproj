@@ -41,10 +41,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -79,6 +75,8 @@
     <Compile Include="WPF\AnimatedEntrance.cs" />
     <Compile Include="WPF\BindingCache.cs" />
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
+    <Compile Include="WPF\Debug\DebugContainerControl.cs" />
+    <Compile Include="WPF\Debug\DebugVisualTreeControl.cs" />
     <Compile Include="WPF\Generated_ReflectionDecorator_DependencyProperties.cs">
       <DependentUpon>Generated_ReflectionDecorator_DependencyProperties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -167,7 +165,6 @@
       <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="Common\Generated_Log.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
