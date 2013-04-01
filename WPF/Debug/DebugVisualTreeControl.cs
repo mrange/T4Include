@@ -95,7 +95,7 @@ namespace Source.WPF.Debug
                         >
                         <DataGrid.Columns>
                             <DataGridTextColumn IsReadOnly=""True"" Header=""Name"" Binding=""{Binding Path=Name, Mode=OneTime}""/>
-                            <DataGridTextColumn Header=""Name"" Binding=""{Binding Path=Value, Mode=TwoWay}""/>
+                            <DataGridTextColumn Header=""Value"" Binding=""{Binding Path=Value, Mode=TwoWay}""/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -118,11 +118,45 @@ namespace Source.WPF.Debug
                 DependencyProperty  = dependencyProperty    ;
             }
 
+            public bool IsReadOnly
+            {
+                get
+                {
+                    return DependencyProperty.ReadOnly;
+                }
+            }
+
+            public bool IsAttached
+            {
+                get
+                {
+                    var ownerType = DependencyProperty.OwnerType;
+                    var type = DependencyObject.GetType ();
+
+                    return !ownerType.IsAssignableFrom (type);
+                }
+            }
+
+            public bool HasValue
+            {
+                get
+                {
+                    return DependencyObject.ReadLocalValue (DependencyProperty) != null;
+                }
+            }
+
             public string Name
             {
                 get
                 {
-                    return DependencyProperty.Name;
+                    if (IsAttached)
+                    {
+                        return DependencyProperty.OwnerType.Name + "." + DependencyProperty.Name;                                                
+                    }
+                    else
+                    {
+                        return DependencyProperty.Name;                        
+                    }
                 }
             }
 
@@ -134,26 +168,20 @@ namespace Source.WPF.Debug
                 }
                 set
                 {
-                    if (DependencyProperty.ReadOnly)
+                    if (IsReadOnly)
                     {
-                        OnPropertyChanged("Value");
                     }
-                    else
+                    else 
                     {
-                        if (DependencyProperty.ReadOnly)
+                        value = value ?? "";
+                        var converter = TypeDescriptor.GetConverter (DependencyProperty.PropertyType);
+                        if (converter.CanConvertFrom(value.GetType ()))
                         {
+                            var convertedValue = converter.ConvertFrom (null, CultureInfo.CurrentUICulture, value);
+                            DependencyObject.SetValue (DependencyProperty, convertedValue);
                         }
-                        else if (value != null)
-                        {
-                            var converter = TypeDescriptor.GetConverter (DependencyProperty.PropertyType);
-                            if (converter.CanConvertFrom(value.GetType ()))
-                            {
-                                var convertedValue = converter.ConvertFrom (null, CultureInfo.CurrentUICulture, value);
-                                DependencyObject.SetValue (DependencyProperty, convertedValue);
-                            }
-                        }
-                        OnPropertyChanged("Value");
                     }
+                    OnPropertyChanged("Value");
                 }
             }
 
@@ -264,18 +292,16 @@ namespace Source.WPF.Debug
                 {
                     if (m_properties == null)
                     {
-                        var properties = s_cachedProperties.GetOrAdd (
+                        var classProperties = s_cachedProperties.GetOrAdd (
                             DependencyObject.GetType(),
-                            type => type
-                                      .GetFields (BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                                      .Where (fi => fi.FieldType == typeof (DependencyProperty))
-                                      .Select (fi => fi.GetValue (null) as DependencyProperty)
-                                      .Where (dp => dp != null)
-                                      .OrderBy (dp => dp.Name)
-                                      .ToArray ()
-                                      );
+                            type => type.GetClassDependencyProperties().ToArray ()
+                            );
 
-                        m_properties = properties
+                        var localProperties = DependencyObject.GetLocalDependencyProperties ();
+
+                        m_properties = classProperties
+                            .Union(localProperties)
+                            .OrderBy (dp => dp.Name)
                             .Select (dp => new VisualTreeNodeProperty (DependencyObject, dp))
                             .ToArray ()
                             ;

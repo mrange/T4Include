@@ -16,13 +16,13 @@
 // ReSharper disable InconsistentNaming
 
 
-
 namespace Source.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Windows;
     using System.Windows.Data;
@@ -213,6 +213,64 @@ namespace Source.Extensions
             return new Rect(0,0,size.Width, size.Height);
         }
     
+        public static IEnumerable<DependencyProperty> GetLocalDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var enumerator = dependencyObject.GetLocalValueEnumerator ();
+            while (enumerator.MoveNext ())
+            {
+                var current = enumerator.Current;
+                yield return current.Property;
+            }
+        }
+
+        public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this Type type)
+        {
+            if (type == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            if (!typeof(DependencyObject).IsAssignableFrom(type))
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return type
+                    .GetFields (BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                    .Where (fi => fi.FieldType == typeof (DependencyProperty))
+                    .Select (fi => fi.GetValue (null) as DependencyProperty)
+                    .Where (dp => dp != null)
+                    ;
+        }
+
+        public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return dependencyObject.GetType ().GetClassDependencyProperties ();
+        }
+
+        public static IEnumerable<DependencyProperty> GetDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return dependencyObject
+                .GetClassDependencyProperties ()
+                .Union (dependencyObject.GetLocalDependencyProperties ())
+                ;
+        }
+
         public static IEnumerable<DependencyObject> GetVisualChildren (this DependencyObject dependencyObject)
         {
             if (dependencyObject == null)

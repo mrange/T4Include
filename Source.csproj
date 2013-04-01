@@ -108,7 +108,6 @@
       <DependentUpon>Generated_AnimatedEntrance_StateMachine.tt</DependentUpon>
     </Compile>
     <Compile Include="WPF\ReflectionDecorator.cs" />
-    <Compile Include="WPF\TypeConverters.cs" />
     <Compile Include="WPF\WatermarkTextBox.cs" />
     <None Include="app.config" />
     <None Include="NET20\Generated_Common.tt">
