@@ -33,49 +33,49 @@ namespace Source.WPF.Debug
     using System.Windows.Media;
 
     // ------------------------------------------------------------------------
-    // DebugVisualTreeControl
+    // BaseDebugTreeControl
     // ------------------------------------------------------------------------
-    partial class DebugVisualTreeControl
+    partial class BaseDebugTreeControl
     {
         #region Uninteresting generated code
-        static readonly DependencyPropertyKey VisualTreePropertyKey = DependencyProperty.RegisterReadOnly (
-            "VisualTree",
-            typeof (ObservableCollection<VisualTreeNode>),
-            typeof (DebugVisualTreeControl),
+        static readonly DependencyPropertyKey TreePropertyKey = DependencyProperty.RegisterReadOnly (
+            "Tree",
+            typeof (ObservableCollection<TreeNode>),
+            typeof (BaseDebugTreeControl),
             new FrameworkPropertyMetadata (
                 null,
                 FrameworkPropertyMetadataOptions.None,
-                Changed_VisualTree,
-                Coerce_VisualTree          
+                Changed_Tree,
+                Coerce_Tree          
             ));
 
-        public static readonly DependencyProperty VisualTreeProperty = VisualTreePropertyKey.DependencyProperty;
+        public static readonly DependencyProperty TreeProperty = TreePropertyKey.DependencyProperty;
 
-        static void Changed_VisualTree (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        static void Changed_Tree (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
-            var instance = dependencyObject as DebugVisualTreeControl;
+            var instance = dependencyObject as BaseDebugTreeControl;
             if (instance != null)
             {
-                var oldValue = (ObservableCollection<VisualTreeNode>)eventArgs.OldValue;
-                var newValue = (ObservableCollection<VisualTreeNode>)eventArgs.NewValue;
+                var oldValue = (ObservableCollection<TreeNode>)eventArgs.OldValue;
+                var newValue = (ObservableCollection<TreeNode>)eventArgs.NewValue;
 
                 if (oldValue != null)
                 {
-                    oldValue.CollectionChanged -= instance.CollectionChanged_VisualTree;
+                    oldValue.CollectionChanged -= instance.CollectionChanged_Tree;
                 }
 
                 if (newValue != null)
                 {
-                    newValue.CollectionChanged += instance.CollectionChanged_VisualTree;
+                    newValue.CollectionChanged += instance.CollectionChanged_Tree;
                 }
 
-                instance.Changed_VisualTree (oldValue, newValue);
+                instance.Changed_Tree (oldValue, newValue);
             }
         }
 
-        void CollectionChanged_VisualTree(object sender, NotifyCollectionChangedEventArgs e)
+        void CollectionChanged_Tree(object sender, NotifyCollectionChangedEventArgs e)
         {
-            CollectionChanged_VisualTree (
+            CollectionChanged_Tree (
                 sender, 
                 e.Action,
                 e.OldStartingIndex,
@@ -85,20 +85,20 @@ namespace Source.WPF.Debug
                 );
         }
 
-        static object Coerce_VisualTree (DependencyObject dependencyObject, object basevalue)
+        static object Coerce_Tree (DependencyObject dependencyObject, object basevalue)
         {
-            var instance = dependencyObject as DebugVisualTreeControl;
+            var instance = dependencyObject as BaseDebugTreeControl;
             if (instance == null)
             {
                 return basevalue;
             }
-            var value = (ObservableCollection<VisualTreeNode>)basevalue;
+            var value = (ObservableCollection<TreeNode>)basevalue;
 
-            instance.Coerce_VisualTree (ref value);
+            instance.Coerce_Tree (ref value);
 
             if (value == null)
             {
-               value = new ObservableCollection<VisualTreeNode> ();
+               value = new ObservableCollection<TreeNode> ();
             }
 
             return value;
@@ -109,17 +109,17 @@ namespace Source.WPF.Debug
         // --------------------------------------------------------------------
         // Constructor
         // --------------------------------------------------------------------
-        public DebugVisualTreeControl ()
+        public BaseDebugTreeControl ()
         {
             CoerceAllProperties ();
-            Constructed__DebugVisualTreeControl ();
+            Constructed__BaseDebugTreeControl ();
         }
         // --------------------------------------------------------------------
-        partial void Constructed__DebugVisualTreeControl ();
+        partial void Constructed__BaseDebugTreeControl ();
         // --------------------------------------------------------------------
         void CoerceAllProperties ()
         {
-            CoerceValue (VisualTreeProperty);
+            CoerceValue (TreeProperty);
         }
 
 
@@ -129,24 +129,24 @@ namespace Source.WPF.Debug
 
            
         // --------------------------------------------------------------------
-        public ObservableCollection<VisualTreeNode> VisualTree
+        public ObservableCollection<TreeNode> Tree
         {
             get
             {
-                return (ObservableCollection<VisualTreeNode>)GetValue (VisualTreeProperty);
+                return (ObservableCollection<TreeNode>)GetValue (TreeProperty);
             }
             private set
             {
-                if (VisualTree != value)
+                if (Tree != value)
                 {
-                    SetValue (VisualTreePropertyKey, value);
+                    SetValue (TreePropertyKey, value);
                 }
             }
         }
         // --------------------------------------------------------------------
-        partial void Changed_VisualTree (ObservableCollection<VisualTreeNode> oldValue, ObservableCollection<VisualTreeNode> newValue);
-        partial void Coerce_VisualTree (ref ObservableCollection<VisualTreeNode> coercedValue);
-        partial void CollectionChanged_VisualTree (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
+        partial void Changed_Tree (ObservableCollection<TreeNode> oldValue, ObservableCollection<TreeNode> newValue);
+        partial void Coerce_Tree (ref ObservableCollection<TreeNode> coercedValue);
+        partial void CollectionChanged_Tree (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
         // --------------------------------------------------------------------
 
 

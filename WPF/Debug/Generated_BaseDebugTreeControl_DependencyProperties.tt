@@ -2,9 +2,9 @@
     Namespace   = "Source.WPF.Debug"        ;
     Model       = new []
     {
-        new ClassDefinition ("DebugVisualTreeControl")
+        new ClassDefinition ("BaseDebugTreeControl")
         {
-            C ("VisualTreeNode"     , "VisualTree"  , flags:PropertyFlags.IsReadOnly),
+            C ("TreeNode"     , "Tree"              , flags:PropertyFlags.IsReadOnly),
 
         },
     };    

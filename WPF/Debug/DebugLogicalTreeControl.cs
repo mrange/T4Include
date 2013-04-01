@@ -18,21 +18,21 @@ namespace Source.WPF.Debug
     using System.Windows;
     using Source.Extensions;
 
-    partial class DebugVisualTreeControl : BaseDebugTreeControl
+    partial class DebugLogicalTreeControl : BaseDebugTreeControl
     {
         protected override int OnGetOrdinal()
         {
-            return 1000;
+            return 2000;
         }
 
         protected override string OnGetFriendlyName()
         {
-            return "Visual Tree";
+            return "Logical Tree";
         }
 
         protected override IEnumerable<DependencyObject> GetChildren(DependencyObject dependencyObject)
         {
-            return dependencyObject.GetVisualChildren ();
+            return dependencyObject.GetLogicalChildren ();
         }
     }
 }

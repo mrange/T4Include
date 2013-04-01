@@ -76,9 +76,11 @@
     <Compile Include="WPF\BindingCache.cs" />
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
     <Compile Include="WPF\Debug\DebugContainerControl.cs" />
+    <Compile Include="WPF\Debug\BaseDebugTreeControl.cs" />
+    <Compile Include="WPF\Debug\DebugLogicalTreeControl.cs" />
     <Compile Include="WPF\Debug\DebugVisualTreeControl.cs" />
-    <Compile Include="WPF\Debug\Generated_DebugVisualTreeControl_DependencyProperties.cs">
-      <DependentUpon>Generated_DebugVisualTreeControl_DependencyProperties.tt</DependentUpon>
+    <Compile Include="WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs">
+      <DependentUpon>Generated_BaseDebugTreeControl_DependencyProperties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -149,9 +151,9 @@
     <Compile Include="Testing\TestFor.cs" />
     <Compile Include="Testing\TestRunner.cs" />
     <None Include="T4\StateMachine.ttinclude" />
-    <None Include="WPF\Debug\Generated_DebugVisualTreeControl_DependencyProperties.tt">
+    <None Include="WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Generated_DebugVisualTreeControl_DependencyProperties.cs</LastGenOutput>
+      <LastGenOutput>Generated_BaseDebugTreeControl_DependencyProperties.cs</LastGenOutput>
     </None>
     <None Include="WPF\Generated_ReflectionDecorator_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

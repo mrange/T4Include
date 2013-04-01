@@ -213,6 +213,23 @@ namespace Source.Extensions
             return new Rect(0,0,size.Width, size.Height);
         }
     
+        public static string GetName (this DependencyObject dependencyObject)
+        {
+            var frameworkElement = dependencyObject as FrameworkElement;
+            if (frameworkElement != null)
+            {
+                return frameworkElement.Name ?? "";
+            }
+
+            var frameworkContentElement = dependencyObject as FrameworkContentElement;
+            if (frameworkContentElement != null)
+            {
+                return frameworkContentElement.Name ?? "";                
+            }
+
+            return "";
+        }
+
         public static IEnumerable<DependencyProperty> GetLocalDependencyProperties (this DependencyObject dependencyObject)
         {
             if (dependencyObject == null)

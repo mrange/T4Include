@@ -28,6 +28,13 @@ namespace Source.WPF.Debug
     {
         protected DependencyObject AttachedTo;
 
+        public int GetOrdinal ()
+        {
+            return OnGetOrdinal ();
+        }
+
+        protected abstract int OnGetOrdinal();
+
         public string GetFriendlyName ()
         {
             return OnGetFriendlyName ();    
@@ -129,6 +136,7 @@ namespace Source.WPF.Debug
             if (m_tabControl != null)
             {
                 var tabs = m_debugControls
+                    .OrderBy (dc => dc.GetOrdinal ())
                     .Select (dc => 
                         new TabItem
                             {
