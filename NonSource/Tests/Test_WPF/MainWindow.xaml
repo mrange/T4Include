@@ -10,13 +10,7 @@
         <RotateTransform x:Key="Rotate90" Angle="-90"/>
     </Window.Resources>
     <Grid>
-        <TextBlock 
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Center"
-            Text="Downloading images..."
-            Foreground="White"
-            FontSize="48"
-            />
+        <wpf:BuzyWait x:Name="Buzy"/>
         <Grid x:Name="Cnt">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

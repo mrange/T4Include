@@ -11,7 +11,6 @@
 // ----------------------------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,6 +43,7 @@ namespace Test_WPF
 
             Loaded += Loaded_MainWindow;
 
+            Buzy.IsEnabled = true;
             Cnt.IsHitTestVisible = false;
             Cnt.Opacity = 0;
         }
@@ -65,7 +65,7 @@ namespace Test_WPF
                 bitmapSource.DownloadFailed     += bitmapSource_DownloadFailed;
             }
 
-            DebugContainerControl.ShowWindow (this, "Test_WPF: Debug view");
+            //DebugContainerControl.ShowWindow (this, "Test_WPF: Debug view");
         }
 
         void bitmapSource_DownloadCompleted(object sender, EventArgs e)
@@ -77,6 +77,8 @@ namespace Test_WPF
         {
             if (!m_bitmapSources.Any(bs => bs.IsDownloading))
             {
+                Buzy.IsEnabled = false;
+                Buzy.Visibility = Visibility.Collapsed;
                 Cnt.IsHitTestVisible = true;
                 m_clock = m_opacityAnimation.CreateClock ();
                 m_clock.Completed += clock_Completed;

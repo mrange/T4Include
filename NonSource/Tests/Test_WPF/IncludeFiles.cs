@@ -23,6 +23,8 @@
 // @@@ INCLUDE_FOUND: Generated_WatermarkTextBox_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
 // @@@ INCLUDE_FOUND: Generated_ReflectionDecorator_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
+// @@@ INCLUDE_FOUND: Generated_BuzyWait_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs
 // @@@ INCLUDE_FOUND: BaseDebugTreeControl.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs
@@ -36,6 +38,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
 // @@@ INCLUDE_FOUND: Generated_BaseDebugTreeControl_DependencyProperties.cs
 // @@@ INCLUDE_FOUND: DebugContainerControl.cs
@@ -1311,6 +1314,153 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Linq;
+        using System.Windows;
+        using System.Windows.Media;
+        using System.Windows.Media.Animation;
+    
+        using Source.Extensions;
+        
+        partial class BuzyWait : FrameworkElement
+        {
+            const int       Spokes      = 18    ;
+            const double    RadiusRatio = 0.95  ;
+            const double    MinRadius   = 0.25  ;
+            const double    WidthRatio  = 1/16.0;
+    
+            readonly static DoubleAnimation s_animationClock    ;
+    
+            partial class Spoke
+            {
+                public Transform Transform  ;
+                public double Offset        ;
+    
+                public double GetOpacity (double clock)
+                {
+                    return (clock + Offset)%1.0;
+                }
+            }
+    
+            static readonly Spoke[] s_spokes;
+            AnimationClock m_clock;
+    
+            static BuzyWait ()
+            {
+                s_spokes = Enumerable
+                    .Range (0, Spokes)
+                    .Select (x => ((double)x) / Spokes)
+                    .Select (
+                        x => new Spoke
+                            {
+                                Transform   = new RotateTransform (360.0 * x).FreezeObject ()   ,
+                                Offset      = x                                                 ,
+                            })
+                    .ToArray ();
+    
+                s_animationClock = new DoubleAnimation (
+                    1,
+                    0,
+                    new Duration (TimeSpan.FromSeconds(2))
+                    )
+                    {
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
+                s_animationClock.FreezeObject ();
+            }
+    
+            partial void Changed_IsEnabled (bool oldValue, bool newValue)
+            {
+                if (newValue)
+                {
+                    Start ();
+                }
+                else
+                {
+                    Stop ();
+                }
+            }
+    
+            void Start ()
+            {
+                Stop ();
+                m_clock = s_animationClock.CreateClock ();
+                ApplyAnimationClock (AnimationClockProperty, null);
+            }
+    
+            void Stop ()
+            {
+                if (m_clock != null)
+                {
+                    ApplyAnimationClock (AnimationClockProperty, m_clock);
+                    m_clock = null;
+                }
+            }
+    
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                var min = Math.Min (ActualWidth, ActualHeight);
+        
+                var radius      = RadiusRatio * min/2;
+                var minRadius   = min * MinRadius;
+                var spokeLength = radius - minRadius;
+                var spokeWidth  = spokeLength * WidthRatio;
+                var spokeRadius = spokeWidth / 2;
+                    
+                var centerX = ActualWidth / 2;
+                var centerY = ActualHeight / 2;
+    
+                var clock = GetAnimationClock (this);
+        
+                drawingContext.PushTransform (new TranslateTransform (centerX, centerY));
+    
+                for (var index = 0; index < s_spokes.Length; index++)
+                {
+                    var spoke = s_spokes[index];
+                    drawingContext.PushTransform(spoke.Transform);
+                    drawingContext.PushOpacity(spoke.GetOpacity(clock));
+    
+                    drawingContext.DrawRoundedRectangle(
+                        Brushes.White,
+                        null,
+                        new Rect(minRadius, -spokeRadius, spokeLength, spokeWidth),
+                        spokeRadius,
+                        spokeRadius
+                        );
+    
+                    drawingContext.Pop();
+                    drawingContext.Pop();
+                }
+    
+                drawingContext.Pop ();
+            }
+        
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
 // ############################################################################
 
 // ############################################################################
@@ -3517,6 +3667,204 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // BuzyWait
+        // ------------------------------------------------------------------------
+        partial class BuzyWait
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
+                "AnimationClock",
+                typeof (double),
+                typeof (BuzyWait),
+                new FrameworkPropertyMetadata (
+                    default (double),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    Changed_AnimationClock,
+                    Coerce_AnimationClock          
+                ));
+    
+            static void Changed_AnimationClock (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    Changed_AnimationClock (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_AnimationClock (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                Coerce_AnimationClock (dependencyObject, ref value);
+    
+                return value;
+            }
+            public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
+                "IsEnabled",
+                typeof (bool),
+                typeof (BuzyWait),
+                new FrameworkPropertyMetadata (
+                    default (bool),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_IsEnabled,
+                    Coerce_IsEnabled          
+                ));
+    
+            static void Changed_IsEnabled (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as BuzyWait;
+                if (instance != null)
+                {
+                    var oldValue = (bool)eventArgs.OldValue;
+                    var newValue = (bool)eventArgs.NewValue;
+    
+                    instance.Changed_IsEnabled (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_IsEnabled (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as BuzyWait;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (bool)basevalue;
+    
+                instance.Coerce_IsEnabled (ref value);
+    
+    
+                return value;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public BuzyWait ()
+            {
+                CoerceAllProperties ();
+                Constructed__BuzyWait ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__BuzyWait ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (AnimationClockProperty);
+                CoerceValue (IsEnabledProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public static double GetAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (double);
+                }
+    
+                return (double)dependencyObject.GetValue (AnimationClockProperty);
+            }
+    
+            public static void SetAnimationClock (DependencyObject dependencyObject, double value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetAnimationClock (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (AnimationClockProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (AnimationClockProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public bool IsEnabled
+            {
+                get
+                {
+                    return (bool)GetValue (IsEnabledProperty);
+                }
+                set
+                {
+                    if (IsEnabled != value)
+                    {
+                        SetValue (IsEnabledProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_IsEnabled (bool oldValue, bool newValue);
+            partial void Coerce_IsEnabled (ref bool coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
 namespace FileInclude
 {
@@ -4532,27 +4880,29 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-01T17:51:51";
+        public const string IncludeDate     = @"2013-04-01T21:08:05";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\BuzyWait.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################
