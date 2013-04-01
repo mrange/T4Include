@@ -26,9 +26,41 @@ namespace Source.WPF.Debug
 
     abstract partial class DebugControl : Control
     {
-        public abstract string GetFriendlyName ();
-        public abstract void AttachTo (DependencyObject dependencyObject);
-        public abstract void DetachFrom (DependencyObject dependencyObject);
+        protected DependencyObject AttachedTo;
+
+        public string GetFriendlyName ()
+        {
+            return OnGetFriendlyName ();    
+        }
+
+        protected abstract string OnGetFriendlyName();
+
+        public void AttachTo (DependencyObject dependencyObject)
+        {
+            if (AttachedTo != null)
+            {
+                DetachFrom ();
+            }
+
+            AttachedTo = dependencyObject;            
+
+            if (AttachedTo != null)
+            {
+                OnAttachTo (AttachedTo);
+            }
+        }
+
+        protected abstract void OnAttachTo(DependencyObject attachedTo);
+
+        public void DetachFrom ()
+        {
+            if (AttachedTo != null)
+            {
+                OnDetachFrom (AttachedTo);
+            }
+        }
+
+        protected abstract void OnDetachFrom(DependencyObject attachedTo);
     }
 
     [TemplatePart (Name=PART_Tabs, Type = typeof (TabControl))]
@@ -58,6 +90,8 @@ namespace Source.WPF.Debug
 
         readonly DebugControl[]     m_debugControls     ;
         TabControl                  m_tabControl        ;
+
+        DependencyObject            m_attachedTo        ;
 
         static DebugContainerControl ()
         {
@@ -139,6 +173,7 @@ namespace Source.WPF.Debug
         static void ShowWindowImpl(DependencyObject dependencyObject, string title)
         {
             var debugContainerControl = new DebugContainerControl ();
+            debugContainerControl.AttachTo (dependencyObject);
 
             var window = 
                 new Window
@@ -150,6 +185,26 @@ namespace Source.WPF.Debug
                     };
 
             window.Show();
+        }
+
+        void AttachTo(DependencyObject dependencyObject)
+        {
+            foreach (var dc in m_debugControls)
+            {
+                dc.DetachFrom ();
+            }
+
+            m_attachedTo = dependencyObject;
+
+            if (m_attachedTo != null)
+            {
+                foreach (var dc in m_debugControls)
+                {
+                    dc.AttachTo (m_attachedTo);
+                }
+            }
+
+
         }
     }
 }
