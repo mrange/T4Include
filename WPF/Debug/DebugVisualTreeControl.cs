@@ -17,6 +17,7 @@
 // ReSharper disable InconsistentNaming
 
 
+using System.Globalization;
 
 namespace Source.WPF.Debug
 {
@@ -139,7 +140,19 @@ namespace Source.WPF.Debug
                     }
                     else
                     {
-                        DependencyObject.SetValue (DependencyProperty, value);                        
+                        if (DependencyProperty.ReadOnly)
+                        {
+                        }
+                        else if (value != null)
+                        {
+                            var converter = TypeDescriptor.GetConverter (DependencyProperty.PropertyType);
+                            if (converter.CanConvertFrom(value.GetType ()))
+                            {
+                                var convertedValue = converter.ConvertFrom (null, CultureInfo.CurrentUICulture, value);
+                                DependencyObject.SetValue (DependencyProperty, convertedValue);
+                            }
+                        }
+                        OnPropertyChanged("Value");
                     }
                 }
             }
