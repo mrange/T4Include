@@ -38,9 +38,6 @@
 
         var compileElements = xdoc.Elements (Project).Elements (ItemGroup).Elements (Compile);
 
-        var defines = new List<string> (32);
-        var results = new List<string> (1024);
-
         Includes = compileElements
             .Select (compileElement => 
                 Path.GetFullPath (
