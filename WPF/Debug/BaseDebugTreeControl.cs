@@ -63,9 +63,9 @@ namespace Source.WPF.Debug
                         <RowDefinition Height=""*""/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition />
                         <ColumnDefinition Width=""4""/>
-                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Row=""0"" Grid.Column=""0"" Orientation=""Horizontal"">
                         <Button x:Name=""PART_SelectButton""    Padding=""8,0,8,0"" Margin=""0,0,4,0"" Content=""Select""/>
@@ -84,6 +84,12 @@ namespace Source.WPF.Debug
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
+                    <GridSplitter
+                        Grid.Column=""1""
+                        Grid.RowSpan=""3""
+                        HorizontalAlignment=""Stretch""
+                        VerticalAlignment=""Stretch""
+                        /> 
                     <DataGrid   
                         Grid.Row=""2"" 
                         Grid.Column=""2"" 
