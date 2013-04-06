@@ -52,6 +52,7 @@
     <Compile Include="Concurrency\TestsFor_TaskSchedulers.cs" />
     <Compile Include="Extensions\TestsFor_EnumParseExtensions.cs" />
     <Compile Include="Reflection\TestsFor_ClassDescriptor.cs" />
+    <Compile Include="SQL\TestsFor_ClassDescriptor.cs" />
     <Compile Include="T4\Generated_Commands.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

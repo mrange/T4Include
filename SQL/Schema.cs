@@ -23,7 +23,7 @@ namespace Source.SQL
         public readonly string  Schema      ;
         public readonly string  Name        ;
         public readonly byte    SystemTypeId;
-        public readonly byte    UserTypeId  ;
+        public readonly int     UserTypeId  ;
         public readonly short   MaxLength   ;
         public readonly byte    Precision   ;
         public readonly byte    Scale       ;
@@ -31,15 +31,15 @@ namespace Source.SQL
         public readonly bool    IsNullable  ;
 
         public TypeDefinition(
-            string schema, 
-            string name, 
-            byte systemTypeId, 
-            byte userTypeId, 
-            short maxLength, 
-            byte precision, 
-            byte scale, 
-            string collation, 
-            bool isNullable
+            string  schema          , 
+            string  name            , 
+            byte    systemTypeId    , 
+            int     userTypeId      , 
+            short   maxLength       , 
+            byte    precision       , 
+            byte    scale           , 
+            string  collation       , 
+            bool    isNullable
             )
         {
             Schema          = schema            ?? "";
@@ -116,20 +116,18 @@ namespace Source.SQL
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = @"
-
 SELECT
-	s.name				[Schema]		,
-	t.name				Name			,
-	t.system_type_id	SystemTypeId	,
-	t.user_type_id		UserTypeId		,
-	t.max_length		[MaxLength]		,
-	t.[precision]		[Precision]		,
-	t.scale				Scale			,
-	t.collation_name	Collation		,
-	t.is_nullable		IsNullable
+	s.name								[Schema]		,
+	t.name								Name			,
+	t.system_type_id					SystemTypeId	,
+	t.user_type_id						UserTypeId		,
+	t.max_length						[MaxLength]	,
+	t.[precision]						[Precision]	,
+	t.scale								Scale			,
+	ISNULL (t.collation_name	, '')	Collation		,
+	ISNULL (t.is_nullable		, 0)	IsNullable
 	FROM SYS.types t WITH(NOLOCK)
 	INNER JOIN SYS.schemas s WITH(NOLOCK) ON t.schema_id = s.schema_id
-
 
 ";
                 using (var reader = command.ExecuteReader ())
@@ -140,7 +138,7 @@ SELECT
                             reader.GetString(0) , 
                             reader.GetString(1) , 
                             reader.GetByte(2)   , 
-                            reader.GetByte(3)   , 
+                            reader.GetInt32(3)  , 
                             reader.GetInt16(4)  , 
                             reader.GetByte(5)   , 
                             reader.GetByte(6)   , 

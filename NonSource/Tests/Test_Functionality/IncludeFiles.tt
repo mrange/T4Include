@@ -23,6 +23,7 @@
             Include (@"Extensions\BasicExtensions.cs"),
             Include (@"Testing\TestRunner.cs"),
             Include (@"Text\LineToObjectExtensions.cs"),
+            Include (@"SQL\Schema.cs"),
         };
 #>
 

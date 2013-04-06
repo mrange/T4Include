@@ -40,6 +40,7 @@
 // @@@ INCLUDE_FOUND: LineReaderExtensions.cs
 // @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\SQL\Schema.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -2209,6 +2210,185 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\SQL\Schema.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.SQL
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Data;
+        using System.Data.SqlClient;
+    
+    
+        sealed partial class TypeDefinition
+        {
+            public readonly string  Schema      ;
+            public readonly string  Name        ;
+            public readonly byte    SystemTypeId;
+            public readonly int     UserTypeId  ;
+            public readonly short   MaxLength   ;
+            public readonly byte    Precision   ;
+            public readonly byte    Scale       ;
+            public readonly string  Collation   ;
+            public readonly bool    IsNullable  ;
+    
+            public TypeDefinition(
+                string  schema          , 
+                string  name            , 
+                byte    systemTypeId    , 
+                int     userTypeId      , 
+                short   maxLength       , 
+                byte    precision       , 
+                byte    scale           , 
+                string  collation       , 
+                bool    isNullable
+                )
+            {
+                Schema          = schema            ?? "";
+                Name            = name              ?? "";
+                SystemTypeId    = systemTypeId      ;
+                UserTypeId      = userTypeId        ;
+                MaxLength       = maxLength         ;
+                Precision       = precision         ;
+                Scale           = scale             ;
+                Collation       = collation         ?? "";
+                IsNullable      = isNullable        ;
+            }
+    
+            public string FullName
+            {
+                get
+                {
+                    return Schema + "." + Name;
+                }
+            }
+    
+        }
+    
+        abstract partial class BaseTypedSubObject
+        {
+            public readonly TypeDefinition  Type    ;
+            public readonly int             Ordinal ;
+            public readonly string          Name    ;
+            public readonly int             Length  ;
+        }
+    
+        sealed partial class ColumnSubObject : BaseTypedSubObject
+        {
+            public readonly bool            IsNullable  ;
+            
+        }
+    
+        sealed partial class ParameterSubObject : BaseTypedSubObject
+        {
+            
+        }
+    
+        sealed partial class SchemaObject
+        {
+            public enum SchemaType
+            {
+                StoredProcedure     ,
+                Function            ,
+                TableFunction       ,
+                InlineTableFunction ,
+                Table               ,
+                View                ,
+            }
+    
+            public readonly SchemaType  Type    ;
+            public readonly string      Schema  ;
+            public readonly string      Name    ;
+    
+            protected SchemaObject(SchemaType type, string schema, string name)
+            {
+                Type    = type              ;
+                Schema  = schema    ?? ""   ;
+                Name    = name      ?? ""   ;
+            }
+        }
+    
+        sealed partial class Schema
+        {
+            readonly Dictionary<string, TypeDefinition> m_typeDefinitions = new Dictionary<string, TypeDefinition> ();
+    
+            public Schema (SqlConnection connection)
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = @"
+    SELECT
+    	s.name								[Schema]		,
+    	t.name								Name			,
+    	t.system_type_id					SystemTypeId	,
+    	t.user_type_id						UserTypeId		,
+    	t.max_length						[MaxLength]	,
+    	t.[precision]						[Precision]	,
+    	t.scale								Scale			,
+    	ISNULL (t.collation_name	, '')	Collation		,
+    	ISNULL (t.is_nullable		, 0)	IsNullable
+    	FROM SYS.types t WITH(NOLOCK)
+    	INNER JOIN SYS.schemas s WITH(NOLOCK) ON t.schema_id = s.schema_id
+    
+    ";
+                    using (var reader = command.ExecuteReader ())
+                    {
+                        while (reader.Read ())
+                        {
+                            var type = new TypeDefinition (
+                                reader.GetString(0) , 
+                                reader.GetString(1) , 
+                                reader.GetByte(2)   , 
+                                reader.GetInt32(3)  , 
+                                reader.GetInt16(4)  , 
+                                reader.GetByte(5)   , 
+                                reader.GetByte(6)   , 
+                                reader.GetString(7) , 
+                                reader.GetBoolean(8) 
+                                );
+                            m_typeDefinitions[type.FullName] = type;
+                            
+                        }
+                    }
+                    
+                }
+            }
+    
+            public IEnumerable<TypeDefinition> TypeDefinitions
+            {
+                get
+                {
+                    return m_typeDefinitions.Values;
+                }
+            }
+    
+            public TypeDefinition FindTypeDefinition (string fullName)
+            {
+                TypeDefinition typeDefinition;
+                m_typeDefinitions.TryGetValue (fullName ?? "", out typeDefinition);
+                return typeDefinition;
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\SQL\Schema.cs
 // ############################################################################
 
 // ############################################################################
@@ -5318,7 +5498,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-30T10:16:05";
+        public const string IncludeDate     = @"2013-04-06T08:01:01";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
@@ -5327,21 +5507,22 @@ namespace FileInclude.Include
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
         public const string Include_5       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
         public const string Include_6       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_21       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################
