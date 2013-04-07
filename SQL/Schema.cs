@@ -30,45 +30,48 @@ namespace Source.SQL
 
     sealed partial class TypeDefinition
     {
-        sealed partial class SqlTypeInfo
+        internal sealed partial class SqlTypeInfo
         {
             public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object), -1, false, null);
 
             public readonly SqlDbType   DbType              ;
-            public readonly Type        Type                ;
-            public readonly int         ElementSize         ;
+            public readonly Type        ClrType             ;
+            public readonly int         DbTypeElementSize   ;
             public readonly bool        RequiresDimension   ;
+            public readonly string      DbTypeName          ;
+            public readonly string      CsTypeName          ;
 
             public readonly MethodInfo  GetterMethod        ;
 
-            public readonly string      SqlName             ;
-            public readonly string      CsName              ;
 
             public SqlTypeInfo(SqlDbType dbType, Type type, int elementSize, bool requiresDimension, MethodInfo getterMethod)
             {
                 DbType              = dbType            ;
-                Type                = type              ;
-                ElementSize         = elementSize       ;
+                ClrType             = type              ;
+                DbTypeElementSize   = elementSize       ;
                 RequiresDimension   = requiresDimension ;
 
                 GetterMethod        = getterMethod      ;
 
-                SqlName             = dbType.ToString().ToLowerInvariant();
+                DbTypeName          = dbType.ToString().ToLowerInvariant();
 
                 if (type.IsArray)
                 {
-                    CsName          = type.GetElementType().FullName + "[]";
+                    CsTypeName      = type.GetElementType().FullName + "[]";
                 }
                 else
                 {
-                    CsName          = type.FullName;
+                    CsTypeName      = type.FullName;
                 }
             }
         }
 
         static void Add<T> (byte id, SqlDbType dbType, int elementSize, bool requiresDimension, Expression<Func<SqlDataReader, T>> getter)
         {
-            var getterMethodInfo = ((MethodCallExpression)getter.Body).Method   ;
+            var getterMethodInfo = getter != null
+                ?   ((MethodCallExpression)getter.Body).Method   
+                :   null
+                ;
             s_typeInfoLookup.Add(id, new SqlTypeInfo(dbType, typeof(T), elementSize, requiresDimension, getterMethodInfo));
         }
 
@@ -84,7 +87,7 @@ namespace Source.SQL
             Add<DateTime>        (61    , SqlDbType.DateTime         , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
             Add<Decimal>         (106   , SqlDbType.Decimal          , getter:r => r.GetDecimal(0)          , elementSize:17   , requiresDimension:false   );
             Add<Double>          (62    , SqlDbType.Float            , getter:r => r.GetDouble(0)           , elementSize:4    , requiresDimension:false   );
-            Add<Byte[]>          (34    , SqlDbType.Image            , getter:null                          , elementSize:16   , requiresDimension:false   );  // TODO: Check this
+            Add<Byte[]>          (34    , SqlDbType.Image            , getter:null                          , elementSize:1    , requiresDimension:false   );  // TODO: Check this
             Add<Int32>           (56    , SqlDbType.Int              , getter:r => r.GetInt32(0)            , elementSize:4    , requiresDimension:false   );
             Add<Decimal>         (60    , SqlDbType.Money            , getter:r => r.GetDecimal(0)          , elementSize:8    , requiresDimension:false   );
             Add<String>          (239   , SqlDbType.NChar            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
@@ -100,7 +103,7 @@ namespace Source.SQL
             Add<Byte>            (48    , SqlDbType.TinyInt          , getter:r => r.GetByte(0)             , elementSize:1    , requiresDimension:false   );
             Add<Byte[]>          (165   , SqlDbType.VarBinary        , getter:null                          , elementSize:1    , requiresDimension:true    );
             Add<String>          (167   , SqlDbType.VarChar          , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
-            Add<Byte[]>          (98    , SqlDbType.Variant          , getter:null                          , elementSize: -1  , requiresDimension:false   );
+            Add<object>          (98    , SqlDbType.Variant          , getter:r => r.GetValue(0)            , elementSize: -1  , requiresDimension:false   );
             Add<XmlReader>       (241   , SqlDbType.Xml              , getter:r => r.GetXmlReader(0)        , elementSize:-1   , requiresDimension:false   );  
             Add<DateTime>        (40    , SqlDbType.Date             , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
             Add<DateTime>        (41    , SqlDbType.Time             , getter:r => r.GetDateTime(0)         , elementSize:5    , requiresDimension:false   );
@@ -133,8 +136,8 @@ namespace Source.SQL
         public readonly string      Collation   ;
         public readonly bool        IsNullable  ;
 
-        readonly SqlTypeInfo        m_typeInfo  ;
-        readonly string             m_asString  ;
+        internal readonly SqlTypeInfo   TypeInfo    ;
+        readonly string                 m_asString  ;
 
         public TypeDefinition(
             string  schema          , 
@@ -166,63 +169,34 @@ namespace Source.SQL
                 typeInfo = SqlTypeInfo.Empty;    
             }
 
-            m_typeInfo = typeInfo;
+            TypeInfo = typeInfo;
 
             m_asString      = "TD." + FullName  ;
         }
 
         public SqlDbType DbType
         {
-            get {return m_typeInfo.DbType;}
+            get { return TypeInfo.DbType; }
         }
 
-        public Type Type
+        public Type ClrType
         {
-            get {return m_typeInfo.Type;}
+            get { return TypeInfo.ClrType; }
         }
 
-        public string DbTypeAsString (int? maxLength = null, bool? isNullable = null)
+        public int DbTypeElementSize
         {
-            var sb = new StringBuilder(m_typeInfo.SqlName);
-
-            if (m_typeInfo.RequiresDimension && maxLength != null)
-            {
-                sb.Append(m_typeInfo.SqlName);
-                var elementSize = Math.Max(DbTypeElementSize(), 1);
-                var value = maxLength.Value / elementSize;
-                sb.Append('(');
-                sb.Append(value.ToString(CultureInfo.InvariantCulture));
-                sb.Append(')');
-            }
-
-            if (isNullable != null)
-            {
-                if (isNullable.Value)
-                {
-                    sb.Append(" NULL");                    
-                }
-                else
-                {
-                    sb.Append(" NOT NULL");                    
-                }
-            }
-
-            return sb.ToString();
+            get { return TypeInfo.DbTypeElementSize; }
         }
 
-        public int DbTypeElementSize ()
+        public string CsTypeName
         {
-            return m_typeInfo.ElementSize;
+            get { return TypeInfo.CsTypeName; }
         }
 
-        public string TypeAsCsString ()
+        public MethodInfo GetterMethod
         {
-            return m_typeInfo.CsName;
-        }
-
-        public MethodInfo GetterMethod ()
-        {
-            return m_typeInfo.GetterMethod;
+            get { return TypeInfo.GetterMethod; }
         }
 
         public override string ToString()
@@ -255,6 +229,78 @@ namespace Source.SQL
             MaxLength   = maxLength ;
             Precision   = precision ;
             Scale       = scale     ;
+        }
+
+        public string DbTypeAsString ()
+        {
+            var sb = new StringBuilder(Type.TypeInfo.DbTypeName);
+
+            if (Type.TypeInfo.RequiresDimension)
+            {
+                if (MaxLength < 0)
+                {
+                    sb.Append("(MAX)");                    
+                }
+                else
+                {
+                    var elementSize = Math.Max(DbTypeElementSize, 1);
+                    var value = MaxLength / elementSize;
+                    sb.Append('(');
+                    sb.Append(value.ToString(CultureInfo.InvariantCulture));                    
+                    sb.Append(')');
+                }
+            }
+
+            if (Type.DbType == SqlDbType.Decimal)
+            {
+                    sb.Append('(');
+                    sb.Append(Precision.ToString(CultureInfo.InvariantCulture));                    
+                    sb.Append(',');
+                    sb.Append(Scale.ToString(CultureInfo.InvariantCulture));                    
+                    sb.Append(')');                
+            }
+
+            var isNullable = OnGetNullable ();
+            if (isNullable != null)
+            {
+                if (isNullable.Value)
+                {
+                    sb.Append(" NULL");                    
+                }
+                else
+                {
+                    sb.Append(" NOT NULL");                    
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        protected abstract bool? OnGetNullable();
+
+        public SqlDbType DbType
+        {
+            get {return Type.DbType;}
+        }
+
+        public Type ClrType
+        {
+            get {return Type.ClrType;}
+        }
+
+        public int DbTypeElementSize
+        {
+            get { return Type.DbTypeElementSize; }
+        }
+
+        public string CsTypeName
+        {
+            get { return Type.CsTypeName;}
+        }
+
+        public MethodInfo GetterMethod
+        {
+            get { return Type.GetterMethod; }
         }
     }
 
@@ -293,6 +339,11 @@ namespace Source.SQL
         {
             return m_asString;
         }
+
+        protected override bool? OnGetNullable()
+        {
+            return IsNullable;
+        }
     }
 
     sealed partial class ParameterSubObject : BaseTypedSubObject
@@ -320,6 +371,11 @@ namespace Source.SQL
         public override string ToString()
         {
             return m_asString;
+        }
+
+        protected override bool? OnGetNullable()
+        {
+            return null;
         }
     }
 

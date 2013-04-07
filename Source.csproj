@@ -58,6 +58,7 @@
     <Compile Include="Concurrency\RemainingTime.cs" />
     <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
+    <Compile Include="Extensions\SqlExtensions.cs" />
     <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
       <AutoGen>True</AutoGen>

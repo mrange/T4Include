@@ -16,14 +16,15 @@
     RootPath    = @"..\..\..";
     Includes = new []
         {
-            Include (@"HRON\HRONObjectSerializer.cs"),
-            Include (@"HRON\HRONDynamicObjectSerializer.cs"),
-            Include (@"Common\ConsoleLog.cs"),
-            Include (@"Concurrency\TaskSchedulers.cs"),
-            Include (@"Extensions\BasicExtensions.cs"),
-            Include (@"Testing\TestRunner.cs"),
-            Include (@"Text\LineToObjectExtensions.cs"),
-            Include (@"SQL\Schema.cs"),
+            Include (@"HRON\HRONObjectSerializer.cs"            ),
+            Include (@"HRON\HRONDynamicObjectSerializer.cs"     ),
+            Include (@"Common\ConsoleLog.cs"                    ),
+            Include (@"Concurrency\TaskSchedulers.cs"           ),
+            Include (@"Extensions\BasicExtensions.cs"           ),
+            Include (@"Extensions\SqlExtensions.cs"             ),
+            Include (@"Testing\TestRunner.cs"                   ),
+            Include (@"Text\LineToObjectExtensions.cs"          ),
+            Include (@"SQL\Schema.cs"                           ),
         };
 #>
 

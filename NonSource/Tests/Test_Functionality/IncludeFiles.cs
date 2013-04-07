@@ -31,6 +31,9 @@
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs
+// @@@ INCLUDE_FOUND: ../Common/Array.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
@@ -63,6 +66,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
@@ -90,6 +95,7 @@
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantIfElseBlock
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable RedundantTypeArgumentsOfMethod
 // ############################################################################
 
 // ############################################################################
@@ -1882,6 +1888,80 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+        using System.Data;
+    
+        static partial class SqlExtensions
+        {
+            public static TValue Get<TValue>(this IDataReader reader, int index, TValue defaultValue)
+            {
+                if (reader == null)
+                {
+                    return defaultValue;
+                }
+                
+                if (index < 0)
+                {
+                    return defaultValue;
+                }
+    
+                if (index >= reader.FieldCount)
+                {
+                    return defaultValue;
+                }
+    
+                var value = reader.GetValue (index);
+    
+                if (value is DBNull)
+                {
+                    return defaultValue;
+                }
+    
+                if (!(value is TValue))
+                {
+                    return defaultValue;
+                }
+    
+                return (TValue) value;
+            }
+    
+            public static TValue Get<TValue>(this IDataReader reader, string name, TValue defaultValue)
+            {
+                if (reader == null)
+                {
+                    return defaultValue;
+                }
+                
+                var index = reader.GetOrdinal(name ?? "");
+    
+                return reader.Get(index, defaultValue);
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 namespace FileInclude
 {
@@ -2229,16 +2309,105 @@ namespace FileInclude
     // ----------------------------------------------------------------------------------------------
     
     
+    
+    
     namespace Source.SQL
     {
         using System;
         using System.Collections.Generic;
         using System.Data;
         using System.Data.SqlClient;
+        using System.Globalization;
         using System.Linq;
+        using System.Linq.Expressions;
+        using System.Reflection;
+        using System.Text;
+        using System.Xml;
     
         sealed partial class TypeDefinition
         {
+            internal sealed partial class SqlTypeInfo
+            {
+                public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object), -1, false, null);
+    
+                public readonly SqlDbType   DbType              ;
+                public readonly Type        ClrType             ;
+                public readonly int         DbTypeElementSize   ;
+                public readonly bool        RequiresDimension   ;
+                public readonly string      DbTypeName          ;
+                public readonly string      CsTypeName          ;
+    
+                public readonly MethodInfo  GetterMethod        ;
+    
+    
+                public SqlTypeInfo(SqlDbType dbType, Type type, int elementSize, bool requiresDimension, MethodInfo getterMethod)
+                {
+                    DbType              = dbType            ;
+                    ClrType             = type              ;
+                    DbTypeElementSize   = elementSize       ;
+                    RequiresDimension   = requiresDimension ;
+    
+                    GetterMethod        = getterMethod      ;
+    
+                    DbTypeName          = dbType.ToString().ToLowerInvariant();
+    
+                    if (type.IsArray)
+                    {
+                        CsTypeName      = type.GetElementType().FullName + "[]";
+                    }
+                    else
+                    {
+                        CsTypeName      = type.FullName;
+                    }
+                }
+            }
+    
+            static void Add<T> (byte id, SqlDbType dbType, int elementSize, bool requiresDimension, Expression<Func<SqlDataReader, T>> getter)
+            {
+                var getterMethodInfo = getter != null
+                    ?   ((MethodCallExpression)getter.Body).Method   
+                    :   null
+                    ;
+                s_typeInfoLookup.Add(id, new SqlTypeInfo(dbType, typeof(T), elementSize, requiresDimension, getterMethodInfo));
+            }
+    
+            readonly static Dictionary<byte, SqlTypeInfo> s_typeInfoLookup = 
+                new Dictionary<byte, SqlTypeInfo> ();
+    
+            static TypeDefinition ()
+            {
+                Add<Int64>           (127   , SqlDbType.BigInt           , getter:r => r.GetInt64(0)            , elementSize:8    , requiresDimension:false   );
+                Add<Byte[]>          (173   , SqlDbType.Binary           , getter:null                          , elementSize:1    , requiresDimension:true    );
+                Add<Boolean>         (104   , SqlDbType.Bit              , getter:r => r.GetBoolean(0)          , elementSize:1    , requiresDimension:false   );
+                Add<String>          (175   , SqlDbType.Char             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
+                Add<DateTime>        (61    , SqlDbType.DateTime         , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+                Add<Decimal>         (106   , SqlDbType.Decimal          , getter:r => r.GetDecimal(0)          , elementSize:17   , requiresDimension:false   );
+                Add<Double>          (62    , SqlDbType.Float            , getter:r => r.GetDouble(0)           , elementSize:4    , requiresDimension:false   );
+                Add<Byte[]>          (34    , SqlDbType.Image            , getter:null                          , elementSize:1    , requiresDimension:false   );  // TODO: Check this
+                Add<Int32>           (56    , SqlDbType.Int              , getter:r => r.GetInt32(0)            , elementSize:4    , requiresDimension:false   );
+                Add<Decimal>         (60    , SqlDbType.Money            , getter:r => r.GetDecimal(0)          , elementSize:8    , requiresDimension:false   );
+                Add<String>          (239   , SqlDbType.NChar            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
+                Add<String>          (99    , SqlDbType.NText            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:false   );
+                Add<String>          (231   , SqlDbType.NVarChar         , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
+                Add<Single>          (59    , SqlDbType.Real             , getter:r => r.GetFloat(0)            , elementSize:4    , requiresDimension:false   );
+                Add<Guid>            (36    , SqlDbType.UniqueIdentifier , getter:r => r.GetGuid(0)             , elementSize:1    , requiresDimension:false   );
+                Add<DateTime>        (58    , SqlDbType.SmallDateTime    , getter:r => r.GetDateTime(0)         , elementSize:4    , requiresDimension:false   );
+                Add<Int16>           (52    , SqlDbType.SmallInt         , getter:r => r.GetInt16(0)            , elementSize:2    , requiresDimension:false   );
+                Add<Decimal>         (122   , SqlDbType.SmallMoney       , getter:r => r.GetDecimal(0)          , elementSize:4    , requiresDimension:false   );
+                Add<String>          (35    , SqlDbType.Text             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:false   );
+                Add<DateTime>        (189   , SqlDbType.Timestamp        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+                Add<Byte>            (48    , SqlDbType.TinyInt          , getter:r => r.GetByte(0)             , elementSize:1    , requiresDimension:false   );
+                Add<Byte[]>          (165   , SqlDbType.VarBinary        , getter:null                          , elementSize:1    , requiresDimension:true    );
+                Add<String>          (167   , SqlDbType.VarChar          , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
+                Add<object>          (98    , SqlDbType.Variant          , getter:r => r.GetValue(0)            , elementSize: -1  , requiresDimension:false   );
+                Add<XmlReader>       (241   , SqlDbType.Xml              , getter:r => r.GetXmlReader(0)        , elementSize:-1   , requiresDimension:false   );  
+                Add<DateTime>        (40    , SqlDbType.Date             , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+                Add<DateTime>        (41    , SqlDbType.Time             , getter:r => r.GetDateTime(0)         , elementSize:5    , requiresDimension:false   );
+                Add<DateTime>        (42    , SqlDbType.DateTime2        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+                Add<DateTimeOffset>  (43    , SqlDbType.DateTimeOffset   , getter:r => r.GetDateTimeOffset(0)   , elementSize:10   , requiresDimension:false   );
+            }                                                                                                                                 
+    
+     
             public static readonly TypeDefinition Empty = new TypeDefinition (
                 "empty" ,
                 "void"  ,
@@ -2251,18 +2420,20 @@ namespace FileInclude
                 true
                 );
     
-            public readonly string  Schema      ;
-            public readonly string  Name        ;
-            public readonly string  FullName    ;
-            public readonly byte    SystemTypeId;
-            public readonly int     UserTypeId  ;
-            public readonly short   MaxLength   ;
-            public readonly byte    Precision   ;
-            public readonly byte    Scale       ;
-            public readonly string  Collation   ;
-            public readonly bool    IsNullable  ;
     
-            readonly string         m_asString  ;
+            public readonly string      Schema      ;
+            public readonly string      Name        ;
+            public readonly string      FullName    ;
+            public readonly byte        SystemTypeId;
+            public readonly int         UserTypeId  ;
+            public readonly short       MaxLength   ;
+            public readonly byte        Precision   ;
+            public readonly byte        Scale       ;
+            public readonly string      Collation   ;
+            public readonly bool        IsNullable  ;
+    
+            internal readonly SqlTypeInfo   TypeInfo    ;
+            readonly string                 m_asString  ;
     
             public TypeDefinition(
                 string  schema          , 
@@ -2287,7 +2458,41 @@ namespace FileInclude
                 Collation       = collation         ?? "";
                 IsNullable      = isNullable        ;
     
+                SqlTypeInfo typeInfo;
+                s_typeInfoLookup.TryGetValue (SystemTypeId, out typeInfo) ;
+                if (typeInfo == null)
+                {
+                    typeInfo = SqlTypeInfo.Empty;    
+                }
+    
+                TypeInfo = typeInfo;
+    
                 m_asString      = "TD." + FullName  ;
+            }
+    
+            public SqlDbType DbType
+            {
+                get { return TypeInfo.DbType; }
+            }
+    
+            public Type ClrType
+            {
+                get { return TypeInfo.ClrType; }
+            }
+    
+            public int DbTypeElementSize
+            {
+                get { return TypeInfo.DbTypeElementSize; }
+            }
+    
+            public string CsTypeName
+            {
+                get { return TypeInfo.CsTypeName; }
+            }
+    
+            public MethodInfo GetterMethod
+            {
+                get { return TypeInfo.GetterMethod; }
             }
     
             public override string ToString()
@@ -2320,6 +2525,78 @@ namespace FileInclude
                 MaxLength   = maxLength ;
                 Precision   = precision ;
                 Scale       = scale     ;
+            }
+    
+            public string DbTypeAsString ()
+            {
+                var sb = new StringBuilder(Type.TypeInfo.DbTypeName);
+    
+                if (Type.TypeInfo.RequiresDimension)
+                {
+                    if (MaxLength < 0)
+                    {
+                        sb.Append("(MAX)");                    
+                    }
+                    else
+                    {
+                        var elementSize = Math.Max(DbTypeElementSize, 1);
+                        var value = MaxLength / elementSize;
+                        sb.Append('(');
+                        sb.Append(value.ToString(CultureInfo.InvariantCulture));                    
+                        sb.Append(')');
+                    }
+                }
+    
+                if (Type.DbType == SqlDbType.Decimal)
+                {
+                        sb.Append('(');
+                        sb.Append(Precision.ToString(CultureInfo.InvariantCulture));                    
+                        sb.Append(',');
+                        sb.Append(Scale.ToString(CultureInfo.InvariantCulture));                    
+                        sb.Append(')');                
+                }
+    
+                var isNullable = OnGetNullable ();
+                if (isNullable != null)
+                {
+                    if (isNullable.Value)
+                    {
+                        sb.Append(" NULL");                    
+                    }
+                    else
+                    {
+                        sb.Append(" NOT NULL");                    
+                    }
+                }
+    
+                return sb.ToString();
+            }
+    
+            protected abstract bool? OnGetNullable();
+    
+            public SqlDbType DbType
+            {
+                get {return Type.DbType;}
+            }
+    
+            public Type ClrType
+            {
+                get {return Type.ClrType;}
+            }
+    
+            public int DbTypeElementSize
+            {
+                get { return Type.DbTypeElementSize; }
+            }
+    
+            public string CsTypeName
+            {
+                get { return Type.CsTypeName;}
+            }
+    
+            public MethodInfo GetterMethod
+            {
+                get { return Type.GetterMethod; }
             }
         }
     
@@ -2358,6 +2635,11 @@ namespace FileInclude
             {
                 return m_asString;
             }
+    
+            protected override bool? OnGetNullable()
+            {
+                return IsNullable;
+            }
         }
     
         sealed partial class ParameterSubObject : BaseTypedSubObject
@@ -2385,6 +2667,11 @@ namespace FileInclude
             public override string ToString()
             {
                 return m_asString;
+            }
+    
+            protected override bool? OnGetNullable()
+            {
+                return null;
             }
         }
     
@@ -5845,31 +6132,32 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-07T09:48:01";
+        public const string IncludeDate     = @"2013-04-07T18:04:49";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
         public const string Include_3       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_21       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_22       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_23       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################
