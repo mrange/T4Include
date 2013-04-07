@@ -41,7 +41,93 @@ namespace Test_WPF
         {
             InitializeComponent();
 
+            Loaded += Loaded_MainWindow;
+
             Buzy.IsWaiting = true;
+            Cnt.IsHitTestVisible = false;
+            Cnt.Opacity = 0;
+        }
+
+        void Loaded_MainWindow(object sender, RoutedEventArgs e)
+        {
+            m_bitmapSources = this
+                .GetLogicalTree_BreadthFirst ()
+                .OfType<Image> ()
+                .Select (i => i.Source)
+                .OfType<BitmapSource> ()
+                .Where (bs => bs.IsDownloading)
+                .ToArray ();
+
+
+            foreach (var bitmapSource in m_bitmapSources)
+            {
+                bitmapSource.DownloadCompleted  += bitmapSource_DownloadCompleted;
+                bitmapSource.DownloadFailed     += bitmapSource_DownloadFailed;
+            }
+
+            //DebugContainerControl.ShowWindow (this, "Test_WPF: Debug view");
+        }
+
+        void bitmapSource_DownloadCompleted(object sender, EventArgs e)
+        {
+            ShowContent();
+        }
+
+        void ShowContent()
+        {
+            if (!m_bitmapSources.Any(bs => bs.IsDownloading))
+            {
+                Buzy.IsWaiting = false;
+                Buzy.Visibility = Visibility.Collapsed;
+                Cnt.IsHitTestVisible = true;
+                m_clock = m_opacityAnimation.CreateClock ();
+                m_clock.Completed += clock_Completed;
+                Cnt.ApplyAnimationClock(OpacityProperty, m_clock);
+            }
+        }
+
+        void clock_Completed(object sender, EventArgs e)
+        {
+            m_clock.Completed -= clock_Completed;
+            Cnt.ApplyAnimationClock(OpacityProperty, null);
+            Cnt.Opacity = 1;
+        }
+
+        void bitmapSource_DownloadFailed(object sender, System.Windows.Media.ExceptionEventArgs e)
+        {
+            ShowContent();
+        }
+
+        void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var button = e.OriginalSource as ButtonBase;
+            if (button == null)
+            {
+                return;
+            }
+
+            var tag = button.Tag as string;
+            switch(tag)
+            {
+                case "First":
+                    AE.Present(AnimatedEntrance.Option.PushFromLeft, First);
+                    break;
+                case "Second":
+                    AE.Present(AnimatedEntrance.Option.RevealToRight, Second);
+                    break;
+                case "Third":
+                    AE.Present(AnimatedEntrance.Option.CoverFromBottom, Third);
+                    break;
+                case "Fourth":
+                    AE.Present(AnimatedEntrance.Option.Fade, Fourth);
+                    break;
+                case "Fifth":
+                    AE.Present(AnimatedEntrance.Option.Instant, Fifth);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 }
