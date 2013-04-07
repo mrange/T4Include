@@ -3929,9 +3929,9 @@ namespace FileInclude
                             <RowDefinition Height=""*""/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition />
                             <ColumnDefinition Width=""4""/>
-                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Row=""0"" Grid.Column=""0"" Orientation=""Horizontal"">
                             <Button x:Name=""PART_SelectButton""    Padding=""8,0,8,0"" Margin=""0,0,4,0"" Content=""Select""/>
@@ -3950,6 +3950,12 @@ namespace FileInclude
                                 </HierarchicalDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
+                        <GridSplitter
+                            Grid.Column=""1""
+                            Grid.RowSpan=""3""
+                            HorizontalAlignment=""Stretch""
+                            VerticalAlignment=""Stretch""
+                            /> 
                         <DataGrid   
                             Grid.Row=""2"" 
                             Grid.Column=""2"" 
@@ -4880,7 +4886,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-01T21:11:08";
+        public const string IncludeDate     = @"2013-04-07T12:08:45";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
