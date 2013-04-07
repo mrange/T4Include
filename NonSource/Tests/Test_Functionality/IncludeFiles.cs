@@ -2445,8 +2445,11 @@ namespace FileInclude
     
         sealed partial class Schema
         {
-            readonly Dictionary<string, TypeDefinition> m_typeDefinitions   = new Dictionary<string, TypeDefinition> ();
-            readonly Dictionary<string, SchemaObject>   m_schemaObjects     = new Dictionary<string, SchemaObject> ();
+            // As SQL is generally case insensitive we ignore case when looking for objects
+            static readonly StringComparer s_keyComparer = StringComparer.OrdinalIgnoreCase;
+    
+            readonly Dictionary<string, TypeDefinition> m_typeDefinitions   = new Dictionary<string, TypeDefinition> (s_keyComparer);
+            readonly Dictionary<string, SchemaObject>   m_schemaObjects     = new Dictionary<string, SchemaObject> (s_keyComparer);
     
             public Schema (SqlConnection connection)
             {
@@ -2522,7 +2525,7 @@ namespace FileInclude
                     var columnLookup    = new Dictionary<int, List<ColumnSubObject>> ();
                     var parameterLookup = new Dictionary<int, List<ParameterSubObject>> ();
     
-                    using (var reader = command.ExecuteReader ())
+                    using (var reader = command.ExecuteReader (CommandBehavior.SequentialAccess))
                     {
                         while (reader.Read ())
                         {
@@ -2601,7 +2604,9 @@ namespace FileInclude
                         while (reader.Read ())
                         {
                             var objectId = reader.GetInt32(0);
-                            var fullName = reader.GetString(1) + "." + reader.GetString (2);
+                            var schema = reader.GetString(1);
+                            var name = reader.GetString(2);
+                            var fullName = schema + "." + name;
                             var schemaObjectType = ToSchemaType(reader.GetString(3));
                             
                             if (schemaObjectType == SchemaObject.SchemaObjectType.Unknown)
@@ -2616,8 +2621,8 @@ namespace FileInclude
                             parameterLookup.TryGetValue(objectId, out parameters);
     
                             var schemaObject = new SchemaObject (
-                                reader.GetString(1)         ,
-                                reader.GetString(2)         ,
+                                schema                      ,
+                                name                        ,
                                 schemaObjectType            ,
                                 reader.GetDateTime(4)       ,
                                 reader.GetDateTime(5)       ,
@@ -5840,7 +5845,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-07T09:00:03";
+        public const string IncludeDate     = @"2013-04-07T09:48:01";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
