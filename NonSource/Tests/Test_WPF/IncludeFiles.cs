@@ -1391,7 +1391,7 @@ namespace FileInclude
                 s_animationClock.FreezeObject ();
             }
     
-            partial void Changed_IsEnabled (bool oldValue, bool newValue)
+            partial void Changed_IsWaiting(bool oldValue, bool newValue)
             {
                 if (newValue)
                 {
@@ -3734,18 +3734,18 @@ namespace FileInclude
     
                 return value;
             }
-            public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
-                "IsEnabled",
+            public static readonly DependencyProperty IsWaitingProperty = DependencyProperty.Register (
+                "IsWaiting",
                 typeof (bool),
                 typeof (BuzyWait),
                 new FrameworkPropertyMetadata (
                     default (bool),
                     FrameworkPropertyMetadataOptions.None,
-                    Changed_IsEnabled,
-                    Coerce_IsEnabled          
+                    Changed_IsWaiting,
+                    Coerce_IsWaiting          
                 ));
     
-            static void Changed_IsEnabled (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            static void Changed_IsWaiting (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
             {
                 var instance = dependencyObject as BuzyWait;
                 if (instance != null)
@@ -3753,12 +3753,12 @@ namespace FileInclude
                     var oldValue = (bool)eventArgs.OldValue;
                     var newValue = (bool)eventArgs.NewValue;
     
-                    instance.Changed_IsEnabled (oldValue, newValue);
+                    instance.Changed_IsWaiting (oldValue, newValue);
                 }
             }
     
     
-            static object Coerce_IsEnabled (DependencyObject dependencyObject, object basevalue)
+            static object Coerce_IsWaiting (DependencyObject dependencyObject, object basevalue)
             {
                 var instance = dependencyObject as BuzyWait;
                 if (instance == null)
@@ -3767,7 +3767,7 @@ namespace FileInclude
                 }
                 var value = (bool)basevalue;
     
-                instance.Coerce_IsEnabled (ref value);
+                instance.Coerce_IsWaiting (ref value);
     
     
                 return value;
@@ -3789,7 +3789,7 @@ namespace FileInclude
             void CoerceAllProperties ()
             {
                 CoerceValue (AnimationClockProperty);
-                CoerceValue (IsEnabledProperty);
+                CoerceValue (IsWaitingProperty);
             }
     
     
@@ -3835,23 +3835,23 @@ namespace FileInclude
     
                
             // --------------------------------------------------------------------
-            public bool IsEnabled
+            public bool IsWaiting
             {
                 get
                 {
-                    return (bool)GetValue (IsEnabledProperty);
+                    return (bool)GetValue (IsWaitingProperty);
                 }
                 set
                 {
-                    if (IsEnabled != value)
+                    if (IsWaiting != value)
                     {
-                        SetValue (IsEnabledProperty, value);
+                        SetValue (IsWaitingProperty, value);
                     }
                 }
             }
             // --------------------------------------------------------------------
-            partial void Changed_IsEnabled (bool oldValue, bool newValue);
-            partial void Coerce_IsEnabled (ref bool coercedValue);
+            partial void Changed_IsWaiting (bool oldValue, bool newValue);
+            partial void Coerce_IsWaiting (ref bool coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -3929,9 +3929,9 @@ namespace FileInclude
                             <RowDefinition Height=""*""/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition />
                             <ColumnDefinition Width=""4""/>
-                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Row=""0"" Grid.Column=""0"" Orientation=""Horizontal"">
                             <Button x:Name=""PART_SelectButton""    Padding=""8,0,8,0"" Margin=""0,0,4,0"" Content=""Select""/>
@@ -3950,6 +3950,12 @@ namespace FileInclude
                                 </HierarchicalDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
+                        <GridSplitter
+                            Grid.Column=""1""
+                            Grid.RowSpan=""3""
+                            HorizontalAlignment=""Stretch""
+                            VerticalAlignment=""Stretch""
+                            /> 
                         <DataGrid   
                             Grid.Row=""2"" 
                             Grid.Column=""2"" 
@@ -4880,7 +4886,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-01T21:11:08";
+        public const string IncludeDate     = @"2013-04-07T18:40:24";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

@@ -71,7 +71,7 @@ namespace Source.WPF
             s_animationClock.FreezeObject ();
         }
 
-        partial void Changed_IsEnabled (bool oldValue, bool newValue)
+        partial void Changed_IsWaiting(bool oldValue, bool newValue)
         {
             if (newValue)
             {
