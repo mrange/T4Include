@@ -12,6 +12,9 @@
 
 // ReSharper disable PartialTypeWithSinglePart
 
+using System.Data.SqlTypes;
+using System.Xml;
+
 namespace Source.SQL
 {
     using System;
@@ -20,8 +23,67 @@ namespace Source.SQL
     using System.Data.SqlClient;
     using System.Linq;
 
+    sealed partial class SqlTypeInfo
+    {
+        public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object));
+
+        public readonly SqlDbType   DbType  ;
+        public readonly Type        Type    ;
+
+        public SqlTypeInfo(SqlDbType dbType, Type type)
+        {
+            DbType  = dbType;
+            Type    = type  ;
+        }
+    }
+
     sealed partial class TypeDefinition
     {
+        static void Add<T> (SqlDbType dbType)
+        {
+            s_typeInfoLookup.Add(dbType.ToString(), new SqlTypeInfo(dbType, typeof(T)));
+        }
+
+        readonly static Dictionary<string, SqlTypeInfo> s_typeInfoLookup = 
+            new Dictionary<string, SqlTypeInfo> (StringComparer.OrdinalIgnoreCase);
+
+        static TypeDefinition ()
+        {
+            Add<Int64>           (SqlDbType.BigInt           );
+            Add<Byte[]>          (SqlDbType.Binary           );
+            Add<Boolean>         (SqlDbType.Bit              );
+            Add<Char>            (SqlDbType.Char             );
+            Add<DateTime>        (SqlDbType.DateTime         );
+            Add<Decimal>         (SqlDbType.Decimal          );
+            Add<Single>          (SqlDbType.Float            );
+            Add<Byte[]>          (SqlDbType.Image            );  // TODO: Check this
+            Add<Int32>           (SqlDbType.Int              );
+            Add<Decimal>         (SqlDbType.Money            );
+            Add<Char>            (SqlDbType.NChar            );
+            Add<String>          (SqlDbType.NText            );
+            Add<String>          (SqlDbType.NVarChar         );
+            Add<Double>          (SqlDbType.Real             );
+            Add<Guid>            (SqlDbType.UniqueIdentifier );
+            Add<DateTime>        (SqlDbType.SmallDateTime    );
+            Add<Int16>           (SqlDbType.SmallInt         );
+            Add<Decimal>         (SqlDbType.SmallMoney       );
+            Add<String>          (SqlDbType.Text             );
+            Add<DateTime>        (SqlDbType.Timestamp        );  // TODO: Check this
+            Add<Byte>            (SqlDbType.TinyInt          );
+            Add<Byte[]>          (SqlDbType.VarBinary        );
+            Add<String>          (SqlDbType.VarChar          );
+            Add<Byte[]>          (SqlDbType.Variant          );
+            Add<XmlDocument>     (SqlDbType.Xml              );  // TODO: Check this
+            Add<object>          (SqlDbType.Udt              );  // TODO: Check this
+            Add<object>          (SqlDbType.Structured       );  // TODO: Check this
+            Add<DateTime>        (SqlDbType.Date             );
+            Add<int>             (SqlDbType.Time             );
+            Add<int>             (SqlDbType.DateTime2        );
+            Add<DateTimeOffset>  (SqlDbType.DateTimeOffset   );
+            
+        }
+
+ 
         public static readonly TypeDefinition Empty = new TypeDefinition (
             "empty" ,
             "void"  ,
@@ -34,16 +96,19 @@ namespace Source.SQL
             true
             );
 
-        public readonly string  Schema      ;
-        public readonly string  Name        ;
-        public readonly string  FullName    ;
-        public readonly byte    SystemTypeId;
-        public readonly int     UserTypeId  ;
-        public readonly short   MaxLength   ;
-        public readonly byte    Precision   ;
-        public readonly byte    Scale       ;
-        public readonly string  Collation   ;
-        public readonly bool    IsNullable  ;
+
+        public readonly string      Schema      ;
+        public readonly string      Name        ;
+        public readonly string      FullName    ;
+        public readonly byte        SystemTypeId;
+        public readonly int         UserTypeId  ;
+        public readonly short       MaxLength   ;
+        public readonly byte        Precision   ;
+        public readonly byte        Scale       ;
+        public readonly string      Collation   ;
+        public readonly bool        IsNullable  ;
+
+        public readonly SqlTypeInfo TypeInfo    ;
 
         readonly string         m_asString  ;
 
@@ -69,6 +134,15 @@ namespace Source.SQL
             Scale           = scale             ;
             Collation       = collation         ?? "";
             IsNullable      = isNullable        ;
+
+            SqlTypeInfo typeInfo;
+            s_typeInfoLookup.TryGetValue (Name, out typeInfo) ;
+            if (typeInfo == null)
+            {
+                typeInfo = SqlTypeInfo.Empty;    
+            }
+
+            TypeInfo = typeInfo;
 
             m_asString      = "TD." + FullName  ;
         }
