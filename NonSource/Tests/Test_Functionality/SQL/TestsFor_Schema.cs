@@ -143,9 +143,9 @@ SELECT
                                     TestFor.Equality(reader.Get("name"          , "")       , typeDefinition.Name           , "Name must match"         );
                                     TestFor.Equality(reader.Get("system_type_id", (byte)0)  , typeDefinition.SystemTypeId   , "SystemTypeId must match" );
                                     TestFor.Equality(reader.Get("user_type_id"  , 0)        , typeDefinition.UserTypeId     , "UserTypeId must match"   );
-                                    TestFor.Equality(reader.Get("max_length"    , (short)0) , typeDefinition.MaxLength      , "MaxLength must match"    );
-                                    TestFor.Equality(reader.Get("precision"     , (byte)0)  , typeDefinition.Precision      , "Precision must match"    );
-                                    TestFor.Equality(reader.Get("scale"         , (byte)0)  , typeDefinition.Scale          , "Scale must match"        );
+                                    TestFor.Equality(reader.Get("max_length"    , 0)        , typeDefinition.MaxLength      , "MaxLength must match"    );
+                                    TestFor.Equality(reader.Get("precision"     , 0)        , typeDefinition.Precision      , "Precision must match"    );
+                                    TestFor.Equality(reader.Get("scale"         , 0)        , typeDefinition.Scale          , "Scale must match"        );
                                     TestFor.Equality(reader.Get("is_nullable"   , false)    , typeDefinition.IsNullable     , "IsNullable must match"   );
                                 
                                 }

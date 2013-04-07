@@ -92,6 +92,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialMethodWithSinglePart
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable PossibleInvalidCastException
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable RedundantIfElseBlock
 // ReSharper disable RedundantNameQualifier
@@ -1905,6 +1906,9 @@ namespace FileInclude
     
     
     
+    using System.Diagnostics;
+    using System.Globalization;
+    
     namespace Source.Extensions
     {
         using System;
@@ -1931,17 +1935,31 @@ namespace FileInclude
     
                 var value = reader.GetValue (index);
     
+                if (value == null)
+                {
+                    return defaultValue;
+                }
+    
+                if (value is TValue)
+                {
+                    return (TValue) value;
+                }
+    
                 if (value is DBNull)
                 {
                     return defaultValue;
                 }
     
-                if (!(value is TValue))
+                try
                 {
+                    return (TValue) Convert.ChangeType (value, typeof (TValue), CultureInfo.InvariantCulture);
+                }
+                catch
+                {
+                    Debug.Assert (false, "The semantics of Get is no-throw but try to avoid cases where Get needs to catch cast exception as those are cpu-expensive");
                     return defaultValue;
                 }
     
-                return (TValue) value;
             }
     
             public static TValue Get<TValue>(this IDataReader reader, string name, TValue defaultValue)
@@ -6132,7 +6150,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-07T18:04:49";
+        public const string IncludeDate     = @"2013-04-07T18:36:02";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

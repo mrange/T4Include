@@ -14,6 +14,10 @@
 // ### INCLUDE: ../Common/Log.cs
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable PossibleInvalidCastException
+
+using System.Diagnostics;
+using System.Globalization;
 
 namespace Source.Extensions
 {
@@ -41,17 +45,31 @@ namespace Source.Extensions
 
             var value = reader.GetValue (index);
 
+            if (value == null)
+            {
+                return defaultValue;
+            }
+
+            if (value is TValue)
+            {
+                return (TValue) value;
+            }
+
             if (value is DBNull)
             {
                 return defaultValue;
             }
 
-            if (!(value is TValue))
+            try
             {
+                return (TValue) Convert.ChangeType (value, typeof (TValue), CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                Debug.Assert (false, "The semantics of Get is no-throw but try to avoid cases where Get needs to catch cast exception as those are cpu-expensive");
                 return defaultValue;
             }
 
-            return (TValue) value;
         }
 
         public static TValue Get<TValue>(this IDataReader reader, string name, TValue defaultValue)
