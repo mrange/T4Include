@@ -44,7 +44,7 @@ namespace Source.WPF
             typeof (BuzyWait),
             new FrameworkPropertyMetadata (
                 default (double),
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.None,
                 Changed_AnimationClock,
                 Coerce_AnimationClock          
             ));

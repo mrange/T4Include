@@ -4,7 +4,7 @@
     {
         new ClassDefinition ("BuzyWait")
         {
-            P ("double"                 , "AnimationClock"      , flags:PropertyFlags.IsAttached    , metaDataOptions: "FrameworkPropertyMetadataOptions.AffectsRender"  ),
+            P ("double"                 , "AnimationClock"      , flags:PropertyFlags.IsAttached    ),
             P ("bool"                   , "IsWaiting"           ),
         },
     };    
