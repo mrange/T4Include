@@ -44,7 +44,7 @@ namespace Source.WPF
             typeof (BuzyWait),
             new FrameworkPropertyMetadata (
                 default (double),
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.None,
                 Changed_AnimationClock,
                 Coerce_AnimationClock          
             ));
@@ -72,18 +72,18 @@ namespace Source.WPF
 
             return value;
         }
-        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
-            "IsEnabled",
+        public static readonly DependencyProperty IsWaitingProperty = DependencyProperty.Register (
+            "IsWaiting",
             typeof (bool),
             typeof (BuzyWait),
             new FrameworkPropertyMetadata (
                 default (bool),
                 FrameworkPropertyMetadataOptions.None,
-                Changed_IsEnabled,
-                Coerce_IsEnabled          
+                Changed_IsWaiting,
+                Coerce_IsWaiting          
             ));
 
-        static void Changed_IsEnabled (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        static void Changed_IsWaiting (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var instance = dependencyObject as BuzyWait;
             if (instance != null)
@@ -91,12 +91,12 @@ namespace Source.WPF
                 var oldValue = (bool)eventArgs.OldValue;
                 var newValue = (bool)eventArgs.NewValue;
 
-                instance.Changed_IsEnabled (oldValue, newValue);
+                instance.Changed_IsWaiting (oldValue, newValue);
             }
         }
 
 
-        static object Coerce_IsEnabled (DependencyObject dependencyObject, object basevalue)
+        static object Coerce_IsWaiting (DependencyObject dependencyObject, object basevalue)
         {
             var instance = dependencyObject as BuzyWait;
             if (instance == null)
@@ -105,7 +105,7 @@ namespace Source.WPF
             }
             var value = (bool)basevalue;
 
-            instance.Coerce_IsEnabled (ref value);
+            instance.Coerce_IsWaiting (ref value);
 
 
             return value;
@@ -127,7 +127,7 @@ namespace Source.WPF
         void CoerceAllProperties ()
         {
             CoerceValue (AnimationClockProperty);
-            CoerceValue (IsEnabledProperty);
+            CoerceValue (IsWaitingProperty);
         }
 
 
@@ -173,23 +173,23 @@ namespace Source.WPF
 
            
         // --------------------------------------------------------------------
-        public bool IsEnabled
+        public bool IsWaiting
         {
             get
             {
-                return (bool)GetValue (IsEnabledProperty);
+                return (bool)GetValue (IsWaitingProperty);
             }
             set
             {
-                if (IsEnabled != value)
+                if (IsWaiting != value)
                 {
-                    SetValue (IsEnabledProperty, value);
+                    SetValue (IsWaitingProperty, value);
                 }
             }
         }
         // --------------------------------------------------------------------
-        partial void Changed_IsEnabled (bool oldValue, bool newValue);
-        partial void Coerce_IsEnabled (ref bool coercedValue);
+        partial void Changed_IsWaiting (bool oldValue, bool newValue);
+        partial void Coerce_IsWaiting (ref bool coercedValue);
         // --------------------------------------------------------------------
 
 

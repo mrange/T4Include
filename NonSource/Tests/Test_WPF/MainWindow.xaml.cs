@@ -43,7 +43,7 @@ namespace Test_WPF
 
             Loaded += Loaded_MainWindow;
 
-            Buzy.IsEnabled = true;
+            Buzy.IsWaiting = true;
             Cnt.IsHitTestVisible = false;
             Cnt.Opacity = 0;
         }
@@ -77,7 +77,7 @@ namespace Test_WPF
         {
             if (!m_bitmapSources.Any(bs => bs.IsDownloading))
             {
-                Buzy.IsEnabled = false;
+                Buzy.IsWaiting = false;
                 Buzy.Visibility = Visibility.Collapsed;
                 Cnt.IsHitTestVisible = true;
                 m_clock = m_opacityAnimation.CreateClock ();

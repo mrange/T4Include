@@ -1337,7 +1337,6 @@ namespace FileInclude
     namespace Source.WPF
     {
         using System;
-        using System.Linq;
         using System.Windows;
         using System.Windows.Media;
         using System.Windows.Media.Animation;
@@ -1346,43 +1345,48 @@ namespace FileInclude
         
         partial class BuzyWait : FrameworkElement
         {
-            const int       Spokes      = 18    ;
-            const double    RadiusRatio = 0.95  ;
-            const double    MinRadius   = 0.25  ;
-            const double    WidthRatio  = 1/16.0;
+            const int       Spokes          = 18    ;
+            const double    RadiusRadius    = 0.95  ;
+            const double    MinRadius       = 0.25  ;
+            const double    WidthRadius     = 1/32.0;
     
             readonly static DoubleAnimation s_animationClock    ;
     
-            partial class Spoke
-            {
-                public Transform Transform  ;
-                public double Offset        ;
+            static readonly Drawing s_drawing;
     
-                public double GetOpacity (double clock)
-                {
-                    return (clock + Offset)%1.0;
-                }
-            }
-    
-            static readonly Spoke[] s_spokes;
             AnimationClock m_clock;
     
             static BuzyWait ()
             {
-                s_spokes = Enumerable
-                    .Range (0, Spokes)
-                    .Select (x => ((double)x) / Spokes)
-                    .Select (
-                        x => new Spoke
-                            {
-                                Transform   = new RotateTransform (360.0 * x).FreezeObject ()   ,
-                                Offset      = x                                                 ,
-                            })
-                    .ToArray ();
+                var drawingVisual = new DrawingVisual ();
+                using (var drawingContext = drawingVisual.RenderOpen())
+                {
+                    for (var i = 0; i < Spokes; ++i)
+                    {
+                        var t = ((double)i) / Spokes;
+                        
+                        drawingContext.PushOpacity (1 - t);
+                        drawingContext.PushTransform (new RotateTransform (360.0 * t));
+    
+                        drawingContext.DrawRoundedRectangle(
+                            Brushes.White,
+                            null,
+                            new Rect(MinRadius, -WidthRadius/2, RadiusRadius - MinRadius, WidthRadius),
+                            WidthRadius,
+                            WidthRadius
+                            );
+    
+                        drawingContext.Pop ();
+                        drawingContext.Pop ();
+                    }
+                    
+                }
+    
+                s_drawing = drawingVisual.Drawing.FreezeObject ();
     
                 s_animationClock = new DoubleAnimation (
-                    1,
                     0,
+                    1,
                     new Duration (TimeSpan.FromSeconds(2))
                     )
                     {
@@ -1391,7 +1395,7 @@ namespace FileInclude
                 s_animationClock.FreezeObject ();
             }
     
-            partial void Changed_IsEnabled (bool oldValue, bool newValue)
+            partial void Changed_IsWaiting(bool oldValue, bool newValue)
             {
                 if (newValue)
                 {
@@ -1419,42 +1423,42 @@ namespace FileInclude
                 }
             }
     
-            protected override void OnRender(DrawingContext drawingContext)
+            static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
             {
-                var min = Math.Min (ActualWidth, ActualHeight);
-        
-                var radius      = RadiusRatio * min/2;
-                var minRadius   = min * MinRadius;
-                var spokeLength = radius - minRadius;
-                var spokeWidth  = spokeLength * WidthRatio;
-                var spokeRadius = spokeWidth / 2;
-                    
-                var centerX = ActualWidth / 2;
-                var centerY = ActualHeight / 2;
-    
-                var clock = GetAnimationClock (this);
-        
-                drawingContext.PushTransform (new TranslateTransform (centerX, centerY));
-    
-                for (var index = 0; index < s_spokes.Length; index++)
+                var buzyWait = dependencyObject as BuzyWait;
+                if (buzyWait == null)
                 {
-                    var spoke = s_spokes[index];
-                    drawingContext.PushTransform(spoke.Transform);
-                    drawingContext.PushOpacity(spoke.GetOpacity(clock));
-    
-                    drawingContext.DrawRoundedRectangle(
-                        Brushes.White,
-                        null,
-                        new Rect(minRadius, -spokeRadius, spokeLength, spokeWidth),
-                        spokeRadius,
-                        spokeRadius
-                        );
-    
-                    drawingContext.Pop();
-                    drawingContext.Pop();
+                    return;
                 }
     
-                drawingContext.Pop ();
+                var oldStep = (int)Math.Floor (oldValue * Spokes) % Spokes;
+                var newStep = (int)Math.Floor (newValue * Spokes) % Spokes;
+    
+                if (oldStep != newStep)
+                {
+                    buzyWait.InvalidateVisual(); 
+                }
+            }
+    
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                var clock = GetAnimationClock(this);
+                var step = (int)Math.Floor (clock * Spokes);
+                var halfWidth = ActualWidth/2;
+                var halfHeight = ActualHeight/2;
+                var scale = Math.Min (halfWidth, halfHeight);
+    
+                var matrix = Matrix.Identity;
+                matrix.Scale (scale, scale);
+                var angle = -(step*360.0)/Spokes;
+                matrix.Rotate (angle);
+                matrix.Translate (halfWidth, halfHeight);
+        
+                drawingContext.PushTransform(new MatrixTransform (matrix));
+                    
+                drawingContext.DrawDrawing(s_drawing);
+        
+                drawingContext.Pop();
             }
         
         }
@@ -3706,7 +3710,7 @@ namespace FileInclude
                 typeof (BuzyWait),
                 new FrameworkPropertyMetadata (
                     default (double),
-                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    FrameworkPropertyMetadataOptions.None,
                     Changed_AnimationClock,
                     Coerce_AnimationClock          
                 ));
@@ -3734,18 +3738,18 @@ namespace FileInclude
     
                 return value;
             }
-            public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
-                "IsEnabled",
+            public static readonly DependencyProperty IsWaitingProperty = DependencyProperty.Register (
+                "IsWaiting",
                 typeof (bool),
                 typeof (BuzyWait),
                 new FrameworkPropertyMetadata (
                     default (bool),
                     FrameworkPropertyMetadataOptions.None,
-                    Changed_IsEnabled,
-                    Coerce_IsEnabled          
+                    Changed_IsWaiting,
+                    Coerce_IsWaiting          
                 ));
     
-            static void Changed_IsEnabled (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            static void Changed_IsWaiting (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
             {
                 var instance = dependencyObject as BuzyWait;
                 if (instance != null)
@@ -3753,12 +3757,12 @@ namespace FileInclude
                     var oldValue = (bool)eventArgs.OldValue;
                     var newValue = (bool)eventArgs.NewValue;
     
-                    instance.Changed_IsEnabled (oldValue, newValue);
+                    instance.Changed_IsWaiting (oldValue, newValue);
                 }
             }
     
     
-            static object Coerce_IsEnabled (DependencyObject dependencyObject, object basevalue)
+            static object Coerce_IsWaiting (DependencyObject dependencyObject, object basevalue)
             {
                 var instance = dependencyObject as BuzyWait;
                 if (instance == null)
@@ -3767,7 +3771,7 @@ namespace FileInclude
                 }
                 var value = (bool)basevalue;
     
-                instance.Coerce_IsEnabled (ref value);
+                instance.Coerce_IsWaiting (ref value);
     
     
                 return value;
@@ -3789,7 +3793,7 @@ namespace FileInclude
             void CoerceAllProperties ()
             {
                 CoerceValue (AnimationClockProperty);
-                CoerceValue (IsEnabledProperty);
+                CoerceValue (IsWaitingProperty);
             }
     
     
@@ -3835,23 +3839,23 @@ namespace FileInclude
     
                
             // --------------------------------------------------------------------
-            public bool IsEnabled
+            public bool IsWaiting
             {
                 get
                 {
-                    return (bool)GetValue (IsEnabledProperty);
+                    return (bool)GetValue (IsWaitingProperty);
                 }
                 set
                 {
-                    if (IsEnabled != value)
+                    if (IsWaiting != value)
                     {
-                        SetValue (IsEnabledProperty, value);
+                        SetValue (IsWaitingProperty, value);
                     }
                 }
             }
             // --------------------------------------------------------------------
-            partial void Changed_IsEnabled (bool oldValue, bool newValue);
-            partial void Coerce_IsEnabled (ref bool coercedValue);
+            partial void Changed_IsWaiting (bool oldValue, bool newValue);
+            partial void Coerce_IsWaiting (ref bool coercedValue);
             // --------------------------------------------------------------------
     
     
@@ -4886,7 +4890,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-07T18:15:23";
+        public const string IncludeDate     = @"2013-04-07T19:09:28";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";

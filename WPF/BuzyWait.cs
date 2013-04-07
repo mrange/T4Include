@@ -17,7 +17,6 @@
 namespace Source.WPF
 {
     using System;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Animation;
@@ -26,43 +25,48 @@ namespace Source.WPF
     
     partial class BuzyWait : FrameworkElement
     {
-        const int       Spokes      = 18    ;
-        const double    RadiusRatio = 0.95  ;
-        const double    MinRadius   = 0.25  ;
-        const double    WidthRatio  = 1/16.0;
+        const int       Spokes          = 18    ;
+        const double    RadiusRadius    = 0.95  ;
+        const double    MinRadius       = 0.25  ;
+        const double    WidthRadius     = 1/32.0;
 
         readonly static DoubleAnimation s_animationClock    ;
 
-        partial class Spoke
-        {
-            public Transform Transform  ;
-            public double Offset        ;
+        static readonly Drawing s_drawing;
 
-            public double GetOpacity (double clock)
-            {
-                return (clock + Offset)%1.0;
-            }
-        }
-
-        static readonly Spoke[] s_spokes;
         AnimationClock m_clock;
 
         static BuzyWait ()
         {
-            s_spokes = Enumerable
-                .Range (0, Spokes)
-                .Select (x => ((double)x) / Spokes)
-                .Select (
-                    x => new Spoke
-                        {
-                            Transform   = new RotateTransform (360.0 * x).FreezeObject ()   ,
-                            Offset      = x                                                 ,
-                        })
-                .ToArray ();
+            var drawingVisual = new DrawingVisual ();
+            using (var drawingContext = drawingVisual.RenderOpen())
+            {
+                for (var i = 0; i < Spokes; ++i)
+                {
+                    var t = ((double)i) / Spokes;
+                    
+                    drawingContext.PushOpacity (1 - t);
+                    drawingContext.PushTransform (new RotateTransform (360.0 * t));
+
+                    drawingContext.DrawRoundedRectangle(
+                        Brushes.White,
+                        null,
+                        new Rect(MinRadius, -WidthRadius/2, RadiusRadius - MinRadius, WidthRadius),
+                        WidthRadius,
+                        WidthRadius
+                        );
+
+                    drawingContext.Pop ();
+                    drawingContext.Pop ();
+                }
+                
+            }
+
+            s_drawing = drawingVisual.Drawing.FreezeObject ();
 
             s_animationClock = new DoubleAnimation (
-                1,
                 0,
+                1,
                 new Duration (TimeSpan.FromSeconds(2))
                 )
                 {
@@ -71,7 +75,7 @@ namespace Source.WPF
             s_animationClock.FreezeObject ();
         }
 
-        partial void Changed_IsEnabled (bool oldValue, bool newValue)
+        partial void Changed_IsWaiting(bool oldValue, bool newValue)
         {
             if (newValue)
             {
@@ -99,42 +103,42 @@ namespace Source.WPF
             }
         }
 
-        protected override void OnRender(DrawingContext drawingContext)
+        static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
         {
-            var min = Math.Min (ActualWidth, ActualHeight);
-    
-            var radius      = RadiusRatio * min/2;
-            var minRadius   = min * MinRadius;
-            var spokeLength = radius - minRadius;
-            var spokeWidth  = spokeLength * WidthRatio;
-            var spokeRadius = spokeWidth / 2;
-                
-            var centerX = ActualWidth / 2;
-            var centerY = ActualHeight / 2;
-
-            var clock = GetAnimationClock (this);
-    
-            drawingContext.PushTransform (new TranslateTransform (centerX, centerY));
-
-            for (var index = 0; index < s_spokes.Length; index++)
+            var buzyWait = dependencyObject as BuzyWait;
+            if (buzyWait == null)
             {
-                var spoke = s_spokes[index];
-                drawingContext.PushTransform(spoke.Transform);
-                drawingContext.PushOpacity(spoke.GetOpacity(clock));
-
-                drawingContext.DrawRoundedRectangle(
-                    Brushes.White,
-                    null,
-                    new Rect(minRadius, -spokeRadius, spokeLength, spokeWidth),
-                    spokeRadius,
-                    spokeRadius
-                    );
-
-                drawingContext.Pop();
-                drawingContext.Pop();
+                return;
             }
 
-            drawingContext.Pop ();
+            var oldStep = (int)Math.Floor (oldValue * Spokes) % Spokes;
+            var newStep = (int)Math.Floor (newValue * Spokes) % Spokes;
+
+            if (oldStep != newStep)
+            {
+                buzyWait.InvalidateVisual(); 
+            }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            var clock = GetAnimationClock(this);
+            var step = (int)Math.Floor (clock * Spokes);
+            var halfWidth = ActualWidth/2;
+            var halfHeight = ActualHeight/2;
+            var scale = Math.Min (halfWidth, halfHeight);
+
+            var matrix = Matrix.Identity;
+            matrix.Scale (scale, scale);
+            var angle = -(step*360.0)/Spokes;
+            matrix.Rotate (angle);
+            matrix.Translate (halfWidth, halfHeight);
+    
+            drawingContext.PushTransform(new MatrixTransform (matrix));
+                
+            drawingContext.DrawDrawing(s_drawing);
+    
+            drawingContext.Pop();
         }
     
     }
