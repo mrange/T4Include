@@ -11,9 +11,9 @@
 // ----------------------------------------------------------------------------------------------
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantTypeArgumentsOfMethod
 
-using System.Data.SqlTypes;
-using System.Xml;
+
 
 namespace Source.SQL
 {
@@ -21,27 +21,55 @@ namespace Source.SQL
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Globalization;
     using System.Linq;
-
-    sealed partial class SqlTypeInfo
-    {
-        public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object));
-
-        public readonly SqlDbType   DbType  ;
-        public readonly Type        Type    ;
-
-        public SqlTypeInfo(SqlDbType dbType, Type type)
-        {
-            DbType  = dbType;
-            Type    = type  ;
-        }
-    }
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Text;
+    using System.Xml;
 
     sealed partial class TypeDefinition
     {
-        static void Add<T> (SqlDbType dbType)
+        sealed partial class SqlTypeInfo
         {
-            s_typeInfoLookup.Add(dbType.ToString(), new SqlTypeInfo(dbType, typeof(T)));
+            public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object), -1, false, null);
+
+            public readonly SqlDbType   DbType              ;
+            public readonly Type        Type                ;
+            public readonly int         ElementSize         ;
+            public readonly bool        RequiresDimension   ;
+
+            public readonly MethodInfo  GetterMethod        ;
+
+            public readonly string      SqlName             ;
+            public readonly string      CsName              ;
+
+            public SqlTypeInfo(SqlDbType dbType, Type type, int elementSize, bool requiresDimension, MethodInfo getterMethod)
+            {
+                DbType              = dbType            ;
+                Type                = type              ;
+                ElementSize         = elementSize       ;
+                RequiresDimension   = requiresDimension ;
+
+                GetterMethod        = getterMethod      ;
+
+                SqlName             = dbType.ToString().ToLowerInvariant();
+
+                if (type.IsArray)
+                {
+                    CsName          = type.GetElementType().FullName + "[]";
+                }
+                else
+                {
+                    CsName          = type.FullName;
+                }
+            }
+        }
+
+        static void Add<T> (SqlDbType dbType, int elementSize, bool requiresDimension, Expression<Func<SqlDataReader, T>> getter)
+        {
+            var getterMethodInfo = ((MethodCallExpression)getter.Body).Method   ;
+            s_typeInfoLookup.Add(dbType.ToString(), new SqlTypeInfo(dbType, typeof(T), elementSize, requiresDimension, getterMethodInfo));
         }
 
         readonly static Dictionary<string, SqlTypeInfo> s_typeInfoLookup = 
@@ -49,39 +77,38 @@ namespace Source.SQL
 
         static TypeDefinition ()
         {
-            Add<Int64>           (SqlDbType.BigInt           );
-            Add<Byte[]>          (SqlDbType.Binary           );
-            Add<Boolean>         (SqlDbType.Bit              );
-            Add<Char>            (SqlDbType.Char             );
-            Add<DateTime>        (SqlDbType.DateTime         );
-            Add<Decimal>         (SqlDbType.Decimal          );
-            Add<Single>          (SqlDbType.Float            );
-            Add<Byte[]>          (SqlDbType.Image            );  // TODO: Check this
-            Add<Int32>           (SqlDbType.Int              );
-            Add<Decimal>         (SqlDbType.Money            );
-            Add<Char>            (SqlDbType.NChar            );
-            Add<String>          (SqlDbType.NText            );
-            Add<String>          (SqlDbType.NVarChar         );
-            Add<Double>          (SqlDbType.Real             );
-            Add<Guid>            (SqlDbType.UniqueIdentifier );
-            Add<DateTime>        (SqlDbType.SmallDateTime    );
-            Add<Int16>           (SqlDbType.SmallInt         );
-            Add<Decimal>         (SqlDbType.SmallMoney       );
-            Add<String>          (SqlDbType.Text             );
-            Add<DateTime>        (SqlDbType.Timestamp        );  // TODO: Check this
-            Add<Byte>            (SqlDbType.TinyInt          );
-            Add<Byte[]>          (SqlDbType.VarBinary        );
-            Add<String>          (SqlDbType.VarChar          );
-            Add<Byte[]>          (SqlDbType.Variant          );
-            Add<XmlDocument>     (SqlDbType.Xml              );  // TODO: Check this
-            Add<object>          (SqlDbType.Udt              );  // TODO: Check this
-            Add<object>          (SqlDbType.Structured       );  // TODO: Check this
-            Add<DateTime>        (SqlDbType.Date             );
-            Add<int>             (SqlDbType.Time             );
-            Add<int>             (SqlDbType.DateTime2        );
-            Add<DateTimeOffset>  (SqlDbType.DateTimeOffset   );
-            
-        }
+            Add<Int64>           (SqlDbType.BigInt           , getter:r => r.GetInt64(0)            , elementSize:8    , requiresDimension:false   );
+            Add<Byte[]>          (SqlDbType.Binary           , getter:null                          , elementSize:1    , requiresDimension:true    );
+            Add<Boolean>         (SqlDbType.Bit              , getter:r => r.GetBoolean(0)          , elementSize:1    , requiresDimension:false   );
+            Add<String>          (SqlDbType.Char             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
+            Add<DateTime>        (SqlDbType.DateTime         , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+            Add<Decimal>         (SqlDbType.Decimal          , getter:r => r.GetDecimal(0)          , elementSize:17   , requiresDimension:false   );
+            Add<Double>          (SqlDbType.Float            , getter:r => r.GetDouble(0)           , elementSize:4    , requiresDimension:false   );
+            Add<Byte[]>          (SqlDbType.Image            , getter:null                          , elementSize:16   , requiresDimension:false   );  // TODO: Check this
+            Add<Int32>           (SqlDbType.Int              , getter:r => r.GetInt32(0)            , elementSize:4    , requiresDimension:false   );
+            Add<Decimal>         (SqlDbType.Money            , getter:r => r.GetDecimal(0)          , elementSize:8    , requiresDimension:false   );
+            Add<String>          (SqlDbType.NChar            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
+            Add<String>          (SqlDbType.NText            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:false   );
+            Add<String>          (SqlDbType.NVarChar         , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
+            Add<Single>          (SqlDbType.Real             , getter:r => r.GetFloat(0)            , elementSize:4    , requiresDimension:false   );
+            Add<Guid>            (SqlDbType.UniqueIdentifier , getter:r => r.GetGuid(0)             , elementSize:1    , requiresDimension:false   );
+            Add<DateTime>        (SqlDbType.SmallDateTime    , getter:r => r.GetDateTime(0)         , elementSize:4    , requiresDimension:false   );
+            Add<Int16>           (SqlDbType.SmallInt         , getter:r => r.GetInt16(0)            , elementSize:2    , requiresDimension:false   );
+            Add<Decimal>         (SqlDbType.SmallMoney       , getter:r => r.GetDecimal(0)          , elementSize:4    , requiresDimension:false   );
+            Add<String>          (SqlDbType.Text             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:false   );
+            Add<DateTime>        (SqlDbType.Timestamp        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+            Add<Byte>            (SqlDbType.TinyInt          , getter:r => r.GetByte(0)             , elementSize:1    , requiresDimension:false   );
+            Add<Byte[]>          (SqlDbType.VarBinary        , getter:null                          , elementSize:1    , requiresDimension:true    );
+            Add<String>          (SqlDbType.VarChar          , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
+            Add<Byte[]>          (SqlDbType.Variant          , getter:null                          , elementSize: -1  , requiresDimension:false   );
+            Add<XmlReader>       (SqlDbType.Xml              , getter:r => r.GetXmlReader(0)        , elementSize:-1   , requiresDimension:false   );  
+            Add<object>          (SqlDbType.Udt              , getter:null                          , elementSize:-1   , requiresDimension:false   );  // TODO: Check this
+            Add<object>          (SqlDbType.Structured       , getter:null                          , elementSize:-1   , requiresDimension:false   );  // TODO: Check this
+            Add<DateTime>        (SqlDbType.Date             , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+            Add<DateTime>        (SqlDbType.Time             , getter:r => r.GetDateTime(0)         , elementSize:5    , requiresDimension:false   );
+            Add<DateTime>        (SqlDbType.DateTime2        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
+            Add<DateTimeOffset>  (SqlDbType.DateTimeOffset   , getter:r => r.GetDateTimeOffset(0)   , elementSize:10   , requiresDimension:false   );
+        }                                                                                                                                 
 
  
         public static readonly TypeDefinition Empty = new TypeDefinition (
@@ -108,9 +135,8 @@ namespace Source.SQL
         public readonly string      Collation   ;
         public readonly bool        IsNullable  ;
 
-        public readonly SqlTypeInfo TypeInfo    ;
-
-        readonly string         m_asString  ;
+        readonly SqlTypeInfo        m_typeInfo  ;
+        readonly string             m_asString  ;
 
         public TypeDefinition(
             string  schema          , 
@@ -142,9 +168,63 @@ namespace Source.SQL
                 typeInfo = SqlTypeInfo.Empty;    
             }
 
-            TypeInfo = typeInfo;
+            m_typeInfo = typeInfo;
 
             m_asString      = "TD." + FullName  ;
+        }
+
+        public SqlDbType DbType
+        {
+            get {return m_typeInfo.DbType;}
+        }
+
+        public Type Type
+        {
+            get {return m_typeInfo.Type;}
+        }
+
+        public string DbTypeAsString (int? maxLength = null, bool? isNullable = null)
+        {
+            var sb = new StringBuilder(m_typeInfo.SqlName);
+
+            if (m_typeInfo.RequiresDimension && maxLength != null)
+            {
+                sb.Append(m_typeInfo.SqlName);
+                var elementSize = Math.Max(DbTypeElementSize(), 1);
+                var value = maxLength.Value / elementSize;
+                sb.Append('(');
+                sb.Append(value.ToString(CultureInfo.InvariantCulture));
+                sb.Append(')');
+            }
+
+            if (isNullable != null)
+            {
+                if (isNullable.Value)
+                {
+                    sb.Append(" NULL");                    
+                }
+                else
+                {
+                    sb.Append(" NOT NULL");                    
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public int DbTypeElementSize ()
+        {
+            return m_typeInfo.ElementSize;
+        }
+
+        public string TypeAsCsString ()
+        {
+            return m_typeInfo.CsName;
+        }
+
+        public MethodInfo GetterMethod ()
+        {
+            return m_typeInfo.GetterMethod;
         }
 
         public override string ToString()
