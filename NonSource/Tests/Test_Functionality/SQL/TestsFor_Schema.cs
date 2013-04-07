@@ -15,7 +15,9 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System.Data.SqlClient;
+using System.Linq;
 using FileInclude.Source.SQL;
+using FileInclude.Source.Testing;
 
 namespace Test_Functionality.SQL
 {
@@ -28,6 +30,9 @@ namespace Test_Functionality.SQL
                 sqlConnection.Open ();
 
                 var schema = new Schema (sqlConnection);
+
+                TestFor.Equality (34, schema.TypeDefinitions.Count (), "34 schema types expected");
+
             }
         }
    }

@@ -10,12 +10,15 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Source.SQL
 {
+    using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
-
+    using System.Linq;
 
     sealed partial class TypeDefinition
     {
@@ -33,6 +36,7 @@ namespace Source.SQL
 
         public readonly string  Schema      ;
         public readonly string  Name        ;
+        public readonly string  FullName    ;
         public readonly byte    SystemTypeId;
         public readonly int     UserTypeId  ;
         public readonly short   MaxLength   ;
@@ -40,6 +44,8 @@ namespace Source.SQL
         public readonly byte    Scale       ;
         public readonly string  Collation   ;
         public readonly bool    IsNullable  ;
+
+        readonly string         m_asString  ;
 
         public TypeDefinition(
             string  schema          , 
@@ -55,6 +61,7 @@ namespace Source.SQL
         {
             Schema          = schema            ?? "";
             Name            = name              ?? "";
+            FullName        = Schema + "." + Name;
             SystemTypeId    = systemTypeId      ;
             UserTypeId      = userTypeId        ;
             MaxLength       = maxLength         ;
@@ -62,16 +69,14 @@ namespace Source.SQL
             Scale           = scale             ;
             Collation       = collation         ?? "";
             IsNullable      = isNullable        ;
+
+            m_asString      = "TD." + FullName  ;
         }
 
-        public string FullName
+        public override string ToString()
         {
-            get
-            {
-                return Schema + "." + Name;
-            }
+            return m_asString;
         }
-
     }
 
     abstract partial class BaseTypedSubObject
@@ -108,6 +113,8 @@ namespace Source.SQL
         public readonly bool            IsIdentity  ;
         public readonly bool            IsComputed  ;
 
+        readonly string                 m_asString  ;
+
         public ColumnSubObject(
             string          name        , 
             TypeDefinition  type        , 
@@ -126,12 +133,21 @@ namespace Source.SQL
             IsNullable  = isNullable;
             IsIdentity  = isIdentity;
             IsComputed  = isComputed;
+
+            m_asString  = "CSO." + Name ;
+        }
+
+        public override string ToString()
+        {
+            return m_asString;
         }
     }
 
     sealed partial class ParameterSubObject : BaseTypedSubObject
     {
         public readonly bool            IsOutput    ;
+
+        readonly string                 m_asString  ;
 
         public ParameterSubObject(
             string          name        , 
@@ -145,13 +161,21 @@ namespace Source.SQL
             : base(name, type, ordinal, maxLength, precision, scale)
         {
             IsOutput    = isOutput  ;
+
+            m_asString  = "PSO." + Name ;
+        }
+
+        public override string ToString()
+        {
+            return m_asString;
         }
     }
 
     sealed partial class SchemaObject
     {
-        public enum SchemaType
+        public enum SchemaObjectType
         {
+            Unknown             ,
             StoredProcedure     ,
             Function            ,
             TableFunction       ,
@@ -160,21 +184,52 @@ namespace Source.SQL
             View                ,
         }
 
-        public readonly SchemaType  Type    ;
-        public readonly string      Schema  ;
-        public readonly string      Name    ;
+        public readonly string                  Schema      ;
+        public readonly string                  Name        ;
+        public readonly string                  FullName    ;
+        public readonly SchemaObjectType        Type        ;
+        public readonly DateTime                CreateDate  ;
+        public readonly DateTime                ModifyDate  ;
 
-        protected SchemaObject(SchemaType type, string schema, string name)
+        public readonly ColumnSubObject[]       Columns     ;
+        public readonly ParameterSubObject[]    Parameters  ;
+
+        readonly string                         m_asString  ;
+
+
+        public SchemaObject(
+            string                  schema      , 
+            string                  name        , 
+            SchemaObjectType        type        , 
+            DateTime                createDate  , 
+            DateTime                modifyDate  ,
+            ColumnSubObject[]       columns     ,
+            ParameterSubObject[]    parameters  
+            )
         {
-            Type    = type              ;
-            Schema  = schema    ?? ""   ;
-            Name    = name      ?? ""   ;
+            Schema          = schema        ?? "";
+            Name            = name          ?? "";
+            FullName        = Schema + "." + Name;
+            Type            = type          ;
+            CreateDate      = createDate    ;
+            ModifyDate      = modifyDate    ;
+
+            Columns         = columns       ?? new ColumnSubObject[0]       ;
+            Parameters      = parameters    ?? new ParameterSubObject[0]    ;
+
+            m_asString  = "SO." + FullName ;
+        }
+
+        public override string ToString()
+        {
+            return m_asString;
         }
     }
 
     sealed partial class Schema
     {
-        readonly Dictionary<string, TypeDefinition> m_typeDefinitions = new Dictionary<string, TypeDefinition> ();
+        readonly Dictionary<string, TypeDefinition> m_typeDefinitions   = new Dictionary<string, TypeDefinition> ();
+        readonly Dictionary<string, SchemaObject>   m_schemaObjects     = new Dictionary<string, SchemaObject> ();
 
         public Schema (SqlConnection connection)
         {
@@ -217,9 +272,9 @@ SELECT
 
 SELECT 
 	p.object_id							ObjectId	,	-- 0
-	ISNULL (p.name		, '')			Name		,	-- 1
-	s.name								[TypeSchema],	-- 2
-	t.name								[TypeName]	,	-- 3
+	s.name								[TypeSchema],	-- 1
+	t.name								[TypeName]	,	-- 2
+	ISNULL (p.name		, '')			Name		,	-- 3
 	p.parameter_id						Ordinal		,	-- 4
 	p.max_length						[MaxLength]	,	-- 5
 	p.[precision]						[Precision]	,	-- 6
@@ -232,10 +287,23 @@ SELECT
 	WHERE
 		o.is_ms_shipped = 0
 
+SELECT
+	o.object_id							ObjectId		,	-- 0
+	s.name								[Schema]		,	-- 1
+	o.name								Name			,	-- 2
+	o.[type]							[Type]			,	-- 4
+	o.create_date						CreateDate		,	-- 5
+	o.modify_date						ModifyDate			-- 6
+	FROM SYS.schemas s WITH(NOLOCK)
+	INNER JOIN SYS.objects o WITH(NOLOCK) ON o.schema_id = s.schema_id
+	WHERE
+		o.is_ms_shipped = 0
+		AND
+		o.type IN ('P', 'TF', 'IF', 'F', 'U', 'V')
 ";
 
-                var columns = new Dictionary<int, List<ColumnSubObject>> ();
-                var parameters = new Dictionary<int, List<ParameterSubObject>> ();
+                var columnLookup    = new Dictionary<int, List<ColumnSubObject>> ();
+                var parameterLookup = new Dictionary<int, List<ParameterSubObject>> ();
 
                 using (var reader = command.ExecuteReader ())
                 {
@@ -280,7 +348,7 @@ SELECT
                             reader.GetBoolean(11) 
                             );
 
-                        AddObject (columns, objectId, column);
+                        AddObject (columnLookup, objectId, column);
                     }
 
                     if (!reader.NextResult())
@@ -305,7 +373,49 @@ SELECT
                             reader.GetBoolean(8)   
                             );
 
-                        AddObject (parameters, objectId, parameter);
+                        AddObject (parameterLookup, objectId, parameter);
+                    }
+
+                    if (!reader.NextResult())
+                    {
+                        return;                            
+                    }
+
+                    while (reader.Read ())
+                    {
+                        var objectId = reader.GetInt32(0);
+                        var fullName = reader.GetString(1) + "." + reader.GetString (2);
+                        var schemaObjectType = ToSchemaType(reader.GetString(3));
+                        
+                        if (schemaObjectType == SchemaObject.SchemaObjectType.Unknown)
+                        {
+                            continue;
+                        }
+
+                        List<ColumnSubObject> columns;
+                        List<ParameterSubObject> parameters;
+
+                        columnLookup.TryGetValue(objectId, out columns);
+                        parameterLookup.TryGetValue(objectId, out parameters);
+
+                        var schemaObject = new SchemaObject (
+                            reader.GetString(1)         ,
+                            reader.GetString(2)         ,
+                            schemaObjectType            ,
+                            reader.GetDateTime(4)       ,
+                            reader.GetDateTime(5)       ,
+                            NonNull(columns)
+                                .Where(c => c != null)
+                                .OrderBy(c => c.Ordinal)
+                                .ToArray()
+                                ,
+                            NonNull(parameters)
+                                .Where(p => p != null)
+                                .OrderBy(p => p.Ordinal)
+                                .ToArray()
+                            );
+
+                        m_schemaObjects[fullName] = schemaObject;
                     }
 
                 }
@@ -313,6 +423,38 @@ SELECT
                 
             }
 
+        }
+
+        static IEnumerable<T> NonNull<T> (IEnumerable<T> list)
+        {
+            if (list == null)
+            {
+                return new T[0];
+            }
+            
+            return list;
+            
+        }
+
+        SchemaObject.SchemaObjectType ToSchemaType(string schemaType)
+        {
+            switch ((schemaType ?? "").Trim())
+            {
+                case "P":
+                    return SchemaObject.SchemaObjectType.StoredProcedure;
+                case "U":
+                    return SchemaObject.SchemaObjectType.Table;
+                case "TF":
+                    return SchemaObject.SchemaObjectType.TableFunction;
+                case "IF":
+                    return SchemaObject.SchemaObjectType.InlineTableFunction;
+                case "F":
+                    return SchemaObject.SchemaObjectType.Function;
+                case "V":
+                    return SchemaObject.SchemaObjectType.View;
+                default:
+                    return SchemaObject.SchemaObjectType.Unknown;
+            }
         }
 
         static void AddObject<T> (Dictionary<int, List<T>> dic, int key, T obj)
@@ -352,5 +494,21 @@ SELECT
             m_typeDefinitions.TryGetValue (fullName ?? "", out typeDefinition);
             return typeDefinition;
         }
+
+        public IEnumerable<SchemaObject> SchemaObjects
+        {
+            get
+            {
+                return m_schemaObjects.Values;
+            }
+        }
+
+        public SchemaObject FindSchemaObject (string fullName)
+        {
+            SchemaObject schemaObject;
+            m_schemaObjects.TryGetValue (fullName ?? "", out schemaObject);
+            return schemaObject;
+        }
+    
     }
 }
