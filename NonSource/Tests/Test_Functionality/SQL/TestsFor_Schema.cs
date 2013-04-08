@@ -15,6 +15,8 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -109,6 +111,65 @@ SELECT
 	FROM SYS.types t WITH(NOLOCK)
 	INNER JOIN SYS.schemas s WITH(NOLOCK) ON t.schema_id = s.schema_id 
 ";
+
+        partial class TableTestCase : IEnumerable<ColumnTestCase>
+        {
+            public readonly string   TableName   ;
+            public readonly int      ColumnCount ;
+
+            readonly List<ColumnTestCase> m_columns = new List<ColumnTestCase> ();
+
+            public TableTestCase(string tableName, int columnCount)
+            {
+                TableName = tableName;
+                ColumnCount = columnCount;
+            }
+
+            public void Add(ColumnTestCase columnTestCase)
+            {
+                if (columnTestCase == null)
+                {
+                    return;
+                }
+
+                m_columns.Add(columnTestCase);
+            }
+
+            public IEnumerator<ColumnTestCase> GetEnumerator()
+            {
+                return m_columns.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        partial class ColumnTestCase
+        {
+            public readonly string   ColumnName  ;
+
+            public ColumnTestCase(string columnName)
+            {
+                ColumnName = columnName;
+            }
+        }
+
+        static ColumnTestCase C (string columnName)
+        {
+            return new ColumnTestCase (columnName);
+        }
+                                 
+        readonly TableTestCase[] TestCases = 
+            new []
+                {
+                    new TableTestCase ("dbo.tblObjects", 12)
+                        {
+                            C ("name"),
+                        },        
+                };
+
         public void Test_Basic()
         {
             using (var sqlConnection = new SqlConnection (@"Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;Integrated Security=True"))
@@ -156,8 +217,27 @@ SELECT
                         TestFor.Equality (count, schema.TypeDefinitions.Count (), "34 schema types expected");
                     }
 
+                    foreach (var tableTestCase in TestCases)
+                    {
+                        var schemaObject = schema.FindSchemaObject(tableTestCase.TableName);
 
-                    var tblObjects = schema.FindSchemaObject("dbo.tblObjects");
+                        if (TestFor.Equality(true, schemaObject != null, "{0} must exists".FormatWith(tableTestCase.TableName)))
+                        {
+                            TestFor.Equality(tableTestCase.ColumnCount, schemaObject.Columns.Length, "table column count must be {0}".FormatWith(tableTestCase.ColumnCount));
+                            var columnLookup = schemaObject.Columns.ToLookup (c => c.Name);
+
+                            foreach (var columnTestCase in tableTestCase)
+                            {
+                                var column = columnLookup[columnTestCase.ColumnName].FirstOrDefault ();
+                                if (TestFor.Equality(true, column != null, "{0} column must exist".FormatWith(columnTestCase.ColumnName)))
+                                {
+                                    var asString = column.DbTypeAsString();    
+                                }
+                                    
+                            }
+                            
+                        }
+                    }
 
                 }
                 finally
