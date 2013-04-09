@@ -2706,6 +2706,7 @@ namespace FileInclude
                 View                ,
             }
     
+            public readonly int                     Id          ;
             public readonly string                  Schema      ;
             public readonly string                  Name        ;
             public readonly string                  FullName    ;
@@ -2720,6 +2721,7 @@ namespace FileInclude
     
     
             public SchemaObject(
+                int                     id          ,
                 string                  schema      , 
                 string                  name        , 
                 SchemaObjectType        type        , 
@@ -2729,6 +2731,7 @@ namespace FileInclude
                 ParameterSubObject[]    parameters  
                 )
             {
+                Id              = id            ;
                 Schema          = schema        ?? "";
                 Name            = name          ?? "";
                 FullName        = Schema + "." + Name;
@@ -2926,6 +2929,7 @@ namespace FileInclude
                             parameterLookup.TryGetValue(objectId, out parameters);
     
                             var schemaObject = new SchemaObject (
+                                objectId                    ,
                                 schema                      ,
                                 name                        ,
                                 schemaObjectType            ,
@@ -5058,7 +5062,9 @@ namespace FileInclude
     
                     if (ReferenceEquals(expected, found))
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success(finalMessage);
+    #endif                    
                         return true;
                     }
     
@@ -5078,13 +5084,17 @@ namespace FileInclude
     
                     if (expected.Equals(found))
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success(finalMessage);
+    #endif                    
                         return true;
                     }
     
                     if (expected.SequenceEqual(found))
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success(finalMessage);
+    #endif                    
                         return true;
                     }
     
@@ -5147,11 +5157,13 @@ namespace FileInclude
                     }
                     else
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}",
                             sExpected.ToString(0, 16),
                             sFound.ToString(0, 16),
                             message
                             );
+    #endif                    
                         return true;
                     }
     
@@ -5169,7 +5181,9 @@ namespace FileInclude
     
                     if (ReferenceEquals(expected, found))
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success(finalMessage);
+    #endif                    
                         return true;
                     }
     
@@ -5189,7 +5203,9 @@ namespace FileInclude
     
                     if (expected.Equals(found))
                     {
+    #if T4INCLUDE_TESTFOR_LOG_SUCCESS
                         Log.Success(finalMessage);
+    #endif                    
                         return true;
                     }
     
@@ -6150,7 +6166,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-07T18:36:02";
+        public const string IncludeDate     = @"2013-04-09T11:01:51";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

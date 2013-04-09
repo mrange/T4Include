@@ -15,8 +15,6 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -112,63 +110,21 @@ SELECT
 	INNER JOIN SYS.schemas s WITH(NOLOCK) ON t.schema_id = s.schema_id 
 ";
 
-        partial class TableTestCase : IEnumerable<ColumnTestCase>
-        {
-            public readonly string   TableName   ;
-            public readonly int      ColumnCount ;
-
-            readonly List<ColumnTestCase> m_columns = new List<ColumnTestCase> ();
-
-            public TableTestCase(string tableName, int columnCount)
-            {
-                TableName = tableName;
-                ColumnCount = columnCount;
-            }
-
-            public void Add(ColumnTestCase columnTestCase)
-            {
-                if (columnTestCase == null)
-                {
-                    return;
-                }
-
-                m_columns.Add(columnTestCase);
-            }
-
-            public IEnumerator<ColumnTestCase> GetEnumerator()
-            {
-                return m_columns.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        partial class ColumnTestCase
-        {
-            public readonly string   ColumnName  ;
-
-            public ColumnTestCase(string columnName)
-            {
-                ColumnName = columnName;
-            }
-        }
-
-        static ColumnTestCase C (string columnName)
-        {
-            return new ColumnTestCase (columnName);
-        }
-                                 
-        readonly TableTestCase[] TestCases = 
-            new []
-                {
-                    new TableTestCase ("dbo.tblObjects", 12)
-                        {
-                            C ("name"),
-                        },        
-                };
+        const string GetObjectsText = @"
+SELECT
+	o.object_id							,
+	s.name								[schema],
+	o.name								,
+	o.[type]							,
+	o.create_date						,
+	o.modify_date						
+	FROM SYS.schemas s WITH(NOLOCK)
+	INNER JOIN SYS.objects o WITH(NOLOCK) ON o.schema_id = s.schema_id
+	WHERE
+		o.is_ms_shipped = 0
+		AND
+		o.type IN ('P', 'TF', 'IF', 'F', 'U', 'V')
+";
 
         public void Test_Basic()
         {
@@ -187,12 +143,12 @@ SELECT
                         cmd.CommandType = CommandType.Text;
                         cmd.CommandText = GetTypesText;
 
-                        var count = 0;
+                        var typeCount = 0;
                         using (var reader = cmd.ExecuteReader ())
                         {
                             while (reader.Read())
                             {
-                                ++count;
+                                ++typeCount;
                             
                                 var fullName = reader.Get("schema", "") + "." + reader.Get("name", "");
                             
@@ -200,7 +156,6 @@ SELECT
 
                                 if (TestFor.Equality(true, typeDefinition != null, "{0} must exist".FormatWith(fullName)))
                                 {
-                                    TestFor.Equality(reader.Get("schema"        , "")       , typeDefinition.Schema         , "Schema must match"       );
                                     TestFor.Equality(reader.Get("name"          , "")       , typeDefinition.Name           , "Name must match"         );
                                     TestFor.Equality(reader.Get("system_type_id", (byte)0)  , typeDefinition.SystemTypeId   , "SystemTypeId must match" );
                                     TestFor.Equality(reader.Get("user_type_id"  , 0)        , typeDefinition.UserTypeId     , "UserTypeId must match"   );
@@ -214,29 +169,37 @@ SELECT
                             }
                         }
 
-                        TestFor.Equality (count, schema.TypeDefinitions.Count (), "34 schema types expected");
+                        TestFor.Equality (typeCount, schema.TypeDefinitions.Count (), "Schema type count must match");
                     }
 
-                    foreach (var tableTestCase in TestCases)
+                    using (var cmd = sqlConnection.CreateCommand ())
                     {
-                        var schemaObject = schema.FindSchemaObject(tableTestCase.TableName);
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = GetObjectsText;
 
-                        if (TestFor.Equality(true, schemaObject != null, "{0} must exists".FormatWith(tableTestCase.TableName)))
+                        var objectCount = 0;
+                        using (var reader = cmd.ExecuteReader ())
                         {
-                            TestFor.Equality(tableTestCase.ColumnCount, schemaObject.Columns.Length, "table column count must be {0}".FormatWith(tableTestCase.ColumnCount));
-                            var columnLookup = schemaObject.Columns.ToLookup (c => c.Name);
-
-                            foreach (var columnTestCase in tableTestCase)
+                            while (reader.Read())
                             {
-                                var column = columnLookup[columnTestCase.ColumnName].FirstOrDefault ();
-                                if (TestFor.Equality(true, column != null, "{0} column must exist".FormatWith(columnTestCase.ColumnName)))
+                                ++objectCount;
+                                var fullName = reader.Get("schema", "") + "." + reader.Get("name", "");
+
+                                var schemaObject = schema.FindSchemaObject (fullName);
+
+                                if (TestFor.Equality(true, schemaObject != null, "{0} must exist".FormatWith(fullName)))
                                 {
-                                    var asString = column.DbTypeAsString();    
+                                    TestFor.Equality(reader.Get("object_id"     , 0)                , schemaObject.Id           , "Id must match"           );
+                                    TestFor.Equality(reader.Get("schema"        , "")               , schemaObject.Schema       , "Schema must match"       );
+                                    TestFor.Equality(reader.Get("name"          , "")               , schemaObject.Name         , "Name must match"         );
+//                                    TestFor.Equality(reader.Get("type"          , "")               , schemaObject.Type         , "Type must match"         );
+                                    TestFor.Equality(reader.Get("create_date"   , DateTime.MinValue), schemaObject.CreateDate   , "CreateDate must match"   );
+                                    TestFor.Equality(reader.Get("modify_date"   , DateTime.MinValue), schemaObject.ModifyDate   , "ModifyDate must match"   );
+                                
                                 }
-                                    
                             }
-                            
                         }
+                        TestFor.Equality (objectCount, schema.SchemaObjects.Count (), "Object count must match");
                     }
 
                 }

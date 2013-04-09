@@ -392,6 +392,7 @@ namespace Source.SQL
             View                ,
         }
 
+        public readonly int                     Id          ;
         public readonly string                  Schema      ;
         public readonly string                  Name        ;
         public readonly string                  FullName    ;
@@ -406,6 +407,7 @@ namespace Source.SQL
 
 
         public SchemaObject(
+            int                     id          ,
             string                  schema      , 
             string                  name        , 
             SchemaObjectType        type        , 
@@ -415,6 +417,7 @@ namespace Source.SQL
             ParameterSubObject[]    parameters  
             )
         {
+            Id              = id            ;
             Schema          = schema        ?? "";
             Name            = name          ?? "";
             FullName        = Schema + "." + Name;
@@ -612,6 +615,7 @@ SELECT
                         parameterLookup.TryGetValue(objectId, out parameters);
 
                         var schemaObject = new SchemaObject (
+                            objectId                    ,
                             schema                      ,
                             name                        ,
                             schemaObjectType            ,
