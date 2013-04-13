@@ -189,12 +189,12 @@ SELECT
 
                                 if (TestFor.Equality(true, schemaObject != null, "{0} must exist".FormatWith(fullName)))
                                 {
-                                    TestFor.Equality(reader.Get("object_id"     , 0)                , schemaObject.Id           , "Id must match"           );
-                                    TestFor.Equality(reader.Get("schema"        , "")               , schemaObject.Schema       , "Schema must match"       );
-                                    TestFor.Equality(reader.Get("name"          , "")               , schemaObject.Name         , "Name must match"         );
-//                                    TestFor.Equality(reader.Get("type"          , "")               , schemaObject.Type         , "Type must match"         );
-                                    TestFor.Equality(reader.Get("create_date"   , DateTime.MinValue), schemaObject.CreateDate   , "CreateDate must match"   );
-                                    TestFor.Equality(reader.Get("modify_date"   , DateTime.MinValue), schemaObject.ModifyDate   , "ModifyDate must match"   );
+                                    TestFor.Equality(reader.Get("object_id"     , 0)                , schemaObject.Id                   , "Id must match"           );
+                                    TestFor.Equality(reader.Get("schema"        , "")               , schemaObject.Schema               , "Schema must match"       );
+                                    TestFor.Equality(reader.Get("name"          , "")               , schemaObject.Name                 , "Name must match"         );
+                                    TestFor.Equality(reader.Get("type"          , "").Trim ()       , TypeToString (schemaObject.Type)  , "Type must match"         );
+                                    TestFor.Equality(reader.Get("create_date"   , DateTime.MinValue), schemaObject.CreateDate           , "CreateDate must match"   );
+                                    TestFor.Equality(reader.Get("modify_date"   , DateTime.MinValue), schemaObject.ModifyDate           , "ModifyDate must match"   );
                                 
                                 }
                             }
@@ -212,13 +212,36 @@ SELECT
             }
         }
 
-        static void ExecuteScript(SqlConnection sqlConnection, string commantText)
+        static string TypeToString (SchemaObject.SchemaObjectType type)
+        {
+            switch (type)
+            {
+                case SchemaObject.SchemaObjectType.Unknown:
+                    return "";
+                case SchemaObject.SchemaObjectType.StoredProcedure:
+                    return "P";
+                case SchemaObject.SchemaObjectType.Function:
+                    return "F";
+                case SchemaObject.SchemaObjectType.TableFunction:
+                    return "TF";
+                case SchemaObject.SchemaObjectType.InlineTableFunction:
+                    return "IF";
+                case SchemaObject.SchemaObjectType.Table:
+                    return "U";
+                case SchemaObject.SchemaObjectType.View:
+                    return "V";
+                default:
+                    return "";
+            }
+        }
+
+        static void ExecuteScript(SqlConnection sqlConnection, string commandText)
         {
             using (var cmd = sqlConnection.CreateCommand())
             {
                 cmd.CommandType = CommandType.Text;
 
-                var splitCommandTexts = commantText
+                var splitCommandTexts = commandText
                     .Split(new[] {"\r\nGO"}, StringSplitOptions.None)
                     .Select(x => x.Trim())
                     .Where(x => !x.IsNullOrWhiteSpace())

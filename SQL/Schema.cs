@@ -435,6 +435,26 @@ namespace Source.SQL
         {
             return m_asString;
         }
+
+        public bool IsTableLike
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case SchemaObjectType.Unknown:
+                    case SchemaObjectType.StoredProcedure:
+                    case SchemaObjectType.Function:
+                    default:
+                        return false;
+                    case SchemaObjectType.TableFunction:
+                    case SchemaObjectType.InlineTableFunction:
+                    case SchemaObjectType.Table:
+                    case SchemaObjectType.View:
+                        return true;
+                }
+            }
+        }
     }
 
     sealed partial class Schema

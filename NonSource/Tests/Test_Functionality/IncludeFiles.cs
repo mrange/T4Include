@@ -2749,6 +2749,26 @@ namespace FileInclude
             {
                 return m_asString;
             }
+    
+            public bool IsTableLike
+            {
+                get
+                {
+                    switch (Type)
+                    {
+                        case SchemaObjectType.Unknown:
+                        case SchemaObjectType.StoredProcedure:
+                        case SchemaObjectType.Function:
+                        default:
+                            return false;
+                        case SchemaObjectType.TableFunction:
+                        case SchemaObjectType.InlineTableFunction:
+                        case SchemaObjectType.Table:
+                        case SchemaObjectType.View:
+                            return true;
+                    }
+                }
+            }
         }
     
         sealed partial class Schema
@@ -6166,7 +6186,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-09T11:01:51";
+        public const string IncludeDate     = @"2013-04-13T10:24:37";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
