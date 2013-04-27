@@ -214,7 +214,7 @@ namespace Source.SQL
         public readonly byte            Precision   ;
         public readonly byte            Scale       ;
 
-        protected BaseTypedSubObject(
+        protected BaseTypedSubObject (
             string          name        , 
             TypeDefinition  type        , 
             int             ordinal     , 
@@ -313,7 +313,7 @@ namespace Source.SQL
 
         readonly string                 m_asString  ;
 
-        public ColumnSubObject(
+        public ColumnSubObject (
             string          name        , 
             TypeDefinition  type        , 
             int             ordinal     , 
@@ -352,7 +352,7 @@ namespace Source.SQL
 
         readonly string                 m_asString  ;
 
-        public ParameterSubObject(
+        public ParameterSubObject (
             string          name        , 
             TypeDefinition  type        , 
             int             ordinal     , 
@@ -572,7 +572,7 @@ SELECT
                         var column = new ColumnSubObject (
                             reader.GetString(3)   ,
                             type                  ,
-                            reader.GetInt32(4)    , 
+                            reader.GetInt32(4) - 1, 
                             reader.GetInt16(5)    , 
                             reader.GetByte(6)     , 
                             reader.GetByte(7)     , 
@@ -600,7 +600,7 @@ SELECT
                         var parameter = new ParameterSubObject (
                             reader.GetString(3)   ,
                             type                  ,
-                            reader.GetInt32(4)    , 
+                            reader.GetInt32(4) - 1, 
                             reader.GetInt16(5)    , 
                             reader.GetByte(6)     , 
                             reader.GetByte(7)     , 

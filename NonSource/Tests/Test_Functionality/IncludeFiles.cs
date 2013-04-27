@@ -2528,7 +2528,7 @@ namespace FileInclude
             public readonly byte            Precision   ;
             public readonly byte            Scale       ;
     
-            protected BaseTypedSubObject(
+            protected BaseTypedSubObject (
                 string          name        , 
                 TypeDefinition  type        , 
                 int             ordinal     , 
@@ -2627,7 +2627,7 @@ namespace FileInclude
     
             readonly string                 m_asString  ;
     
-            public ColumnSubObject(
+            public ColumnSubObject (
                 string          name        , 
                 TypeDefinition  type        , 
                 int             ordinal     , 
@@ -2666,7 +2666,7 @@ namespace FileInclude
     
             readonly string                 m_asString  ;
     
-            public ParameterSubObject(
+            public ParameterSubObject (
                 string          name        , 
                 TypeDefinition  type        , 
                 int             ordinal     , 
@@ -2886,7 +2886,7 @@ namespace FileInclude
                             var column = new ColumnSubObject (
                                 reader.GetString(3)   ,
                                 type                  ,
-                                reader.GetInt32(4)    , 
+                                reader.GetInt32(4) - 1, 
                                 reader.GetInt16(5)    , 
                                 reader.GetByte(6)     , 
                                 reader.GetByte(7)     , 
@@ -2914,7 +2914,7 @@ namespace FileInclude
                             var parameter = new ParameterSubObject (
                                 reader.GetString(3)   ,
                                 type                  ,
-                                reader.GetInt32(4)    , 
+                                reader.GetInt32(4) - 1, 
                                 reader.GetInt16(5)    , 
                                 reader.GetByte(6)     , 
                                 reader.GetByte(7)     , 
@@ -6186,7 +6186,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-13T10:24:37";
+        public const string IncludeDate     = @"2013-04-27T19:44:08";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

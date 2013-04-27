@@ -126,6 +126,31 @@ SELECT
 		o.type IN ('P', 'TF', 'IF', 'F', 'U', 'V')
 ";
 
+        const string GetColumnsText = @"
+SELECT 
+	c.object_id							,
+	so.name								object_schema	,
+	o.name								object_name		,
+	s.name								type_schema		,
+	t.name								type_name		,
+	ISNULL (c.name		, '')			column_name		,
+	c.column_id							,
+	c.max_length						,
+	c.[precision]						,
+	c.scale								,
+	ISNULL (c.collation_name	, '')	collation_name	,
+	ISNULL (c.is_nullable		, 0)	is_nullable		,
+	c.is_identity						,
+	c.is_computed						
+	FROM SYS.objects o WITH(NOLOCK)
+	INNER JOIN SYS.schemas so WITH(NOLOCK) ON o.schema_id = so.schema_id
+	INNER JOIN SYS.columns c WITH(NOLOCK) ON o.object_id = c.object_id
+	INNER JOIN SYS.types t WITH(NOLOCK) ON c.user_type_id = t.user_type_id AND c.system_type_id = t.system_type_id
+	INNER JOIN SYS.schemas s WITH(NOLOCK) ON t.schema_id = s.schema_id
+	WHERE
+		o.is_ms_shipped = 0
+";
+
         public void Test_Basic()
         {
             using (var sqlConnection = new SqlConnection (@"Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;Integrated Security=True"))
@@ -200,6 +225,46 @@ SELECT
                             }
                         }
                         TestFor.Equality (objectCount, schema.SchemaObjects.Count (), "Object count must match");
+                    }
+
+
+                    using (var cmd = sqlConnection.CreateCommand ())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = GetColumnsText;
+
+                        var columnCount = 0;
+                        using (var reader = cmd.ExecuteReader ())
+                        {
+                            while (reader.Read())
+                            {
+                                ++columnCount;
+                                var fullName = reader.Get("object_schema", "") + "." + reader.Get("object_name", "");
+                                var ordinal = reader.Get("column_id", 0) - 1;
+
+                                var schemaObject = schema.FindSchemaObject (fullName);
+                                
+                                if (
+                                        TestFor.Equality(true, schemaObject != null, "{0} must exist".FormatWith(fullName))
+                                    &&  TestFor.Equality(true, ordinal < schemaObject.Columns.Length, ""))
+                                {
+                                    var columnSubObject = schemaObject.Columns[ordinal];
+
+                                    TestFor.Equality(ordinal                                , columnSubObject.Ordinal           , "Ordinal must match"      );
+                                    TestFor.Equality(reader.Get("column_name"   , "")       , columnSubObject.Name              , "Name must match"         );
+                                    TestFor.Equality(reader.Get("type_schema"   , "")       , columnSubObject.Type.Schema       , "Type.Schema must match"  );
+                                    TestFor.Equality(reader.Get("type_name"     , "")       , columnSubObject.Type.Name         , "Type.Name must match"    );
+                                    TestFor.Equality(reader.Get("max_length"    , (short)0) , columnSubObject.MaxLength         , "MaxLength must match"    );
+                                    TestFor.Equality(reader.Get("precision"     , (short)0) , columnSubObject.Precision         , "Precision must match"    );
+                                    TestFor.Equality(reader.Get("scale"         , (short)0) , columnSubObject.Scale             , "Scale must match"        );
+                                    TestFor.Equality(reader.Get("collation_name", ""      ) , columnSubObject.Collation         , "Collation must match"    );
+                                    TestFor.Equality(reader.Get("is_nullable"   , false)    , columnSubObject.IsNullable        , "IsNullable must match"   );
+                                    TestFor.Equality(reader.Get("is_identity"   , false)    , columnSubObject.IsIdentity        , "IsIdentity must match"   );
+                                    TestFor.Equality(reader.Get("is_computed"   , false)    , columnSubObject.IsComputed        , "IsComputed must match"   );
+                                }
+                            }
+                        }
+                        TestFor.Equality (columnCount, schema.SchemaObjects.SelectMany (o => o.Columns).Count (), "Column count must match");
                     }
 
                 }
