@@ -209,7 +209,7 @@ namespace Source.SQL
     {
         public readonly string          Name        ;
         public readonly TypeDefinition  Type        ;
-        public readonly int             Ordinal     ;
+        public readonly int             Id          ;
         public readonly short           MaxLength   ;
         public readonly byte            Precision   ;
         public readonly byte            Scale       ;
@@ -217,7 +217,7 @@ namespace Source.SQL
         protected BaseTypedSubObject (
             string          name        , 
             TypeDefinition  type        , 
-            int             ordinal     , 
+            int             id          , 
             short           maxLength   , 
             byte            precision   , 
             byte            scale        
@@ -225,7 +225,7 @@ namespace Source.SQL
         {
             Name        = name      ?? "";
             Type        = type      ?? TypeDefinition.Empty;
-            Ordinal     = ordinal   ;
+            Id          = id        ;
             MaxLength   = maxLength ;
             Precision   = precision ;
             Scale       = scale     ;
@@ -316,7 +316,7 @@ namespace Source.SQL
         public ColumnSubObject (
             string          name        , 
             TypeDefinition  type        , 
-            int             ordinal     , 
+            int             id          , 
             short           maxLength   , 
             byte            precision   , 
             byte            scale       , 
@@ -325,7 +325,7 @@ namespace Source.SQL
             bool            isIdentity  , 
             bool            isComputed
             ) 
-            : base(name, type, ordinal, maxLength, precision, scale)
+            : base(name, type, id, maxLength, precision, scale)
         {
             Collation   = collation ?? "";
             IsNullable  = isNullable;
@@ -355,13 +355,13 @@ namespace Source.SQL
         public ParameterSubObject (
             string          name        , 
             TypeDefinition  type        , 
-            int             ordinal     , 
+            int             id          , 
             short           maxLength   , 
             byte            precision   , 
             byte            scale       ,
             bool            isOutput
             ) 
-            : base(name, type, ordinal, maxLength, precision, scale)
+            : base(name, type, id, maxLength, precision, scale)
         {
             IsOutput    = isOutput  ;
 
@@ -489,7 +489,7 @@ SELECT
 	s.name								[TypeSchema],	-- 1
 	t.name								[TypeName]	,	-- 2
 	ISNULL (c.name		, '')			Name		,	-- 3
-	c.column_id							Ordinal		,	-- 4
+	c.column_id							Id          ,	-- 4
 	c.max_length						[MaxLength]	,	-- 5
 	c.[precision]						[Precision]	,	-- 6
 	c.scale								Scale		,	-- 7
@@ -509,7 +509,7 @@ SELECT
 	s.name								[TypeSchema],	-- 1
 	t.name								[TypeName]	,	-- 2
 	ISNULL (p.name		, '')			Name		,	-- 3
-	p.parameter_id						Ordinal		,	-- 4
+	p.parameter_id						Id		    ,	-- 4
 	p.max_length						[MaxLength]	,	-- 5
 	p.[precision]						[Precision]	,	-- 6
 	p.scale								Scale		,	-- 7
@@ -533,7 +533,7 @@ SELECT
 	WHERE
 		o.is_ms_shipped = 0
 		AND
-		o.type IN ('P', 'TF', 'IF', 'F', 'U', 'V')
+		o.type IN ('P', 'TF', 'IF', 'FN', 'U', 'V')
 ";
 
                 var columnLookup    = new Dictionary<int, List<ColumnSubObject>> ();
@@ -572,7 +572,7 @@ SELECT
                         var column = new ColumnSubObject (
                             reader.GetString(3)   ,
                             type                  ,
-                            reader.GetInt32(4) - 1, 
+                            reader.GetInt32(4)    , 
                             reader.GetInt16(5)    , 
                             reader.GetByte(6)     , 
                             reader.GetByte(7)     , 
@@ -600,7 +600,7 @@ SELECT
                         var parameter = new ParameterSubObject (
                             reader.GetString(3)   ,
                             type                  ,
-                            reader.GetInt32(4) - 1, 
+                            reader.GetInt32(4)    , 
                             reader.GetInt16(5)    , 
                             reader.GetByte(6)     , 
                             reader.GetByte(7)     , 
@@ -643,12 +643,12 @@ SELECT
                             reader.GetDateTime(5)       ,
                             NonNull(columns)
                                 .Where(c => c != null)
-                                .OrderBy(c => c.Ordinal)
+                                .OrderBy(c => c.Id)
                                 .ToArray()
                                 ,
                             NonNull(parameters)
                                 .Where(p => p != null)
-                                .OrderBy(p => p.Ordinal)
+                                .OrderBy(p => p.Id)
                                 .ToArray()
                             );
 
@@ -685,7 +685,7 @@ SELECT
                     return SchemaObject.SchemaObjectType.TableFunction;
                 case "IF":
                     return SchemaObject.SchemaObjectType.InlineTableFunction;
-                case "F":
+                case "FN":
                     return SchemaObject.SchemaObjectType.Function;
                 case "V":
                     return SchemaObject.SchemaObjectType.View;
