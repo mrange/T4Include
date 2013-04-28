@@ -47,7 +47,7 @@ namespace Source.NuGet
 
                 if (File.Exists (flagPath))
                 {
-                    Log.HighLight ("Installing of nuget packages skipped as flag found: {0}", flagPath);
+                    Log.Success ("Installing of nuget packages skipped as flag found: {0}", flagPath);
 
                     return true;
                 }
