@@ -10,6 +10,8 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: ../Common/Log.cs
+
 namespace Source.NuGet
 {
     using System;
