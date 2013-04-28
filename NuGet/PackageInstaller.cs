@@ -74,10 +74,14 @@ namespace Source.NuGet
         
                 if (!File.Exists (nugetPath))
                 {
-                    Log.HighLight ("NuGet.exe not found, downloading it: {0}", nugetPath);
+                    Log.HighLight ("NuGet.exe not found, downloading it to: {0}", nugetPath);
+
+                    Log.Info ("Downloading signature: {0}", NuGetSignatureUri);
 
                     var webClient   = new WebClient ();
                     var signature   = Convert.FromBase64String (webClient.DownloadString (NuGetSignatureUri));
+
+                    Log.Info ("Downloading binary: {0}", NuGetUri);
 
                     var webRequest  = WebRequest.Create (NuGetUri);
                     using (var webResponse = webRequest.GetResponse ())
