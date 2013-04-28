@@ -10,7 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: ../Common/ConsoleLog.cs
 
 namespace Source.NuGet
 {
@@ -126,10 +126,12 @@ namespace Source.NuGet
 
                 if (result)
                 {
+                    Environment.ExitCode = 0;
                     Log.Success ("Installing of nuget packages done");
                 }
                 else
                 {
+                    Environment.ExitCode = 101;
                     Log.Error ("Failed to install nuget packages");
                 }
 
@@ -137,6 +139,7 @@ namespace Source.NuGet
             }
             catch (Exception exc)
             {
+                Environment.ExitCode = 999;
                 Log.Exception ("InstallPackages failed with: {0}", exc.Message);
                 return false;
             }
