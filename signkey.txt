@@ -1,0 +1,4 @@
+T4Include resources are signed using: Elliptic Curve Digital Signature Algorithm (ECDSA)
+Public (CngKeyBlobFormat.EccPublicBlob):
+
+RUNTNUIAAAAAQMX5x+0XBbBq8G3aAt/a11nyDmuSCJwyEKPW+FRdydPYWxFTLeUtZ8Sqiu+rD/rQIuLoqa4QJmtR+Nb48dTsM7QBiVk+Im2UnWyFDFqlzoXk5oqhzrT+Wydh13aiQEPpAu38JzF03ugjI4QYXMFc8+O2TWgvDff3/Pgs39ylDGL2DmQ=
