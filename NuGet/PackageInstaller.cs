@@ -32,32 +32,40 @@ namespace Source.NuGet
             try
             {
                 Log.HighLight ("Installing nuget packages");
-
+    
                 const string nugetUri   = @"https://github.com/mrange/T4Include/raw/master/NonSource/NuGet/NuGet.exe.gz";
                 var executingPath       = Assembly.GetExecutingAssembly ().Location;
                 var appDirectory        = AppDomain.CurrentDomain.BaseDirectory;
                 var solutionDirectory   = Path.GetFullPath (Path.Combine (appDirectory, @"..\..\.."));
                 var packagesDirectory   = Path.GetFullPath (Path.Combine (solutionDirectory, @"packages"));
-                var flagPath            = Path.Combine (packagesDirectory, "NuGetPackageInstaller.flag");
+                var flagPath            = Path.Combine (packagesDirectory, "T4Include.NuGet.PackageInstaller.flag");
                 var nugetPath           = Path.Combine (packagesDirectory, "NUGET.EXE");
-
+    
                 var executingInfo       = new FileInfo (executingPath);
-
-                var time = executingInfo.CreationTime < executingInfo.LastWriteTime ? executingInfo.CreationTime : executingInfo.LastWriteTime;
-
+    
+                var dateTime = executingInfo.LastWriteTime.Ticks;
+    
                 if (File.Exists (flagPath))
                 {
-                    Log.Success ("Installing of nuget packages skipped as flag found: {0}", flagPath);
-
-                    return true;
+                    var flagContent = File.ReadAllText (flagPath);
+                    long flagDateTime;
+                    if (
+                            long.TryParse (flagContent, NumberStyles.Integer, CultureInfo.InvariantCulture, out flagDateTime)
+                        &&  flagDateTime >= dateTime 
+                        )
+                    {
+                        Log.Success ("Installing of nuget packages skipped as flag file found: {0}", flagPath);
+   
+                        return true;
+                    }
                 }
-
+    
                 if (!Directory.Exists (packagesDirectory))
                 {
                     Log.HighLight ("package folder not found, creating it : {0}", packagesDirectory);
                     Directory.CreateDirectory (packagesDirectory);
                 }
-
+    
                 if (!File.Exists (nugetPath))
                 {
                     Log.HighLight ("NuGet.exe not found, downloading it: {0}", nugetPath);
@@ -70,21 +78,21 @@ namespace Source.NuGet
                         const int bufferSize = 4096;
                         var buffer = new byte[bufferSize];
                         var readBytes = 0;
-
+    
                         while ((readBytes = gZipStream.Read (buffer, 0, bufferSize)) > 0)
                         {
                             fileStream.Write (buffer, 0, readBytes);
                         }
                     }
                 }
-
+    
                 var packages = Directory
                     .GetDirectories (solutionDirectory)
                     .SelectMany (path => Directory.GetFiles (path, "packages.config"))
                     ;
-
+    
                 var result = true;
-
+    
                 foreach (var package in packages)
                 {
                     var commandLine = string.Format (
@@ -93,12 +101,12 @@ namespace Source.NuGet
                         packagesDirectory,
                         package
                         );
-
+    
                     Log.HighLight ("Installing packages: {0}", package);
                     Log.Info ("  CommandLine: {0}", commandLine);
-                   
+                       
                     var process = new Process
-                                      {
+                                        {
                                             StartInfo = new ProcessStartInfo (
                                                 nugetPath,
                                                 commandLine)
@@ -107,26 +115,26 @@ namespace Source.NuGet
                                                 ErrorDialog     = false                     ,
                                                 WindowStyle     = ProcessWindowStyle.Hidden ,
                                             },
-                                      };
-                    
+                                        };
+                        
                     process.Start ();
                     process.WaitForExit ();
-
+    
                     var exitCode = process.ExitCode;
-
+    
                     if (exitCode != 0)
                     {
                         result = false;
                         Log.Error ("Failed to install nuget package: {0}", exitCode);
                     }
-
+    
                 }
-
-                File.WriteAllText (flagPath, time.ToString ("yyyy-MM-ddTHH:mm:ss"));
-
+    
+    
                 if (result)
                 {
                     Environment.ExitCode = 0;
+                    File.WriteAllText (flagPath, dateTime.ToString (CultureInfo.InvariantCulture));
                     Log.Success ("Installing of nuget packages done");
                 }
                 else
@@ -134,7 +142,7 @@ namespace Source.NuGet
                     Environment.ExitCode = 101;
                     Log.Error ("Failed to install nuget packages");
                 }
-
+    
                 return result;
             }
             catch (Exception exc)
