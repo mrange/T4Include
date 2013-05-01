@@ -69,53 +69,51 @@ namespace Source.WPF
             {
                 return basevalue;
             }
-            var oldValue = (UIElement)basevalue;
-            var newValue = oldValue;
+            var value = (UIElement)basevalue;
 
-            instance.Coerce_Child (oldValue, ref newValue);
+            instance.Coerce_Child (ref value);
 
 
-            return newValue;
+            return value;
         }
 
-        public static readonly DependencyProperty CacheStrategyProperty = DependencyProperty.Register (
-            "CacheStrategy",
-            typeof (Strategy),
+        public static readonly DependencyProperty IsCachingProperty = DependencyProperty.Register (
+            "IsCaching",
+            typeof (bool),
             typeof (CachedVisual),
             new FrameworkPropertyMetadata (
-                default (Strategy),
+                default (bool),
                 FrameworkPropertyMetadataOptions.None,
-                Changed_CacheStrategy,
-                Coerce_CacheStrategy          
+                Changed_IsCaching,
+                Coerce_IsCaching          
             ));
 
-        static void Changed_CacheStrategy (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+        static void Changed_IsCaching (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
         {
             var instance = dependencyObject as CachedVisual;
             if (instance != null)
             {
-                var oldValue = (Strategy)eventArgs.OldValue;
-                var newValue = (Strategy)eventArgs.NewValue;
+                var oldValue = (bool)eventArgs.OldValue;
+                var newValue = (bool)eventArgs.NewValue;
 
-                instance.Changed_CacheStrategy (oldValue, newValue);
+                instance.Changed_IsCaching (oldValue, newValue);
             }
         }
 
 
-        static object Coerce_CacheStrategy (DependencyObject dependencyObject, object basevalue)
+        static object Coerce_IsCaching (DependencyObject dependencyObject, object basevalue)
         {
             var instance = dependencyObject as CachedVisual;
             if (instance == null)
             {
                 return basevalue;
             }
-            var oldValue = (Strategy)basevalue;
-            var newValue = oldValue;
+            var value = (bool)basevalue;
 
-            instance.Coerce_CacheStrategy (oldValue, ref newValue);
+            instance.Coerce_IsCaching (ref value);
 
 
-            return newValue;
+            return value;
         }
 
         #endregion
@@ -134,7 +132,7 @@ namespace Source.WPF
         void CoerceAllProperties ()
         {
             CoerceValue (ChildProperty);
-            CoerceValue (CacheStrategyProperty);
+            CoerceValue (IsCachingProperty);
         }
 
 
@@ -160,29 +158,29 @@ namespace Source.WPF
         }
         // --------------------------------------------------------------------
         partial void Changed_Child (UIElement oldValue, UIElement newValue);
-        partial void Coerce_Child (UIElement value, ref UIElement coercedValue);
+        partial void Coerce_Child (ref UIElement coercedValue);
         // --------------------------------------------------------------------
 
 
            
         // --------------------------------------------------------------------
-        public Strategy CacheStrategy
+        public bool IsCaching
         {
             get
             {
-                return (Strategy)GetValue (CacheStrategyProperty);
+                return (bool)GetValue (IsCachingProperty);
             }
             set
             {
-                if (CacheStrategy != value)
+                if (IsCaching != value)
                 {
-                    SetValue (CacheStrategyProperty, value);
+                    SetValue (IsCachingProperty, value);
                 }
             }
         }
         // --------------------------------------------------------------------
-        partial void Changed_CacheStrategy (Strategy oldValue, Strategy newValue);
-        partial void Coerce_CacheStrategy (Strategy value, ref Strategy coercedValue);
+        partial void Changed_IsCaching (bool oldValue, bool newValue);
+        partial void Coerce_IsCaching (ref bool coercedValue);
         // --------------------------------------------------------------------
 
 

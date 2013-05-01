@@ -81,8 +81,10 @@
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
     <Compile Include="WPF\CachedVisual.cs" />
     <Compile Include="WPF\Generated_CachedVisual_DependencyProperties.cs">
-        <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
-    </Compile>        
+      <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WPF\BuzyWait.cs" />
     <Compile Include="WPF\Generated_BuzyWait_DependencyProperties.cs">
       <DependentUpon>Generated_BuzyWait_DependencyProperties.tt</DependentUpon>

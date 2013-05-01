@@ -10,28 +10,22 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-using System;
-using System.Windows.Media.Imaging;
+// ReSharper disable InconsistentNaming
+
+// ### INCLUDE: Generated_CachedVisual_DependencyProperties.cs
 
 namespace Source.WPF
 {
-    using Source.Extensions;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Markup;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+
+    using Source.Extensions;
 
     partial class CachedVisual : FrameworkElement, IAddChild
     {
-        public enum Strategy
-        {
-            None    ,
-            Drawing ,
-            Bitmap  ,
-        }
-
         Size?           m_cachedSize    ;
-        Drawing         m_cachedDrawing ;
         ImageSource     m_cachedImage   ;
 
         public void AddChild(object value)
@@ -51,12 +45,13 @@ namespace Source.WPF
         {
             get
             {
-                return Child != null ? 1 : 0;
+                return (!IsCaching && Child != null) ? 1 : 0;
             }
         }
+
         protected override Visual GetVisualChild(int index)
         {
-            return index == 0 ? Child : null;
+            return (!IsCaching && index == 0) ? Child : null;
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -67,20 +62,19 @@ namespace Source.WPF
                 return base.MeasureOverride(availableSize);
             }
 
-            switch (CacheStrategy)
+            if (IsCaching)
             {
-                case Strategy.Drawing:
-                case Strategy.Bitmap:
-                    if (m_cachedSize == null)
-                    {
-                        child.Measure(availableSize);
-                        return child.DesiredSize;
-                    }
-                    return m_cachedSize.Value.ScaleToFit (availableSize);
-                case Strategy.None:
-                default:
+                if (m_cachedSize == null)
+                {
                     child.Measure(availableSize);
                     return child.DesiredSize;
+                }
+                return m_cachedSize.Value.ScaleToFit (availableSize);
+            }
+            else
+            {
+                child.Measure(availableSize);
+                return child.DesiredSize;
             }
 
         }
@@ -90,31 +84,23 @@ namespace Source.WPF
             var child = Child;
             if (child == null)
             {
-                return base.MeasureOverride(finalSize);
+                return base.ArrangeOverride(finalSize);
             }
 
-            switch (CacheStrategy)
+            if (IsCaching)
             {
-                case Strategy.Drawing:
-                    if (m_cachedDrawing == null)
-                    {
-                        m_cachedDrawing = GetDrawing(finalSize, child);
-                    }
-                    m_cachedSize = child.RenderSize;
-                    return m_cachedSize.Value;
-                case Strategy.Bitmap:
-                    if (m_cachedImage == null)
-                    {
-                        m_cachedImage = GetImage (finalSize, child);
-                    }
-                    m_cachedSize = child.RenderSize;
-                    return m_cachedSize.Value;
-                default:
-                case Strategy.None:
-                    child.Arrange(finalSize.ToRect());
-                    return child.RenderSize;
+                if (m_cachedImage == null)
+                {
+                    m_cachedImage = GetImage (finalSize, child);
+                }
+                m_cachedSize = child.RenderSize;
+                return m_cachedSize.Value;
             }
-
+            else
+            {
+                child.Arrange(finalSize.ToRect());
+                return child.RenderSize;
+            }
         }
 
         ImageSource GetImage(Size finalSize, UIElement child)
@@ -134,35 +120,15 @@ namespace Source.WPF
             return renderTargetBitmap;
         }
 
-        static Drawing GetDrawing(Size finalSize, UIElement child)
-        {
-            child.Arrange(finalSize.ToRect());
-            var drawingVisual = new VisualDrawing();
-            using (var dc = drawingVisual.RenderOpen())
-            {
-                                                      child.Rend
-            }
-            var drawing = drawingVisual.Drawing;
-            drawing.Freeze();
-            return drawing;
-        }
-
         protected override void OnRender(DrawingContext drawingContext)
         {
-            switch (CacheStrategy)
+            if (IsCaching && m_cachedSize != null)
             {
-                case Strategy.Drawing:
-                    drawingContext.DrawDrawing(m_cachedDrawing);
-                    break;
-                case Strategy.Bitmap:
-                    drawingContext.DrawImage(
-                        m_cachedImage, 
-                        (m_cachedSize ?? new Size()).ToRect()
-                        );
-                    break;
-                default:
-                case Strategy.None:
-                    break;
+                drawingContext.DrawImage(
+                    m_cachedImage, 
+                    m_cachedSize.Value.ToRect()
+                    );
+                
             }
         }
 
@@ -171,15 +137,14 @@ namespace Source.WPF
             Invalidate ();
         }
 
-        partial void Changed_CacheStrategy(CachedVisual.Strategy oldValue, CachedVisual.Strategy newValue)
+        partial void Changed_IsCaching(bool oldValue, bool newValue)
         {
-            Invalidate();
+            Invalidate ();
         }
 
         void Invalidate()
         {
             m_cachedSize    = null;
-            m_cachedDrawing = null;
             m_cachedImage   = null;
             InvalidateMeasure();
         }

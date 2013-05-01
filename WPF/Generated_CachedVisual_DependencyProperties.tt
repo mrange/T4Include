@@ -5,7 +5,7 @@
         new ClassDefinition ("CachedVisual")
         {
             P ("UIElement"              , "Child"                                       ),
-            P ("Strategy"               , "CacheStrategy"                               ),
+            P ("bool"                   , "IsCaching"                                   ),
         },
     };    
 
