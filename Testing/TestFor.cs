@@ -69,7 +69,9 @@ namespace Source.Testing
 
                 if (ReferenceEquals(expected, found))
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success(finalMessage);
+#endif                    
                     return true;
                 }
 
@@ -89,13 +91,17 @@ namespace Source.Testing
 
                 if (expected.Equals(found))
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success(finalMessage);
+#endif                    
                     return true;
                 }
 
                 if (expected.SequenceEqual(found))
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success(finalMessage);
+#endif                    
                     return true;
                 }
 
@@ -158,11 +164,13 @@ namespace Source.Testing
                 }
                 else
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success("TestFor.Equality: #EXPECTED:{0}, #FOUND:{1} - {2}",
                         sExpected.ToString(0, 16),
                         sFound.ToString(0, 16),
                         message
                         );
+#endif                    
                     return true;
                 }
 
@@ -180,7 +188,9 @@ namespace Source.Testing
 
                 if (ReferenceEquals(expected, found))
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success(finalMessage);
+#endif                    
                     return true;
                 }
 
@@ -200,7 +210,9 @@ namespace Source.Testing
 
                 if (expected.Equals(found))
                 {
+#if T4INCLUDE_TESTFOR_LOG_SUCCESS
                     Log.Success(finalMessage);
+#endif                    
                     return true;
                 }
 

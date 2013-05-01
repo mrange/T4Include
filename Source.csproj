@@ -40,11 +40,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -61,6 +58,7 @@
     <Compile Include="Concurrency\RemainingTime.cs" />
     <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
+    <Compile Include="Extensions\SqlExtensions.cs" />
     <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
       <AutoGen>True</AutoGen>
@@ -72,7 +70,9 @@
     <Compile Include="HRON\HRONDynamicObjectSerializer.cs" />
     <Compile Include="HRON\HRONObjectSerializer.cs" />
     <Compile Include="NonSource\Global_AssemblyInfo.cs" />
+    <Compile Include="NuGet\PackageInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQL\Schema.cs" />
     <Compile Include="Text\LineReaderExtensions.cs" />
     <Compile Include="Text\LineToObjectExtensions.cs" />
     <Compile Include="WPF\AccordionPanel.cs" />
@@ -82,6 +82,26 @@
     <Compile Include="WPF\CachedVisual.cs" />
     <Compile Include="WPF\Generated_CachedVisual_DependencyProperties.cs">
       <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
+    <Compile Include="WPF\BuzyWait.cs" />
+    <Compile Include="WPF\Generated_BuzyWait_DependencyProperties.cs">
+      <DependentUpon>Generated_BuzyWait_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="WPF\Debug\DebugContainerControl.cs" />
+    <Compile Include="WPF\Debug\BaseDebugTreeControl.cs" />
+    <Compile Include="WPF\Debug\DebugLogicalTreeControl.cs" />
+    <Compile Include="WPF\Debug\DebugVisualTreeControl.cs" />
+    <Compile Include="WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs">
+      <DependentUpon>Generated_BaseDebugTreeControl_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="WPF\Generated_ReflectionDecorator_DependencyProperties.cs">
+      <DependentUpon>Generated_ReflectionDecorator_DependencyProperties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WPF\Generated_WatermarkTextBox_DependencyProperties.cs">
       <DependentUpon>Generated_WatermarkTextBox_DependencyProperties.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -102,6 +122,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_AnimatedEntrance_StateMachine.tt</DependentUpon>
     </Compile>
+    <Compile Include="WPF\ReflectionDecorator.cs" />
     <Compile Include="WPF\WatermarkTextBox.cs" />
     <None Include="app.config" />
     <None Include="NET20\Generated_Common.tt">
@@ -146,6 +167,18 @@
     <None Include="WPF\Generated_CachedVisual_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_CachedVisual_DependencyProperties.cs</LastGenOutput>
+    <None Include="WPF\Generated_BuzyWait_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_BuzyWait_DependencyProperties.cs</LastGenOutput>
+    </None>
+    <None Include="WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_BaseDebugTreeControl_DependencyProperties.cs</LastGenOutput>
+    </None>
+    <None Include="WPF\Generated_ReflectionDecorator_DependencyProperties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_ReflectionDecorator_DependencyProperties.cs</LastGenOutput>
+    </None>
     <None Include="WPF\Generated_WatermarkTextBox_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_WatermarkTextBox_DependencyProperties.cs</LastGenOutput>
@@ -163,7 +196,6 @@
       <LastGenOutput>Generated_AnimatedEntrance_StateMachine.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="Common\Generated_Log.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -11,6 +11,7 @@
 
 
 // ############################################################################
+// @@@ SKIPPING (Not found): C:\temp\GitHub\T4Include\Extensions\WPF.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDE_FOUND: Generated_AnimatedEntrance_StateMachine.cs
@@ -20,6 +21,14 @@
 // @@@ INCLUDE_FOUND: ../Extensions/WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
 // @@@ INCLUDE_FOUND: Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+// @@@ INCLUDE_FOUND: Generated_ReflectionDecorator_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
+// @@@ INCLUDE_FOUND: Generated_BuzyWait_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs
+// @@@ INCLUDE_FOUND: BaseDebugTreeControl.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs
+// @@@ INCLUDE_FOUND: BaseDebugTreeControl.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
@@ -28,12 +37,24 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
+// @@@ INCLUDE_FOUND: Generated_BaseDebugTreeControl_DependencyProperties.cs
+// @@@ INCLUDE_FOUND: DebugContainerControl.cs
+// @@@ INCLUDE_FOUND: ../../Extensions/WpfExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs
+// @@@ INCLUDE_FOUND: ../../Extensions/WpfExtensions.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -279,7 +300,6 @@ namespace FileInclude
                             ShowInstant
                             );
                     }
-    
                 }
     
                 void ShowInstant()
@@ -613,11 +633,13 @@ namespace FileInclude
                 s_transitionEase          = transitionEase      ;
     
                 s_transitionClock       = new DoubleAnimation(
-                    0,
-                    1,
-                    s_transitionDuration, 
+                    0                       ,
+                    1                       ,
+                    s_transitionDuration    , 
                     FillBehavior.Stop
-                    );
+                    )
+                    .FreezeObject ()
+                    ;
     
                 StyleProperty.OverrideMetadata(typeof(AnimatedEntrance), new FrameworkPropertyMetadata(s_defaultStyle));
             }
@@ -637,6 +659,14 @@ namespace FileInclude
                                          Owner = this,
                                      };
                 Children = new ObservableCollection<UIElement> ();
+            }
+    
+            protected override System.Collections.IEnumerator LogicalChildren
+            {
+                get
+                {
+                    return Children.GetEnumerator();
+                }
             }
     
             partial void Changed_Children(ObservableCollection<UIElement> oldValue, ObservableCollection<UIElement> newValue)
@@ -755,9 +785,11 @@ namespace FileInclude
                 s_animationClock       = new DoubleAnimation(
                     0                       ,
                     1                       ,
-                    s_animationDuration    , 
+                    s_animationDuration     , 
                     FillBehavior.Stop
-                    );
+                    )
+                    .FreezeObject ()
+                    ;
                 
             }
     
@@ -1096,6 +1128,433 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Media;
+    
+        using Source.Extensions;
+    
+        partial class ReflectionDecorator : Decorator
+        {
+            VisualBrush m_brush;
+            LinearGradientBrush m_opacityMask;
+            MatrixTransform m_transform;
+    
+            partial void Constructed__ReflectionDecorator()
+            {
+                m_opacityMask   = new LinearGradientBrush (
+                    new GradientStopCollection
+                        {
+                            new GradientStop (Colors.Transparent                , 0     ),    
+                            new GradientStop ("#2000".ParseColor(Colors.Black)  , 0.25  ),    
+                            new GradientStop ("#4000".ParseColor(Colors.Black)  , 0.50  ),    
+                            new GradientStop ("#8000".ParseColor(Colors.Black)  , 0.75  ),    
+                            new GradientStop (Colors.Black                      , 1     ),    
+                        },
+                    90
+                    ).FreezeObject ();    
+    
+                m_transform = new MatrixTransform ();
+    
+                VerticalAlignment = VerticalAlignment.Center;       
+                HorizontalAlignment = HorizontalAlignment.Center;
+            }
+    
+            public override UIElement Child
+            {
+                get
+                {
+                    return base.Child;
+                }
+                set
+                {
+                    base.Child = value;
+                    if (value == null)
+                    {
+                        m_brush = null;
+                    }
+                    else if (m_brush == null || !ReferenceEquals (m_brush.Visual, value))
+                    {
+                        m_brush = new VisualBrush (value)
+                                        {
+                                            Stretch           = Stretch.None      ,
+                                            AlignmentY        = AlignmentY.Bottom , 
+                                            AutoLayoutContent = false             , 
+                                            TileMode          = TileMode.None     ,
+                                        }.FreezeObject ();
+                    }
+                }
+            }
+    
+            protected override Size MeasureOverride(Size constraint)
+            {
+                var fullReflectionSize = FullReflectionSize;
+                var adjustedSize = new Size (
+                    constraint.Width, 
+                    (constraint.Height - fullReflectionSize).LimitBy(constraint.Height)
+                    );
+                var measuredSize = base.MeasureOverride (adjustedSize);
+    
+                var result = new Size(measuredSize.Width, measuredSize.Height + fullReflectionSize).LimitBy(constraint);
+    
+                return result;
+            }
+    
+            double FullReflectionSize
+            {
+                get
+                {
+                    return ReflectionSeparation + ReflectionSize;
+                }
+            }
+    
+            protected override Size ArrangeOverride(Size arrangeSize)
+            {
+                var fullReflectionSize = FullReflectionSize;
+                var adjustedSize = new Size (
+                    arrangeSize.Width, 
+                    (arrangeSize.Height - fullReflectionSize).LimitBy(arrangeSize.Height)
+                    );
+    
+                    var finalSize = base.ArrangeOverride (adjustedSize);
+    
+                var result = new Size(finalSize.Width, finalSize.Height + fullReflectionSize).LimitBy(arrangeSize);
+    
+                return result;
+            }
+    
+            partial void Coerce_ReflectionSeparation(ref double coercedValue)
+            {
+                coercedValue = Math.Max (0, coercedValue);
+            }
+    
+            partial void Changed_ReflectionSeparation(double oldValue, double newValue)
+            {
+                InvalidateMeasure();
+            }
+    
+            partial void Coerce_ReflectionSize(ref double coercedValue)
+            {
+                coercedValue = Math.Max (0, coercedValue);
+            }
+    
+            partial void Changed_ReflectionSize(double oldValue, double newValue)
+            {
+                InvalidateMeasure();
+            }
+    
+    
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                var child = Child;
+                if (child == null)
+                {
+                    return;
+                }
+    
+                if (m_brush == null)
+                {
+                    return;
+                }
+    
+                var renderSize = RenderSize;
+                var childRenderSize = child.RenderSize;
+                var reflectionSize = ReflectionSize;
+                var reflectionSeparation = ReflectionSeparation;
+    
+                var matrix = Matrix.Identity;
+                matrix.Scale(1,-1);
+                matrix.Translate (0, childRenderSize.Height + reflectionSize + reflectionSeparation);
+    
+                m_transform.Matrix = matrix;
+    
+                drawingContext.PushTransform (m_transform);
+                drawingContext.PushOpacityMask (m_opacityMask);
+    
+                var rectangle = new Rect(
+                    0, 
+                    0, 
+                    renderSize.Width, 
+                    reflectionSize
+                    );
+    
+                drawingContext.DrawRectangle (
+                    m_brush, 
+                    null, 
+                    rectangle
+                    );
+    
+                drawingContext.Pop();
+                drawingContext.Pop();
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.WPF
+    {
+        using System;
+        using System.Windows;
+        using System.Windows.Media;
+        using System.Windows.Media.Animation;
+    
+        using Source.Extensions;
+        
+        partial class BuzyWait : FrameworkElement
+        {
+            const int       Spokes          = 18    ;
+            const double    RadiusRadius    = 0.95  ;
+            const double    MinRadius       = 0.25  ;
+            const double    WidthRadius     = 1/32.0;
+    
+            readonly static DoubleAnimation s_animationClock    ;
+    
+            static readonly Drawing s_drawing;
+    
+            AnimationClock m_clock;
+    
+            static BuzyWait ()
+            {
+                var drawingVisual = new DrawingVisual ();
+                using (var drawingContext = drawingVisual.RenderOpen())
+                {
+                    for (var i = 0; i < Spokes; ++i)
+                    {
+                        var t = ((double)i) / Spokes;
+                        
+                        drawingContext.PushOpacity (1 - t);
+                        drawingContext.PushTransform (new RotateTransform (360.0 * t));
+    
+                        drawingContext.DrawRoundedRectangle(
+                            Brushes.White,
+                            null,
+                            new Rect(MinRadius, -WidthRadius/2, RadiusRadius - MinRadius, WidthRadius),
+                            WidthRadius,
+                            WidthRadius
+                            );
+    
+                        drawingContext.Pop ();
+                        drawingContext.Pop ();
+                    }
+                    
+                }
+    
+                s_drawing = drawingVisual.Drawing.FreezeObject ();
+    
+                s_animationClock = new DoubleAnimation (
+                    0,
+                    1,
+                    new Duration (TimeSpan.FromSeconds(2))
+                    )
+                    {
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
+                s_animationClock.FreezeObject ();
+            }
+    
+            partial void Changed_IsWaiting(bool oldValue, bool newValue)
+            {
+                if (newValue)
+                {
+                    Start ();
+                }
+                else
+                {
+                    Stop ();
+                }
+            }
+    
+            void Start ()
+            {
+                Stop ();
+                m_clock = s_animationClock.CreateClock ();
+                ApplyAnimationClock (AnimationClockProperty, m_clock);
+            }
+    
+            void Stop ()
+            {
+                if (m_clock != null)
+                {
+                    ApplyAnimationClock (AnimationClockProperty, null);
+                    m_clock = null;
+                }
+            }
+    
+            static partial void Changed_AnimationClock(DependencyObject dependencyObject, double oldValue, double newValue)
+            {
+                var buzyWait = dependencyObject as BuzyWait;
+                if (buzyWait == null)
+                {
+                    return;
+                }
+    
+                var oldStep = (int)Math.Floor (oldValue * Spokes) % Spokes;
+                var newStep = (int)Math.Floor (newValue * Spokes) % Spokes;
+    
+                if (oldStep != newStep)
+                {
+                    buzyWait.InvalidateVisual(); 
+                }
+            }
+    
+            protected override void OnRender(DrawingContext drawingContext)
+            {
+                var clock = GetAnimationClock(this);
+                var step = (int)Math.Floor (clock * Spokes);
+                var halfWidth = ActualWidth/2;
+                var halfHeight = ActualHeight/2;
+                var scale = Math.Min (halfWidth, halfHeight);
+    
+                var matrix = Matrix.Identity;
+                matrix.Scale (scale, scale);
+                var angle = -(step*360.0)/Spokes;
+                matrix.Rotate (angle);
+                matrix.Translate (halfWidth, halfHeight);
+        
+                drawingContext.PushTransform(new MatrixTransform (matrix));
+                    
+                drawingContext.DrawDrawing(s_drawing);
+        
+                drawingContext.Pop();
+            }
+        
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\BuzyWait.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.WPF.Debug
+    {
+        using System.Collections.Generic;
+        using System.Windows;
+        using Source.Extensions;
+    
+        partial class DebugVisualTreeControl : BaseDebugTreeControl
+        {
+            protected override int OnGetOrdinal()
+            {
+                return 1000;
+            }
+    
+            protected override string OnGetFriendlyName()
+            {
+                return "Visual Tree";
+            }
+    
+            protected override IEnumerable<DependencyObject> GetChildren(DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetVisualChildren ();
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.WPF.Debug
+    {
+        using System.Collections.Generic;
+        using System.Windows;
+        using Source.Extensions;
+    
+        partial class DebugLogicalTreeControl : BaseDebugTreeControl
+        {
+            protected override int OnGetOrdinal()
+            {
+                return 2000;
+            }
+    
+            protected override string OnGetFriendlyName()
+            {
+                return "Logical Tree";
+            }
+    
+            protected override IEnumerable<DependencyObject> GetChildren(DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetLogicalChildren ();
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs
 // ############################################################################
 
 // ############################################################################
@@ -1887,11 +2346,15 @@ namespace FileInclude
     {
         using System;
         using System.Collections.Generic;
+        using System.Globalization;
         using System.Linq;
+        using System.Reflection;
+        using System.Text;
         using System.Windows;
         using System.Windows.Data;
         using System.Windows.Media;
         using System.Windows.Threading;
+        using System.Xml;
     
         using Source.Common;
     
@@ -2076,6 +2539,81 @@ namespace FileInclude
                 return new Rect(0,0,size.Width, size.Height);
             }
         
+            public static string GetName (this DependencyObject dependencyObject)
+            {
+                var frameworkElement = dependencyObject as FrameworkElement;
+                if (frameworkElement != null)
+                {
+                    return frameworkElement.Name ?? "";
+                }
+    
+                var frameworkContentElement = dependencyObject as FrameworkContentElement;
+                if (frameworkContentElement != null)
+                {
+                    return frameworkContentElement.Name ?? "";                
+                }
+    
+                return "";
+            }
+    
+            public static IEnumerable<DependencyProperty> GetLocalDependencyProperties (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var enumerator = dependencyObject.GetLocalValueEnumerator ();
+                while (enumerator.MoveNext ())
+                {
+                    var current = enumerator.Current;
+                    yield return current.Property;
+                }
+            }
+    
+            public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this Type type)
+            {
+                if (type == null)
+                {
+                    return Array<DependencyProperty>.Empty;
+                }
+    
+                if (!typeof(DependencyObject).IsAssignableFrom(type))
+                {
+                    return Array<DependencyProperty>.Empty;
+                }
+    
+                return type
+                        .GetFields (BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                        .Where (fi => fi.FieldType == typeof (DependencyProperty))
+                        .Select (fi => fi.GetValue (null) as DependencyProperty)
+                        .Where (dp => dp != null)
+                        ;
+            }
+    
+            public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return Array<DependencyProperty>.Empty;
+                }
+    
+                return dependencyObject.GetType ().GetClassDependencyProperties ();
+            }
+    
+            public static IEnumerable<DependencyProperty> GetDependencyProperties (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return Array<DependencyProperty>.Empty;
+                }
+    
+                return dependencyObject
+                    .GetClassDependencyProperties ()
+                    .Union (dependencyObject.GetLocalDependencyProperties ())
+                    ;
+            }
+    
             public static IEnumerable<DependencyObject> GetVisualChildren (this DependencyObject dependencyObject)
             {
                 if (dependencyObject == null)
@@ -2099,6 +2637,260 @@ namespace FileInclude
     
                 return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
             }
+    
+            static string GetValueAsString (object obj)
+            {
+                var formattable = obj as IFormattable;
+                if (formattable != null)
+                {
+                    return formattable.ToString ("", CultureInfo.InvariantCulture);
+                }
+    
+                if (obj != null)
+                {
+                    return obj.ToString ();
+                }
+    
+                return "";
+            }
+    
+            static void GetTree_AsString_Impl (
+                this DependencyObject dependencyObject, 
+                XmlWriter xmlWriter,
+                Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+                )
+            {
+                if (dependencyObject == null)
+                {
+                    return;
+                }
+                
+                xmlWriter.WriteStartElement (dependencyObject.GetType().Name);
+    
+                var enumerator = dependencyObject.GetLocalValueEnumerator ();
+                while (enumerator.MoveNext ())
+                {
+                    var current = enumerator.Current;
+    
+                    xmlWriter.WriteAttributeString (
+                        current.Property.Name, 
+                        GetValueAsString (current.Value)
+                        );
+                }
+    
+                foreach (var child in childrenGetter (dependencyObject))
+                {
+                    child.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+                }
+    
+                xmlWriter.WriteEndElement ();
+    
+            }
+    
+            static string GetTree_AsString (
+                this DependencyObject dependencyObject,             
+                Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+                )
+            {
+                var settings =  new XmlWriterSettings
+                                    {
+                                        Indent  = true  ,
+                                    };
+    
+                var sb = new StringBuilder (128);
+    
+                using (var xmlWriter = XmlWriter.Create (sb, settings))
+                {
+                    xmlWriter.WriteStartDocument ();
+    
+                    dependencyObject.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+    
+                    xmlWriter.WriteEndDocument ();
+                }
+    
+                return sb.ToString ();            
+            }
+    
+            public static string GetLogicalTree_AsString (this DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetTree_AsString (d => d.GetLogicalChildren ());
+            }
+    
+            public static string GetVisualTree_AsString (this DependencyObject dependencyObject)
+            {
+                return dependencyObject.GetTree_AsString (d => d.GetVisualChildren ());
+            }
+    
+            public static IEnumerable<DependencyObject> GetVisualTree_BreadthFirst (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var queue = new Queue<DependencyObject> ();
+                queue.Enqueue (dependencyObject);
+    
+                while (queue.Count > 0)
+                {
+                    var obj = queue.Dequeue ();
+    
+                    foreach (var child in obj.GetVisualChildren ())
+                    {
+                        if (child != null)
+                        {
+                            queue.Enqueue (child);
+                            yield return child;                        
+                        }
+                    }                
+                }
+            }
+    
+            public static IEnumerable<DependencyObject> GetLogicalTree_BreadthFirst (this DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    yield break;
+                }
+    
+                var queue = new Queue<DependencyObject> ();
+                queue.Enqueue (dependencyObject);
+    
+                while (queue.Count > 0)
+                {
+                    var obj = queue.Dequeue ();
+    
+                    foreach (var child in obj.GetLogicalChildren ())
+                    {
+                        if (child != null)
+                        {
+                            queue.Enqueue (child);
+                            yield return child;                        
+                        }
+                    }                
+                }
+            }
+    
+            public static double LimitBy (this double size, double constraint)
+            {
+                constraint = Math.Max (0, constraint);
+    
+                if (double.IsNaN (size))
+                {
+                    return size;
+                }
+    
+                if (size < 0)
+                {
+                    return 0;
+                }
+    
+                if (size > constraint)
+                {
+                    return constraint;
+                }
+    
+                return size;
+            }
+    
+            public static Size LimitBy (this Size size, Size constraint)
+            {
+                return new Size(
+                    size.Width.LimitBy(constraint.Width), 
+                    size.Height.LimitBy(constraint.Height)
+                    );    
+            }
+    
+            static byte HexColor (this char ch)
+            {
+                switch (ch)
+                {
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        return (byte) (ch - '0');
+                    case 'a':
+                    case 'b':
+                    case 'c':
+                    case 'd':
+                    case 'e':
+                    case 'f':
+                        return (byte) (ch - 'a' + 10);
+                    case 'A':
+                    case 'B':
+                    case 'C':
+                    case 'D':
+                    case 'E':
+                    case 'F':
+                        return (byte) (ch - 'A' + 10);
+                    default:
+                        return 0;
+                }       
+            }
+    
+            static byte ExpandNibble (this byte b)
+            {
+                var n = b & 0xF;
+                return (byte) (n | (n << 4));
+            }
+    
+            public static Color ParseColor (this string color, Color defaultTo)
+            {
+                if (string.IsNullOrEmpty (color))
+                {
+                    return defaultTo;                
+                }
+    
+                if (color[0] != '#')
+                {                   
+                    return defaultTo;
+                }
+    
+                switch (color.Length)
+                {
+                    default:
+                        return defaultTo;
+                    case 4:
+                        // #FFF
+                        return Color.FromRgb (
+                            color[1].HexColor().ExpandNibble(),
+                            color[2].HexColor().ExpandNibble(),
+                            color[3].HexColor().ExpandNibble()
+                            );
+                    case 5:
+                        // #FFFF
+                        return Color.FromArgb (
+                            color[1].HexColor().ExpandNibble(),
+                            color[2].HexColor().ExpandNibble(),
+                            color[3].HexColor().ExpandNibble(),
+                            color[4].HexColor().ExpandNibble()
+                            );
+                    case 7:
+                        // #FFFFFF
+                        return Color.FromRgb (
+                            (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                            (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                            (byte) ((color[5].HexColor() << 4) + color[6].HexColor())
+                            );
+                    case 9:
+                        // #FFFFFFFF
+                        return Color.FromArgb (
+                            (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                            (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                            (byte) ((color[5].HexColor() << 4) + color[6].HexColor()),
+                            (byte) ((color[7].HexColor() << 4) + color[8].HexColor())
+                            );
+                }
+    
+            }
+    
         }
     }
 }
@@ -2690,6 +3482,782 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // ReflectionDecorator
+        // ------------------------------------------------------------------------
+        partial class ReflectionDecorator
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty ReflectionSizeProperty = DependencyProperty.Register (
+                "ReflectionSize",
+                typeof (double),
+                typeof (ReflectionDecorator),
+                new FrameworkPropertyMetadata (
+                    48.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ReflectionSize,
+                    Coerce_ReflectionSize          
+                ));
+    
+            static void Changed_ReflectionSize (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_ReflectionSize (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ReflectionSize (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_ReflectionSize (ref value);
+    
+    
+                return value;
+            }
+    
+            public static readonly DependencyProperty ReflectionSeparationProperty = DependencyProperty.Register (
+                "ReflectionSeparation",
+                typeof (double),
+                typeof (ReflectionDecorator),
+                new FrameworkPropertyMetadata (
+                    4.0,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_ReflectionSeparation,
+                    Coerce_ReflectionSeparation          
+                ));
+    
+            static void Changed_ReflectionSeparation (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    instance.Changed_ReflectionSeparation (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_ReflectionSeparation (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as ReflectionDecorator;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                instance.Coerce_ReflectionSeparation (ref value);
+    
+    
+                return value;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public ReflectionDecorator ()
+            {
+                CoerceAllProperties ();
+                Constructed__ReflectionDecorator ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__ReflectionDecorator ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (ReflectionSizeProperty);
+                CoerceValue (ReflectionSeparationProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public double ReflectionSize
+            {
+                get
+                {
+                    return (double)GetValue (ReflectionSizeProperty);
+                }
+                set
+                {
+                    if (ReflectionSize != value)
+                    {
+                        SetValue (ReflectionSizeProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ReflectionSize (double oldValue, double newValue);
+            partial void Coerce_ReflectionSize (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public double ReflectionSeparation
+            {
+                get
+                {
+                    return (double)GetValue (ReflectionSeparationProperty);
+                }
+                set
+                {
+                    if (ReflectionSeparation != value)
+                    {
+                        SetValue (ReflectionSeparationProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_ReflectionSeparation (double oldValue, double newValue);
+            partial void Coerce_ReflectionSeparation (ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // BuzyWait
+        // ------------------------------------------------------------------------
+        partial class BuzyWait
+        {
+            #region Uninteresting generated code
+            public static readonly DependencyProperty AnimationClockProperty = DependencyProperty.RegisterAttached (
+                "AnimationClock",
+                typeof (double),
+                typeof (BuzyWait),
+                new FrameworkPropertyMetadata (
+                    default (double),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_AnimationClock,
+                    Coerce_AnimationClock          
+                ));
+    
+            static void Changed_AnimationClock (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                if (dependencyObject != null)
+                {
+                    var oldValue = (double)eventArgs.OldValue;
+                    var newValue = (double)eventArgs.NewValue;
+    
+                    Changed_AnimationClock (dependencyObject, oldValue, newValue);
+                }
+            }
+    
+            static object Coerce_AnimationClock (DependencyObject dependencyObject, object basevalue)
+            {
+                if (dependencyObject == null)
+                {
+                    return basevalue;
+                }
+                var value = (double)basevalue;
+    
+                Coerce_AnimationClock (dependencyObject, ref value);
+    
+                return value;
+            }
+            public static readonly DependencyProperty IsWaitingProperty = DependencyProperty.Register (
+                "IsWaiting",
+                typeof (bool),
+                typeof (BuzyWait),
+                new FrameworkPropertyMetadata (
+                    default (bool),
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_IsWaiting,
+                    Coerce_IsWaiting          
+                ));
+    
+            static void Changed_IsWaiting (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as BuzyWait;
+                if (instance != null)
+                {
+                    var oldValue = (bool)eventArgs.OldValue;
+                    var newValue = (bool)eventArgs.NewValue;
+    
+                    instance.Changed_IsWaiting (oldValue, newValue);
+                }
+            }
+    
+    
+            static object Coerce_IsWaiting (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as BuzyWait;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (bool)basevalue;
+    
+                instance.Coerce_IsWaiting (ref value);
+    
+    
+                return value;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public BuzyWait ()
+            {
+                CoerceAllProperties ();
+                Constructed__BuzyWait ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__BuzyWait ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (AnimationClockProperty);
+                CoerceValue (IsWaitingProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public static double GetAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject == null)
+                {
+                    return default (double);
+                }
+    
+                return (double)dependencyObject.GetValue (AnimationClockProperty);
+            }
+    
+            public static void SetAnimationClock (DependencyObject dependencyObject, double value)
+            {
+                if (dependencyObject != null)
+                {
+                    if (GetAnimationClock (dependencyObject) != value)
+                    {
+                        dependencyObject.SetValue (AnimationClockProperty, value);
+                    }
+                }
+            }
+    
+            public static void ClearAnimationClock (DependencyObject dependencyObject)
+            {
+                if (dependencyObject != null)
+                {
+                    dependencyObject.ClearValue (AnimationClockProperty);
+                }
+            }
+            // --------------------------------------------------------------------
+            static partial void Changed_AnimationClock (DependencyObject dependencyObject, double oldValue, double newValue);
+            static partial void Coerce_AnimationClock (DependencyObject dependencyObject, ref double coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+               
+            // --------------------------------------------------------------------
+            public bool IsWaiting
+            {
+                get
+                {
+                    return (bool)GetValue (IsWaitingProperty);
+                }
+                set
+                {
+                    if (IsWaiting != value)
+                    {
+                        SetValue (IsWaitingProperty, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_IsWaiting (bool oldValue, bool newValue);
+            partial void Coerce_IsWaiting (ref bool coercedValue);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    
+    using System.Collections.Generic;
+    
+    namespace Source.WPF.Debug
+    {
+        using System;
+        using System.Collections.Concurrent;
+        using System.ComponentModel;
+        using System.Linq;
+        using System.Globalization;
+        using System.Text;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Controls.Primitives;
+        using System.Windows.Markup;
+    
+        using Source.Extensions;
+    
+        [TemplatePart (Name = PART_SelectButton     , Type = typeof (ButtonBase))   ]
+        [TemplatePart (Name = PART_RefreshButton    , Type = typeof (ButtonBase))   ]
+        [TemplatePart (Name = PART_SearchBox        , Type = typeof (TextBoxBase))  ]
+        [TemplatePart (Name = PART_TreeView         , Type = typeof (TreeView))     ]
+        [TemplatePart (Name = PART_PropertyDataGrid , Type = typeof (DataGrid))     ]
+        abstract partial class BaseDebugTreeControl : DebugControl
+        {
+            public const string PART_SelectButton       = @"PART_SelectButton"      ;
+            public const string PART_RefreshButton      = @"PART_RefreshButton"     ;
+            public const string PART_SearchBox          = @"PART_SearchBox"         ;
+            public const string PART_TreeView           = @"PART_TreeView"          ;
+            public const string PART_PropertyDataGrid   = @"PART_PropertyDataGrid"  ;
+    
+            public const string DefaultStyle = @"
+    <Style 
+        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+        TargetType=""{x:Type d:BaseDebugTreeControl}""
+        >
+        <Setter Property=""Template"">
+            <Setter.Value>
+                <ControlTemplate TargetType=""{x:Type d:BaseDebugTreeControl}"">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height=""24""/>
+                            <RowDefinition Height=""4""/>
+                            <RowDefinition Height=""*""/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width=""4""/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row=""0"" Grid.Column=""0"" Orientation=""Horizontal"">
+                            <Button x:Name=""PART_SelectButton""    Padding=""8,0,8,0"" Margin=""0,0,4,0"" Content=""Select""/>
+                            <Button x:Name=""PART_RefreshButton""   Padding=""8,0,8,0"" Margin=""0,0,4,0"" Content=""Refresh""/>
+                        </StackPanel>
+                        <TextBox    Grid.Row=""0"" Grid.Column=""2"" x:Name=""PART_SearchBox""      />
+                        <TreeView   Grid.Row=""2"" Grid.Column=""0"" x:Name=""PART_TreeView""  ItemsSource=""{TemplateBinding Tree}"">
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate
+                                    ItemsSource=""{Binding Path=Children, Mode=OneTime}""
+                                    >
+                                    <TextBlock 
+                                        Text=""{Binding Path=Name, Mode=OneTime}""
+                                        ToolTip=""{Binding Path=ToolTip, Mode=OneTime}""
+                                        />
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                        <GridSplitter
+                            Grid.Column=""1""
+                            Grid.RowSpan=""3""
+                            HorizontalAlignment=""Stretch""
+                            VerticalAlignment=""Stretch""
+                            /> 
+                        <DataGrid   
+                            Grid.Row=""2"" 
+                            Grid.Column=""2"" 
+                            x:Name=""PART_PropertyDataGrid""   
+                            ItemsSource=""{Binding ElementName=PART_TreeView,Path=SelectedValue.Properties}"" 
+                            EnableColumnVirtualization=""False"" 
+                            EnableRowVirtualization=""True"" 
+                            AutoGenerateColumns=""False""                        
+                            >
+                            <DataGrid.Columns>
+                                <DataGridTextColumn IsReadOnly=""True"" Header=""Name"" Binding=""{Binding Path=Name, Mode=OneTime}""/>
+                                <DataGridTextColumn Header=""Value"" Binding=""{Binding Path=Value, Mode=TwoWay}""/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    ";
+            public class TreeNodeProperty : INotifyPropertyChanged
+            {
+                readonly DependencyObject   DependencyObject    ;
+                readonly DependencyProperty DependencyProperty  ;
+    
+                public TreeNodeProperty(
+                    DependencyObject dependencyObject, 
+                    DependencyProperty dependencyProperty
+                    )
+                {
+                    DependencyObject    = dependencyObject      ?? new DependencyObject ();
+                    DependencyProperty  = dependencyProperty    ;
+                }
+    
+                public bool IsReadOnly
+                {
+                    get
+                    {
+                        return DependencyProperty.ReadOnly;
+                    }
+                }
+    
+                public bool IsAttached
+                {
+                    get
+                    {
+                        var ownerType = DependencyProperty.OwnerType;
+                        var type = DependencyObject.GetType ();
+    
+                        return !ownerType.IsAssignableFrom (type);
+                    }
+                }
+    
+                public bool HasValue
+                {
+                    get
+                    {
+                        return DependencyObject.ReadLocalValue (DependencyProperty) != null;
+                    }
+                }
+    
+                public string Name
+                {
+                    get
+                    {
+                        if (IsAttached)
+                        {
+                            return DependencyProperty.OwnerType.Name + "." + DependencyProperty.Name;                                                
+                        }
+                        else
+                        {
+                            return DependencyProperty.Name;                        
+                        }
+                    }
+                }
+    
+                public object Value
+                {
+                    get
+                    {
+                        return DependencyObject.GetValue (DependencyProperty);    
+                    }
+                    set
+                    {
+                        if (IsReadOnly)
+                        {
+                        }
+                        else 
+                        {
+                            value = value ?? "";
+                            var converter = TypeDescriptor.GetConverter (DependencyProperty.PropertyType);
+                            if (converter.CanConvertFrom(value.GetType ()))
+                            {
+                                var convertedValue = converter.ConvertFrom (null, CultureInfo.CurrentUICulture, value);
+                                DependencyObject.SetValue (DependencyProperty, convertedValue);
+                            }
+                        }
+                        OnPropertyChanged("Value");
+                    }
+                }
+    
+                public event PropertyChangedEventHandler PropertyChanged;
+    
+                protected virtual void OnPropertyChanged(string propertyName)
+                {
+                    var handler = PropertyChanged;
+                    if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+                }
+            }
+    
+            public class TreeNode : INotifyPropertyChanged
+            {
+                readonly BaseDebugTreeControl   Owner               ;
+                readonly DependencyObject       DependencyObject    ;
+                string                          m_name              ;
+                string                          m_tooltip           ;
+                TreeNode[]                      m_children          ;
+                TreeNodeProperty[]              m_properties        ;
+    
+                public TreeNode(BaseDebugTreeControl owner, DependencyObject dependencyObject)
+                {
+                    Owner = owner;
+                    DependencyObject = dependencyObject ?? new DependencyObject ();
+                }
+    
+                public string Name
+                {
+                    get
+                    {
+                        if (m_name == null)
+                        {
+                            m_name = BuildDescription(" ");
+                        }
+                        return m_name;
+                    }
+                }
+    
+                string BuildDescription(string separator)
+                {
+                    separator = separator ?? " ";
+                    var type = DependencyObject.GetType();
+    
+                    var sb = new StringBuilder(128);
+    
+                    sb.Append(type.Name);
+    
+                    foreach (var dp in DependencyObject.GetLocalDependencyProperties().OrderBy(dp => dp.Name))
+                    {
+                        var value = DependencyObject.GetValue(dp);
+                        if (value == null)
+                        {
+                            continue;
+                        }
+    
+                        sb.Append(separator);
+                        sb.Append(dp.Name);
+                        sb.Append(@"=""");
+                        sb.AppendFormat(CultureInfo.CurrentUICulture, "{0}", value);
+                        sb.Append('"');
+                    }
+    
+                    return sb.ToString ();
+                }
+    
+                public string ToolTip
+                {
+                    get
+                    {
+                        if (m_tooltip == null)
+                        {
+                            m_tooltip = BuildDescription ("\r\n  ");
+                        }
+                        return m_tooltip;
+                    }
+                }
+    
+                public TreeNode[] Children
+                {
+                    get
+                    {
+                        if (m_children == null)
+                        {
+                            m_children = Owner.GetChildren (DependencyObject)
+                                .Select(d => new TreeNode (Owner, d))
+                                .ToArray()
+                                ;
+                        }
+                        return m_children;
+                    }
+                }
+    
+                static readonly ConcurrentDictionary<Type, DependencyProperty[]> s_cachedProperties = new ConcurrentDictionary<Type, DependencyProperty[]> ();
+    
+                public TreeNodeProperty[] Properties
+                {
+                    get
+                    {
+                        if (m_properties == null)
+                        {
+                            var classProperties = s_cachedProperties.GetOrAdd (
+                                DependencyObject.GetType(),
+                                type => type.GetClassDependencyProperties().ToArray ()
+                                );
+    
+                            var localProperties = DependencyObject.GetLocalDependencyProperties ();
+    
+                            m_properties = classProperties
+                                .Union(localProperties)
+                                .OrderBy (dp => dp.Name)
+                                .Select (dp => new TreeNodeProperty (DependencyObject, dp))
+                                .ToArray ()
+                                ;
+                        }
+    
+                        return m_properties;
+                    }
+                }
+    
+                public event PropertyChangedEventHandler PropertyChanged;
+    
+                protected virtual void OnPropertyChanged(string propertyName)
+                {
+                    var handler = PropertyChanged;      
+                    if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+                }
+            }
+    
+            protected abstract IEnumerable<DependencyObject> GetChildren(DependencyObject dependencyObject);
+    
+            readonly static Style           s_defaultStyle      ;
+    
+            static BaseDebugTreeControl ()
+            {
+                var parserContext = DebugContainerControl.GetParserContext();
+    
+                s_defaultStyle = (Style)XamlReader.Parse(
+                    DefaultStyle,
+                    parserContext
+                    );            
+    
+                StyleProperty.OverrideMetadata(typeof(BaseDebugTreeControl), new FrameworkPropertyMetadata(s_defaultStyle));
+            }
+    
+            partial void Constructed__BaseDebugTreeControl()
+            {
+                RoutedEventHandler buttonClick = Button_Click;
+                AddHandler (ButtonBase.ClickEvent, buttonClick);
+            }
+    
+            void Button_Click(object sender, RoutedEventArgs e)
+            {
+                var button = e.OriginalSource as ButtonBase;
+                if (button == null)
+                {
+                    return;
+                }
+    
+                switch (button.Name ?? "")
+                {
+                    case PART_SelectButton:
+                        break;
+                    case PART_RefreshButton:
+                        PopulateTree ();
+                        break;
+                    default:
+                        break;
+                }
+            }
+    
+            protected override void OnAttachTo(DependencyObject dependencyObject)
+            {
+                dependencyObject.Dispatcher.Async_Invoke (
+                    "Delay tree population till application idle", 
+                    PopulateTree
+                    );
+            }
+    
+            void PopulateTree()
+            {
+                Tree.Clear ();
+                if (AttachedTo == null)
+                {
+                    return;
+                }
+                Tree.Add (new TreeNode (this, AttachedTo));
+            }
+    
+            protected override void OnDetachFrom(DependencyObject dependencyObject)
+            {
+                Tree.Clear ();
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\Array.cs
 namespace FileInclude
 {
@@ -2779,6 +4347,385 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs
+namespace FileInclude
+{
+    
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+                                       
+    
+    
+    namespace Source.WPF.Debug
+    {
+        using System.Collections;
+        using System.Collections.ObjectModel;
+        using System.Collections.Specialized;
+    
+        using System.Windows;
+        using System.Windows.Media;
+    
+        // ------------------------------------------------------------------------
+        // BaseDebugTreeControl
+        // ------------------------------------------------------------------------
+        partial class BaseDebugTreeControl
+        {
+            #region Uninteresting generated code
+            static readonly DependencyPropertyKey TreePropertyKey = DependencyProperty.RegisterReadOnly (
+                "Tree",
+                typeof (ObservableCollection<TreeNode>),
+                typeof (BaseDebugTreeControl),
+                new FrameworkPropertyMetadata (
+                    null,
+                    FrameworkPropertyMetadataOptions.None,
+                    Changed_Tree,
+                    Coerce_Tree          
+                ));
+    
+            public static readonly DependencyProperty TreeProperty = TreePropertyKey.DependencyProperty;
+    
+            static void Changed_Tree (DependencyObject dependencyObject, DependencyPropertyChangedEventArgs eventArgs)
+            {
+                var instance = dependencyObject as BaseDebugTreeControl;
+                if (instance != null)
+                {
+                    var oldValue = (ObservableCollection<TreeNode>)eventArgs.OldValue;
+                    var newValue = (ObservableCollection<TreeNode>)eventArgs.NewValue;
+    
+                    if (oldValue != null)
+                    {
+                        oldValue.CollectionChanged -= instance.CollectionChanged_Tree;
+                    }
+    
+                    if (newValue != null)
+                    {
+                        newValue.CollectionChanged += instance.CollectionChanged_Tree;
+                    }
+    
+                    instance.Changed_Tree (oldValue, newValue);
+                }
+            }
+    
+            void CollectionChanged_Tree(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                CollectionChanged_Tree (
+                    sender, 
+                    e.Action,
+                    e.OldStartingIndex,
+                    e.OldItems,
+                    e.NewStartingIndex,
+                    e.NewItems
+                    );
+            }
+    
+            static object Coerce_Tree (DependencyObject dependencyObject, object basevalue)
+            {
+                var instance = dependencyObject as BaseDebugTreeControl;
+                if (instance == null)
+                {
+                    return basevalue;
+                }
+                var value = (ObservableCollection<TreeNode>)basevalue;
+    
+                instance.Coerce_Tree (ref value);
+    
+                if (value == null)
+                {
+                   value = new ObservableCollection<TreeNode> ();
+                }
+    
+                return value;
+            }
+    
+            #endregion
+    
+            // --------------------------------------------------------------------
+            // Constructor
+            // --------------------------------------------------------------------
+            public BaseDebugTreeControl ()
+            {
+                CoerceAllProperties ();
+                Constructed__BaseDebugTreeControl ();
+            }
+            // --------------------------------------------------------------------
+            partial void Constructed__BaseDebugTreeControl ();
+            // --------------------------------------------------------------------
+            void CoerceAllProperties ()
+            {
+                CoerceValue (TreeProperty);
+            }
+    
+    
+            // --------------------------------------------------------------------
+            // Properties
+            // --------------------------------------------------------------------
+    
+               
+            // --------------------------------------------------------------------
+            public ObservableCollection<TreeNode> Tree
+            {
+                get
+                {
+                    return (ObservableCollection<TreeNode>)GetValue (TreeProperty);
+                }
+                private set
+                {
+                    if (Tree != value)
+                    {
+                        SetValue (TreePropertyKey, value);
+                    }
+                }
+            }
+            // --------------------------------------------------------------------
+            partial void Changed_Tree (ObservableCollection<TreeNode> oldValue, ObservableCollection<TreeNode> newValue);
+            partial void Coerce_Tree (ref ObservableCollection<TreeNode> coercedValue);
+            partial void CollectionChanged_Tree (object sender, NotifyCollectionChangedAction action, int oldStartingIndex, IList oldItems, int newStartingIndex, IList newItems);
+            // --------------------------------------------------------------------
+    
+    
+        }
+        // ------------------------------------------------------------------------
+    
+    }
+                                       
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    using Source.Extensions;
+    
+    namespace Source.WPF.Debug
+    {
+        using System;
+        using System.Linq;
+        using System.Reflection;
+        using System.Windows;
+        using System.Windows.Controls;
+        using System.Windows.Markup;
+    
+        abstract partial class DebugControl : Control
+        {
+            protected DependencyObject AttachedTo;
+    
+            public int GetOrdinal ()
+            {
+                return OnGetOrdinal ();
+            }
+    
+            protected abstract int OnGetOrdinal();
+    
+            public string GetFriendlyName ()
+            {
+                return OnGetFriendlyName ();    
+            }
+    
+            protected abstract string OnGetFriendlyName();
+    
+            public void AttachTo (DependencyObject dependencyObject)
+            {
+                if (AttachedTo != null)
+                {
+                    DetachFrom ();
+                }
+    
+                AttachedTo = dependencyObject;            
+    
+                if (AttachedTo != null)
+                {
+                    OnAttachTo (AttachedTo);
+                }
+            }
+    
+            protected abstract void OnAttachTo(DependencyObject attachedTo);
+    
+            public void DetachFrom ()
+            {
+                if (AttachedTo != null)
+                {
+                    OnDetachFrom (AttachedTo);
+                }
+            }
+    
+            protected abstract void OnDetachFrom(DependencyObject attachedTo);
+        }
+    
+        [TemplatePart (Name=PART_Tabs, Type = typeof (TabControl))]
+        partial class DebugContainerControl : Control
+        {
+            const string PART_Tabs  = @"PART_Tabs"  ;
+    
+            public const string DefaultStyle = @"
+    <Style 
+        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+        TargetType=""{x:Type d:DebugContainerControl}""
+        >
+        <Setter Property=""Template"">
+            <Setter.Value>
+                <ControlTemplate TargetType=""{x:Type d:DebugContainerControl}"">
+                    <TabControl x:Name=""PART_Tabs"">
+                    </TabControl>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    ";
+    
+            static readonly Style       s_defaultStyle      ;
+            static readonly TypeInfo[]  s_debugControlTypes ;
+    
+            readonly DebugControl[]     m_debugControls     ;
+            TabControl                  m_tabControl        ;
+    
+            DependencyObject            m_attachedTo        ;
+    
+            static DebugContainerControl ()
+            {
+                var parserContext = GetParserContext();
+    
+                s_defaultStyle = (Style)XamlReader.Parse(
+                    DefaultStyle,
+                    parserContext
+                    );
+    
+                var type = typeof (DebugContainerControl);
+                s_debugControlTypes = type
+                    .Assembly
+                    .DefinedTypes
+                    .Where (typeInfo => !typeInfo.IsAbstract && typeof(DebugControl).IsAssignableFrom (typeInfo))
+                    .ToArray ()
+                    ;
+    
+                StyleProperty.OverrideMetadata(typeof(DebugContainerControl), new FrameworkPropertyMetadata(s_defaultStyle));
+            }
+    
+            public DebugContainerControl ()
+            {
+                m_debugControls = s_debugControlTypes
+                    .Select (Activator.CreateInstance)
+                    .OfType<DebugControl>()
+                    .ToArray();
+            }
+    
+            public override void OnApplyTemplate()
+            {
+                base.OnApplyTemplate();
+    
+                m_tabControl = GetTemplateChild (PART_Tabs) as TabControl;
+                if (m_tabControl != null)
+                {
+                    var tabs = m_debugControls
+                        .OrderBy (dc => dc.GetOrdinal ())
+                        .Select (dc => 
+                            new TabItem
+                                {
+                                    Header  = dc.GetFriendlyName()  ,
+                                    Content = dc            ,
+                                })
+                        .ToArray ()
+                        ;
+                    m_tabControl.ItemsSource = tabs;
+                }
+            }
+    
+            internal static ParserContext GetParserContext()
+            {
+                var parserContext = new ParserContext
+                                        {
+                                            XamlTypeMapper = new XamlTypeMapper(new string[0])
+                                        };
+    
+                var type = typeof (DebugContainerControl);
+                var namespaceName = type.Namespace ?? "";
+                var assemblyName = type.Assembly.FullName;
+                parserContext.XamlTypeMapper.AddMappingProcessingInstruction("Debug", namespaceName, assemblyName);
+                parserContext.XmlnsDictionary.Add("d", "Debug");
+                return parserContext;
+            }
+    
+            public static void ShowWindow (DependencyObject dependencyObject, string title = null)
+            {
+                if (dependencyObject == null)
+                {
+                    return;
+                }
+    
+                dependencyObject.Dispatcher.Async_Invoke (
+                    "Delay show window till application idle", 
+                    () => ShowWindowImpl (dependencyObject, title)
+                    );
+    
+            }
+    
+            static void ShowWindowImpl(DependencyObject dependencyObject, string title)
+            {
+                var debugContainerControl = new DebugContainerControl ();
+                debugContainerControl.AttachTo (dependencyObject);
+    
+                var window = 
+                    new Window
+                        {
+                            Title       = title ?? "Debug"      , 
+                            MinHeight   = 200                   ,
+                            MinWidth    = 320                   ,
+                            Content     = debugContainerControl
+                        };
+    
+                window.Show();
+            }
+    
+            void AttachTo(DependencyObject dependencyObject)
+            {
+                foreach (var dc in m_debugControls)
+                {
+                    dc.DetachFrom ();
+                }
+    
+                m_attachedTo = dependencyObject;
+    
+                if (m_attachedTo != null)
+                {
+                    foreach (var dc in m_debugControls)
+                    {
+                        dc.AttachTo (m_attachedTo);
+                    }
+                }
+    
+    
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs
 // ############################################################################
 
 // ############################################################################
@@ -2943,20 +4890,29 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-03-30T10:16:06";
+        public const string IncludeDate     = @"2013-04-07T19:09:28";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\WPF\AnimatedEntrance.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\WPF\AccordionPanel.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\WPF\WatermarkTextBox.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\WPF\ReflectionDecorator.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\WPF\BuzyWait.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugVisualTreeControl.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugLogicalTreeControl.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_DependencyProperties.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\WPF\Generated_AnimatedEntrance_StateMachine.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Extensions\WpfExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\WPF\Generated_AccordionPanel_DependencyProperties.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\WPF\Generated_WatermarkTextBox_DependencyProperties.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\WPF\Generated_ReflectionDecorator_DependencyProperties.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\WPF\Generated_BuzyWait_DependencyProperties.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\WPF\Debug\BaseDebugTreeControl.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\WPF\Debug\Generated_BaseDebugTreeControl_DependencyProperties.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\WPF\Debug\DebugContainerControl.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
     }
 }
 // ############################################################################

@@ -20,11 +20,15 @@ namespace Source.Extensions
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Reflection;
+    using System.Text;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Media;
     using System.Windows.Threading;
+    using System.Xml;
 
     using Source.Common;
 
@@ -235,6 +239,81 @@ namespace Source.Extensions
 
         }
     
+        public static string GetName (this DependencyObject dependencyObject)
+        {
+            var frameworkElement = dependencyObject as FrameworkElement;
+            if (frameworkElement != null)
+            {
+                return frameworkElement.Name ?? "";
+            }
+
+            var frameworkContentElement = dependencyObject as FrameworkContentElement;
+            if (frameworkContentElement != null)
+            {
+                return frameworkContentElement.Name ?? "";                
+            }
+
+            return "";
+        }
+
+        public static IEnumerable<DependencyProperty> GetLocalDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var enumerator = dependencyObject.GetLocalValueEnumerator ();
+            while (enumerator.MoveNext ())
+            {
+                var current = enumerator.Current;
+                yield return current.Property;
+            }
+        }
+
+        public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this Type type)
+        {
+            if (type == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            if (!typeof(DependencyObject).IsAssignableFrom(type))
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return type
+                    .GetFields (BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                    .Where (fi => fi.FieldType == typeof (DependencyProperty))
+                    .Select (fi => fi.GetValue (null) as DependencyProperty)
+                    .Where (dp => dp != null)
+                    ;
+        }
+
+        public static IEnumerable<DependencyProperty> GetClassDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return dependencyObject.GetType ().GetClassDependencyProperties ();
+        }
+
+        public static IEnumerable<DependencyProperty> GetDependencyProperties (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                return Array<DependencyProperty>.Empty;
+            }
+
+            return dependencyObject
+                .GetClassDependencyProperties ()
+                .Union (dependencyObject.GetLocalDependencyProperties ())
+                ;
+        }
+
         public static IEnumerable<DependencyObject> GetVisualChildren (this DependencyObject dependencyObject)
         {
             if (dependencyObject == null)
@@ -258,5 +337,259 @@ namespace Source.Extensions
 
             return LogicalTreeHelper.GetChildren (dependencyObject).OfType<DependencyObject> ();
         }
+
+        static string GetValueAsString (object obj)
+        {
+            var formattable = obj as IFormattable;
+            if (formattable != null)
+            {
+                return formattable.ToString ("", CultureInfo.InvariantCulture);
+            }
+
+            if (obj != null)
+            {
+                return obj.ToString ();
+            }
+
+            return "";
+        }
+
+        static void GetTree_AsString_Impl (
+            this DependencyObject dependencyObject, 
+            XmlWriter xmlWriter,
+            Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+            )
+        {
+            if (dependencyObject == null)
+            {
+                return;
+            }
+            
+            xmlWriter.WriteStartElement (dependencyObject.GetType().Name);
+
+            var enumerator = dependencyObject.GetLocalValueEnumerator ();
+            while (enumerator.MoveNext ())
+            {
+                var current = enumerator.Current;
+
+                xmlWriter.WriteAttributeString (
+                    current.Property.Name, 
+                    GetValueAsString (current.Value)
+                    );
+            }
+
+            foreach (var child in childrenGetter (dependencyObject))
+            {
+                child.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+            }
+
+            xmlWriter.WriteEndElement ();
+
+        }
+
+        static string GetTree_AsString (
+            this DependencyObject dependencyObject,             
+            Func<DependencyObject, IEnumerable<DependencyObject>> childrenGetter 
+            )
+        {
+            var settings =  new XmlWriterSettings
+                                {
+                                    Indent  = true  ,
+                                };
+
+            var sb = new StringBuilder (128);
+
+            using (var xmlWriter = XmlWriter.Create (sb, settings))
+            {
+                xmlWriter.WriteStartDocument ();
+
+                dependencyObject.GetTree_AsString_Impl (xmlWriter, childrenGetter);
+
+                xmlWriter.WriteEndDocument ();
+            }
+
+            return sb.ToString ();            
+        }
+
+        public static string GetLogicalTree_AsString (this DependencyObject dependencyObject)
+        {
+            return dependencyObject.GetTree_AsString (d => d.GetLogicalChildren ());
+        }
+
+        public static string GetVisualTree_AsString (this DependencyObject dependencyObject)
+        {
+            return dependencyObject.GetTree_AsString (d => d.GetVisualChildren ());
+        }
+
+        public static IEnumerable<DependencyObject> GetVisualTree_BreadthFirst (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var queue = new Queue<DependencyObject> ();
+            queue.Enqueue (dependencyObject);
+
+            while (queue.Count > 0)
+            {
+                var obj = queue.Dequeue ();
+
+                foreach (var child in obj.GetVisualChildren ())
+                {
+                    if (child != null)
+                    {
+                        queue.Enqueue (child);
+                        yield return child;                        
+                    }
+                }                
+            }
+        }
+
+        public static IEnumerable<DependencyObject> GetLogicalTree_BreadthFirst (this DependencyObject dependencyObject)
+        {
+            if (dependencyObject == null)
+            {
+                yield break;
+            }
+
+            var queue = new Queue<DependencyObject> ();
+            queue.Enqueue (dependencyObject);
+
+            while (queue.Count > 0)
+            {
+                var obj = queue.Dequeue ();
+
+                foreach (var child in obj.GetLogicalChildren ())
+                {
+                    if (child != null)
+                    {
+                        queue.Enqueue (child);
+                        yield return child;                        
+                    }
+                }                
+            }
+        }
+
+        public static double LimitBy (this double size, double constraint)
+        {
+            constraint = Math.Max (0, constraint);
+
+            if (double.IsNaN (size))
+            {
+                return size;
+            }
+
+            if (size < 0)
+            {
+                return 0;
+            }
+
+            if (size > constraint)
+            {
+                return constraint;
+            }
+
+            return size;
+        }
+
+        public static Size LimitBy (this Size size, Size constraint)
+        {
+            return new Size(
+                size.Width.LimitBy(constraint.Width), 
+                size.Height.LimitBy(constraint.Height)
+                );    
+        }
+
+        static byte HexColor (this char ch)
+        {
+            switch (ch)
+            {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    return (byte) (ch - '0');
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                    return (byte) (ch - 'a' + 10);
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                    return (byte) (ch - 'A' + 10);
+                default:
+                    return 0;
+            }       
+        }
+
+        static byte ExpandNibble (this byte b)
+        {
+            var n = b & 0xF;
+            return (byte) (n | (n << 4));
+        }
+
+        public static Color ParseColor (this string color, Color defaultTo)
+        {
+            if (string.IsNullOrEmpty (color))
+            {
+                return defaultTo;                
+            }
+
+            if (color[0] != '#')
+            {                   
+                return defaultTo;
+            }
+
+            switch (color.Length)
+            {
+                default:
+                    return defaultTo;
+                case 4:
+                    // #FFF
+                    return Color.FromRgb (
+                        color[1].HexColor().ExpandNibble(),
+                        color[2].HexColor().ExpandNibble(),
+                        color[3].HexColor().ExpandNibble()
+                        );
+                case 5:
+                    // #FFFF
+                    return Color.FromArgb (
+                        color[1].HexColor().ExpandNibble(),
+                        color[2].HexColor().ExpandNibble(),
+                        color[3].HexColor().ExpandNibble(),
+                        color[4].HexColor().ExpandNibble()
+                        );
+                case 7:
+                    // #FFFFFF
+                    return Color.FromRgb (
+                        (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                        (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                        (byte) ((color[5].HexColor() << 4) + color[6].HexColor())
+                        );
+                case 9:
+                    // #FFFFFFFF
+                    return Color.FromArgb (
+                        (byte) ((color[1].HexColor() << 4) + color[2].HexColor()),
+                        (byte) ((color[3].HexColor() << 4) + color[4].HexColor()),
+                        (byte) ((color[5].HexColor() << 4) + color[6].HexColor()),
+                        (byte) ((color[7].HexColor() << 4) + color[8].HexColor())
+                        );
+            }
+
+        }
+
     }
 }

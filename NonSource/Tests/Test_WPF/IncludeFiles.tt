@@ -16,9 +16,14 @@
     RootPath    = @"..\..\..";
     Includes = new []
         {
-            Include (@"WPF\AnimatedEntrance.cs"),
-            Include (@"WPF\AccordionPanel.cs"),
-            Include (@"WPF\WatermarkTextBox.cs"),
+            Include (@"Extensions\WPF.cs"                   ),
+            Include (@"WPF\AnimatedEntrance.cs"             ),
+            Include (@"WPF\AccordionPanel.cs"               ),
+            Include (@"WPF\WatermarkTextBox.cs"             ),
+            Include (@"WPF\ReflectionDecorator.cs"          ),
+            Include (@"WPF\BuzyWait.cs"                     ),
+            Include (@"WPF\Debug\DebugVisualTreeControl.cs" ),
+            Include (@"WPF\Debug\DebugLogicalTreeControl.cs"),
         };
 #>
 

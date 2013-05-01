@@ -1,0 +1,15 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("ReflectionDecorator")
+        {
+            P ("double"                 , "ReflectionSize"      , defaultValue:"48.0"           ),
+            P ("double"                 , "ReflectionSeparation", defaultValue:"4.0"            ),
+
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   

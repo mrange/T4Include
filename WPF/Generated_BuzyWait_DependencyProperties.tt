@@ -1,0 +1,14 @@
+﻿<#
+    Namespace   = "Source.WPF"        ;
+    Model       = new []
+    {
+        new ClassDefinition ("BuzyWait")
+        {
+            P ("double"                 , "AnimationClock"      , flags:PropertyFlags.IsAttached    ),
+            P ("bool"                   , "IsWaiting"           ),
+        },
+    };    
+
+#>
+
+<#@ include     file        ="..\T4\DependencyProperties.ttinclude"     #>                                   
