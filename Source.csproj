@@ -81,7 +81,8 @@
     <Compile Include="WPF\Bindings\BasicBindings.cs" />
     <Compile Include="WPF\CachedVisual.cs" />
     <Compile Include="WPF\Generated_CachedVisual_DependencyProperties.cs">
-      <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
+        <DependentUpon>Generated_CachedVisual_DependencyProperties.tt</DependentUpon>
+    </Compile>        
     <Compile Include="WPF\BuzyWait.cs" />
     <Compile Include="WPF\Generated_BuzyWait_DependencyProperties.cs">
       <DependentUpon>Generated_BuzyWait_DependencyProperties.tt</DependentUpon>
@@ -167,6 +168,7 @@
     <None Include="WPF\Generated_CachedVisual_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_CachedVisual_DependencyProperties.cs</LastGenOutput>
+    </None>
     <None Include="WPF\Generated_BuzyWait_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_BuzyWait_DependencyProperties.cs</LastGenOutput>
