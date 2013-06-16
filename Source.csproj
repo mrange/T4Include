@@ -58,6 +58,12 @@
     <Compile Include="Concurrency\RemainingTime.cs" />
     <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
+    <Compile Include="Extensions\Generated_ObservableExtensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_ObservableExtensions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\ObservableExtensions.cs" />
     <Compile Include="Extensions\SqlExtensions.cs" />
     <Compile Include="Extensions\EnumParseExtensions.cs" />
     <Compile Include="Extensions\ParseExtensions.cs">
@@ -122,6 +128,10 @@
     <Compile Include="WPF\ReflectionDecorator.cs" />
     <Compile Include="WPF\WatermarkTextBox.cs" />
     <None Include="app.config" />
+    <None Include="Extensions\Generated_ObservableExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_ObservableExtensions.cs</LastGenOutput>
+    </None>
     <None Include="NET20\Generated_Common.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_Common.cs</LastGenOutput>

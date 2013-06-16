@@ -1,0 +1,126 @@
+﻿<#@ include     file        ="../T4/Header.ttinclude"             #>
+
+<#
+    var model = new []
+        {
+            O ("Where"  , "Func<T,bool>"    ),
+            O ("Select" , "Func<T,TTo>"     , returnType:"TTo"  ),
+            O ("Take"   , "int"             ),
+            O ("Skip"   , "int"             ),
+        };
+#>
+
+namespace Source.Extensions
+{
+    using System;
+
+<#
+    foreach (var obDef in model)
+    {
+#>
+
+    sealed partial class <#=obDef.Name#>Observable<<#=obDef.GenericSignature#>> : IObservable<<#=obDef.ReturnType#>>
+    {
+        readonly IObservable<T> m_observable;
+        readonly <#=obDef.StateType#> m_state;
+
+        public <#=obDef.Name#>Observable (IObservable<T> observable, <#=obDef.StateType#> state)
+        {
+            m_observable    = observable;
+            m_state         = state     ;
+        }
+
+        public IDisposable Subscribe (IObserver<<#=obDef.ReturnType#>> observer)
+        {
+            var o = new <#=obDef.Name#>Observer<<#=obDef.GenericSignature#>> (observer, m_state);
+            return m_observable.Subscribe (o);
+        }
+    }
+
+    sealed partial class <#=obDef.Name#>Observer<<#=obDef.GenericSignature#>> : IObserver<T>
+    {
+        readonly IObserver<<#=obDef.ReturnType#>> m_observer;
+        <#=obDef.StateType#> m_state;
+
+        public <#=obDef.Name#>Observer (IObserver<<#=obDef.ReturnType#>> observer, <#=obDef.StateType#> state)
+        {
+            m_observer  = observer  ;
+            m_state     = state     ;
+        }
+
+        partial void Partial_OnNext (T value);
+
+        public void OnNext (T value)
+        {
+            Partial_OnNext (value);
+        }
+
+        public void OnError (Exception error)
+        {
+            m_observer.OnError (error);
+        }
+
+        public void OnCompleted ()
+        {
+            m_observer.OnCompleted ();
+        }
+
+    }
+
+    static partial class ObservableExtensions
+    {
+        public static IObservable<<#=obDef.ReturnType#>> <#=obDef.Name#><<#=obDef.GenericSignature#>> (IObservable<T> observable, <#=obDef.StateType#> p)
+        {
+            if (observable == null)
+            {
+                return EmptyObservable<<#=obDef.ReturnType#>>.Value;
+            }
+
+            return new <#=obDef.Name#>Observable<<#=obDef.GenericSignature#>> (observable, p);
+        }
+    }
+
+<#
+    }
+#>
+}
+
+<#+
+    
+
+    sealed class ObservableDefinition : BaseEntity<Root>
+    {
+        public string Name          ;
+        public string StateType     ;
+        public string ReturnType    ;
+
+        public ObservableDefinition (string name, string stateType, string returnType)
+        {
+            Name        = name          ?? S_NoName ;
+            StateType   = stateType     ?? S_NoType ;
+            ReturnType  = returnType    ?? "T"      ;
+        }
+
+        public string GenericSignature
+        {
+            get
+            {
+                if (ReturnType == "T")
+                {
+                    return "T";
+                }
+                else
+                {
+                    return "T," + ReturnType;
+                }
+            }
+        }
+    }
+
+
+    static ObservableDefinition O (string name, string stateType, string returnType = null)
+    {
+        return new ObservableDefinition (name, stateType, returnType);
+    }
+
+#>
