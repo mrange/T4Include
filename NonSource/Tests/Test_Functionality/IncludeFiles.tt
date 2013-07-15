@@ -23,9 +23,11 @@
             Include (@"Concurrency\TaskSchedulers.cs"           ),
             Include (@"Extensions\BasicExtensions.cs"           ),
             Include (@"Extensions\SqlExtensions.cs"             ),
+            Include (@"Extensions\ObservableExtensions.cs"      ),
             Include (@"Testing\TestRunner.cs"                   ),
             Include (@"Text\LineToObjectExtensions.cs"          ),
             Include (@"SQL\Schema.cs"                           ),
+            Include (@"Observable\Producers.cs"                 ),
         };
 #>
 

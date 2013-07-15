@@ -36,6 +36,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\ObservableExtensions.cs
+// @@@ INCLUDE_FOUND: Generated_ObservableExtensions.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
@@ -46,6 +48,9 @@
 // @@@ INCLUDE_FOUND: ../Extensions/BasicExtensions.cs
 // @@@ INCLUDE_FOUND: ../Reflection/ClassDescriptor.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\SQL\Schema.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Observable\Producers.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
+// @@@ INCLUDE_FOUND: Observables.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -71,6 +76,7 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
@@ -79,6 +85,10 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Observable\Observables.cs
+// @@@ INCLUDE_FOUND: ../Common/BaseDisposable.cs
+// @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Array.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\SubString.cs
@@ -87,6 +97,10 @@
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Config.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Generated_Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
+// @@@ INCLUDE_FOUND: Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
+// @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // ############################################################################
 // Certains directives such as #define and // Resharper comments has to be 
 // moved to top in order to work properly    
@@ -2287,6 +2301,167 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ObservableExtensions.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+    
+        sealed partial class EmptyObservable<T> : IObservable<T>
+        {
+            public readonly static EmptyObservable<T> Value = new EmptyObservable<T> (); 
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                return new ObservableExtensions.EmptyDisposable ();
+            }
+        }
+    
+        sealed partial class SingleObserver<T> : IObservable<T>
+        {
+            readonly T m_value;
+    
+            public SingleObserver (T value)
+            {
+                m_value = value;
+            }
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                observer.OnNext (m_value);
+                observer.OnCompleted ();
+                return new ObservableExtensions.EmptyDisposable ();
+            }
+        }
+    
+        static partial class ObservableExtensions
+        {
+            public sealed partial class EmptyDisposable : IDisposable
+            {
+                public void Dispose ()
+                {
+                }
+            }
+    
+            public static IObservable<T> Empty<T> ()
+            {
+                return EmptyObservable<T>.Value;
+            }
+    
+            public static IObservable<T> Single<T> (T value)
+            {
+                return new SingleObserver<T> (value);
+            }
+    
+            sealed partial class ActionObserver<T> : IObserver<T>
+            {
+                readonly Action<T> m_onNext;
+                readonly Action m_onCompleted;
+                readonly Action<Exception> m_onError;
+    
+                public ActionObserver (Action<T> onNext, Action onCompleted, Action<Exception> onError)
+                {
+                    m_onNext        = onNext        ?? (v => {});
+                    m_onCompleted   = onCompleted   ?? (() => {});
+                    m_onError       = onError       ?? (e => {});
+                }
+    
+                public void OnNext (T value)
+                {
+                    m_onNext (value);
+                }
+    
+                public void OnError (Exception error)
+                {
+                    m_onError (error);
+                }
+    
+                public void OnCompleted ()
+                {
+                    m_onCompleted ();
+                }
+            }
+    
+            public static IDisposable Subscribe<T> (this IObservable<T> observable, Action<T> onNext, Action onCompleted = null, Action<Exception> onError = null)
+            {
+                if (observable == null)
+                {
+                    throw new ArgumentNullException ("observable");
+                }
+    
+                var observer = new ActionObserver<T> (onNext, onCompleted, onError);
+    
+                return observable.Subscribe (observer);
+            }
+    
+        }
+    
+        partial class WhereObserver<T>
+        {
+            partial void Partial_OnNext (T value)
+            {
+                if (m_state (value))
+                {
+                    m_observer.OnNext (value);
+                }
+            }
+        }
+    
+        partial class SelectObserver<T, TTo>
+        {
+            partial void Partial_OnNext (T value)
+            {
+                m_observer.OnNext (m_state (value));
+            }
+        }
+    
+        partial class TakeObserver<T>
+        {
+            partial void Partial_OnNext (T value)
+            {
+                if (m_state > 0)
+                {
+                    --m_state;
+                    m_observer.OnNext (value);
+                }
+            }
+        }
+    
+        partial class SkipObserver<T>
+        {
+            partial void Partial_OnNext (T value)
+            {
+                if (m_state > 0)
+                {
+                    --m_state;
+                }
+                else
+                {
+                    m_observer.OnNext (value);
+                }
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\ObservableExtensions.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestRunner.cs
 namespace FileInclude
 {
@@ -3393,6 +3568,188 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\SQL\Schema.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Observable\Producers.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Observable
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Threading;
+        using System.Threading.Tasks;
+    
+        using Source.Common;
+    
+        partial interface IProducer<out T> : IObservable<T>, IDisposable
+        {
+            void Start ();
+        }
+    
+        abstract partial class BaseProducer<T> : BaseObservable<T>, IProducer<T>
+        {
+            sealed public partial class ProducedValue
+            {
+                public readonly T Value;
+    
+                public ProducedValue (T value)
+                {
+                    Value = value;
+                }
+            }
+    
+            readonly TaskFactory                m_taskFactory               ;
+            readonly int                        m_maxFailureCount           ;
+    
+            volatile Task m_task;
+    
+            protected BaseProducer (TaskFactory taskFactory, int maxFailureCount = 10)
+            {
+                m_taskFactory               = taskFactory   ?? Task.Factory     ;
+                m_maxFailureCount           = maxFailureCount                   ;
+            }
+    
+            protected override void OnDispose ()
+            {
+                base.OnDispose ();
+    
+                lock (Lock)
+                {
+                    if (m_task != null)
+                    {
+                        try
+                        {
+                            m_task.Dispose ();
+                        }
+                        catch (Exception exc)
+                        {
+                            Log.Exception ("BaseProducer.OnDispose: Disposing task threw exception: {0}", exc);
+                        }
+                    }
+                }
+            }
+    
+            public void Start ()
+            {
+                if (m_task != null)
+                {
+                    return;
+                }
+    
+                lock (Lock)
+                {
+                    if (m_task != null)
+                    {
+                        return;
+                    }
+    
+                    if (IsDisposed)
+                    {
+                        throw new ObjectDisposedException ("Producer", "Can't start a disposed producer");
+                    }
+    
+                    m_task = m_taskFactory.StartNew (OnProduce, CancellationToken, TaskCreationOptions.LongRunning);
+                }
+            }
+    
+            void OnProduce (object obj)
+            {
+                try
+                {
+                    var productionError = 0;
+                    var done = false;
+    
+                    while (!CancellationToken.IsCancellationRequested && !done)
+                    {
+                        try
+                        {
+                            ProducedValue value;
+                            while (!CancellationToken.IsCancellationRequested && (value = ProduceValue (CancellationToken)) != null)
+                            {
+                                SendValue (value.Value);
+                            }
+    
+                            done = true;
+                        }
+                        catch (Exception exc)
+                        {
+                            ++productionError;
+                            
+                            SendException (exc);
+    
+                            done |= productionError > m_maxFailureCount;
+                        }
+                    }
+    
+                    TerminateObservers();
+    
+                    if (productionError == m_maxFailureCount)
+                    {
+                        Log.Error ("Producer.OnProduce: Producer terminated due to max failure count reached: {0}", m_maxFailureCount);
+                    }
+    
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("Producer.OnProduce: Caught exception, terminating: {0}", exc);
+                }
+            }
+    
+            protected abstract ProducedValue ProduceValue(CancellationToken cancellationToken);
+        }
+    
+        sealed partial class EnumerableProducer<T> : BaseProducer<T>
+        {
+            readonly IEnumerator<T> m_enumerator;
+    
+            public EnumerableProducer (TaskFactory taskFactory, IEnumerable<T> enumerable, int maxFailureCount = 10) 
+                :   base (taskFactory, maxFailureCount)
+            {
+                enumerable  = enumerable ?? Array<T>.Empty  ;
+                m_enumerator= enumerable.GetEnumerator ()   ;
+            }
+    
+            protected override ProducedValue ProduceValue (CancellationToken cancellationToken)
+            {
+                return !cancellationToken.IsCancellationRequested && m_enumerator.MoveNext()
+                    ?   new ProducedValue (m_enumerator.Current)
+                    :   null
+                    ;
+            }
+    
+            protected override void OnDispose ()
+            {
+                base.OnDispose();
+    
+                try
+                {
+                    m_enumerator.Dispose ();
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("EnumerableProducer.OnDispose: Disposing enumerator threw exception: {0}", exc);
+                }
+            }
+        }
+    
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Observable\Producers.cs
 // ############################################################################
 
 // ############################################################################
@@ -7642,6 +7999,282 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs
+namespace FileInclude
+{
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    
+    namespace Source.Extensions
+    {
+        using System;
+    
+    
+        sealed partial class WhereObservable<T> : IObservable<T>
+        {
+            readonly IObservable<T> m_observable;
+            readonly Func<T,bool> m_state;
+    
+            public WhereObservable (IObservable<T> observable, Func<T,bool> state)
+            {
+                m_observable    = observable;
+                m_state         = state     ;
+            }
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                var o = new WhereObserver<T> (observer, m_state);
+                return m_observable.Subscribe (o);
+            }
+        }
+    
+        sealed partial class WhereObserver<T> : IObserver<T>
+        {
+            readonly IObserver<T> m_observer;
+            Func<T,bool> m_state;
+    
+            public WhereObserver (IObserver<T> observer, Func<T,bool> state)
+            {
+                m_observer  = observer  ;
+                m_state     = state     ;
+            }
+    
+            partial void Partial_OnNext (T value);
+    
+            public void OnNext (T value)
+            {
+                Partial_OnNext (value);
+            }
+    
+            public void OnError (Exception error)
+            {
+                m_observer.OnError (error);
+            }
+    
+            public void OnCompleted ()
+            {
+                m_observer.OnCompleted ();
+            }
+    
+        }
+    
+        static partial class ObservableExtensions
+        {
+            public static IObservable<T> Where<T> (this IObservable<T> observable, Func<T,bool> p)
+            {
+                if (observable == null)
+                {
+                    return EmptyObservable<T>.Value;
+                }
+    
+                return new WhereObservable<T> (observable, p);
+            }
+        }
+    
+    
+        sealed partial class SelectObservable<T,TTo> : IObservable<TTo>
+        {
+            readonly IObservable<T> m_observable;
+            readonly Func<T,TTo> m_state;
+    
+            public SelectObservable (IObservable<T> observable, Func<T,TTo> state)
+            {
+                m_observable    = observable;
+                m_state         = state     ;
+            }
+    
+            public IDisposable Subscribe (IObserver<TTo> observer)
+            {
+                var o = new SelectObserver<T,TTo> (observer, m_state);
+                return m_observable.Subscribe (o);
+            }
+        }
+    
+        sealed partial class SelectObserver<T,TTo> : IObserver<T>
+        {
+            readonly IObserver<TTo> m_observer;
+            Func<T,TTo> m_state;
+    
+            public SelectObserver (IObserver<TTo> observer, Func<T,TTo> state)
+            {
+                m_observer  = observer  ;
+                m_state     = state     ;
+            }
+    
+            partial void Partial_OnNext (T value);
+    
+            public void OnNext (T value)
+            {
+                Partial_OnNext (value);
+            }
+    
+            public void OnError (Exception error)
+            {
+                m_observer.OnError (error);
+            }
+    
+            public void OnCompleted ()
+            {
+                m_observer.OnCompleted ();
+            }
+    
+        }
+    
+        static partial class ObservableExtensions
+        {
+            public static IObservable<TTo> Select<T,TTo> (this IObservable<T> observable, Func<T,TTo> p)
+            {
+                if (observable == null)
+                {
+                    return EmptyObservable<TTo>.Value;
+                }
+    
+                return new SelectObservable<T,TTo> (observable, p);
+            }
+        }
+    
+    
+        sealed partial class TakeObservable<T> : IObservable<T>
+        {
+            readonly IObservable<T> m_observable;
+            readonly int m_state;
+    
+            public TakeObservable (IObservable<T> observable, int state)
+            {
+                m_observable    = observable;
+                m_state         = state     ;
+            }
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                var o = new TakeObserver<T> (observer, m_state);
+                return m_observable.Subscribe (o);
+            }
+        }
+    
+        sealed partial class TakeObserver<T> : IObserver<T>
+        {
+            readonly IObserver<T> m_observer;
+            int m_state;
+    
+            public TakeObserver (IObserver<T> observer, int state)
+            {
+                m_observer  = observer  ;
+                m_state     = state     ;
+            }
+    
+            partial void Partial_OnNext (T value);
+    
+            public void OnNext (T value)
+            {
+                Partial_OnNext (value);
+            }
+    
+            public void OnError (Exception error)
+            {
+                m_observer.OnError (error);
+            }
+    
+            public void OnCompleted ()
+            {
+                m_observer.OnCompleted ();
+            }
+    
+        }
+    
+        static partial class ObservableExtensions
+        {
+            public static IObservable<T> Take<T> (this IObservable<T> observable, int p)
+            {
+                if (observable == null)
+                {
+                    return EmptyObservable<T>.Value;
+                }
+    
+                return new TakeObservable<T> (observable, p);
+            }
+        }
+    
+    
+        sealed partial class SkipObservable<T> : IObservable<T>
+        {
+            readonly IObservable<T> m_observable;
+            readonly int m_state;
+    
+            public SkipObservable (IObservable<T> observable, int state)
+            {
+                m_observable    = observable;
+                m_state         = state     ;
+            }
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                var o = new SkipObserver<T> (observer, m_state);
+                return m_observable.Subscribe (o);
+            }
+        }
+    
+        sealed partial class SkipObserver<T> : IObserver<T>
+        {
+            readonly IObserver<T> m_observer;
+            int m_state;
+    
+            public SkipObserver (IObserver<T> observer, int state)
+            {
+                m_observer  = observer  ;
+                m_state     = state     ;
+            }
+    
+            partial void Partial_OnNext (T value);
+    
+            public void OnNext (T value)
+            {
+                Partial_OnNext (value);
+            }
+    
+            public void OnError (Exception error)
+            {
+                m_observer.OnError (error);
+            }
+    
+            public void OnCompleted ()
+            {
+                m_observer.OnCompleted ();
+            }
+    
+        }
+    
+        static partial class ObservableExtensions
+        {
+            public static IObservable<T> Skip<T> (this IObservable<T> observable, int p)
+            {
+                if (observable == null)
+                {
+                    return EmptyObservable<T>.Value;
+                }
+    
+                return new SkipObservable<T> (observable, p);
+            }
+        }
+    
+    }
+    
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Testing\TestFor.cs
 namespace FileInclude
 {
@@ -8145,6 +8778,196 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Observable\Observables.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Observable
+    {
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using System.Threading;
+    
+        using Source.Common;
+    
+        abstract partial class BaseObservable<T> : BaseDisposable, IObservable<T>
+        {
+            sealed partial class Subscriber : BaseDisposable
+            {
+                readonly BaseObservable<T> m_observable;
+    
+                public Subscriber (BaseObservable<T> observable)
+                {
+                    m_observable = observable;
+                }
+    
+                protected override void OnDispose ()
+                {
+                    m_observable.Unsubscribe (this);
+                }
+            }
+    
+            protected readonly object               Lock = new object ()        ;
+            protected readonly CancellationToken    CancellationToken           ;
+    
+            readonly CancellationTokenSource        m_cancellationTokenSource   ;
+    
+            readonly Dictionary<IDisposable, IObserver<T>>                      m_observers = new Dictionary<IDisposable, IObserver<T>> ();
+    
+            protected BaseObservable ()
+            {
+                Lock                      = m_observers                       ;
+                m_cancellationTokenSource = new CancellationTokenSource ()    ;
+                CancellationToken         = m_cancellationTokenSource.Token   ;
+            }
+    
+    
+            public IDisposable Subscribe (IObserver<T> observer)
+            {
+                if (observer == null)
+                {
+                    throw new ArgumentNullException ("observer");
+                }
+               
+                var subscriber = new Subscriber (this);
+    
+                lock (Lock)
+                {
+                    if (IsDisposed)
+                    {
+                        throw new ObjectDisposedException ("BaseObservable", "Can't add new subscriber to disposed observable");
+                    }
+    
+                    m_observers.Add (subscriber, observer);
+                }
+    
+                return subscriber;
+            }
+    
+            void Unsubscribe (Subscriber subscriber)
+            {
+                lock (Lock)
+                {
+                    m_observers.Remove (subscriber);
+                }
+            }
+    
+            protected override void OnDispose ()
+            {
+                try
+                {
+                    m_cancellationTokenSource.Cancel ();
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("BaseObservable.OnDispose: Cancelling cancellation token source threw exception: {0}", exc);
+                }
+    
+                try
+                {
+                    m_cancellationTokenSource.Dispose ();
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("BaseObservable.OnDispose: Disposing cancellation token source threw exception: {0}", exc);
+                }
+    
+                TerminateObservers();
+            }
+    
+            protected IObserver<T>[] CurrentObservers
+            {
+                get
+                {
+                    lock (Lock)
+                    {
+                        return CurrentObservers_NoLock;
+                    }
+                }
+            }
+    
+            protected IObserver<T>[] CurrentObservers_NoLock
+            {
+                get { return m_observers.Select (kv => kv.Value).ToArray (); }
+            }
+    
+            protected void SendValue (T value)
+            {
+                var observers = CurrentObservers;
+                for (var index = 0; !CancellationToken.IsCancellationRequested && index < observers.Length; index++)
+                {
+                    var observer = observers[index];
+                    try
+                    {
+                        observer.OnNext (value);
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception ("BaseObservable.SendValue: Caught exception from .OnNext: {0}", exc);
+                    }
+                }
+            }
+    
+            protected void SendException (Exception exc)
+            {
+                var observers = CurrentObservers;
+                for (var index = 0; !CancellationToken.IsCancellationRequested && index < observers.Length; index++)
+                {
+                    var observer = observers[index];
+                    try
+                    {
+                        observer.OnError (exc);
+                    }
+                    catch (Exception innerExc)
+                    {
+                        Log.Exception ("Producer.OnProduce: Caught exception from .OnError: {0}", innerExc);
+                    }
+                }
+            }
+    
+            protected void TerminateObservers()
+            {
+                IObserver<T>[] observers;
+    
+                lock (Lock)
+                {
+                    observers = CurrentObservers_NoLock;
+                    m_observers.Clear ();
+                }
+    
+                foreach (var observer in observers)
+                {
+                    try
+                    {
+                        observer.OnCompleted ();
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception ("Producer.TerminateObservers: Caught exception from .OnCompleted: {0}", exc);
+                    }
+                }
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Observable\Observables.cs
 // ############################################################################
 
 // ############################################################################
@@ -8814,12 +9637,70 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    namespace Source.Common
+    {
+        using System;
+        using System.Threading;
+    
+        abstract partial class BaseDisposable : IDisposable
+        {
+            int m_isDisposed;
+    
+            public bool IsDisposed
+            {
+                get { return m_isDisposed != 0; }
+            }
+    
+            public void Dispose ()
+            {
+                if (Interlocked.Exchange (ref m_isDisposed, 1) == 0)
+                {
+                    try
+                    {
+                        OnDispose ();
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception (
+                            "BaseDisposable.Dispose for {0}, caught exception: {1}", 
+                            GetType ().FullName,
+                            exc
+                            );
+                    }
+                }            
+            }
+    
+            protected abstract void OnDispose ();
+        }
+    
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
+// ############################################################################
+
+// ############################################################################
 namespace FileInclude.Include
 {
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-07-30T09:53:10";
+        public const string IncludeDate     = @"2013-08-01T23:44:13";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
@@ -8828,25 +9709,30 @@ namespace FileInclude.Include
         public const string Include_4       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
         public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
         public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
-        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_21       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_22       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_23       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_24       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_25       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Extensions\ObservableExtensions.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Observable\Producers.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_23       = @"C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs";
+        public const string Include_24       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_25       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_26       = @"C:\temp\GitHub\T4Include\Observable\Observables.cs";
+        public const string Include_27       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_28       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_29       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_30       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
     }
 }
 // ############################################################################

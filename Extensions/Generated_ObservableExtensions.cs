@@ -67,7 +67,7 @@ namespace Source.Extensions
 
     static partial class ObservableExtensions
     {
-        public static IObservable<T> Where<T> (IObservable<T> observable, Func<T,bool> p)
+        public static IObservable<T> Where<T> (this IObservable<T> observable, Func<T,bool> p)
         {
             if (observable == null)
             {
@@ -129,7 +129,7 @@ namespace Source.Extensions
 
     static partial class ObservableExtensions
     {
-        public static IObservable<TTo> Select<T,TTo> (IObservable<T> observable, Func<T,TTo> p)
+        public static IObservable<TTo> Select<T,TTo> (this IObservable<T> observable, Func<T,TTo> p)
         {
             if (observable == null)
             {
@@ -191,7 +191,7 @@ namespace Source.Extensions
 
     static partial class ObservableExtensions
     {
-        public static IObservable<T> Take<T> (IObservable<T> observable, int p)
+        public static IObservable<T> Take<T> (this IObservable<T> observable, int p)
         {
             if (observable == null)
             {
@@ -253,7 +253,7 @@ namespace Source.Extensions
 
     static partial class ObservableExtensions
     {
-        public static IObservable<T> Skip<T> (IObservable<T> observable, int p)
+        public static IObservable<T> Skip<T> (this IObservable<T> observable, int p)
         {
             if (observable == null)
             {
