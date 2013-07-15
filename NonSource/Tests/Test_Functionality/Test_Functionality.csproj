@@ -76,7 +76,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Events.tt</DependentUpon>
     </Compile>
+    <Compile Include="T4\NamedTuple.cs">
+      <DependentUpon>NamedTuple.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="T4\TestControl.cs" />
+    <Compile Include="T4\TestsFor_NamedTuple.cs" />
     <Compile Include="T4\TestsFor_WPFT4.cs" />
     <Compile Include="Text\TestsFor_LineToObjectExtensions.cs" />
   </ItemGroup>
@@ -103,6 +109,10 @@
     <None Include="T4\Generated_Events.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_Events.cs</LastGenOutput>
+    </None>
+    <None Include="T4\NamedTuple.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NamedTuple.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

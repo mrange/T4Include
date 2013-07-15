@@ -1,0 +1,414 @@
+﻿<#@ include     file        ="Header.ttinclude"  #>
+<#
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+#>
+
+namespace <#=Namespace#>
+{
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Text;
+
+#if !SUPPRESS_NAMED_TUPLE_COMMON
+    partial interface INamedTuple
+    {
+        void ToString (StringBuilder sb, int indent);
+    }
+
+    static partial class NamedTupleCommon
+    {
+        public static readonly  IEqualityComparer   DefaultComparer         = EqualityComparer<object>.Default  ;
+        public const            int                 DefaultHashCode         = 0x55555555                        ;
+        public const            StringComparison    DefaultStringComparison = StringComparison.Ordinal          ;
+
+        public static bool StructuralEqual (IStructuralEquatable left, IStructuralEquatable right)
+        {
+            if (left != null && right != null)
+            {
+                return left.Equals (right, DefaultComparer);
+            }
+            else
+            {
+                return left == null && right == null;
+            }
+        }
+
+        public static int StructuralGetHashCode (IStructuralEquatable v)
+        {
+            if (v == null)
+            {
+                return DefaultHashCode;
+            }
+
+            return v.GetHashCode (DefaultComparer);
+        }
+
+        public static void AppendReferenceLine<T> (StringBuilder sb, T value, int indent)
+            where T : class
+        {
+            var nt = value as INamedTuple;
+            var e = value as IEnumerable;
+            if (nt != null)
+            {
+                sb.AppendLine ();
+                nt.ToString (sb, indent + 4);
+            }
+            else if (e != null)
+            {
+                sb.AppendLine ();
+                sb.Append (' ', indent + 4);
+                sb.AppendLine ("[");
+                var idx = -1;
+                foreach (var obj in e)
+                {
+                    ++idx;
+                    sb.Append (' ', indent + 8);
+                    sb.Append ('[');
+                    sb.Append (idx.ToString ("000"));
+                    sb.Append ("] = ");
+
+                    var s = obj as string;
+                    if (s != null)
+                    {
+                        AppendStringLine (sb, s, indent + 8);
+                    }
+                    else
+                    {
+                        AppendReferenceLine (sb, obj, indent + 8);
+                    }
+                }
+                sb.Append (' ', indent + 4);
+                sb.AppendLine ("]");
+            }
+            else if (value == null)
+            {
+                sb.AppendLine ("null");
+            }
+            else
+            {
+                sb.Append (value);
+                sb.AppendLine ();
+            }
+        }
+
+        public static void AppendValueLine<T> (StringBuilder sb, T value, int indent)
+            where T : struct
+        {
+            sb.Append (value);
+            sb.AppendLine ();
+        }
+
+        public static void AppendStringLine (StringBuilder sb, string value, int indent)
+        {
+            if (value == null)
+            {
+                sb.AppendLine ("null");
+            }
+            else
+            {
+                sb.Append ('"');
+                sb.Append (value);
+                sb.Append ('"');
+                sb.AppendLine ();
+            }
+        }
+
+    } 
+#endif
+
+<#
+    var propIdx = -1;
+
+    foreach (var tuple in Model)
+    {
+        var maxTypeLength = tuple.Select (p => (int?)(p.Type).Length).Max () ?? 0;
+        var maxNameLength = tuple.Select (p => (int?)(p.Name).Length).Max () ?? 5;
+        
+#>
+
+    sealed partial class <#=tuple.Name#> : IEquatable<<#=tuple.Name#>>, INamedTuple
+    {
+
+
+<#
+    propIdx = -1;
+    foreach (var propDef in tuple)
+    {
+        ++propIdx;
+#>
+        public <#=LeftJustify(propDef.Type, maxTypeLength)#> <#=LeftJustify(propDef.Name, maxNameLength)#> { get; set; }
+<#
+    }
+#>
+
+        #region Generated code
+
+        public void ToString (StringBuilder sb, int indent)
+        {
+            sb.Append (' ', indent);
+<#
+    if (tuple.GenerateToString)
+    {
+#>
+            var innerIndent = indent + 4;
+            sb.AppendLine ("{");
+
+            sb.Append (' ', innerIndent);
+            sb.Append ("<#=LeftJustify ("!Type", maxNameLength)#> = ");
+            sb.AppendLine (GetType ().Name);
+
+<#
+    propIdx = -1;
+    foreach (var propDef in tuple)
+    {
+        ++propIdx;
+#>
+            sb.Append (' ', innerIndent);
+            sb.Append ("<#=LeftJustify (propDef.Name, maxNameLength)#> = ");
+<#
+        switch (propDef.PropertyClass)
+        {
+            case PropertyClass.ReferenceType:
+            case PropertyClass.StructuralType:
+            default:
+#>
+            NamedTupleCommon.AppendReferenceLine (sb, <#=propDef.Name#>, innerIndent);
+<#
+                break;
+            case PropertyClass.StringType:
+#>
+            NamedTupleCommon.AppendStringLine (sb, <#=propDef.Name#>, innerIndent);
+<#
+                break;
+            case PropertyClass.ValueType:
+#>
+            NamedTupleCommon.AppendValueLine (sb, <#=propDef.Name#>, innerIndent);
+<#
+                break;
+        }
+    }
+#>
+            sb.Append (' ', indent);
+            sb.AppendLine ("}");
+<#
+    }
+    else
+    {
+#>
+            sb.Append (base.ToString ());
+<#
+    }
+#>
+        }
+
+        public override string ToString ()
+        {
+            var sb = new StringBuilder ();
+
+            ToString (sb, 0);
+
+            return sb.ToString ();
+        }
+
+<#
+    if (tuple.StructuralTuple)
+    {
+#>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as <#=tuple.Name#>);
+        }
+
+        public bool Equals (<#=tuple.Name#> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            var result = 
+<#
+    propIdx = -1;
+    foreach (var propDef in tuple)
+    {
+        ++propIdx;
+        var prepend = propIdx > 0 ? "&&  ": "    ";
+        switch (propDef.PropertyClass)
+        {
+            case PropertyClass.StringType:
+#>
+                <#=prepend#>((<#=propDef.Name#> ?? "").Equals (other.<#=propDef.Name#> ?? "", NamedTupleCommon.DefaultStringComparison))
+<#
+                break;
+            default:
+            case PropertyClass.ReferenceType:
+#>
+                <#=prepend#>(<#=propDef.Name#> == null && other.<#=propDef.Name#> == null || <#=propDef.Name#> != null && other.<#=propDef.Name#> != null && <#=propDef.Name#>.Equals (other.<#=propDef.Name#>))
+<#
+                break;
+            case PropertyClass.ValueType:
+#>
+                <#=prepend#>(<#=propDef.Name#>.Equals (other.<#=propDef.Name#>))
+<#
+                break;
+            case PropertyClass.StructuralType:
+#>
+                <#=prepend#>(NamedTupleCommon.StructuralEqual (<#=propDef.Name#>, other.<#=propDef.Name#>))
+<#
+                break;
+        }
+    }
+#>
+                ;
+
+            return result;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var result = NamedTupleCommon.DefaultHashCode;
+<#
+    propIdx = -1;
+    foreach (var propDef in tuple)
+    {
+        ++propIdx;
+        switch (propDef.PropertyClass)
+        {
+            default:
+            case PropertyClass.ReferenceType:
+            case PropertyClass.StringType:
+#>
+                result = (result << 5) + result ^ (<#=propDef.Name#> != null ? <#=propDef.Name#>.GetHashCode () : NamedTupleCommon.DefaultHashCode);
+<#
+                break;
+            case PropertyClass.ValueType:
+#>
+                result = (result << 5) + result ^ (<#=propDef.Name#>.GetHashCode ());
+<#
+                break;
+            case PropertyClass.StructuralType:
+#>
+                result = (result << 5) + result ^ (NamedTupleCommon.StructuralGetHashCode (<#=propDef.Name#>));
+<#
+                break;
+        }
+    }
+#>
+                return result;
+            }
+
+        }
+<#
+    }
+    else
+    {
+#>
+        public bool Equals (<#=tuple.Name#> other)
+        {
+            return Equals (other as object);
+        }
+<#
+    }
+#>
+        #endregion
+    }
+
+<#
+    }
+#>
+}
+<#+
+    string              Namespace                   = "T4Include"               ;
+    TupleDefinition[]   Model                       = new TupleDefinition[0]    ;
+
+    static bool         Default_StructuralTuple     = true                      ;
+    static bool         Default_GenerateToString    = true                      ;
+
+    sealed class TupleDefinition : BaseContainer<Root, PropertyDefinition>
+    {
+        public readonly string  Name                        ;
+        public readonly bool    StructuralTuple             ;
+        public readonly bool    GenerateToString            ;
+
+        public TupleDefinition (string name, bool? structuralTuple = null, bool? generateToString = null)
+        {
+            Name                        = name                      ?? S_NoName                 ;
+            StructuralTuple             = structuralTuple           ?? Default_StructuralTuple  ;
+            GenerateToString            = generateToString          ?? Default_GenerateToString ;
+        }
+    }
+
+    enum PropertyClass
+    {
+        ReferenceType           ,
+        ValueType               ,
+        StructuralType          ,
+        StringType              ,
+    }
+
+    sealed class PropertyDefinition : BaseEntity<TupleDefinition> 
+    {
+        public readonly string          Type            ;
+        public readonly string          Name            ;
+
+        public readonly PropertyClass   PropertyClass   ;
+
+        static bool IsStringType (string type)
+        {
+            switch (type ?? "")
+            {
+                case "string":
+                case "String":
+                case "System.String":
+                case "global::System.String":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+
+        public PropertyDefinition (
+            string          type            ,
+            string          name            ,
+            PropertyClass   propertyClass
+            )
+        {
+            Type            = type      ?? S_NoType ;
+            Name            = name      ?? S_NoName ;
+            PropertyClass   = IsStringType (type)
+                ?   PropertyClass.StringType    
+                :   propertyClass               
+                ;
+        }
+
+    }
+
+    static PropertyDefinition R (string type, string name)
+    {
+        return new PropertyDefinition (type, name, propertyClass:PropertyClass.ReferenceType);
+    }
+
+    static PropertyDefinition V (string type, string name)
+    {
+        return new PropertyDefinition (type, name, propertyClass:PropertyClass.ValueType);
+    }
+
+    static PropertyDefinition A (string type, string name)
+    {
+        return new PropertyDefinition (type + "[]", name, propertyClass:PropertyClass.StructuralType);
+    }
+#>
