@@ -12,9 +12,95 @@
 
 // ### INCLUDE: Generated_ObservableExtensions.cs
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Source.Extensions
 {
     using System;
+
+    partial interface IProducer<T> : IObservable<T>, IDisposable
+    {
+        void Start ();
+        void Stop ();
+    }
+
+    sealed partial class TaskProducer<T> : IProducer<T>
+    {
+        readonly TaskFactory m_taskFactory;
+        readonly IEnumerable<T> m_values;
+        readonly IEnumerator<T> m_enumerator;
+        readonly int m_maxFailureCount;
+
+        CancellationTokenSource m_cancellationTokenSource;
+        CancellationToken m_cancellationToken;
+        object m_task;
+
+        public TaskProducer (TaskFactory taskFactory, IEnumerable<T> values, int maxFailureCount = 10)
+        {
+            m_taskFactory = taskFactory;
+            m_values = values;
+            m_enumerator = m_values.GetEnumerator ();
+            m_maxFailureCount = maxFailureCount;
+        }
+
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            m_enumerator.Dispose ();
+        }
+
+        public void Start()
+        {
+            if (m_task != null)
+            {
+                return;
+            }
+
+            lock (m_taskFactory)
+            {
+                if (m_task != null)
+                {
+                    return;
+                }
+
+                m_cancellationTokenSource = new CancellationTokenSource ();
+                m_cancellationToken = m_cancellationTokenSource.Token;
+
+                m_task = m_taskFactory.StartNew (OnProduce, m_cancellationToken, TaskCreationOptions.LongRunning);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        void OnProduce(object obj)
+        {
+            try
+            {
+            while (m_enumerator.MoveNext ())
+            {
+                    m_enumerator.Current    
+                    
+            }
+            }
+            catch (Exception exc)
+            {
+                    
+            }
+            
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     sealed partial class EmptyObservable<T> : IObservable<T>
     {
