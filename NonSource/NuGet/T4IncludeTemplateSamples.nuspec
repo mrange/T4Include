@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata schemaVersion="2">
+    <id>T4IncludeTemplateSamples</id>
+    <version>1.0.4</version>
+    <title>T4Include Templates with Samples</title>
+    <authors>Mårten Rånge</authors>
+    <owners>Mårten Rånge</owners>
+    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <projectUrl>https://github.com/mrange/T4Include</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>T4Include Templates is a set of reusable T4 templates intended to accelerate development as well as reducing maintenance cost. This package includes sample code.</description>
+    <summary>T4Include Templates is a set of reusable T4 templates. This package includes sample code.</summary>
+    <tags>include T4</tags>
+    <dependencies>
+        <dependency id="T4IncludeTemplate" version="1.0.1" />
+    </dependencies>
+    <frameworkAssemblies>
+    </frameworkAssemblies>
+    <releaseNotes>
+        * 1.0.4   - Fixed an issue in the sample code for WPF controls
+        * 1.0.3   - Fixed some path issues and updated dependency version
+        * 1.0.2   - Fixed some path issues
+        * 1.0.1   - Initial release
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="templatecontent\Generated_DependencyProperties.tt.pp" target="content" />
+    <file src="templatecontent\Generated_Commands.tt.pp" target="content" />
+    <file src="templatecontent\Generated_Events.tt.pp" target="content" />
+    <file src="templatecontent\T4IncludeControl.cs.pp" target="content" />
+  </files>
+</package>
