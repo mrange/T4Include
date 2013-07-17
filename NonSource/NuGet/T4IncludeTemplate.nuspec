@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata schemaVersion="2">
+    <id>T4IncludeTemplate</id>
+    <version>1.0.1</version>
+    <title>T4Include Templates</title>
+    <authors>Mårten Rånge</authors>
+    <owners>Mårten Rånge</owners>
+    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <projectUrl>https://github.com/mrange/T4Include</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>T4Include Templates is a set of reusable T4 templates intended to accelerate development as well as reducing maintenance cost. For samples on how to use them see the nuget package T4IncludeTemplateSamples.</description>
+    <summary>T4Include Templates is a set of reusable T4 templates</summary>
+    <tags>include T4</tags>
+    <frameworkAssemblies>
+    </frameworkAssemblies>
+    <releaseNotes>
+        * 1.0.1   - Initial release
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="..\..\T4\DependencyProperties.ttinclude" target="T4" />
+    <file src="..\..\T4\Header.ttinclude" target="T4" />
+    <file src="..\..\T4\IncludeHeader.ttinclude" target="T4" />
+    <file src="..\..\T4\IncludeLocalFile.ttinclude" target="T4" />
+    <file src="..\..\T4\IncludeProject.ttinclude" target="T4" />
+    <file src="..\..\T4\IncludeWebFile.ttinclude" target="T4" />
+    <file src="..\..\T4\NamedTuple.ttinclude" target="T4" />
+    <file src="..\..\T4\NumericalExtensions.ttinclude" target="T4" />
+    <file src="..\..\T4\ParseExtensions.ttinclude" target="T4" />
+    <file src="..\..\T4\RoutedCommands.ttinclude" target="T4" />
+    <file src="..\..\T4\RoutedEvents.ttinclude" target="T4" />
+    <file src="..\..\T4\StateMachine.ttinclude" target="T4" />
+  </files>
+</package>
