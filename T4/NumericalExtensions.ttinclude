@@ -16,13 +16,9 @@
 
 // ReSharper disable PartialTypeWithSinglePart
 
-namespace Source.Extensions
+namespace <#=Namespace#>
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-
-    using Source.Common;
 
     static partial class NumericalExtensions
     {
@@ -132,7 +128,8 @@ namespace Source.Extensions
         TimeSpanLike,
     }
 
-    NumericalDefinition[] Model = new NumericalDefinition[0];    
+    string                Namespace = "T4Include"               ;
+    NumericalDefinition[] Model     = new NumericalDefinition[0];    
 
     sealed class NumericalDefinition : BaseEntity<Root>
     {

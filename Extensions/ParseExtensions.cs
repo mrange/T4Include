@@ -24,8 +24,6 @@ namespace Source.Extensions
     using System.Collections.Generic;
     using System.Globalization;
 
-    using Source.Common;
-
     static partial class ParseExtensions
     {
         static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
@@ -194,7 +192,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, Type type, out object value)
         {
-            return s.TryParse (Config.DefaultCulture, type, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, type, out value);
         }
 
         public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
@@ -205,7 +203,7 @@ namespace Source.Extensions
 
         public static object Parse (this string s, Type type, object defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, type, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, type, defaultValue);
         }
 
         // Boolean (BoolLike)
@@ -214,7 +212,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Boolean value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Boolean Parse (this string s, CultureInfo cultureInfo, Boolean defaultValue)
@@ -226,7 +224,7 @@ namespace Source.Extensions
 
         public static Boolean Parse (this string s, Boolean defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Boolean value)
@@ -242,7 +240,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Char value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Char Parse (this string s, CultureInfo cultureInfo, Char defaultValue)
@@ -254,7 +252,7 @@ namespace Source.Extensions
 
         public static Char Parse (this string s, Char defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Char value)
@@ -270,7 +268,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out SByte value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static SByte Parse (this string s, CultureInfo cultureInfo, SByte defaultValue)
@@ -282,7 +280,7 @@ namespace Source.Extensions
 
         public static SByte Parse (this string s, SByte defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out SByte value)
@@ -298,7 +296,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Int16 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
@@ -310,7 +308,7 @@ namespace Source.Extensions
 
         public static Int16 Parse (this string s, Int16 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
@@ -326,7 +324,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Int32 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
@@ -338,7 +336,7 @@ namespace Source.Extensions
 
         public static Int32 Parse (this string s, Int32 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
@@ -354,7 +352,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Int64 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
@@ -366,7 +364,7 @@ namespace Source.Extensions
 
         public static Int64 Parse (this string s, Int64 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
@@ -382,7 +380,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Byte value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
@@ -394,7 +392,7 @@ namespace Source.Extensions
 
         public static Byte Parse (this string s, Byte defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
@@ -410,7 +408,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out UInt16 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static UInt16 Parse (this string s, CultureInfo cultureInfo, UInt16 defaultValue)
@@ -422,7 +420,7 @@ namespace Source.Extensions
 
         public static UInt16 Parse (this string s, UInt16 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt16 value)
@@ -438,7 +436,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out UInt32 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static UInt32 Parse (this string s, CultureInfo cultureInfo, UInt32 defaultValue)
@@ -450,7 +448,7 @@ namespace Source.Extensions
 
         public static UInt32 Parse (this string s, UInt32 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt32 value)
@@ -466,7 +464,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out UInt64 value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static UInt64 Parse (this string s, CultureInfo cultureInfo, UInt64 defaultValue)
@@ -478,7 +476,7 @@ namespace Source.Extensions
 
         public static UInt64 Parse (this string s, UInt64 defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt64 value)
@@ -494,7 +492,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Single value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
@@ -506,7 +504,7 @@ namespace Source.Extensions
 
         public static Single Parse (this string s, Single defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
@@ -522,7 +520,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Double value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
@@ -534,7 +532,7 @@ namespace Source.Extensions
 
         public static Double Parse (this string s, Double defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
@@ -550,7 +548,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out Decimal value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
@@ -562,7 +560,7 @@ namespace Source.Extensions
 
         public static Decimal Parse (this string s, Decimal defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
@@ -578,7 +576,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out TimeSpan value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
@@ -590,7 +588,7 @@ namespace Source.Extensions
 
         public static TimeSpan Parse (this string s, TimeSpan defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
@@ -606,7 +604,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out DateTime value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (Source.Common.Config.DefaultCulture, out value);
         }
 
         public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
@@ -618,7 +616,7 @@ namespace Source.Extensions
 
         public static DateTime Parse (this string s, DateTime defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
         }
 
         public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)

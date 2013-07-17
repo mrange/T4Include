@@ -13,7 +13,8 @@
 // ### INCLUDE: ../Common/Config.cs
 
 <#
-    Model = new []
+    Namespace   = "Source.Extensions"   ;
+    Model       = new []
     {
         I ("Char")      ,
         I ("SByte")     ,

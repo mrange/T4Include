@@ -10,14 +10,16 @@
         new ClassDefinition ("T4IncludeControl")
         {
             // A normal property
-            P ("bool"   ,   "IsValid"           ),
+            P ("bool"                   ,   "IsValid"           ),
+            // A normal property referencing a type defined in the target assembly
+            P ("T4IncludeControlFlags"  ,   "ControlFlags"      ),
             // An attached property
-            P ("string" ,   "AttachedValue"     , flags:PropertyFlags.IsAttached    )
+            P ("string"                 ,   "AttachedValue"     , flags:PropertyFlags.IsAttached    )
         },
     };
 
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.1\T4\DependencyProperties.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.2\T4\DependencyProperties.ttinclude" #>
 
 

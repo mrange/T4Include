@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>T4IncludeTemplateSamples</id>
-    <version>1.0.4</version>
+    <version>1.0.6</version>
     <title>T4Include Templates with Samples</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
@@ -13,11 +13,13 @@
     <summary>T4Include Templates is a set of reusable T4 templates. This package includes sample code.</summary>
     <tags>include T4</tags>
     <dependencies>
-        <dependency id="T4IncludeTemplate" version="1.0.1" />
+        <dependency id="T4IncludeTemplate" version="1.0.2" />
     </dependencies>
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
+        * 1.0.6   - Added sample for numerical extension methods
+        * 1.0.5   - Added sample for named tuples and numerical extension methods
         * 1.0.4   - Fixed an issue in the sample code for WPF controls
         * 1.0.3   - Fixed some path issues and updated dependency version
         * 1.0.2   - Fixed some path issues
@@ -28,6 +30,8 @@
     <file src="templatecontent\Generated_DependencyProperties.tt.pp" target="content" />
     <file src="templatecontent\Generated_Commands.tt.pp" target="content" />
     <file src="templatecontent\Generated_Events.tt.pp" target="content" />
+    <file src="templatecontent\Generated_NamedTuple.tt.pp" target="content" />
+    <file src="templatecontent\Generated_NumericalExtensions.tt.pp" target="content" />
     <file src="templatecontent\T4IncludeControl.cs.pp" target="content" />
   </files>
 </package>

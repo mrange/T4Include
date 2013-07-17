@@ -4,7 +4,7 @@
 
     Model = new []
     {
-        // The name of a class
+        // The name of the class
         new ClassDefinition ("T4IncludeControl")
         {
             // The name of the command
@@ -14,6 +14,6 @@
 
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.1\T4\RoutedCommands.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.2\T4\RoutedCommands.ttinclude" #>
 
 

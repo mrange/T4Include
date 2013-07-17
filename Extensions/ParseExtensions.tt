@@ -15,7 +15,9 @@
 // ### INCLUDE: ../Common/Config.cs
 
 <#
-    Model = new []
+    Namespace      = "Source.Extensions"                    ;
+    DefaultCulture = "Source.Common.Config.DefaultCulture"  ;
+    Model          = new []
     {
         B ("Boolean")   ,
         C ("Char")      ,

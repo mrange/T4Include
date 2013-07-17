@@ -1,7 +1,17 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 
 namespace $rootnamespace$
 {
+    [Flags]
+    enum T4IncludeControlFlags
+    {
+        FirstFlag   = 0x0001            ,
+        SecondFlag  = 0x0002            ,
+        ThirdFlag   = 0x0004            ,
+        FourthFlag  = 0x0008            ,
+    }
+
     partial class T4IncludeControl : Control
     {
         partial void Constructed__T4IncludeControl()

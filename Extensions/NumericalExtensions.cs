@@ -32,10 +32,6 @@
 namespace Source.Extensions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-
-    using Source.Common;
 
     static partial class NumericalExtensions
     {

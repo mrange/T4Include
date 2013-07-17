@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>T4IncludeTemplate</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <title>T4Include Templates</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
@@ -15,6 +15,7 @@
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
+        * 1.0.2   - Updated templates in order to remove some unnecessary dependencies
         * 1.0.1   - Initial release
     </releaseNotes>
   </metadata>

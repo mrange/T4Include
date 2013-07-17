@@ -16,13 +16,11 @@
 
 // ReSharper disable PartialTypeWithSinglePart
 
-namespace Source.Extensions
+namespace <#=Namespace#>
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-
-    using Source.Common;
 
     static partial class ParseExtensions
     {
@@ -94,7 +92,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, Type type, out object value)
         {
-            return s.TryParse (Config.DefaultCulture, type, out value);
+            return s.TryParse (<#=DefaultCulture#>, type, out value);
         }
 
         public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
@@ -105,7 +103,7 @@ namespace Source.Extensions
 
         public static object Parse (this string s, Type type, object defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, type, defaultValue);
+            return s.Parse (<#=DefaultCulture#>, type, defaultValue);
         }
 
 <#
@@ -118,7 +116,7 @@ namespace Source.Extensions
 
         public static bool TryParse (this string s, out <#=nd.Name#> value)
         {
-            return s.TryParse (Config.DefaultCulture, out value);
+            return s.TryParse (<#=DefaultCulture#>, out value);
         }
 
         public static <#=nd.Name#> Parse (this string s, CultureInfo cultureInfo, <#=nd.Name#> defaultValue)
@@ -130,7 +128,7 @@ namespace Source.Extensions
 
         public static <#=nd.Name#> Parse (this string s, <#=nd.Name#> defaultValue)
         {
-            return s.Parse (Config.DefaultCulture, defaultValue);
+            return s.Parse (<#=DefaultCulture#>, defaultValue);
         }
 
 <#
@@ -219,7 +217,9 @@ namespace Source.Extensions
         TimeSpanLike,
     }
 
-    ParseDefinition[] Model = new ParseDefinition[0];    
+    string            Namespace         = "T4Include"                       ;
+    string            DefaultCulture    = "CultureInfo.InvariantCulture"    ;
+    ParseDefinition[] Model             = new ParseDefinition[0]            ;    
 
     sealed class ParseDefinition : BaseEntity<Root>
     {
