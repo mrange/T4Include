@@ -22,6 +22,22 @@ namespace Source.Testing
     using System.Reflection;
     using Source.Common;
 
+    [AttributeUsage(AttributeTargets.Class)]
+    sealed partial class TestsForAttribute : Attribute
+    {
+        public readonly int Ordinal;
+
+        public TestsForAttribute ()
+            :   this (0)
+        {
+        }
+
+        public TestsForAttribute (int ordinal)
+        {
+            Ordinal = ordinal;
+        }
+    }
+
     static partial class TestRunner
     {
         public static bool ExecuteTests (Assembly assemblyContainingTests = null)
@@ -38,7 +54,12 @@ namespace Source.Testing
                 var testClasses = assembly
                     .GetTypes()
                     .Where(t => t.Name.StartsWith("TestsFor_", StringComparison.OrdinalIgnoreCase))
-                    .OrderBy(t => t.Name)
+                    .OrderBy (t =>
+                        {
+                            var attrib = (TestsForAttribute)t.GetCustomAttributes (typeof (TestsForAttribute)).FirstOrDefault ();
+                            return attrib != null ? attrib.Ordinal : int.MaxValue;
+                        })
+                    .ThenBy(t => t.Name)
                     .ToArray()
                     ;
                 Log.HighLight("Found {0} test classes", testClasses.Length);

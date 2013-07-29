@@ -48,6 +48,7 @@
     <Compile Include="..\..\Global_AssemblyInfo.cs">
       <Link>Properties\Global_AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Collections\TestsFor_SkipList.cs" />
     <Compile Include="Common\TestsFor_SubString.cs" />
     <Compile Include="Concurrency\TestsFor_TaskSchedulers.cs" />
     <Compile Include="Extensions\TestsFor_EnumParseExtensions.cs" />

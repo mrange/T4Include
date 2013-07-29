@@ -46,6 +46,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Collections\Generated_SkipList.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_SkipList.cs</LastGenOutput>
+    </None>
+    <Compile Include="Collections\Generated_SkipList.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_SkipList.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\SkipList.cs" />
     <Compile Include="Common\Array.cs" />
     <Compile Include="Common\BaseDisposable.cs" />
     <Compile Include="Common\Config.cs" />

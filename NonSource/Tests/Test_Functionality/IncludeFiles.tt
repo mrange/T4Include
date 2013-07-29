@@ -19,6 +19,7 @@
             Include (@"HRON\HRONObjectSerializer.cs"            ),
             Include (@"HRON\HRONDynamicObjectSerializer.cs"     ),
             Include (@"Common\ConsoleLog.cs"                    ),
+            Include (@"Collections\SkipList.cs"                 ),
             Include (@"Concurrency\TaskSchedulers.cs"           ),
             Include (@"Extensions\BasicExtensions.cs"           ),
             Include (@"Extensions\SqlExtensions.cs"             ),

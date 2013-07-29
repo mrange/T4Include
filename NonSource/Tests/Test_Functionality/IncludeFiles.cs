@@ -23,6 +23,8 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\ConsoleLog.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Collections\SkipList.cs
+// @@@ INCLUDE_FOUND: Generated_SkipList.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDE_FOUND: ShutDownable.cs
@@ -60,6 +62,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDE_FOUND: Config.cs
 // @@@ INCLUDE_FOUND: Generated_Log.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs
 // @@@ SKIPPING (Already seen): C:\temp\GitHub\T4Include\Common\Log.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs
@@ -1457,6 +1460,286 @@ namespace FileInclude
 // ############################################################################
 
 // ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Collections\SkipList.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    
+    
+    namespace Source.Collections
+    {
+        using System;
+        using System.Collections;
+        using System.Collections.Generic;
+        using System.Text;
+    
+        sealed partial class SkipList<TKey, TValue> : IEnumerable<SkipList<TKey,TValue>.INode> 
+        {
+            const double PLimit = 0.125;
+    
+            public interface INode
+            {
+                TKey    Key     { get; }
+                TValue  Value   { get; set; }
+            }
+    
+            abstract partial class BaseNode : INode
+            {
+                public TKey     Key         { get; set; }
+                public TValue   Value       { get; set; }
+    
+                public abstract BaseNode this[int idx]
+                {
+                    get;
+                    set;
+                }
+    
+                public abstract int Length { get; }
+    
+                public override string ToString()
+                {
+                    var sb = new StringBuilder ();
+    
+                    sb.Append ("{ Key = ");
+                    sb.Append (Key);
+                    sb.Append (", Value = ");
+                    sb.Append (Value);
+                    sb.Append ("}");
+    
+                    return sb.ToString ();
+                }
+            }
+    
+            sealed partial class RootNode : BaseNode
+            {
+                // Invariant: Always != null
+                // Invariant: Always .Length > 0
+                BaseNode[]   m_levels = new BaseNode[1];
+    
+                public override BaseNode this[int idx]
+                {
+                    get { return m_levels[idx]; }
+                    set { m_levels[idx] = value; }
+                }
+    
+                public override int Length
+                {
+                    get { return m_levels.Length; }
+                }
+    
+                public void Resize (int levels, bool allowShrink = false)
+                {
+                    if (!allowShrink && levels < m_levels.Length)
+                    {
+                        return;
+                    }
+    
+                    Array.Resize (ref m_levels, levels);
+                }
+            }
+    
+            readonly IComparer<TKey>    m_comparer                          ;
+            readonly RootNode           m_head          = new RootNode ()   ;
+            readonly Random             m_random        = new Random ()     ;
+            readonly double             m_probability                       ;
+    
+            int      m_count                                                ;
+    
+            public SkipList ()
+                :   this (null)
+            {
+            }
+    
+            public SkipList (IComparer<TKey> comparer)
+                :   this (0.5, comparer)
+            {
+            }
+    
+            public SkipList (double probability)
+                :   this (probability, null)
+            {
+            }
+    
+            public SkipList (double probability, IComparer<TKey> comparer)
+            {
+                m_probability   = Math.Min (Math.Max (probability, PLimit), 1 - PLimit);
+                m_comparer      = comparer ?? Comparer<TKey>.Default;
+            }
+    
+            BaseNode[] FindInsertionPoint (TKey key)
+            {
+                var insertionPoint = new BaseNode[m_head.Length];
+                BaseNode previous = m_head;
+    
+                for (var level = insertionPoint.Length - 1; level >= 0; --level)
+                {
+                    var node    = previous[level];
+    
+                    while (node != null && (m_comparer.Compare (key, node.Key)) > 0)
+                    {
+                        previous = node;
+                        node = node[level];
+                    }
+    
+                    insertionPoint[level] = previous;
+                }
+    
+                return insertionPoint;
+            }
+    
+            BaseNode FindMatch (TKey key)
+            {
+                var insertionPoint = new BaseNode[m_head.Length];
+                BaseNode previous = m_head;
+    
+                for (var level = insertionPoint.Length - 1; level >= 0; --level)
+                {
+                    var node    = previous[level];
+                    var result  = int.MinValue;
+    
+                    while (node != null && (result = m_comparer.Compare (key, node.Key)) > 0)
+                    {
+                        previous = node;
+                        node = node[level];
+                    }
+    
+                    if (result == 0)
+                    {
+                        return node;
+                    }
+                }
+    
+                return null;
+            }
+    
+            int ComputeLevelCount ()
+            {
+                var level = 1;
+    
+                while (level < MaxLevel && m_random.NextDouble () < m_probability)
+                {
+                    ++level;
+                }
+    
+                return level;
+            }
+    
+            public INode Find (TKey key)
+            {
+                return FindMatch (key);
+    
+            }
+    
+            public bool TryAdd (TKey key, TValue value)
+            {
+                var insertionPoint = FindInsertionPoint (key);
+    
+                var existingNode = insertionPoint[0][0];
+                if (
+                        existingNode != null
+                    &&  m_comparer.Compare (existingNode.Key, key) == 0)
+                {
+                    return false;
+                }
+    
+                var levelCount = ComputeLevelCount ();
+    
+                var node = CreateNode (levelCount);
+                node.Key = key;
+                node.Value = value;
+    
+                var oldLevelCount = m_head.Length;
+    
+                if (levelCount > oldLevelCount)
+                {
+                    m_head.Resize (levelCount);
+                    Array.Resize (ref insertionPoint, levelCount);
+                    
+                    for (var iter = oldLevelCount; iter < levelCount; ++iter)
+                    {
+                        insertionPoint[iter] = m_head;
+                    }
+                }
+    
+                for (var iter = 0; iter < levelCount; ++iter)
+                {
+                    node[iter] = insertionPoint[iter][iter];
+                    insertionPoint[iter][iter] = node;
+                }
+    
+                ++m_count;
+    
+                return true;
+            }
+    
+            public bool TryRemove (TKey key)
+            {
+                var insertionPoint = FindInsertionPoint (key);
+    
+                var node = insertionPoint[0][0];
+    
+                if (node == null)
+                {
+                    return false;
+                }
+    
+                if (m_comparer.Compare (node.Key, key) != 0)
+                {
+                    return false;
+                }
+    
+                for (var iter = 0; iter < node.Length; ++iter)
+                {
+                    insertionPoint[iter][iter] = node[iter];
+                }
+    
+                --m_count;
+    
+                return true;
+            }
+    
+            public void Clear ()
+            {
+                m_head.Resize (1, allowShrink:true);
+                m_count = 0;
+                m_head[0] = null;
+            }
+    
+            public int Count { get {return m_count;}}
+    
+            public IEnumerator<INode> GetEnumerator()
+            {
+                var node = m_head[0];
+    
+                while (node != null)
+                {
+                    yield return node;
+                    node = node[0];
+                }
+            }
+    
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Collections\SkipList.cs
+// ############################################################################
+
+// ############################################################################
 // @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs
 namespace FileInclude
 {
@@ -1716,6 +1999,30 @@ namespace FileInclude
                 }
     
                 return defaultValue;
+            }
+    
+            public static void Shuffle<T>(this T[] values, Random random)
+            {
+                if (values == null)
+                {
+                    return;
+                }
+    
+                if (random == null)
+                {
+                    return;
+                }
+    
+                for (var iter = 0; iter < values.Length; ++iter)
+                {
+                    var swapWith = random.Next (iter, values.Length);
+    
+                    var tmp = values[iter];
+    
+                    values[iter] = values[swapWith];
+                    values[swapWith] = tmp;
+                }
+    
             }
     
             public static string DefaultTo (this string v, string defaultValue = null)
@@ -2003,6 +2310,22 @@ namespace FileInclude
         using System.Reflection;
         using Source.Common;
     
+        [AttributeUsage(AttributeTargets.Class)]
+        sealed partial class TestsForAttribute : Attribute
+        {
+            public readonly int Ordinal;
+    
+            public TestsForAttribute ()
+                :   this (0)
+            {
+            }
+    
+            public TestsForAttribute (int ordinal)
+            {
+                Ordinal = ordinal;
+            }
+        }
+    
         static partial class TestRunner
         {
             public static bool ExecuteTests (Assembly assemblyContainingTests = null)
@@ -2019,7 +2342,12 @@ namespace FileInclude
                     var testClasses = assembly
                         .GetTypes()
                         .Where(t => t.Name.StartsWith("TestsFor_", StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(t => t.Name)
+                        .OrderBy (t =>
+                            {
+                                var attrib = (TestsForAttribute)t.GetCustomAttributes (typeof (TestsForAttribute)).FirstOrDefault ();
+                                return attrib != null ? attrib.Ordinal : int.MaxValue;
+                            })
+                        .ThenBy(t => t.Name)
                         .ToArray()
                         ;
                     Log.HighLight("Found {0} test classes", testClasses.Length);
@@ -3511,8 +3839,6 @@ namespace FileInclude
         using System.Collections.Generic;
         using System.Globalization;
     
-        using Source.Common;
-    
         static partial class ParseExtensions
         {
             static readonly Dictionary<Type, Func<object>> s_defaultValues = new Dictionary<Type, Func<object>> 
@@ -3681,7 +4007,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, Type type, out object value)
             {
-                return s.TryParse (Config.DefaultCulture, type, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, type, out value);
             }
     
             public static object Parse (this string s, CultureInfo cultureInfo, Type type, object defaultValue)
@@ -3692,7 +4018,7 @@ namespace FileInclude
     
             public static object Parse (this string s, Type type, object defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, type, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, type, defaultValue);
             }
     
             // Boolean (BoolLike)
@@ -3701,7 +4027,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Boolean value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Boolean Parse (this string s, CultureInfo cultureInfo, Boolean defaultValue)
@@ -3713,7 +4039,7 @@ namespace FileInclude
     
             public static Boolean Parse (this string s, Boolean defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Boolean value)
@@ -3729,7 +4055,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Char value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Char Parse (this string s, CultureInfo cultureInfo, Char defaultValue)
@@ -3741,7 +4067,7 @@ namespace FileInclude
     
             public static Char Parse (this string s, Char defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Char value)
@@ -3757,7 +4083,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out SByte value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static SByte Parse (this string s, CultureInfo cultureInfo, SByte defaultValue)
@@ -3769,7 +4095,7 @@ namespace FileInclude
     
             public static SByte Parse (this string s, SByte defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out SByte value)
@@ -3785,7 +4111,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Int16 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Int16 Parse (this string s, CultureInfo cultureInfo, Int16 defaultValue)
@@ -3797,7 +4123,7 @@ namespace FileInclude
     
             public static Int16 Parse (this string s, Int16 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Int16 value)
@@ -3813,7 +4139,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Int32 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Int32 Parse (this string s, CultureInfo cultureInfo, Int32 defaultValue)
@@ -3825,7 +4151,7 @@ namespace FileInclude
     
             public static Int32 Parse (this string s, Int32 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Int32 value)
@@ -3841,7 +4167,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Int64 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Int64 Parse (this string s, CultureInfo cultureInfo, Int64 defaultValue)
@@ -3853,7 +4179,7 @@ namespace FileInclude
     
             public static Int64 Parse (this string s, Int64 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Int64 value)
@@ -3869,7 +4195,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Byte value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Byte Parse (this string s, CultureInfo cultureInfo, Byte defaultValue)
@@ -3881,7 +4207,7 @@ namespace FileInclude
     
             public static Byte Parse (this string s, Byte defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Byte value)
@@ -3897,7 +4223,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out UInt16 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static UInt16 Parse (this string s, CultureInfo cultureInfo, UInt16 defaultValue)
@@ -3909,7 +4235,7 @@ namespace FileInclude
     
             public static UInt16 Parse (this string s, UInt16 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt16 value)
@@ -3925,7 +4251,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out UInt32 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static UInt32 Parse (this string s, CultureInfo cultureInfo, UInt32 defaultValue)
@@ -3937,7 +4263,7 @@ namespace FileInclude
     
             public static UInt32 Parse (this string s, UInt32 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt32 value)
@@ -3953,7 +4279,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out UInt64 value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static UInt64 Parse (this string s, CultureInfo cultureInfo, UInt64 defaultValue)
@@ -3965,7 +4291,7 @@ namespace FileInclude
     
             public static UInt64 Parse (this string s, UInt64 defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out UInt64 value)
@@ -3981,7 +4307,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Single value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Single Parse (this string s, CultureInfo cultureInfo, Single defaultValue)
@@ -3993,7 +4319,7 @@ namespace FileInclude
     
             public static Single Parse (this string s, Single defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Single value)
@@ -4009,7 +4335,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Double value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Double Parse (this string s, CultureInfo cultureInfo, Double defaultValue)
@@ -4021,7 +4347,7 @@ namespace FileInclude
     
             public static Double Parse (this string s, Double defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Double value)
@@ -4037,7 +4363,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out Decimal value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static Decimal Parse (this string s, CultureInfo cultureInfo, Decimal defaultValue)
@@ -4049,7 +4375,7 @@ namespace FileInclude
     
             public static Decimal Parse (this string s, Decimal defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out Decimal value)
@@ -4065,7 +4391,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out TimeSpan value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static TimeSpan Parse (this string s, CultureInfo cultureInfo, TimeSpan defaultValue)
@@ -4077,7 +4403,7 @@ namespace FileInclude
     
             public static TimeSpan Parse (this string s, TimeSpan defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out TimeSpan value)
@@ -4093,7 +4419,7 @@ namespace FileInclude
     
             public static bool TryParse (this string s, out DateTime value)
             {
-                return s.TryParse (Config.DefaultCulture, out value);
+                return s.TryParse (Source.Common.Config.DefaultCulture, out value);
             }
     
             public static DateTime Parse (this string s, CultureInfo cultureInfo, DateTime defaultValue)
@@ -4105,7 +4431,7 @@ namespace FileInclude
     
             public static DateTime Parse (this string s, DateTime defaultValue)
             {
-                return s.Parse (Config.DefaultCulture, defaultValue);
+                return s.Parse (Source.Common.Config.DefaultCulture, defaultValue);
             }
     
             public static bool TryParse (this string s, CultureInfo cultureInfo, out DateTime value)
@@ -4834,6 +5160,2313 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\Log.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs
+namespace FileInclude
+{
+    // ############################################################################
+    // #                                                                          #
+    // #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+    // #                                                                          #
+    // # This means that any edits to the .cs file will be lost when its          #
+    // # regenerated. Changes should instead be applied to the corresponding      #
+    // # template file (.tt)                                                      #
+    // ############################################################################
+    
+    
+    
+    
+    
+    
+    
+    namespace Source.Collections
+    {
+        using System;
+    
+        partial class SkipList<TKey, TValue>
+        {
+            public int MaxLevel = 30;
+    
+            static BaseNode CreateNode (int size)
+            {
+                switch (size)
+                {
+                case 1: return new Node1 ();
+                case 2: return new Node2 ();
+                case 3: return new Node3 ();
+                case 4: return new Node4 ();
+                case 5: return new Node5 ();
+                case 6: return new Node6 ();
+                case 7: return new Node7 ();
+                case 8: return new Node8 ();
+                case 9: return new Node9 ();
+                case 10: return new Node10 ();
+                case 11: return new Node11 ();
+                case 12: return new Node12 ();
+                case 13: return new Node13 ();
+                case 14: return new Node14 ();
+                case 15: return new Node15 ();
+                case 16: return new Node16 ();
+                case 17: return new Node17 ();
+                case 18: return new Node18 ();
+                case 19: return new Node19 ();
+                case 20: return new Node20 ();
+                case 21: return new Node21 ();
+                case 22: return new Node22 ();
+                case 23: return new Node23 ();
+                case 24: return new Node24 ();
+                case 25: return new Node25 ();
+                case 26: return new Node26 ();
+                case 27: return new Node27 ();
+                case 28: return new Node28 ();
+                case 29: return new Node29 ();
+                case 30: return new Node30 ();
+            
+                default: throw new IndexOutOfRangeException ();
+                }
+            }
+        
+    
+            sealed partial class Node1 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 1; }
+                }
+    
+                BaseNode m_0;
+            }
+    
+    
+            sealed partial class Node2 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 2; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+            }
+    
+    
+            sealed partial class Node3 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 3; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+            }
+    
+    
+            sealed partial class Node4 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 4; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+            }
+    
+    
+            sealed partial class Node5 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 5; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+            }
+    
+    
+            sealed partial class Node6 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 6; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+            }
+    
+    
+            sealed partial class Node7 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 7; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+            }
+    
+    
+            sealed partial class Node8 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 8; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+            }
+    
+    
+            sealed partial class Node9 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 9; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+            }
+    
+    
+            sealed partial class Node10 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 10; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+            }
+    
+    
+            sealed partial class Node11 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 11; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+            }
+    
+    
+            sealed partial class Node12 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 12; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+            }
+    
+    
+            sealed partial class Node13 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 13; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+            }
+    
+    
+            sealed partial class Node14 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 14; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+            }
+    
+    
+            sealed partial class Node15 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 15; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+            }
+    
+    
+            sealed partial class Node16 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 16; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+            }
+    
+    
+            sealed partial class Node17 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 17; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+            }
+    
+    
+            sealed partial class Node18 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 18; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+            }
+    
+    
+            sealed partial class Node19 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 19; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+            }
+    
+    
+            sealed partial class Node20 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 20; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+            }
+    
+    
+            sealed partial class Node21 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 21; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+            }
+    
+    
+            sealed partial class Node22 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 22; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+            }
+    
+    
+            sealed partial class Node23 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 23; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+            }
+    
+    
+            sealed partial class Node24 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 24; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+            }
+    
+    
+            sealed partial class Node25 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 25; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+            }
+    
+    
+            sealed partial class Node26 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        case 25: return m_25;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        case 25: m_25 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 26; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+                BaseNode m_25;
+            }
+    
+    
+            sealed partial class Node27 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        case 25: return m_25;
+                        case 26: return m_26;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        case 25: m_25 = value; break;
+                        case 26: m_26 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 27; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+                BaseNode m_25;
+                BaseNode m_26;
+            }
+    
+    
+            sealed partial class Node28 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        case 25: return m_25;
+                        case 26: return m_26;
+                        case 27: return m_27;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        case 25: m_25 = value; break;
+                        case 26: m_26 = value; break;
+                        case 27: m_27 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 28; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+                BaseNode m_25;
+                BaseNode m_26;
+                BaseNode m_27;
+            }
+    
+    
+            sealed partial class Node29 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        case 25: return m_25;
+                        case 26: return m_26;
+                        case 27: return m_27;
+                        case 28: return m_28;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        case 25: m_25 = value; break;
+                        case 26: m_26 = value; break;
+                        case 27: m_27 = value; break;
+                        case 28: m_28 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 29; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+                BaseNode m_25;
+                BaseNode m_26;
+                BaseNode m_27;
+                BaseNode m_28;
+            }
+    
+    
+            sealed partial class Node30 : BaseNode
+            {
+                public override BaseNode this[int idx]
+                {
+                    get 
+                    {
+                        switch (idx)
+                        {
+                        case 0: return m_0;
+                        case 1: return m_1;
+                        case 2: return m_2;
+                        case 3: return m_3;
+                        case 4: return m_4;
+                        case 5: return m_5;
+                        case 6: return m_6;
+                        case 7: return m_7;
+                        case 8: return m_8;
+                        case 9: return m_9;
+                        case 10: return m_10;
+                        case 11: return m_11;
+                        case 12: return m_12;
+                        case 13: return m_13;
+                        case 14: return m_14;
+                        case 15: return m_15;
+                        case 16: return m_16;
+                        case 17: return m_17;
+                        case 18: return m_18;
+                        case 19: return m_19;
+                        case 20: return m_20;
+                        case 21: return m_21;
+                        case 22: return m_22;
+                        case 23: return m_23;
+                        case 24: return m_24;
+                        case 25: return m_25;
+                        case 26: return m_26;
+                        case 27: return m_27;
+                        case 28: return m_28;
+                        case 29: return m_29;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                    set 
+                    { 
+                        switch (idx)
+                        {
+                        case 0: m_0 = value; break;
+                        case 1: m_1 = value; break;
+                        case 2: m_2 = value; break;
+                        case 3: m_3 = value; break;
+                        case 4: m_4 = value; break;
+                        case 5: m_5 = value; break;
+                        case 6: m_6 = value; break;
+                        case 7: m_7 = value; break;
+                        case 8: m_8 = value; break;
+                        case 9: m_9 = value; break;
+                        case 10: m_10 = value; break;
+                        case 11: m_11 = value; break;
+                        case 12: m_12 = value; break;
+                        case 13: m_13 = value; break;
+                        case 14: m_14 = value; break;
+                        case 15: m_15 = value; break;
+                        case 16: m_16 = value; break;
+                        case 17: m_17 = value; break;
+                        case 18: m_18 = value; break;
+                        case 19: m_19 = value; break;
+                        case 20: m_20 = value; break;
+                        case 21: m_21 = value; break;
+                        case 22: m_22 = value; break;
+                        case 23: m_23 = value; break;
+                        case 24: m_24 = value; break;
+                        case 25: m_25 = value; break;
+                        case 26: m_26 = value; break;
+                        case 27: m_27 = value; break;
+                        case 28: m_28 = value; break;
+                        case 29: m_29 = value; break;
+                        default: throw new IndexOutOfRangeException ();
+                        } 
+                    }
+                }
+    
+                public override int Length
+                {
+                    get { return 30; }
+                }
+    
+                BaseNode m_0;
+                BaseNode m_1;
+                BaseNode m_2;
+                BaseNode m_3;
+                BaseNode m_4;
+                BaseNode m_5;
+                BaseNode m_6;
+                BaseNode m_7;
+                BaseNode m_8;
+                BaseNode m_9;
+                BaseNode m_10;
+                BaseNode m_11;
+                BaseNode m_12;
+                BaseNode m_13;
+                BaseNode m_14;
+                BaseNode m_15;
+                BaseNode m_16;
+                BaseNode m_17;
+                BaseNode m_18;
+                BaseNode m_19;
+                BaseNode m_20;
+                BaseNode m_21;
+                BaseNode m_22;
+                BaseNode m_23;
+                BaseNode m_24;
+                BaseNode m_25;
+                BaseNode m_26;
+                BaseNode m_27;
+                BaseNode m_28;
+                BaseNode m_29;
+            }
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs
 // ############################################################################
 
 // ############################################################################
@@ -6186,32 +8819,34 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-04-27T20:25:57";
+        public const string IncludeDate     = @"2013-07-30T09:53:10";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
         public const string Include_2       = @"C:\temp\GitHub\T4Include\Common\ConsoleLog.cs";
-        public const string Include_3       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
-        public const string Include_4       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
-        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs";
-        public const string Include_6       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
-        public const string Include_7       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
-        public const string Include_8       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
-        public const string Include_9       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_10       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_11       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_20       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_21       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_22       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_23       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_3       = @"C:\temp\GitHub\T4Include\Collections\SkipList.cs";
+        public const string Include_4       = @"C:\temp\GitHub\T4Include\Concurrency\TaskSchedulers.cs";
+        public const string Include_5       = @"C:\temp\GitHub\T4Include\Extensions\BasicExtensions.cs";
+        public const string Include_6       = @"C:\temp\GitHub\T4Include\Extensions\SqlExtensions.cs";
+        public const string Include_7       = @"C:\temp\GitHub\T4Include\Testing\TestRunner.cs";
+        public const string Include_8       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
+        public const string Include_9       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
+        public const string Include_10       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_11       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_23       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_24       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_25       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
     }
 }
 // ############################################################################

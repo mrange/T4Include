@@ -70,6 +70,30 @@ namespace Source.Extensions
             return defaultValue;
         }
 
+        public static void Shuffle<T>(this T[] values, Random random)
+        {
+            if (values == null)
+            {
+                return;
+            }
+
+            if (random == null)
+            {
+                return;
+            }
+
+            for (var iter = 0; iter < values.Length; ++iter)
+            {
+                var swapWith = random.Next (iter, values.Length);
+
+                var tmp = values[iter];
+
+                values[iter] = values[swapWith];
+                values[swapWith] = tmp;
+            }
+
+        }
+
         public static string DefaultTo (this string v, string defaultValue = null)
         {
             return !v.IsNullOrEmpty () ? v : (defaultValue ?? "");

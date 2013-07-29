@@ -1,0 +1,93 @@
+﻿<#@ include     file        ="../T4/Header.ttinclude"             #>
+
+// ReSharper disable PartialTypeWithSinglePart
+
+<#
+    var count = 30;
+#>
+
+namespace Source.Collections
+{
+    using System;
+
+    partial class SkipList<TKey, TValue>
+    {
+        public int MaxLevel = <#=count#>;
+
+        static BaseNode CreateNode (int size)
+        {
+            switch (size)
+            {
+<#
+    for (var iter = 1; iter <= count; ++iter)
+    {
+#>
+            case <#=iter#>: return new Node<#=iter#> ();
+<#
+    }
+#>        
+            default: throw new IndexOutOfRangeException ();
+            }
+        }
+    
+<#
+    for (var iter = 1; iter <= count; ++iter)
+    {
+#>
+
+        sealed partial class Node<#=iter#> : BaseNode
+        {
+            public override BaseNode this[int idx]
+            {
+                get 
+                {
+                    switch (idx)
+                    {
+<#
+    for (var inner = 0; inner < iter; ++inner)
+    {
+#>
+                    case <#=inner#>: return m_<#=inner#>;
+<#
+    }
+#>
+                    default: throw new IndexOutOfRangeException ();
+                    } 
+                }
+                set 
+                { 
+                    switch (idx)
+                    {
+<#
+    for (var inner = 0; inner < iter; ++inner)
+    {
+#>
+                    case <#=inner#>: m_<#=inner#> = value; break;
+<#
+    }
+#>
+                    default: throw new IndexOutOfRangeException ();
+                    } 
+                }
+            }
+
+            public override int Length
+            {
+                get { return <#=iter#>; }
+            }
+
+<#
+    for (var inner = 0; inner < iter; ++inner)
+    {
+#>
+            BaseNode m_<#=inner#>;
+<#
+    }
+#>
+        }
+
+<#
+    }
+#>
+    }
+}
