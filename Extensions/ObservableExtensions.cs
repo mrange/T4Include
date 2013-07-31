@@ -10,50 +10,124 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-// ### INCLUDE: Generated_ObservableExtensions.cs
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+// ### INCLUDE: Generated_ObservableExtensions.cs
 
 namespace Source.Extensions
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    
+    using Source.Common;
 
-    partial interface IProducer<T> : IObservable<T>, IDisposable
+    partial interface IProducer<out T> : IObservable<T>, IDisposable
     {
         void Start ();
-        void Stop ();
     }
 
-    sealed partial class TaskProducer<T> : IProducer<T>
+    abstract partial class BaseProducer<T> : BaseDisposable, IProducer<T>
     {
-        readonly TaskFactory m_taskFactory;
-        readonly IEnumerable<T> m_values;
-        readonly IEnumerator<T> m_enumerator;
-        readonly int m_maxFailureCount;
-
-        CancellationTokenSource m_cancellationTokenSource;
-        CancellationToken m_cancellationToken;
-        object m_task;
-
-        public TaskProducer (TaskFactory taskFactory, IEnumerable<T> values, int maxFailureCount = 10)
+        sealed public partial class ProducedValue
         {
-            m_taskFactory = taskFactory;
-            m_values = values;
-            m_enumerator = m_values.GetEnumerator ();
-            m_maxFailureCount = maxFailureCount;
+            public readonly T Value;
+
+            public ProducedValue(T value)
+            {
+                Value = value;
+            }
+        }
+
+        sealed partial class Subscriber : BaseDisposable
+        {
+            readonly BaseProducer<T> m_producer;
+
+            public Subscriber(BaseProducer<T> producer)
+            {
+                m_producer = producer;
+            }
+
+            protected override void OnDispose()
+            {
+                m_producer.Unsubscribe (this);
+            }
+        }
+
+        readonly object                     m_lock                      ;
+        readonly TaskFactory                m_taskFactory               ;
+        readonly int                        m_maxFailureCount           ;
+        readonly CancellationTokenSource    m_cancellationTokenSource   ;
+        readonly CancellationToken          m_cancellationToken         ;
+
+        readonly Dictionary<IDisposable, IObserver<T>>                  m_observers = new Dictionary<IDisposable, IObserver<T>> ();
+
+        volatile Task m_task;
+
+        public BaseProducer (TaskFactory taskFactory, int maxFailureCount = 10)
+        {
+            m_taskFactory               = taskFactory   ?? Task.Factory     ;
+            m_maxFailureCount           = maxFailureCount                   ;
+            m_cancellationTokenSource   = new CancellationTokenSource ()    ;
+            m_cancellationToken         = m_cancellationTokenSource.Token   ;
+            m_lock                      = m_observers                       ;
         }
 
 
-        public IDisposable Subscribe(IObserver<T> observer)
+        public IDisposable Subscribe (IObserver<T> observer)
         {
-            throw new NotImplementedException();
+            if (observer == null)
+            {
+                throw new ArgumentNullException ("observer");
+            }
+           
+            var subscriber = new Subscriber (this);
+
+            lock (m_lock)
+            {
+                if (IsDisposed)
+                {
+                    throw new ObjectDisposedException ("Producer", "Can't add new subscriber to disposed producer");
+                }
+
+                m_observers.Add (subscriber, observer);
+            }
+
+            return subscriber;
         }
 
-        public void Dispose()
+        void Unsubscribe (Subscriber subscriber)
         {
-            m_enumerator.Dispose ();
+            lock (m_lock)
+            {
+                m_observers.Remove (subscriber);
+            }
+        }
+
+        protected override void OnDispose()
+        {
+            lock (m_lock)
+            {
+                try
+                {
+                    m_cancellationTokenSource.Cancel ();
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception ("Producer.OnDispose: Cancelling cancellation token source threw exception: {0}", exc);
+                }
+
+                if (m_task != null)
+                {
+                    m_task.DisposeNoThrow ();
+                }
+            }
+
+            TerminateObservers();
         }
 
         public void Start()
@@ -63,42 +137,150 @@ namespace Source.Extensions
                 return;
             }
 
-            lock (m_taskFactory)
+            lock (m_lock)
             {
                 if (m_task != null)
                 {
                     return;
                 }
 
-                m_cancellationTokenSource = new CancellationTokenSource ();
-                m_cancellationToken = m_cancellationTokenSource.Token;
+                if (IsDisposed)
+                {
+                    throw new ObjectDisposedException ("Producer", "Can't start a disposed producer");
+                }
 
                 m_task = m_taskFactory.StartNew (OnProduce, m_cancellationToken, TaskCreationOptions.LongRunning);
             }
+        }
 
-            throw new NotImplementedException();
+        IObserver<T>[] CurrentObservers
+        {
+            get
+            {
+                lock (m_lock)
+                {
+                    return CurrentObservers_NoLock;
+                }
+            }
+        }
+
+        IObserver<T>[] CurrentObservers_NoLock
+        {
+            get { return m_observers.Select (kv => kv.Value).ToArray (); }
         }
 
         void OnProduce(object obj)
         {
             try
             {
-            while (m_enumerator.MoveNext ())
-            {
-                    m_enumerator.Current    
-                    
-            }
+                var productionError = 0;
+
+                while (!m_cancellationToken.IsCancellationRequested && productionError <= m_maxFailureCount)
+                {
+                    try
+                    {
+                        ProducedValue value;
+                        while (!m_cancellationToken.IsCancellationRequested && (value = ProduceValue (m_cancellationToken)) != null)
+                        {
+                            var observers = CurrentObservers;
+                            for (int index = 0; !m_cancellationToken.IsCancellationRequested && index < observers.Length; index++)
+                            {
+                                var observer = observers[index];
+                                try
+                                {
+                                    observer.OnNext(value.Value);
+                                }
+                                catch (Exception exc)
+                                {
+                                    Log.Exception("Producer.OnProduce: Caught exception from .OnNext: {0}", exc);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        ++productionError;
+
+                        var observers = CurrentObservers;
+                        for (int index = 0; !m_cancellationToken.IsCancellationRequested && index < observers.Length; index++)
+                        {
+                            var observer = observers[index];
+                            try
+                            {
+                                observer.OnError(exc);
+                            }
+                            catch (Exception innerExc)
+                            {
+                                Log.Exception("Producer.OnProduce: Caught exception from .OnError: {0}", innerExc);
+                            }
+                        }
+                    }
+                }
+
+                TerminateObservers();
+
+                if (productionError == m_maxFailureCount)
+                {
+                    Log.Error ("Producer.OnProduce: Producer terminated due to max failure count reached: {0}", m_maxFailureCount);
+                }
+
             }
             catch (Exception exc)
             {
-                    
+                Log.Exception ("Producer.OnProduce: Caught exception, terminating: {0}", exc);
             }
-            
         }
 
-        public void Stop()
+        protected abstract ProducedValue ProduceValue(CancellationToken cancellationToken);
+
+        void TerminateObservers()
         {
-            throw new NotImplementedException();
+            IObserver<T>[] observers;
+
+            lock (m_lock)
+            {
+                observers = CurrentObservers_NoLock;
+                m_observers.Clear ();
+            }
+
+            foreach (var observer in observers)
+            {
+                try
+                {
+                    observer.OnCompleted();
+                }
+                catch (Exception exc)
+                {
+                    Log.Exception("Producer.TerminateObservers: Caught exception from .OnCompleted: {0}", exc);
+                }
+            }
+        }
+    }
+
+    sealed partial class EnumerableProducer<T> : BaseProducer<T>
+    {
+        readonly IEnumerator<T> m_enumerator;
+
+        public EnumerableProducer(TaskFactory taskFactory, IEnumerable<T> enumerable, int maxFailureCount = 10) 
+            :   base(taskFactory, maxFailureCount)
+        {
+            enumerable  = enumerable ?? Array<T>.Empty  ;
+            m_enumerator= enumerable.GetEnumerator ()   ;
+        }
+
+        protected override ProducedValue ProduceValue (CancellationToken cancellationToken)
+        {
+            return !cancellationToken.IsCancellationRequested && m_enumerator.MoveNext()
+                ?   new ProducedValue(m_enumerator.Current)
+                :   null
+                ;
+        }
+
+        protected override void OnDispose ()
+        {
+            base.OnDispose();
+
+            m_enumerator.DisposeNoThrow ();
         }
     }
 
