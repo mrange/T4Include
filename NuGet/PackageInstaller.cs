@@ -19,20 +19,14 @@ namespace Source.NuGet
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
-    using System.IO.Compression;
     using System.Linq;
     using System.Net;                                      
     using System.Reflection;
-    using System.Security.Cryptography;
-
     using Common;
 
     static partial class PackageInstaller
     {
-        const string PublicKey                  = "RUNTNUIAAAAAQMX5x+0XBbBq8G3aAt/a11nyDmuSCJwyEKPW+FRdydPYWxFTLeUtZ8Sqiu+rD/rQIuLoqa4QJmtR+Nb48dTsM7QBiVk+Im2UnWyFDFqlzoXk5oqhzrT+Wydh13aiQEPpAu38JzF03ugjI4QYXMFc8+O2TWgvDff3/Pgs39ylDGL2DmQ=";
-
-        const string NuGetUri                   = @"https://github.com/mrange/T4Include/raw/master/NonSource/NuGet/NuGet.exe.gz";
-        const string NuGetSignatureUri          = @"https://github.com/mrange/T4Include/raw/master/NonSource/NuGet/NuGet.exe.signature";
+        const string NuGetUri                   = @"http://nuget.org/nuget.exe";
 
         public static bool InstallPackages (string[] arguments)
         {
@@ -76,45 +70,12 @@ namespace Source.NuGet
                 {
                     Log.HighLight ("NuGet.exe not found, downloading it to: {0}", nugetPath);
 
-                    Log.Info ("Downloading signature: {0}", NuGetSignatureUri);
-
-                    var webClient   = new WebClient ();
-                    var signature   = Convert.FromBase64String (webClient.DownloadString (NuGetSignatureUri));
-
                     Log.Info ("Downloading binary: {0}", NuGetUri);
 
-                    var webRequest  = WebRequest.Create (NuGetUri);
-                    using (var webResponse = webRequest.GetResponse ())
-                    using (var responseStream = webResponse.GetResponseStream ())
-                    using (var gZipStream = new GZipStream (responseStream, CompressionMode.Decompress))
-                    using (var ms = new MemoryStream ())
+                    using (var wc = new WebClient ())
                     {
-                        const int bufferSize = 4096;
-                        var buffer = new byte[bufferSize];
-                        var readBytes = 0;
-        
-                        while ((readBytes = gZipStream.Read (buffer, 0, bufferSize)) > 0)
-                        {
-                            ms.Write (buffer, 0, readBytes);
-                        }
-
-                        var nugetBits = ms.ToArray();
-
-                        using (var cngKey = CngKey.Import (Convert.FromBase64String (PublicKey), CngKeyBlobFormat.EccPublicBlob))
-                        using (var ecDsaCng = new ECDsaCng (cngKey))
-                        {
-                            if (!ecDsaCng.VerifyData (nugetBits, signature))
-                            {
-                                Log.Error ("Invalid nuget signature detected, this could be due to attempt to replace NuGet.exe @ T4Include with a malicious binary. Please notify the owner of T4Include.");
-                                Environment.ExitCode = 102;
-                                return false;
-                            }
-                        }
-
-                        File.WriteAllBytes (nugetPath, nugetBits);
+                        wc.DownloadFile (NuGetUri, nugetPath);
                     }
-
-
                 }
         
                 var packages = Directory
