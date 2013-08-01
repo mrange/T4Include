@@ -22,7 +22,6 @@ using FileInclude.Source.Extensions;
 
 namespace Test_Functionality.Observable
 {
-    [TestsFor]
     sealed partial class TestsFor_SkipList
     {
         const int EnumerableCount = 1000;
