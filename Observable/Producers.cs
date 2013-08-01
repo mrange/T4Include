@@ -10,6 +10,7 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
+// ### INCLUDE: ../Common/Log.cs
 namespace Source.Observable
 {
     using System;
@@ -18,7 +19,6 @@ namespace Source.Observable
     using System.Threading.Tasks;
 
     using Source.Common;
-    using Source.Extensions;
 
     partial interface IProducer<out T> : IObservable<T>, IDisposable
     {
@@ -31,7 +31,7 @@ namespace Source.Observable
         {
             public readonly T Value;
 
-            public ProducedValue(T value)
+            public ProducedValue (T value)
             {
                 Value = value;
             }
@@ -48,7 +48,7 @@ namespace Source.Observable
             m_maxFailureCount           = maxFailureCount                   ;
         }
 
-        protected override void OnDispose()
+        protected override void OnDispose ()
         {
             base.OnDispose ();
 
@@ -56,7 +56,14 @@ namespace Source.Observable
             {
                 if (m_task != null)
                 {
-                    m_task.DisposeNoThrow ();
+                    try
+                    {
+                        m_task.Dispose ();
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Exception ("BaseProducer.OnDispose: Disposing task threw exception: {0}", exc);
+                    }
                 }
             }
         }
@@ -84,7 +91,7 @@ namespace Source.Observable
             }
         }
 
-        void OnProduce(object obj)
+        void OnProduce (object obj)
         {
             try
             {
@@ -129,8 +136,8 @@ namespace Source.Observable
     {
         readonly IEnumerator<T> m_enumerator;
 
-        public EnumerableProducer(TaskFactory taskFactory, IEnumerable<T> enumerable, int maxFailureCount = 10) 
-            :   base(taskFactory, maxFailureCount)
+        public EnumerableProducer (TaskFactory taskFactory, IEnumerable<T> enumerable, int maxFailureCount = 10) 
+            :   base (taskFactory, maxFailureCount)
         {
             enumerable  = enumerable ?? Array<T>.Empty  ;
             m_enumerator= enumerable.GetEnumerator ()   ;
@@ -139,7 +146,7 @@ namespace Source.Observable
         protected override ProducedValue ProduceValue (CancellationToken cancellationToken)
         {
             return !cancellationToken.IsCancellationRequested && m_enumerator.MoveNext()
-                ?   new ProducedValue(m_enumerator.Current)
+                ?   new ProducedValue (m_enumerator.Current)
                 :   null
                 ;
         }
@@ -148,7 +155,14 @@ namespace Source.Observable
         {
             base.OnDispose();
 
-            m_enumerator.DisposeNoThrow ();
+            try
+            {
+                m_enumerator.Dispose ();
+            }
+            catch (Exception exc)
+            {
+                Log.Exception ("EnumerableProducer.OnDispose: Disposing enumerator threw exception: {0}", exc);
+            }
         }
     }
 

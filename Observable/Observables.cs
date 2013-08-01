@@ -14,6 +14,9 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 
+// ### INCLUDE: ../Common/BaseDisposable.cs
+// ### INCLUDE: ../Common/Log.cs
+
 namespace Source.Observable
 {
     using System;
@@ -22,7 +25,6 @@ namespace Source.Observable
     using System.Threading;
 
     using Source.Common;
-    using Source.Extensions;
 
     abstract partial class BaseObservable<T> : BaseDisposable, IObservable<T>
     {
@@ -35,7 +37,7 @@ namespace Source.Observable
                 m_observable = observable;
             }
 
-            protected override void OnDispose()
+            protected override void OnDispose ()
             {
                 m_observable.Unsubscribe (this);
             }
@@ -86,7 +88,7 @@ namespace Source.Observable
             }
         }
 
-        protected override void OnDispose()
+        protected override void OnDispose ()
         {
             try
             {
@@ -96,7 +98,15 @@ namespace Source.Observable
             {
                 Log.Exception ("BaseObservable.OnDispose: Cancelling cancellation token source threw exception: {0}", exc);
             }
-            m_cancellationTokenSource.DisposeNoThrow ();
+
+            try
+            {
+                m_cancellationTokenSource.Dispose ();
+            }
+            catch (Exception exc)
+            {
+                Log.Exception ("BaseObservable.OnDispose: Disposing cancellation token source threw exception: {0}", exc);
+            }
 
             TerminateObservers();
         }
@@ -125,11 +135,11 @@ namespace Source.Observable
                 var observer = observers[index];
                 try
                 {
-                    observer.OnNext(value);
+                    observer.OnNext (value);
                 }
                 catch (Exception exc)
                 {
-                    Log.Exception("BaseObservable.SendValue: Caught exception from .OnNext: {0}", exc);
+                    Log.Exception ("BaseObservable.SendValue: Caught exception from .OnNext: {0}", exc);
                 }
             }
         }
@@ -142,11 +152,11 @@ namespace Source.Observable
                 var observer = observers[index];
                 try
                 {
-                    observer.OnError(exc);
+                    observer.OnError (exc);
                 }
                 catch (Exception innerExc)
                 {
-                    Log.Exception("Producer.OnProduce: Caught exception from .OnError: {0}", innerExc);
+                    Log.Exception ("Producer.OnProduce: Caught exception from .OnError: {0}", innerExc);
                 }
             }
         }
@@ -165,11 +175,11 @@ namespace Source.Observable
             {
                 try
                 {
-                    observer.OnCompleted();
+                    observer.OnCompleted ();
                 }
                 catch (Exception exc)
                 {
-                    Log.Exception("Producer.TerminateObservers: Caught exception from .OnCompleted: {0}", exc);
+                    Log.Exception ("Producer.TerminateObservers: Caught exception from .OnCompleted: {0}", exc);
                 }
             }
         }
