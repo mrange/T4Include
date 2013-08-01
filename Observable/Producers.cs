@@ -11,6 +11,8 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Log.cs
+// ### INCLUDE: Observables.cs
+
 namespace Source.Observable
 {
     using System;
@@ -96,8 +98,9 @@ namespace Source.Observable
             try
             {
                 var productionError = 0;
+                var done = false;
 
-                while (!CancellationToken.IsCancellationRequested && productionError <= m_maxFailureCount)
+                while (!CancellationToken.IsCancellationRequested && !done)
                 {
                     try
                     {
@@ -106,12 +109,16 @@ namespace Source.Observable
                         {
                             SendValue (value.Value);
                         }
+
+                        done = true;
                     }
                     catch (Exception exc)
                     {
                         ++productionError;
                         
                         SendException (exc);
+
+                        done |= productionError > m_maxFailureCount;
                     }
                 }
 

@@ -65,6 +65,48 @@ namespace Source.Extensions
         {
             return new SingleObserver<T> (value);
         }
+
+        sealed partial class ActionObserver<T> : IObserver<T>
+        {
+            readonly Action<T> m_onNext;
+            readonly Action m_onCompleted;
+            readonly Action<Exception> m_onError;
+
+            public ActionObserver (Action<T> onNext, Action onCompleted, Action<Exception> onError)
+            {
+                m_onNext        = onNext        ?? (v => {});
+                m_onCompleted   = onCompleted   ?? (() => {});
+                m_onError       = onError       ?? (e => {});
+            }
+
+            public void OnNext (T value)
+            {
+                m_onNext (value);
+            }
+
+            public void OnError (Exception error)
+            {
+                m_onError (error);
+            }
+
+            public void OnCompleted ()
+            {
+                m_onCompleted ();
+            }
+        }
+
+        public static IDisposable Subscribe<T> (this IObservable<T> observable, Action<T> onNext, Action onCompleted = null, Action<Exception> onError = null)
+        {
+            if (observable == null)
+            {
+                throw new ArgumentNullException ("observable");
+            }
+
+            var observer = new ActionObserver<T> (onNext, onCompleted, onError);
+
+            return observable.Subscribe (observer);
+        }
+
     }
 
     partial class WhereObserver<T>

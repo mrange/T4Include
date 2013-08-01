@@ -69,7 +69,7 @@ namespace Source.Extensions
 
     static partial class ObservableExtensions
     {
-        public static IObservable<<#=obDef.ReturnType#>> <#=obDef.Name#><<#=obDef.GenericSignature#>> (IObservable<T> observable, <#=obDef.StateType#> p)
+        public static IObservable<<#=obDef.ReturnType#>> <#=obDef.Name#><<#=obDef.GenericSignature#>> (this IObservable<T> observable, <#=obDef.StateType#> p)
         {
             if (observable == null)
             {
