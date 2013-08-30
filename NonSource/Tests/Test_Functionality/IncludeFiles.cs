@@ -9001,7 +9001,7 @@ namespace FileInclude
         {
             public static void AppendSubString (this StringBuilder sb, SubString ss)
             {
-                sb.Append(ss.BaseString, ss.Begin, ss.Length);
+                sb.Append (ss.BaseString, ss.Begin, ss.Length);
             }
     
             public static string Concatenate (this IEnumerable<SubString> values, string delimiter = null)
@@ -9015,7 +9015,7 @@ namespace FileInclude
     
                 var first = true;
     
-                var sb = new StringBuilder();
+                var sb = new StringBuilder ();
                 foreach (var value in values)
                 {
                     if (first)
@@ -9024,30 +9024,30 @@ namespace FileInclude
                     }
                     else
                     {
-                        sb.Append(delimiter);
+                        sb.Append (delimiter);
                     }
     
-                    sb.AppendSubString(value);
+                    sb.AppendSubString (value);
                 }
     
-                return sb.ToString();
+                return sb.ToString ();
             }
     
     
     
             public static SubString ToSubString (this string value, int begin = 0, int count = int.MaxValue / 2)
             {
-                return new SubString(value, begin, count);
+                return new SubString (value, begin, count);
             }
     
-            public static SubString ToSubString(this StringBuilder value, int begin = 0, int count = int.MaxValue / 2)
+            public static SubString ToSubString (this StringBuilder value, int begin = 0, int count = int.MaxValue / 2)
             {
-                return new SubString(value.ToString(), begin, count);
+                return new SubString (value.ToString (), begin, count);
             }
     
-            public static SubString ToSubString(this SubString value, int begin = 0, int count = int.MaxValue / 2)
+            public static SubString ToSubString (this SubString value, int begin = 0, int count = int.MaxValue / 2)
             {
-                return new SubString(value, begin, count);
+                return new SubString (value, begin, count);
             }
     
             enum ParseLineState
@@ -9057,9 +9057,9 @@ namespace FileInclude
                 ConsumedCR  ,
             }
     
-            public static IEnumerable<SubString> ReadLines(this string value)
+            public static IEnumerable<SubString> ReadLines (this string value)
             {
-                return value.ToSubString().ReadLines();
+                return value.ToSubString ().ReadLines ();
             }
     
             public static IEnumerable<SubString> ReadLines (this SubString subString)
@@ -9080,7 +9080,7 @@ namespace FileInclude
                     switch (state)
                     {
                         case ParseLineState.ConsumedCR:
-                            yield return new SubString(baseString, beginLine, count);
+                            yield return new SubString (baseString, beginLine, count);
                             switch (ch)
                             {
                                 case '\r':
@@ -9108,7 +9108,7 @@ namespace FileInclude
                                     state = ParseLineState.ConsumedCR;
                                     break;
                                 case '\n':
-                                    yield return new SubString(baseString, beginLine, count);
+                                    yield return new SubString (baseString, beginLine, count);
                                     state = ParseLineState.NewLine;
                                     break;
                                 default:
@@ -9125,7 +9125,7 @@ namespace FileInclude
                                     state = ParseLineState.ConsumedCR;
                                     break;
                                 case '\n':
-                                    yield return new SubString(baseString, beginLine, count);
+                                    yield return new SubString (baseString, beginLine, count);
                                     state = ParseLineState.NewLine;
                                     break;
                                 default:
@@ -9139,15 +9139,15 @@ namespace FileInclude
                 switch (state)
                 {
                     case ParseLineState.NewLine:
-                        yield return new SubString(baseString, 0, 0);
+                        yield return new SubString (baseString, 0, 0);
                         break;
                     case ParseLineState.ConsumedCR:
-                        yield return new SubString(baseString, beginLine, count);
-                        yield return new SubString(baseString, 0, 0);
+                        yield return new SubString (baseString, beginLine, count);
+                        yield return new SubString (baseString, 0, 0);
                         break;
                     case ParseLineState.Inline:
                     default:
-                        yield return new SubString(baseString, beginLine, count);
+                        yield return new SubString (baseString, beginLine, count);
                         break;
                 }
             }
@@ -9184,84 +9184,104 @@ namespace FileInclude
                 return v;
             }
     
-            public static readonly SubString Empty = new SubString(null, 0,0);
+            public static readonly SubString Empty = new SubString (null, 0,0);
     
-            public SubString(SubString subString, int begin, int count) : this()
+            public SubString (SubString subString, int begin, int count) : this ()
             {
                 m_baseString    = subString.BaseString;
                 var length      = subString.Length;
     
-                begin           = Clamp(begin, 0, length);
-                count           = Clamp(count, 0, length - begin);
+                begin           = Clamp (begin, 0, length);
+                count           = Clamp (count, 0, length - begin);
                 var end         = begin + count;
     
                 m_begin         = subString.Begin + begin;
                 m_end           = subString.Begin + end;
             }
     
-            public SubString(string baseString, int begin, int count) : this()
+            public SubString (string baseString, int begin, int count) : this ()
             {
                 m_baseString    = baseString;
                 var length      = BaseString.Length;
     
-                begin           = Clamp(begin, 0, length);
-                count           = Clamp(count, 0, length - begin);
+                begin           = Clamp (begin, 0, length);
+                count           = Clamp (count, 0, length - begin);
                 var end         = begin + count;
     
                 m_begin         = begin;
                 m_end           = end;
             }
     
-            public bool Equals(SubString other)
+            public static bool operator== (SubString left, SubString right)
             {
-                return CompareTo(other) == 0;
+                return left.CompareTo (right) == 0;
             }
     
-            public override int GetHashCode()
+            public static bool operator!= (SubString left, SubString right)
+            {
+                return left.CompareTo (right) != 0;
+            }
+    
+            public bool Equals (SubString other)
+            {
+                return CompareTo (other) == 0;
+            }
+    
+            public override int GetHashCode  ()
             {
                 if (!m_hasHashCode)
                 {
-                    m_hashCode = Value.GetHashCode();
+                    m_hashCode = Value.GetHashCode ();
                     m_hasHashCode = true;
                 }
     
                 return m_hashCode;
             }
     
-            IEnumerator IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator ()
             {
-                return GetEnumerator();
+                return GetEnumerator ();
             }
     
-            public object Clone()
+            public object Clone ()
             {
                 return this;
             }
     
-            public int CompareTo(object obj)
+            public int CompareTo (object obj)
             {
-                return obj is SubString ? CompareTo((SubString) obj) : 1;
+                return obj is SubString ? CompareTo ((SubString) obj) : 1;
             }
     
     
-            public override bool Equals(object obj)
+            public override bool Equals (object obj)
             {
-                return obj is SubString && Equals((SubString) obj);
+                return obj is SubString && Equals ((SubString) obj);
             }
     
     
-            public int CompareTo(SubString other)
+            public int CompareTo (SubString other)
             {
-                return String.Compare(
-                    BaseString,
-                    Begin,
-                    other.BaseString,
-                    other.Begin,
-                    Math.Min(Length, other.Length)
+                if (Length < other.Length)
+                {
+                    return -1;
+                }
+    
+                if (Length > other.Length)
+                {
+                    return 1;
+                }
+    
+                return String.Compare (
+                    BaseString          ,
+                    Begin               ,
+                    other.BaseString    ,
+                    other.Begin         ,
+                    Length
                     );
             }
     
-            public IEnumerator<char> GetEnumerator()
+            public IEnumerator<char> GetEnumerator ()
             {
                 for (var iter = Begin; iter < End; ++iter)
                 {
@@ -9269,7 +9289,7 @@ namespace FileInclude
                 }
             }
     
-            public override string ToString()
+            public override string ToString ()
             {
                 return Value;
             }
@@ -9280,7 +9300,7 @@ namespace FileInclude
                 {
                     if (m_value == null)
                     {
-                        m_value = BaseString.Substring(Begin, Length);
+                        m_value = BaseString.Substring (Begin, Length);
                     }
                     return m_value;
                 }
@@ -9307,12 +9327,12 @@ namespace FileInclude
                 {
                     if (idx < 0)
                     {
-                        throw new IndexOutOfRangeException("idx");
+                        throw new IndexOutOfRangeException ("idx");
                     }
     
                     if (idx >= Length)
                     {
-                        throw new IndexOutOfRangeException("idx");
+                        throw new IndexOutOfRangeException ("idx");
                     }
     
                     return BaseString[idx + Begin];
@@ -9338,9 +9358,9 @@ namespace FileInclude
                         return true;
                     }
     
-                    for(var iter = Begin; iter < End; ++iter)
+                    for (var iter = Begin; iter < End; ++iter)
                     {
-                        if (!Char.IsWhiteSpace(BaseString[iter]))
+                        if (!Char.IsWhiteSpace (BaseString[iter]))
                         {
                             return false;
                         }
@@ -9350,7 +9370,7 @@ namespace FileInclude
                 }
             }
     
-            static readonly char[] s_defaultTrimChars = " \t\r\n".ToCharArray();
+            static readonly char[] s_defaultTrimChars = " \t\r\n".ToCharArray ();
     
             static bool Contains (char[] trimChars, char ch)
             {
@@ -9763,7 +9783,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-08-30T09:29:43";
+        public const string IncludeDate     = @"2013-08-30T10:04:21";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

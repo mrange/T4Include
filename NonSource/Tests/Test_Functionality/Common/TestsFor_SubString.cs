@@ -62,6 +62,24 @@ namespace Test_Functionality.Common
                 TestFor.Equality (testCase.Trim (trimChars)     , ss.Trim (trimChars).Value     , "Trim must work as expected");
             }
         }
+
+        public void Test_Operator ()
+        {
+            const string left = "APA";
+            const string right= "APA BEPA";
+
+            var ssleft  = left.ToSubString ();
+            var ssright = right.ToSubString ();
+
+            TestFor.Equality (left == right, ssleft == ssright, "Operator == must work as expected");
+            TestFor.Equality (left != right, ssleft != ssright, "Operator != must work as expected");
+
+            TestFor.Equality (left == left, ssleft == ssleft, "Operator == must work as expected");
+            TestFor.Equality (left != left, ssleft != ssleft, "Operator != must work as expected");
+
+            TestFor.Equality (right == right, ssright == ssright, "Operator == must work as expected");
+            TestFor.Equality (right != right, ssright != ssright, "Operator != must work as expected");
+        }
     
     }
 }
