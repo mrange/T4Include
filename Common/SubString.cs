@@ -396,6 +396,29 @@ namespace Source.Common
             }
         }
 
+        public bool All (Func<char,bool> test)
+        {
+            if (test == null)
+            {
+                return true;
+            }
+
+            if (IsEmpty)
+            {
+                return true;
+            }
+
+            for (var iter = Begin; iter < End; ++iter)
+            {
+                if (!test (BaseString[iter]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         static readonly char[] s_defaultTrimChars = " \t\r\n".ToCharArray ();
 
         static bool Contains (char[] trimChars, char ch)
