@@ -9350,22 +9350,7 @@ namespace FileInclude
                 }
             }
     
-            static readonly char[] s_defaultTrimChars = " \t\r\n".ToCharArray();
-    
-            static bool Contains (char[] trimChars, char ch)
-            {
-                for (int index = 0; index < trimChars.Length; index++)
-                {
-                    var trimChar = trimChars[index];
-    
-                    if (trimChar == ch)
-                    {
-                        return true;
-                    }
-                }
-    
-                return false;
-            }
+            static readonly char[] s_defaultTrimChars = @" \t\r\n".ToCharArray();
     
             public SubString TrimStart (params char[] trimChars)
             {
@@ -9378,9 +9363,15 @@ namespace FileInclude
                 {
                     var ch = BaseString[iter];
     
-                    if (!Contains (trimChars, ch))
+    
+                    for (int index = 0; index < trimChars.Length; index++)
                     {
-                        return new SubString (BaseString, iter, End - iter);
+                        var trimChar = trimChars[index];
+    
+                        if (trimChar != ch)
+                        {
+                            return new SubString (BaseString, iter, End - iter);
+                        }
                     }
                 }
     
@@ -9398,9 +9389,15 @@ namespace FileInclude
                 {
                     var ch = BaseString[iter];
     
-                    if (!Contains (trimChars, ch))
+    
+                    for (int index = 0; index < trimChars.Length; index++)
                     {
-                        return new SubString (BaseString, Begin, iter - Begin + 1);
+                        var trimChar = trimChars[index];
+    
+                        if (trimChar != ch)
+                        {
+                            return new SubString (BaseString, Begin, iter - Begin);
+                        }
                     }
                 }
     
@@ -9763,7 +9760,11 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-08-30T09:29:43";
+<<<<<<< Updated upstream
+        public const string IncludeDate     = @"2013-08-01T23:44:13";
+=======
+        public const string IncludeDate     = @"2013-08-30T09:14:13";
+>>>>>>> Stashed changes
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

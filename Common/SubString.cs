@@ -13,6 +13,8 @@
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCaseLabel
 
+
+
 namespace Source.Common
 {
     using System;
@@ -374,5 +376,66 @@ namespace Source.Common
             }
         }
 
+        static readonly char[] s_defaultTrimChars = " \t\r\n".ToCharArray();
+
+        static bool Contains (char[] trimChars, char ch)
+        {
+            for (int index = 0; index < trimChars.Length; index++)
+            {
+                var trimChar = trimChars[index];
+
+                if (trimChar == ch)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public SubString TrimStart (params char[] trimChars)
+        {
+            if (trimChars == null || trimChars.Length == 0)
+            {
+                trimChars = s_defaultTrimChars;
+            }
+
+            for (var iter = Begin; iter < End; ++iter)
+            {
+                var ch = BaseString[iter];
+
+                if (!Contains (trimChars, ch))
+                {
+                    return new SubString (BaseString, iter, End - iter);
+                }
+            }
+
+            return new SubString (BaseString, Begin, 0);
+        }
+
+        public SubString TrimEnd (params char[] trimChars)
+        {
+            if (trimChars == null || trimChars.Length == 0)
+            {
+                trimChars = s_defaultTrimChars;
+            }
+
+            for (var iter = End - 1; iter >= Begin; --iter)
+            {
+                var ch = BaseString[iter];
+
+                if (!Contains (trimChars, ch))
+                {
+                    return new SubString (BaseString, Begin, iter - Begin + 1);
+                }
+            }
+
+            return new SubString (BaseString, Begin, 0);
+        }
+
+        public SubString Trim (params char[] trimChars)
+        {
+            return TrimStart (trimChars).TrimEnd (trimChars);
+        }
     }
 }
