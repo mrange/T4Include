@@ -35,5 +35,51 @@ namespace Test_Functionality.Common
                 TestFor.SequenceEquality(expected, found.Take(expected.Length), "ReadLines should otherwise match StringReader behavior");
             }
         }
+
+        public void Test_Trim ()
+        {
+
+            {
+                const string testCase = "\t\t\t APA   \r\n BEPA \r\n  ";
+
+                var ss = testCase.ToSubString ();
+
+                TestFor.Equality (testCase.TrimStart()  , ss.TrimStart ().Value , "TrimStart must work as expected");
+                TestFor.Equality (testCase.TrimEnd ()   , ss.TrimEnd ().Value   , "TrimEnd must work as expected");
+                TestFor.Equality (testCase.Trim ()      , ss.Trim ().Value      , "Trim must work as expected");
+
+            }
+
+            {
+                const string testCase = "ABCBA";
+
+                var ss = testCase.ToSubString ();
+
+                var trimChars = new [] {'A', 'B'};
+
+                TestFor.Equality (testCase.TrimStart(trimChars) , ss.TrimStart (trimChars).Value, "TrimStart must work as expected");
+                TestFor.Equality (testCase.TrimEnd (trimChars)  , ss.TrimEnd (trimChars).Value  , "TrimEnd must work as expected");
+                TestFor.Equality (testCase.Trim (trimChars)     , ss.Trim (trimChars).Value     , "Trim must work as expected");
+            }
+        }
+
+        public void Test_Operator ()
+        {
+            const string left = "APA";
+            const string right= "APA BEPA";
+
+            var ssleft  = left.ToSubString ();
+            var ssright = right.ToSubString ();
+
+            TestFor.Equality (left == right, ssleft == ssright, "Operator == must work as expected");
+            TestFor.Equality (left != right, ssleft != ssright, "Operator != must work as expected");
+
+            TestFor.Equality (left == left, ssleft == ssleft, "Operator == must work as expected");
+            TestFor.Equality (left != left, ssleft != ssleft, "Operator != must work as expected");
+
+            TestFor.Equality (right == right, ssright == ssright, "Operator == must work as expected");
+            TestFor.Equality (right != right, ssright != ssright, "Operator != must work as expected");
+        }
+    
     }
 }
