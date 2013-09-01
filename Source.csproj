@@ -202,6 +202,7 @@
     <None Include="NonSource\NuGet\templatecontent\Generated_NumericalExtensions.tt.pp" />
     <None Include="NonSource\NuGet\templatecontent\T4IncludeControl.cs.pp" />
     <None Include="T4\NamedTuple.ttinclude" />
+    <None Include="T4\Schema.ttinclude" />
     <None Include="T4\StateMachine.ttinclude" />
     <None Include="WPF\Generated_BuzyWait_DependencyProperties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -78,6 +78,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_Events.tt</DependentUpon>
     </Compile>
+    <Compile Include="T4\Generated_Schema.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generated_Schema.tt</DependentUpon>
+    </Compile>
     <Compile Include="T4\NamedTuple.cs">
       <DependentUpon>NamedTuple.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -111,6 +116,10 @@
     <None Include="T4\Generated_Events.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Generated_Events.cs</LastGenOutput>
+    </None>
+    <None Include="T4\Generated_Schema.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Generated_Schema.cs</LastGenOutput>
     </None>
     <None Include="T4\NamedTuple.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

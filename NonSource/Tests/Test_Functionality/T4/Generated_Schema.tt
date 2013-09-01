@@ -1,0 +1,72 @@
+﻿<#@ include file="$(SolutionDir)\T4\Schema.ttinclude" #>
+
+<#
+    var schema = GetSchema (@"Data Source=localhost\SQLEXPRESS;Initial Catalog=Customer;Integrated Security=True");
+
+    var tables = schema
+        .SchemaObjects
+        .Where (so => so.Type == SchemaObject.SchemaObjectType.Table)
+        .ToArray ()
+        ;
+
+    Func<string, string> justify = s => LeftJustify (s, 40);
+
+#>
+
+namespace Test_Functionality.T4
+{
+    sealed class IsIdentityAttribute : System.Attribute
+    {
+    }
+
+<#
+    foreach (var table in tables)
+    {
+#>
+    sealed partial class <#=table.Name#>
+    {
+<#
+    foreach (var column in table.Columns)
+    {
+#>
+<#
+    if (column.IsIdentity)
+    {
+#>
+        [IsIdentity]
+<#
+    }
+#>
+        public <#=justify (GetType (column))#> <#=justify (column.Name)#> { get; set; }
+<#
+    }
+#>
+    }
+<#
+    }
+#>
+
+}
+<#+
+    static string GetType (ColumnSubObject column)
+    {
+        if (column.IsNullable && column.ClrType.IsValueType)
+        {
+            return column.CsTypeName + "?";
+        }
+        else
+        {
+            return column.CsTypeName;
+        }
+    }
+
+    static Schema GetSchema (string connectionString)
+    {
+        using (var connection = new SqlConnection (@"Data Source=localhost\SQLEXPRESS;Initial Catalog=Customer;Integrated Security=True"))
+        {
+            connection.Open ();
+            var schema = new Schema (connection);
+            return schema;
+        }
+    }
+#>
