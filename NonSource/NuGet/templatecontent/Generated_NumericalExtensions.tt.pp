@@ -17,4 +17,4 @@
         DT("DateTime")                  ,
     };
 #>
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.2\T4\NumericalExtensions.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.3\T4\NumericalExtensions.ttinclude" #>

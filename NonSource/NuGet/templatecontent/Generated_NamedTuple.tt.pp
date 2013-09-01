@@ -39,4 +39,4 @@
         }, 
     };
 #>
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.2\T4\NamedTuple.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.3\T4\NamedTuple.ttinclude" #>

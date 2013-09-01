@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>T4IncludeTemplate</id>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <title>T4Include Templates</title>
     <authors>Mårten Rånge</authors>
     <owners>Mårten Rånge</owners>
@@ -15,11 +15,13 @@
     <frameworkAssemblies>
     </frameworkAssemblies>
     <releaseNotes>
+        * 1.0.3   - Added Schema.ttinclude - light-weight SQL Server schema discoverer
         * 1.0.2   - Updated templates in order to remove some unnecessary dependencies
         * 1.0.1   - Initial release
     </releaseNotes>
   </metadata>
   <files>
+    <file src="..\..\T4\Schema.ttinclude" target="T4" />
     <file src="..\..\T4\DependencyProperties.ttinclude" target="T4" />
     <file src="..\..\T4\Header.ttinclude" target="T4" />
     <file src="..\..\T4\IncludeHeader.ttinclude" target="T4" />
