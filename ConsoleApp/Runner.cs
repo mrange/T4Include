@@ -11,7 +11,7 @@
 // ----------------------------------------------------------------------------------------------
 
 // ### INCLUDE: ../Common/Config.cs
-// ### INCLUDE: ../Common/ConsoleLog.cs
+// ### INCLUDE: ../Common/Log.cs
 // ### INCLUDE: ../Common/SubString.cs
 // ### INCLUDE: ../Extensions/BasicExtensions.cs
 // ### INCLUDE: ../Hron/HRONDynamicObjectSerializer.cs
@@ -50,6 +50,8 @@ namespace Source.ConsoleApp
 
     static partial class Runner
     {
+        static partial void Partial_ConsoleAppStarts ();
+        static partial void Partial_ConsoleAppStops ();
         static partial void Partial_Run (string[] args, dynamic config);
 
         public static readonly CultureInfo Default_CurrentCulture  = Thread.CurrentThread.CurrentCulture    ;
@@ -60,9 +62,10 @@ namespace Source.ConsoleApp
 
         public static void Run(string[] args)
         {
-            Log.HighLight("{0} is starting...", s_consoleName);
+            Partial_ConsoleAppStarts ();
             try
             {
+                Log.HighLight("{0} is starting...", s_consoleName);
                 Thread.CurrentThread.CurrentCulture = Config.DefaultCulture;
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -116,6 +119,10 @@ namespace Source.ConsoleApp
                     Environment.ExitCode,
                     exc
                     );
+            }
+            finally
+            {
+                Partial_ConsoleAppStops ();
             }
         }
     }
