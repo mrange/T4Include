@@ -32,24 +32,26 @@ namespace Source.SQL
     {
         internal sealed partial class SqlTypeInfo
         {
-            public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object), -1, false, null);
+            public static readonly SqlTypeInfo Empty = new SqlTypeInfo (SqlDbType.Udt, typeof (object), -1, false, "", null);
 
             public readonly SqlDbType   DbType              ;
             public readonly Type        ClrType             ;
             public readonly int         DbTypeElementSize   ;
             public readonly bool        RequiresDimension   ;
+            public readonly string      DbDefaultValue      ;
             public readonly string      DbTypeName          ;
             public readonly string      CsTypeName          ;
 
             public readonly MethodInfo  GetterMethod        ;
 
 
-            public SqlTypeInfo(SqlDbType dbType, Type type, int elementSize, bool requiresDimension, MethodInfo getterMethod)
+            public SqlTypeInfo(SqlDbType dbType, Type type, int elementSize, bool requiresDimension, string dbDefaultValue, MethodInfo getterMethod)
             {
                 DbType              = dbType            ;
                 ClrType             = type              ;
                 DbTypeElementSize   = elementSize       ;
                 RequiresDimension   = requiresDimension ;
+                DbDefaultValue      = dbDefaultValue    ?? ""   ;
 
                 GetterMethod        = getterMethod      ;
 
@@ -66,13 +68,13 @@ namespace Source.SQL
             }
         }
 
-        static void Add<T> (byte id, SqlDbType dbType, int elementSize, bool requiresDimension, Expression<Func<SqlDataReader, T>> getter)
+        static void Add<T> (byte id, SqlDbType dbType, int elementSize, bool requiresDimension, string dbDefaultValue, Expression<Func<SqlDataReader, T>> getter)
         {
             var getterMethodInfo = getter != null
                 ?   ((MethodCallExpression)getter.Body).Method   
                 :   null
                 ;
-            s_typeInfoLookup.Add(id, new SqlTypeInfo(dbType, typeof(T), elementSize, requiresDimension, getterMethodInfo));
+            s_typeInfoLookup.Add(id, new SqlTypeInfo(dbType, typeof(T), elementSize, requiresDimension, dbDefaultValue, getterMethodInfo));
         }
 
         readonly static Dictionary<byte, SqlTypeInfo> s_typeInfoLookup = 
@@ -80,36 +82,36 @@ namespace Source.SQL
 
         static TypeDefinition ()
         {
-            Add<Int64>           (127   , SqlDbType.BigInt           , getter:r => r.GetInt64(0)            , elementSize:8    , requiresDimension:false   );
-            Add<Byte[]>          (173   , SqlDbType.Binary           , getter:null                          , elementSize:1    , requiresDimension:true    );
-            Add<Boolean>         (104   , SqlDbType.Bit              , getter:r => r.GetBoolean(0)          , elementSize:1    , requiresDimension:false   );
-            Add<String>          (175   , SqlDbType.Char             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
-            Add<DateTime>        (61    , SqlDbType.DateTime         , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
-            Add<Decimal>         (106   , SqlDbType.Decimal          , getter:r => r.GetDecimal(0)          , elementSize:17   , requiresDimension:false   );
-            Add<Double>          (62    , SqlDbType.Float            , getter:r => r.GetDouble(0)           , elementSize:4    , requiresDimension:false   );
-            Add<Byte[]>          (34    , SqlDbType.Image            , getter:null                          , elementSize:1    , requiresDimension:false   );  // TODO: Check this
-            Add<Int32>           (56    , SqlDbType.Int              , getter:r => r.GetInt32(0)            , elementSize:4    , requiresDimension:false   );
-            Add<Decimal>         (60    , SqlDbType.Money            , getter:r => r.GetDecimal(0)          , elementSize:8    , requiresDimension:false   );
-            Add<String>          (239   , SqlDbType.NChar            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
-            Add<String>          (99    , SqlDbType.NText            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:false   );
-            Add<String>          (231   , SqlDbType.NVarChar         , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    );
-            Add<Single>          (59    , SqlDbType.Real             , getter:r => r.GetFloat(0)            , elementSize:4    , requiresDimension:false   );
-            Add<Guid>            (36    , SqlDbType.UniqueIdentifier , getter:r => r.GetGuid(0)             , elementSize:1    , requiresDimension:false   );
-            Add<DateTime>        (58    , SqlDbType.SmallDateTime    , getter:r => r.GetDateTime(0)         , elementSize:4    , requiresDimension:false   );
-            Add<Int16>           (52    , SqlDbType.SmallInt         , getter:r => r.GetInt16(0)            , elementSize:2    , requiresDimension:false   );
-            Add<Decimal>         (122   , SqlDbType.SmallMoney       , getter:r => r.GetDecimal(0)          , elementSize:4    , requiresDimension:false   );
-            Add<String>          (35    , SqlDbType.Text             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:false   );
-            Add<DateTime>        (189   , SqlDbType.Timestamp        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
-            Add<Byte>            (48    , SqlDbType.TinyInt          , getter:r => r.GetByte(0)             , elementSize:1    , requiresDimension:false   );
-            Add<Byte[]>          (165   , SqlDbType.VarBinary        , getter:null                          , elementSize:1    , requiresDimension:true    );
-            Add<String>          (167   , SqlDbType.VarChar          , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    );
-            Add<object>          (98    , SqlDbType.Variant          , getter:r => r.GetValue(0)            , elementSize: -1  , requiresDimension:false   );
-            Add<XmlReader>       (241   , SqlDbType.Xml              , getter:r => r.GetXmlReader(0)        , elementSize:-1   , requiresDimension:false   );  
-            Add<DateTime>        (40    , SqlDbType.Date             , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
-            Add<DateTime>        (41    , SqlDbType.Time             , getter:r => r.GetDateTime(0)         , elementSize:5    , requiresDimension:false   );
-            Add<DateTime>        (42    , SqlDbType.DateTime2        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   );
-            Add<DateTimeOffset>  (43    , SqlDbType.DateTimeOffset   , getter:r => r.GetDateTimeOffset(0)   , elementSize:10   , requiresDimension:false   );
-        }                                                                                                                                 
+            Add<Int64>           (127   , SqlDbType.BigInt           , getter:r => r.GetInt64(0)            , elementSize:8    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Byte[]>          (173   , SqlDbType.Binary           , getter:null                          , elementSize:1    , requiresDimension:true    , dbDefaultValue:""          );
+            Add<Boolean>         (104   , SqlDbType.Bit              , getter:r => r.GetBoolean(0)          , elementSize:1    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<String>          (175   , SqlDbType.Char             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    , dbDefaultValue:"''"        );
+            Add<DateTime>        (61    , SqlDbType.DateTime         , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   , dbDefaultValue:"1900-01-01");
+            Add<Decimal>         (106   , SqlDbType.Decimal          , getter:r => r.GetDecimal(0)          , elementSize:17   , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Double>          (62    , SqlDbType.Float            , getter:r => r.GetDouble(0)           , elementSize:4    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Byte[]>          (34    , SqlDbType.Image            , getter:null                          , elementSize:1    , requiresDimension:false   , dbDefaultValue:""          );  // TODO: Check this
+            Add<Int32>           (56    , SqlDbType.Int              , getter:r => r.GetInt32(0)            , elementSize:4    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Decimal>         (60    , SqlDbType.Money            , getter:r => r.GetDecimal(0)          , elementSize:8    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<String>          (239   , SqlDbType.NChar            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    , dbDefaultValue:"''"        );
+            Add<String>          (99    , SqlDbType.NText            , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:false   , dbDefaultValue:"''"        );
+            Add<String>          (231   , SqlDbType.NVarChar         , getter:r => r.GetString(0)           , elementSize:2    , requiresDimension:true    , dbDefaultValue:"''"        );
+            Add<Single>          (59    , SqlDbType.Real             , getter:r => r.GetFloat(0)            , elementSize:4    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Guid>            (36    , SqlDbType.UniqueIdentifier , getter:r => r.GetGuid(0)             , elementSize:1    , requiresDimension:false   , dbDefaultValue:""          );
+            Add<DateTime>        (58    , SqlDbType.SmallDateTime    , getter:r => r.GetDateTime(0)         , elementSize:4    , requiresDimension:false   , dbDefaultValue:"1900-01-01");
+            Add<Int16>           (52    , SqlDbType.SmallInt         , getter:r => r.GetInt16(0)            , elementSize:2    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Decimal>         (122   , SqlDbType.SmallMoney       , getter:r => r.GetDecimal(0)          , elementSize:4    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<String>          (35    , SqlDbType.Text             , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:false   , dbDefaultValue:"''"        );
+            Add<DateTime>        (189   , SqlDbType.Timestamp        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   , dbDefaultValue:""          );
+            Add<Byte>            (48    , SqlDbType.TinyInt          , getter:r => r.GetByte(0)             , elementSize:1    , requiresDimension:false   , dbDefaultValue:"0"         );
+            Add<Byte[]>          (165   , SqlDbType.VarBinary        , getter:null                          , elementSize:1    , requiresDimension:true    , dbDefaultValue:""          );
+            Add<String>          (167   , SqlDbType.VarChar          , getter:r => r.GetString(0)           , elementSize:1    , requiresDimension:true    , dbDefaultValue:"''"        );
+            Add<object>          (98    , SqlDbType.Variant          , getter:r => r.GetValue(0)            , elementSize: -1  , requiresDimension:false   , dbDefaultValue:""          );
+            Add<XmlReader>       (241   , SqlDbType.Xml              , getter:r => r.GetXmlReader(0)        , elementSize:-1   , requiresDimension:false   , dbDefaultValue:""          );  
+            Add<DateTime>        (40    , SqlDbType.Date             , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   , dbDefaultValue:"1900-01-01");
+            Add<DateTime>        (41    , SqlDbType.Time             , getter:r => r.GetDateTime(0)         , elementSize:5    , requiresDimension:false   , dbDefaultValue:""          );
+            Add<DateTime>        (42    , SqlDbType.DateTime2        , getter:r => r.GetDateTime(0)         , elementSize:8    , requiresDimension:false   , dbDefaultValue:"1900-01-01");
+            Add<DateTimeOffset>  (43    , SqlDbType.DateTimeOffset   , getter:r => r.GetDateTimeOffset(0)   , elementSize:10   , requiresDimension:false   , dbDefaultValue:""          );
+        }                                                                                                                                                    
 
  
         public static readonly TypeDefinition Empty = new TypeDefinition (
@@ -189,6 +191,11 @@ namespace Source.SQL
             get { return TypeInfo.DbTypeElementSize; }
         }
 
+        public string DbDefaultValue
+        {
+            get { return TypeInfo.DbDefaultValue; }
+        }
+
         public string CsTypeName
         {
             get { return TypeInfo.CsTypeName; }
@@ -231,7 +238,7 @@ namespace Source.SQL
             Scale       = scale     ;
         }
 
-        public string DbTypeAsString ()
+        public string DbTypeAsString (bool appendNullable = true)
         {
             var sb = new StringBuilder(Type.TypeInfo.DbTypeName);
 
@@ -260,16 +267,19 @@ namespace Source.SQL
                     sb.Append(')');                
             }
 
-            var isNullable = OnGetNullable ();
-            if (isNullable != null)
+            if (appendNullable)
             {
-                if (isNullable.Value)
+                var isNullable = OnGetNullable ();
+                if (isNullable != null)
                 {
-                    sb.Append(" NULL");                    
-                }
-                else
-                {
-                    sb.Append(" NOT NULL");                    
+                    if (isNullable.Value)
+                    {
+                        sb.Append(" NULL");                    
+                    }
+                    else
+                    {
+                        sb.Append(" NOT NULL");                    
+                    }
                 }
             }
 
@@ -291,6 +301,11 @@ namespace Source.SQL
         public int DbTypeElementSize
         {
             get { return Type.DbTypeElementSize; }
+        }
+
+        public string DbDefaultValue
+        {
+            get { return Type.DbDefaultValue; }
         }
 
         public string CsTypeName

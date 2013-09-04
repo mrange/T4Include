@@ -201,6 +201,8 @@
     <None Include="NonSource\NuGet\templatecontent\Generated_NamedTuple.tt.pp" />
     <None Include="NonSource\NuGet\templatecontent\Generated_NumericalExtensions.tt.pp" />
     <None Include="NonSource\NuGet\templatecontent\T4IncludeControl.cs.pp" />
+    <None Include="T4\HeaderCommon.ttinclude" />
+    <None Include="T4\HeaderSql.ttinclude" />
     <None Include="T4\NamedTuple.ttinclude" />
     <None Include="T4\Schema.ttinclude" />
     <None Include="T4\StateMachine.ttinclude" />

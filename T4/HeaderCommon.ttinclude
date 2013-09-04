@@ -1,0 +1,100 @@
+﻿<#
+// ----------------------------------------------------------------------------------------------
+// Copyright (c) Mårten Rånge.
+// ----------------------------------------------------------------------------------------------
+// This source code is subject to terms and conditions of the Microsoft Public License. A 
+// copy of the license can be found in the License.html file at the root of this distribution. 
+// If you cannot locate the  Microsoft Public License, please send an email to 
+// dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+//  by the terms of the Microsoft Public License.
+// ----------------------------------------------------------------------------------------------
+// You must not remove this notice, or any other, from this software.
+// ----------------------------------------------------------------------------------------------
+#>
+
+<#@ assembly    name        ="System.Core"                  #>
+<#@ import      namespace   ="System.Collections.Generic"   #>
+<#@ import      namespace   ="System.Linq"                  #>
+
+<#+
+    const string S_NoName = "<NoName>";
+    const string S_NoType = "<NoType>";
+
+    static string LeftJustify (string value, int width)
+    {
+        value = value ?? "";
+        return value + new string (' ', Math.Max (0, width - value.Length));
+    }
+
+    static string RightJustify (string value, int width)
+    {
+        value = value ?? "";
+        return new string (' ', Math.Max (0, width - value.Length)) + value;
+    }
+
+    sealed class Root
+    {
+    }
+
+    interface IBaseEntity
+    {
+        void SetParent (object parent);
+    }
+
+    abstract class BaseEntity<TParent> : IBaseEntity
+        where TParent : class
+    {
+        public TParent Parent;
+
+        public void SetParent (object parent)
+        {
+            Parent = parent as TParent;
+        }
+
+    }
+
+    abstract class BaseContainer<TParent, TContained> : BaseEntity<TParent>, IEnumerable<TContained>
+        where TContained : class
+        where TParent : class
+    {
+        readonly List<TContained> m_contained = new List<TContained> ();
+
+        public void Add (TContained contained)
+        {
+            if (contained != null)
+            {
+                var be = contained as IBaseEntity;
+                if (be != null)
+                {
+                    be.SetParent (this);
+                }
+                m_contained.Add (contained);
+            }
+        }
+
+        public void Replace (IEnumerable<TContained> range)
+        {
+            range = range ?? new TContained[0];
+
+            foreach (var be in range.OfType<IBaseEntity>())
+            {
+                be.SetParent (this);
+            }
+
+            m_contained.Clear ();
+            m_contained.AddRange (range);
+        }
+
+        public IEnumerator<TContained> GetEnumerator ()
+        {
+            return m_contained.GetEnumerator ();
+        }
+        
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+        {
+            return m_contained.GetEnumerator ();
+        }
+        
+
+    }
+#>
