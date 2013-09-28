@@ -22,11 +22,13 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using FileInclude.Source.Common;
+using FileInclude.Source.Extensions;
 using FileInclude.Source.HRON;
 using FileInclude.Source.Testing;
 
 namespace Test_Functionality.HRON
 {
+    [TestsFor]
     sealed partial class TestsFor_HRON
     {
         class Config
@@ -264,6 +266,31 @@ namespace Test_Functionality.HRON
 
             TestFor.Equality (testCase, value, "Serialized dictionary should have the expected value");
 
+        }
+
+        public void Test_Issue4 ()
+        {
+            var strings = new [] {"hello", "there"};
+            var hron = HRONSerializer.ObjectAsString(strings);
+
+            List<string> resultsStrings;
+            HRONObjectParseError[] errors;
+
+            var result = HRONSerializer.TryParseObject(
+                100,
+                hron.ReadLines(),
+                out resultsStrings,
+                out errors
+                );
+
+            TestFor.Equality (true, result, "TryParseObject should succeed");
+            if (TestFor.Equality (strings.Length, resultsStrings.Count, "The length of expected and result sets should be the same"))
+            {
+                for (var iter = 0; iter < strings.Length; ++iter)
+                {
+                    TestFor.Equality (strings[iter], resultsStrings[iter], "The result set should have the same value as the expected set: {0}".FormatWith (iter));
+                }
+            }
         }
 
     }
