@@ -196,6 +196,37 @@ namespace Source.HRON
 
                     dictionary.Add(itemName, parsedValue);
                 }
+                else if (classDescriptor.IsListLike)
+                {
+                    var list = (IList)top.Value;
+
+                    if (list.IsReadOnly)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    if (IsAssignableFromString(classDescriptor.ListItemType))
+                    {
+                        list.Add (value);
+                    }
+
+                    var itemType = classDescriptor.ListItemType;
+
+                    var parsedValue = value.Parse(
+                        Config.DefaultCulture,
+                        itemType,
+                        null
+                        );
+    
+                    if (parsedValue == null)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    list.Add (parsedValue);
+                }
                 else
                 {
                     // TODO: Log?
@@ -340,6 +371,18 @@ namespace Source.HRON
 
                         type = itemType.GetClassDescriptor().NonNullableType;
                     }
+                    else if (classDescriptor.IsListLike)
+                    {
+                        var itemType = classDescriptor.ListItemType;
+
+                        if (IsAssignableFromString(itemType))
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+
+                        type = itemType.GetClassDescriptor().NonNullableType;
+                    }
                     else
                     {
                         // TODO: Log?
@@ -441,6 +484,18 @@ namespace Source.HRON
                     }
 
                     dictionary.Add(itemName, value);
+                }
+                else if (classDescriptor.IsListLike)
+                {
+                    var list = (IList)top.Value;
+
+                    if (list.IsReadOnly)
+                    {
+                        // TODO: Log?
+                        return;
+                    }
+
+                    list.Add(value);
                 }
                 else
                 {
