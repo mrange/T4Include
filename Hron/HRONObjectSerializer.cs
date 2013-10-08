@@ -483,7 +483,7 @@ namespace Source.HRON
                         return;
                     }
 
-                    dictionary.Add(itemName, value);
+                    dictionary.Add(itemName, value.Value);
                 }
                 else if (classDescriptor.IsListLike)
                 {
@@ -495,7 +495,7 @@ namespace Source.HRON
                         return;
                     }
 
-                    list.Add(value);
+                    list.Add(value.Value);
                 }
                 else
                 {
