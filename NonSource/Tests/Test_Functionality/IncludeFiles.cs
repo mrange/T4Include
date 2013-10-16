@@ -311,6 +311,37 @@ namespace FileInclude
     
                         dictionary.Add(itemName, parsedValue);
                     }
+                    else if (classDescriptor.IsListLike)
+                    {
+                        var list = (IList)top.Value;
+    
+                        if (list.IsReadOnly)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        if (IsAssignableFromString(classDescriptor.ListItemType))
+                        {
+                            list.Add (value);
+                        }
+    
+                        var itemType = classDescriptor.ListItemType;
+    
+                        var parsedValue = value.Parse(
+                            Config.DefaultCulture,
+                            itemType,
+                            null
+                            );
+        
+                        if (parsedValue == null)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        list.Add (parsedValue);
+                    }
                     else
                     {
                         // TODO: Log?
@@ -455,6 +486,18 @@ namespace FileInclude
     
                             type = itemType.GetClassDescriptor().NonNullableType;
                         }
+                        else if (classDescriptor.IsListLike)
+                        {
+                            var itemType = classDescriptor.ListItemType;
+    
+                            if (IsAssignableFromString(itemType))
+                            {
+                                // TODO: Log?
+                                return;
+                            }
+    
+                            type = itemType.GetClassDescriptor().NonNullableType;
+                        }
                         else
                         {
                             // TODO: Log?
@@ -556,6 +599,18 @@ namespace FileInclude
                         }
     
                         dictionary.Add(itemName, value);
+                    }
+                    else if (classDescriptor.IsListLike)
+                    {
+                        var list = (IList)top.Value;
+    
+                        if (list.IsReadOnly)
+                        {
+                            // TODO: Log?
+                            return;
+                        }
+    
+                        list.Add(value);
                     }
                     else
                     {
@@ -9821,7 +9876,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-09-03T21:34:09";
+        public const string IncludeDate     = @"2013-09-28T10:44:26";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
