@@ -14,4 +14,4 @@
     };
 
 #>
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.3\T4\RoutedEvents.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.1.0\T4\RoutedEvents.ttinclude" #>

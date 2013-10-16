@@ -14,6 +14,6 @@
 
 #>
 
-<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.0.3\T4\RoutedCommands.ttinclude" #>
+<#@ include file="$(SolutionDir)\packages\T4IncludeTemplate.1.1.0\T4\RoutedCommands.ttinclude" #>
 
 
