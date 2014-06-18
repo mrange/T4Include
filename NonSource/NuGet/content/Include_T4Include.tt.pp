@@ -9,7 +9,7 @@
             Include (@"mrange/T4Include/master/Extensions/BasicExtensions.cs"),
 
             // Uncomment below to include dapper
-            // Include (@"SamSaffron/dapper-dot-net/master/Dapper NET40/SqlMapper.cs"),
+            // Include (@"StackExchange/dapper-dot-net/master/Dapper%20NET40/SqlMapper.cs"),
         };
 #>
 
