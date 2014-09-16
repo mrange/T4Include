@@ -23,7 +23,7 @@ Example on how to reference dapper:
     Namespace = "InternalizedDapper";
     Includes = new []
         {
-            Include (@"SamSaffron/dapper-dot-net/master/Dapper NET40/SqlMapper.cs"),
+            Include (@"StackExchange/dapper-dot-net/master/Dapper%20NET40/SqlMapper.cs"),
         };
 #>
 
