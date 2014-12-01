@@ -79,6 +79,7 @@
             {
                 var includeMatch = s_matchInclude.Match (line);
                 var topMatch = s_matchMoveToTop.Match (line);
+                var bottomMatch = s_matchMoveToBottom.Match (line);
                 if (includeMatch.Success)
                 {
                     var fileName = includeMatch.Groups["fileName"].Value;
@@ -91,9 +92,13 @@
                 {
                     include.TopLines.Add (line);
                 }
-                else
+                else if (bottomMatch.Success)
                 {
                     include.BottomLines.Add (line);
+                }
+                else
+                {
+                    include.MiddleLines.Add (line);
                 }
             }
         }
@@ -148,14 +153,14 @@ namespace <#=Namespace#>
 <#
         }
 
-        foreach (var bottomLine in include.BottomLines)
+        foreach (var middleLine in include.MiddleLines)
         {
             if (hasNamespace)
             {
                 Write ("    ");
             }
 
-            WriteLine (bottomLine);
+            WriteLine (middleLine);
         }
         if (hasNamespace)
         {
@@ -169,7 +174,16 @@ namespace <#=Namespace#>
 <#
     }
 #>
-
+// ############################################################################
+// Certains directives such as #define and // Resharper comments has to be 
+// moved to bottom in order to work properly    
+// ############################################################################
+<#
+    foreach (var bottomLine in processed.SelectMany(i => i.BottomLines).Distinct ().OrderBy (p => p))
+    {
+        WriteLine (bottomLine);
+    }
+#>
 // ############################################################################
 <#
     if (string.IsNullOrEmpty (Namespace))
@@ -224,10 +238,13 @@ namespace <#=Namespace#>.Include
         );
 
     static readonly Regex s_matchMoveToTop = new Regex (
-        @"^(\#define|\#pragma|// ReSharper )",
+        @"^(\#define|\#pragma warning disable|// ReSharper disable )",
         RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
         );
-
+    static readonly Regex s_matchMoveToBottom = new Regex (
+        @"^(\#define|\#pragma warning restore|// ReSharper restore )",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled |RegexOptions.CultureInvariant |RegexOptions.Singleline
+        );
     class BlackListedFileFragment
     {
         public string Fragment;
@@ -248,6 +265,7 @@ namespace <#=Namespace#>.Include
 
         public string FullPath              ;
         public List<string> TopLines        = new List<string> ();
+        public List<string> MiddleLines     = new List<string> ();
         public List<string> BottomLines     = new List<string> ();
     }
 
