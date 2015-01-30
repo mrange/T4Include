@@ -91,6 +91,7 @@
     <Compile Include="NuGet\PackageInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQL\Schema.cs" />
+    <Compile Include="Streams\Stream.cs" />
     <Compile Include="Text\LineReaderExtensions.cs" />
     <Compile Include="Text\LineToObjectExtensions.cs" />
     <Compile Include="WPF\AccordionPanel.cs" />

@@ -51,6 +51,7 @@
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\Observable\Producers.cs
 // @@@ INCLUDE_FOUND: ../Common/Log.cs
 // @@@ INCLUDE_FOUND: Observables.cs
+// @@@ INCLUDING: C:\temp\GitHub\T4Include\Streams\Stream.cs
 // @@@ INCLUDING: C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs
 // @@@ INCLUDE_FOUND: ../Common/Array.cs
 // @@@ INCLUDE_FOUND: ../Common/Config.cs
@@ -598,7 +599,7 @@ namespace FileInclude
                             return;
                         }
     
-                        dictionary.Add(itemName, value);
+                        dictionary.Add(itemName, value.Value);
                     }
                     else if (classDescriptor.IsListLike)
                     {
@@ -610,7 +611,7 @@ namespace FileInclude
                             return;
                         }
     
-                        list.Add(value);
+                        list.Add(value.Value);
                     }
                     else
                     {
@@ -3820,6 +3821,299 @@ namespace FileInclude
     }
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Observable\Producers.cs
+// ############################################################################
+
+// ############################################################################
+// @@@ BEGIN_INCLUDE: C:\temp\GitHub\T4Include\Streams\Stream.cs
+namespace FileInclude
+{
+    // ----------------------------------------------------------------------------------------------
+    // Copyright (c) Mårten Rånge.
+    // ----------------------------------------------------------------------------------------------
+    // This source code is subject to terms and conditions of the Microsoft Public License. A 
+    // copy of the license can be found in the License.html file at the root of this distribution. 
+    // If you cannot locate the  Microsoft Public License, please send an email to 
+    // dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+    //  by the terms of the Microsoft Public License.
+    // ----------------------------------------------------------------------------------------------
+    // You must not remove this notice, or any other, from this software.
+    // ----------------------------------------------------------------------------------------------
+    
+    namespace Source.Streams
+    {
+        using System;
+        using System.Collections.Generic;
+    
+        partial class StreamContext
+        {
+            public bool IsCancelled = false;
+        }
+    
+        partial interface IStream<T>
+        {
+            void BuildChain (StreamContext ctx, Action<T> a);
+            void BuildCancellableChain (StreamContext ctx, Action<T> a);
+        }
+    
+        static partial class Stream
+        {
+    
+            abstract partial class BaseStream<T,U> : IStream<U>
+            {
+                protected readonly IStream<T> Previous;
+    
+                public BaseStream (IStream<T> s)
+                {
+                    Previous = s;
+                }
+    
+                public abstract void BuildChain(StreamContext ctx, Action<U> a);
+    
+                public abstract void BuildCancellableChain(StreamContext ctx, Action<U> a);
+            }
+    
+            abstract partial class BasicStream<T,U> : BaseStream<T,U>
+            {
+                public BasicStream (IStream<T> s)
+                    : base (s)
+                {
+                }
+    
+                protected abstract Action<T> OnBuildAction (StreamContext ctx, Action<U> a);
+    
+                public override void BuildChain (StreamContext ctx, Action<U> a)
+                {
+                    Previous.BuildChain (ctx, OnBuildAction (ctx, a));
+                }
+    
+                public override void BuildCancellableChain (StreamContext ctx, Action<U> a)
+                {
+                    Previous.BuildCancellableChain (ctx, OnBuildAction (ctx, a));
+                }
+            }
+    
+            abstract partial class CancellableStream<T,U> : BaseStream<T,U>
+            {
+                public CancellableStream (IStream<T> s)
+                    : base (s)
+                {
+                }
+    
+                protected abstract Action<T> OnBuildAction (StreamContext ctx, Action<U> a);
+    
+                public override void BuildChain (StreamContext ctx, Action<U> a)
+                {
+                    Previous.BuildCancellableChain (ctx, OnBuildAction (ctx, a));
+                }
+    
+                public override void BuildCancellableChain (StreamContext ctx, Action<U> a)
+                {
+                    Previous.BuildCancellableChain (ctx, OnBuildAction (ctx, a));
+                }
+            }
+    
+            partial class FromArrayStream<T> : IStream<T>
+            {
+                readonly T[] m_values;
+                public FromArrayStream (T[] values)
+                {
+                    m_values = values;
+                }
+    
+                public void BuildChain (StreamContext ctx, Action<T> a)
+                {
+                    foreach (var v in m_values)
+                    {
+                        a (v);
+                    }
+                }
+    
+                public void BuildCancellableChain (StreamContext ctx, Action<T> a)
+                {
+                    foreach (var v in m_values)
+                    {
+                        a (v);
+                        if (ctx.IsCancelled)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            partial class RangeIntStream : IStream<int>
+            {
+                readonly int m_inclusiveFrom;
+                readonly int m_increment    ;
+                readonly int m_exclusiveTo  ;
+    
+                public RangeIntStream (int inclusiveFrom, int increment, int exclusiveTo)
+                {
+                    m_inclusiveFrom = inclusiveFrom ;
+                    m_increment     = increment     ;
+                    m_exclusiveTo   = exclusiveTo   ;
+                }
+    
+                public void BuildChain (StreamContext ctx, Action<int> a)
+                {
+                    for (var iter = m_inclusiveFrom; iter < m_exclusiveTo; iter += m_increment)
+                    {
+                        a (iter);
+                    }
+                }
+    
+                public void BuildCancellableChain (StreamContext ctx, Action<int> a)
+                {
+                    for (var iter = m_inclusiveFrom; iter < m_exclusiveTo; iter += m_increment)
+                    {
+                        a (iter);
+                        if (ctx.IsCancelled)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            partial class WhereStream<T> : BasicStream<T,T>
+            {
+                readonly Func<T, bool>  m_predicate ;
+    
+                public WhereStream (IStream<T> s, Func<T, bool> p)
+                    : base (s)
+                {
+                    m_predicate = p;
+                }
+    
+                protected override Action<T> OnBuildAction(StreamContext ctx, Action<T> a)
+                {
+                    return v => { if (m_predicate (v)) {a (v);} };
+                } 
+            }
+    
+            partial class SkipStream<T> : BasicStream<T,T>
+            {
+                readonly int m_n;
+    
+                public SkipStream (IStream<T> s, int n)
+                    : base (s)
+                {
+                    m_n = n;
+                }
+    
+                protected override Action<T> OnBuildAction(StreamContext ctx, Action<T> a)
+                {
+                    var remaining = m_n;
+                    return v => 
+                        { 
+                            if (remaining > 0)
+                            {
+                                --remaining;
+                            }
+                            else
+                            {
+                                a (v);
+                            }
+                        };
+                } 
+            }
+    
+            partial class TakeStream<T> : CancellableStream<T,T>
+            {
+                readonly int m_n;
+    
+                public TakeStream (IStream<T> s, int n)
+                    : base (s)
+                {
+                    m_n = n;
+                }
+    
+                protected override Action<T> OnBuildAction(StreamContext ctx, Action<T> a)
+                {
+                    var remaining = m_n;
+                    return v => 
+                        { 
+                            if (remaining >= 0)
+                            {
+                                --remaining;
+                                a (v);
+                            }
+                            else
+                            {
+                                ctx.IsCancelled = true;
+                            }
+                        };
+                } 
+            }
+    
+            partial class SelectStream<T,U> : BasicStream<T,U>
+            {
+                readonly Func<T, U>  m_predicate ;
+    
+                public SelectStream (IStream<T> s, Func<T, U> p)
+                    : base (s)
+                {
+                    m_predicate = p;
+                }
+    
+                protected override Action<T> OnBuildAction(StreamContext ctx, Action<U> a)
+                {
+                    return v => a (m_predicate (v));
+                } 
+            }
+    
+            public static IStream<T> CreateStream<T> (this T[] values)
+            {
+                return new FromArrayStream<T> (values);
+            }
+    
+            public static IStream<int> Range (int inclusiveFrom, int increment, int exclusiveTo)
+            {
+                return new RangeIntStream (inclusiveFrom, increment, exclusiveTo);
+            }
+    
+            public static IStream<T> Where<T> (this IStream<T> s, Func<T, bool> p)
+            {
+                return new WhereStream<T> (s, p);
+            }
+    
+            public static IStream<U> Select<T,U> (this IStream<T> s, Func<T, U> p)
+            {
+                return new SelectStream<T,U> (s, p);
+            }
+    
+            public static IStream<T> Skip<T> (this IStream<T> s, int n)
+            {
+                return new SkipStream<T> (s, n);
+            }
+    
+            public static IStream<T> Take<T> (this IStream<T> s, int n)
+            {
+                return new TakeStream<T> (s, n);
+            }
+    
+            public static int ToSum (this IStream<int> stream, int initialValue = 0)
+            {
+                var sum = initialValue;
+    
+                stream.BuildChain (new StreamContext (), v => sum += v);
+    
+                return sum;
+            }
+    
+            public static long ToSum (this IStream<long> stream, long initialValue = 0L)
+            {
+                var sum = initialValue;
+    
+                stream.BuildChain (new StreamContext (), v => sum += v);
+    
+                return sum;
+            }
+    
+        }
+    }
+}
+// @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Streams\Stream.cs
 // ############################################################################
 
 // ############################################################################
@@ -9869,14 +10163,17 @@ namespace FileInclude
 }
 // @@@ END_INCLUDE: C:\temp\GitHub\T4Include\Common\BaseDisposable.cs
 // ############################################################################
-
+// ############################################################################
+// Certains directives such as #define and // Resharper comments has to be 
+// moved to bottom in order to work properly    
+// ############################################################################
 // ############################################################################
 namespace FileInclude.Include
 {
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-09-28T10:44:26";
+        public const string IncludeDate     = @"2015-01-30T20:34:08";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";
@@ -9890,25 +10187,26 @@ namespace FileInclude.Include
         public const string Include_9       = @"C:\temp\GitHub\T4Include\Text\LineToObjectExtensions.cs";
         public const string Include_10       = @"C:\temp\GitHub\T4Include\SQL\Schema.cs";
         public const string Include_11       = @"C:\temp\GitHub\T4Include\Observable\Producers.cs";
-        public const string Include_12       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
-        public const string Include_13       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
-        public const string Include_14       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
-        public const string Include_15       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
-        public const string Include_16       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
-        public const string Include_17       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
-        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
-        public const string Include_19       = @"C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs";
-        public const string Include_20       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
-        public const string Include_21       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
-        public const string Include_22       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
-        public const string Include_23       = @"C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs";
-        public const string Include_24       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
-        public const string Include_25       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
-        public const string Include_26       = @"C:\temp\GitHub\T4Include\Observable\Observables.cs";
-        public const string Include_27       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
-        public const string Include_28       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
-        public const string Include_29       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
-        public const string Include_30       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
+        public const string Include_12       = @"C:\temp\GitHub\T4Include\Streams\Stream.cs";
+        public const string Include_13       = @"C:\temp\GitHub\T4Include\HRON\HRONSerializer.cs";
+        public const string Include_14       = @"C:\temp\GitHub\T4Include\Extensions\ParseExtensions.cs";
+        public const string Include_15       = @"C:\temp\GitHub\T4Include\Reflection\ClassDescriptor.cs";
+        public const string Include_16       = @"C:\temp\GitHub\T4Include\Reflection\StaticReflection.cs";
+        public const string Include_17       = @"C:\temp\GitHub\T4Include\Extensions\EnumParseExtensions.cs";
+        public const string Include_18       = @"C:\temp\GitHub\T4Include\Common\Config.cs";
+        public const string Include_19       = @"C:\temp\GitHub\T4Include\Common\Log.cs";
+        public const string Include_20       = @"C:\temp\GitHub\T4Include\Collections\Generated_SkipList.cs";
+        public const string Include_21       = @"C:\temp\GitHub\T4Include\Concurrency\ShutDownable.cs";
+        public const string Include_22       = @"C:\temp\GitHub\T4Include\Concurrency\RemainingTime.cs";
+        public const string Include_23       = @"C:\temp\GitHub\T4Include\Common\Array.cs";
+        public const string Include_24       = @"C:\temp\GitHub\T4Include\Extensions\Generated_ObservableExtensions.cs";
+        public const string Include_25       = @"C:\temp\GitHub\T4Include\Testing\TestFor.cs";
+        public const string Include_26       = @"C:\temp\GitHub\T4Include\Text\LineReaderExtensions.cs";
+        public const string Include_27       = @"C:\temp\GitHub\T4Include\Observable\Observables.cs";
+        public const string Include_28       = @"C:\temp\GitHub\T4Include\Common\SubString.cs";
+        public const string Include_29       = @"C:\temp\GitHub\T4Include\Common\Generated_Log.cs";
+        public const string Include_30       = @"C:\temp\GitHub\T4Include\Testing\Generated_TestFor.cs";
+        public const string Include_31       = @"C:\temp\GitHub\T4Include\Common\BaseDisposable.cs";
     }
 }
 // ############################################################################

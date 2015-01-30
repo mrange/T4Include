@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -55,6 +56,7 @@
     <Compile Include="Observable\TestsFor_EnumerableProducer.cs" />
     <Compile Include="Reflection\TestsFor_ClassDescriptor.cs" />
     <Compile Include="SQL\TestsFor_Schema.cs" />
+    <Compile Include="Streams\TestsFor_Stream.cs" />
     <Compile Include="T4\Generated_Commands.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

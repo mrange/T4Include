@@ -28,6 +28,7 @@
             Include (@"Text\LineToObjectExtensions.cs"          ),
             Include (@"SQL\Schema.cs"                           ),
             Include (@"Observable\Producers.cs"                 ),
+            Include (@"Streams\Stream.cs"                       ),
         };
 #>
 
