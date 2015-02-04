@@ -25,6 +25,34 @@ namespace Test_Functionality.Streams
 
     sealed partial class TestsFor_Streams
     {
+        static Func<long, bool> wheref  ;
+        static Func<long, long> selectf ;
+
+        static WhereFunction    whereif     = new WhereFunction ();
+        static SelectFunction   selectif    = new SelectFunction ();
+
+        class Obj
+        {
+            public bool Where (long v)
+            {
+                return v % 2L == 0;
+            }
+
+            public long Select (long v)
+            {
+                return v + 1L;
+            }
+        }
+
+        static TestsFor_Streams ()
+        {
+            var obj = new Obj ();
+            wheref  = obj.Where;
+            selectf = obj.Select;
+
+
+        }
+        
         static int Series (int f, int t)
         {
             return (t - f + 1)*(t + f) / 2;
@@ -77,6 +105,27 @@ namespace Test_Functionality.Streams
 
         }
 
+        interface IFunction<T0, TResult>
+        {
+            TResult Do (T0 v0);
+        }
+
+        class WhereFunction : IFunction<long, bool>
+        {
+            public bool Do (long v)
+            {
+                return v % 2L == 0L;
+            }
+        }
+
+        class SelectFunction : IFunction<long, long>
+        {
+            public long Do (long v)
+            {
+                return v + 1L;
+            }
+        }
+
         public void Test_Performance ()
         {
             var total = 50000000;
@@ -119,6 +168,39 @@ namespace Test_Functionality.Streams
                             ;
                     };
 
+                var wf = wheref;
+                var sf = selectf;
+
+                Func<long> funcSum = () => 
+                    {
+                        var sum = 0L;
+                        foreach (var v in data)
+                        {
+                            if (wf (v))
+                            {
+                                var s = sf (v);
+                                sum += s;
+                            }
+                        }
+
+                        return sum;
+                    };
+
+                Func<long> interfaceSum = () => 
+                    {
+                        var sum = 0L;
+                        foreach (var v in data)
+                        {
+                            if (whereif.Do (v))
+                            {
+                                var s = selectif.Do (v);
+                                sum += s;
+                            }
+                        }
+
+                        return sum;
+                    };
+
                 Func<long> streamSum = () => 
                     {
                         return data
@@ -134,6 +216,8 @@ namespace Test_Functionality.Streams
                         Tuple.Create ("LINQ"    , linqSum   ),
                         Tuple.Create ("For"     , forSum    ),
                         Tuple.Create ("Stream"  , streamSum ),
+                        Tuple.Create ("Func"    , funcSum   ),
+                        Tuple.Create ("If"      , interfaceSum   ),
 
                     };
 
