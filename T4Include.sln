@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Source", "Source.csproj", "{41C19388-E1BD-4387-8073-98D5761D6753}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_T4Include", "NonSource\Tests\Test_T4Include\Test_T4Include.csproj", "{1C271517-A4F0-4286-A0FF-1C8D52FDD641}"
@@ -12,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_FunctionalityNet20", "NonSource\Tests\Test_FunctionalityNet20\Test_FunctionalityNet20.csproj", "{14DC7BC3-5B08-4D56-B740-041338FD78E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_WPF", "NonSource\Tests\Test_WPF\Test_WPF.csproj", "{5B25A5E7-4FDF-4030-B740-8000B8D7B885}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Test_Properties", "NonSource\Tests\Test_Properties\Test_Properties.fsproj", "{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,10 @@ Global
 		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B25A5E7-4FDF-4030-B740-8000B8D7B885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +56,6 @@ Global
 		{8D7DB487-2771-4834-931E-C093E861B650} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 		{14DC7BC3-5B08-4D56-B740-041338FD78E1} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 		{5B25A5E7-4FDF-4030-B740-8000B8D7B885} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
+		{3310A1BD-F7D6-4AA0-B940-55FDA2EBD369} = {835F1A45-17C7-4D91-8F8E-45AADE338FA3}
 	EndGlobalSection
 EndGlobal

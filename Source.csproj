@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>NonSource\Output\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PHM_TEST_BUILD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>NonSource\Output\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;PHM_TEST_BUILD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -55,6 +55,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Generated_SkipList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Collections\PersistentHashMap.cs" />
     <Compile Include="Collections\SkipList.cs" />
     <Compile Include="Common\Array.cs" />
     <Compile Include="Common\BaseDisposable.cs" />
@@ -291,6 +292,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="NonSource\NuGet\content\T4IncludeControl.cs.pp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MakePublic.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
