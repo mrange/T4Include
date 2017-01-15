@@ -10,12 +10,18 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
+namespace Source
+{
+  namespace Collections
+  {
+    // PersistentHashMap properties is tested by F# test suite which obviously can't include
+    //  C# code directly
+    public partial class PersistentHashMap<K, V>
+    {
+    }
 
-[assembly: AssemblyTitle("Source")]
-[assembly: AssemblyDescription("This library is not meant to be compiled and referenced. Instead it's meant to be included")]
-
-#if PHM_TEST_BUILD
-[assembly: InternalsVisibleTo("Test_Properties")]
-#endif
+    public partial class PersistentHashMap
+    {
+    }
+  }
+}

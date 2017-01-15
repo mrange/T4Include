@@ -5,3 +5,4 @@ Output
 *.user
 *.suo
 *.nupkg
+packages/
