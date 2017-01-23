@@ -69,6 +69,7 @@
     <Compile Include="Concurrency\RemainingTime.cs" />
     <Compile Include="Concurrency\ShutDownable.cs" />
     <Compile Include="ConsoleApp\Runner.cs" />
+    <Compile Include="Extensions\MonadsExtensions.cs" />
     <Compile Include="Observable\Observables.cs" />
     <Compile Include="Observable\Producers.cs" />
     <Compile Include="Extensions\Generated_ObservableExtensions.cs">
