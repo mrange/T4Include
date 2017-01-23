@@ -138,11 +138,59 @@ namespace FileInclude
     {
         using System;
         using System.Collections;
+        using System.Collections.Concurrent;
         using System.Collections.Generic;
+        using System.Linq;
         using System.Text;
         using Source.Common;
         using Source.Extensions;
         using Source.Reflection;
+    using System.Runtime.Serialization;
+    
+        static partial class HRONTypeInfoCache
+        {
+            static readonly ConcurrentDictionary<Type, TypeInfo> s_cache = new ConcurrentDictionary<Type, TypeInfo> ();
+    
+            static TypeInfo s_createTypeInfo (Type type)
+            {
+                return new TypeInfo (type);
+            }
+    
+            public static TypeInfo GetTypeInfo (this Type type)
+            {
+                return s_cache.GetOrAdd (type ?? typeof (object), s_createTypeInfo);
+            }
+    
+            public sealed partial class TypeInfo
+            {
+                public readonly ClassDescriptor     ClassDescriptor         ;
+                public readonly MemberDescriptor[]  SerializableMembers     ;
+    
+                public TypeInfo (Type type)
+                {
+                    ClassDescriptor = type.GetClassDescriptor ();
+    
+                    var isDataContract = ClassDescriptor.Attributes.Any (a => a is DataContractAttribute);
+    
+                    if (isDataContract)
+                    {
+                        SerializableMembers = ClassDescriptor
+                            .PublicGetMembers
+                            .Where (m => m.Attributes.Any (a => a is DataMemberAttribute))
+                            .ToArray ()
+                            ;
+                    }
+                    else
+                    {
+                        SerializableMembers = ClassDescriptor
+                            .PublicGetMembers
+                            .Where (m => !m.Attributes.Any (a => a is IgnoreDataMemberAttribute))
+                            .ToArray ()
+                            ;
+                    }
+                }
+            }
+        }
     
         partial class HRONObjectParseError
         {
@@ -162,9 +210,8 @@ namespace FileInclude
         {
             partial struct Item
             {
-                public readonly ClassDescriptor ClassDescriptor;
-                public readonly object Value;
-                public readonly HashSet<MemberDescriptor> MembersAssignedTo;
+                public readonly HRONTypeInfoCache.TypeInfo  TypeInfo        ;
+                public readonly object                      Value           ;
     
                 public Item(Type type)
                     : this()
@@ -174,9 +221,8 @@ namespace FileInclude
                         return;
                     }
     
-                    ClassDescriptor = type.GetClassDescriptor();
-                    Value = ClassDescriptor.Creator();
-                    MembersAssignedTo = new HashSet<MemberDescriptor>();
+                    TypeInfo        = type.GetTypeInfo ()               ;
+                    Value           = TypeInfo.ClassDescriptor.Creator();
                 }
             }
     
@@ -268,7 +314,7 @@ namespace FileInclude
     
                 var value = m_value.ToString();
     
-                var classDescriptor = top.ClassDescriptor;
+                var classDescriptor = top.TypeInfo.ClassDescriptor;
                 var itemName = name.ToString();
                 var memberDescriptor = classDescriptor.FindMember(itemName);
     
@@ -380,7 +426,6 @@ namespace FileInclude
                         }
     
                         memberDescriptor.Setter(top.Value, list);
-                        top.MembersAssignedTo.Add(memberDescriptor);
                     }
     
                     var itemType = memberClassDescriptor.ListItemType;
@@ -413,16 +458,9 @@ namespace FileInclude
                         return;
                     }
     
-                    if (top.MembersAssignedTo.Contains(memberDescriptor))
-                    {
-                        // TODO: Log?
-                        return;
-                    }
-    
                     if (IsAssignableFromString(memberDescriptor.MemberType))
                     {
                         memberDescriptor.Setter(top.Value, value);
-                        top.MembersAssignedTo.Add(memberDescriptor);
                         return;
                     }
     
@@ -439,7 +477,6 @@ namespace FileInclude
                     }
     
                     memberDescriptor.Setter(top.Value, parsedValue);
-                    top.MembersAssignedTo.Add(memberDescriptor);
                 }
             }
     
@@ -454,7 +491,7 @@ namespace FileInclude
                 Type type = null;
                 try
                 {
-                    var classDescriptor = top.ClassDescriptor;
+                    var classDescriptor = top.TypeInfo.ClassDescriptor;
                     var itemName = name.ToString();
                     var memberDescriptor = classDescriptor.FindMember(itemName);
     
@@ -484,7 +521,7 @@ namespace FileInclude
                                 return;
                             }
     
-                            type = itemType.GetClassDescriptor().NonNullableType;
+                            type = itemType.GetTypeInfo ().ClassDescriptor.NonNullableType;
                         }
                         else if (classDescriptor.IsListLike)
                         {
@@ -496,7 +533,7 @@ namespace FileInclude
                                 return;
                             }
     
-                            type = itemType.GetClassDescriptor().NonNullableType;
+                            type = itemType.GetTypeInfo().ClassDescriptor.NonNullableType;
                         }
                         else
                         {
@@ -535,17 +572,11 @@ namespace FileInclude
                             return;
                         }
     
-                        type = itemType.GetClassDescriptor().NonNullableType;
+                        type = itemType.GetTypeInfo ().ClassDescriptor.NonNullableType;
                     }
                     else
                     {
                         if (!memberDescriptor.HasSetter)
-                        {
-                            // TODO: Log?
-                            return;
-                        }
-    
-                        if (top.MembersAssignedTo.Contains(memberDescriptor))
                         {
                             // TODO: Log?
                             return;
@@ -582,7 +613,7 @@ namespace FileInclude
                     return;
                 }
     
-                var classDescriptor = top.ClassDescriptor;
+                var classDescriptor = top.TypeInfo.ClassDescriptor;
                 var itemName = name.ToString();
                 var memberDescriptor = classDescriptor.FindMember(itemName);
     
@@ -598,7 +629,7 @@ namespace FileInclude
                             return;
                         }
     
-                        dictionary.Add(itemName, value);
+                        dictionary.Add(itemName, value.Value);
                     }
                     else if (classDescriptor.IsListLike)
                     {
@@ -610,7 +641,7 @@ namespace FileInclude
                             return;
                         }
     
-                        list.Add(value);
+                        list.Add(value.Value);
                     }
                     else
                     {
@@ -637,14 +668,12 @@ namespace FileInclude
                         }
     
                         memberDescriptor.Setter(top.Value, list);
-                        top.MembersAssignedTo.Add(memberDescriptor);
                     }
     
                     list.Add(value.Value);
                 }
                 else
                 {
-                    top.MembersAssignedTo.Add(memberDescriptor);
                     memberDescriptor.Setter(top.Value, value.Value);
                 }
             }
@@ -701,7 +730,9 @@ namespace FileInclude
                 }
         
                 var type = value.GetType();
-                var classDescriptor = type.GetClassDescriptor();
+                var typeInfo = type.GetTypeInfo ();
+                var classDescriptor = typeInfo.ClassDescriptor;
+                var serializableMembers = typeInfo.SerializableMembers;
         
                 if (classDescriptor.IsDictionaryLike)
                 {
@@ -727,9 +758,9 @@ namespace FileInclude
                 }
                 else
                 {
-                    for (var index = 0; index < classDescriptor.PublicGetMembers.Length; index++)
+                    for (var index = 0; index < serializableMembers.Length; index++)
                     {
-                        var mi = classDescriptor.PublicGetMembers[index];
+                        var mi = serializableMembers[index];
                         var memberName = mi.Name.ToSubString();
                         var memberValue = mi.Getter(value);
                         VisitMember(memberName, memberValue, visitor, omitIfNullOrEmpty);
@@ -749,7 +780,7 @@ namespace FileInclude
                     return;
                 }
         
-                var classDescriptor = memberValue.GetType().GetClassDescriptor();
+                var classDescriptor = memberValue.GetType().GetTypeInfo ().ClassDescriptor;
         
                 if (classDescriptor.IsDictionaryLike)
                 {
@@ -9876,7 +9907,7 @@ namespace FileInclude.Include
     static partial class MetaData
     {
         public const string RootPath        = @"..\..\..";
-        public const string IncludeDate     = @"2013-09-28T10:44:26";
+        public const string IncludeDate     = @"2013-10-09T23:05:54";
 
         public const string Include_0       = @"C:\temp\GitHub\T4Include\HRON\HRONObjectSerializer.cs";
         public const string Include_1       = @"C:\temp\GitHub\T4Include\HRON\HRONDynamicObjectSerializer.cs";

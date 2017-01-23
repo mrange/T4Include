@@ -25,6 +25,7 @@ using FileInclude.Source.Common;
 using FileInclude.Source.Extensions;
 using FileInclude.Source.HRON;
 using FileInclude.Source.Testing;
+using System.Runtime.Serialization;
 
 namespace Test_Functionality.HRON
 {
@@ -55,6 +56,28 @@ namespace Test_Functionality.HRON
             }
 
             public UserConfig User;
+        }
+
+        [DataContract]
+        class UserContract
+        {
+            [DataMember]
+            public long Id          { get; set; }
+
+            [DataMember]
+            public string User      { get; set; }
+
+            public string Password  { get; set; }
+        }
+
+        class UserPoco
+        {
+            public long Id          { get; set; }
+
+            public string User      { get; set; }
+
+            [IgnoreDataMember]
+            public string Password  { get; set; }
         }
 
         static readonly string s_test_hron = File.ReadAllText(@"HRON\Test.hron");
@@ -93,6 +116,51 @@ namespace Test_Functionality.HRON
                     "HRON after deserialize/serialize to object should be identical to test case"
                     );
             }
+        }
+
+        public void Test_DataContract()
+        {
+            const string hron = @"=Id
+	1111
+=User
+	Tester";
+            var contract = new UserContract 
+            {
+                Id          = 1111L     ,
+                User        = "Tester"  ,
+                Password    = "Pwd"     ,
+            };
+
+            var value = HRONSerializer.ObjectAsString(contract);
+
+            TestFor.Equality(
+                hron,
+                value,
+                "HRON after deserialize/serialize to object should be identical to test case"
+                );
+        }
+
+        public void Test_IgnoreMember()
+        {
+            const string hron = @"=Id
+	1111
+=User
+	Tester";
+
+            var contract = new UserPoco
+            {
+                Id          = 1111L     ,
+                User        = "Tester"  ,
+                Password    = "Pwd"     ,
+            };
+
+            var value = HRONSerializer.ObjectAsString(contract);
+
+            TestFor.Equality(
+                hron,
+                value,
+                "HRON after deserialize/serialize to object should be identical to test case"
+                );
         }
 
         enum MyFlag
