@@ -74,6 +74,10 @@
             processed.Add (include);
             var lines = Extension_ReadAllLines (include);
 
+            if(include.Internalize)
+            {
+                lines = Internalize(lines);
+            }
 
             foreach (var line in lines)
             {
@@ -86,7 +90,7 @@
 #>
 // @@@ INCLUDE_FOUND: <#=fileName#>
 <#
-                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName), include.NoOuterNamespace));
+                    toBeProcessed.Enqueue (Include (Extension_CombinePath (fullContainer, fileName), include.NoOuterNamespace, include.Internalize));
                 }
                 else if (topMatch.Success)
                 {
@@ -262,6 +266,7 @@ namespace <#=Namespace#>.Include
     {
         public string LocalPath             ;
         public bool   NoOuterNamespace      ;
+        public bool   Internalize           ;
 
         public string FullPath              ;
         public List<string> TopLines        = new List<string> ();
@@ -269,12 +274,13 @@ namespace <#=Namespace#>.Include
         public List<string> BottomLines     = new List<string> ();
     }
 
-    static IncludeFile Include (string file, bool noOuterNamespace = false)
+    static IncludeFile Include (string file, bool noOuterNamespace = false, bool internalize = false)
     {
         return new IncludeFile 
             { 
                 LocalPath       = file ?? ""        , 
                 NoOuterNamespace= noOuterNamespace  ,
+                Internalize     = internalize       , 
             };
     }
 
@@ -288,5 +294,81 @@ namespace <#=Namespace#>.Include
         return new UsingNamespace { Namespace = ns ?? "", };
     }
 
+    static readonly Regex s_typeClassificationWithinCommentOrQuotes = new Regex(
+        "\".*?(struct|class|enum).*?\"|//.+?(struct|class|enum).*?",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline
+        );
 
+    static string[] Internalize(string[] lines)
+    {
+        var depth = 0;
+        var namespaceDepth = 0;
+        var processed = new string[lines.Length];
+        var lineIndex = 0;
+
+        foreach (var line in lines)
+        {
+            var wasProcessed = false;
+
+            try
+            {
+                if (line.Contains("namespace"))
+                {
+                    namespaceDepth++;
+                }
+                if (line.Trim() == "{" || line.Trim().EndsWith("{") || line == "{")
+                {
+                    depth++;
+                }
+                if (line.Trim() == "}" || line.Trim().EndsWith("}") || line == "}")
+                {
+                    if (depth == namespaceDepth)
+                    {
+                        namespaceDepth--;
+                    }
+                    depth--;
+                }
+                                    
+                // Internalizing should only affect the most outer scope.
+                if (depth == namespaceDepth)
+                {
+                    if (line.Contains("class ") || line.Contains("struct ") || line.Contains("enum "))
+                    {
+                        if (!s_typeClassificationWithinCommentOrQuotes.IsMatch(line))
+                        {
+                            var isPublic = line.Contains("public");
+                            var isInternal = line.Contains("internal");
+                            if (isPublic || !isInternal)
+                            {
+                                var whitespace = string.Empty;
+                                var signature = line;
+
+                                var index = line.TakeWhile(char.IsWhiteSpace).Count();
+                                if (index > 0)
+                                {
+                                    // Keep whitespace.
+                                    whitespace = line.Substring(0, index);
+                                    signature = line.Substring(index, line.Length - index);
+                                }
+
+                                processed[lineIndex] = string.Concat(whitespace, "internal ", signature);
+                                wasProcessed = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!wasProcessed)
+                {
+                    processed[lineIndex] = line;
+                }
+            }
+            finally
+            {
+                lineIndex++;
+            }
+        }
+
+        return processed;
+    }
 #>
